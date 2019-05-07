@@ -30,3 +30,35 @@ TabWidth                                  : 4
 UseTab                                    : ForIndentation
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignAfterOpenBracket: true
+AlignTrailingComments: true
+BinPackArguments: false
+UseTab: Never
+ColumnLimit: 128
+IndentWidth: 8
+AllowShortFunctionsOnASingleLine: false
+BinPackParameters: false
+PointerAlignment: Left
+
+BreakBeforeBinaryOperators: None 
+IndentCaseLabels: true
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterEnum: true
+  AfterStruct: true
+  AfterFunction: true
+  AfterControlStatement: true
+  AfterNamespace: true
+  AfterObjCDeclaration: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+
+BreakConstructorInitializers: AfterColon
