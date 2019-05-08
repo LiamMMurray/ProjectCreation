@@ -18,6 +18,17 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ECS\Component.h" />
+    <ClInclude Include="ECS\Containers.h" />
+    <ClInclude Include="ECS\ECS.h" />
+    <ClInclude Include="ECS\ECSTypes.h" />
+    <ClInclude Include="ECS\Handle.h" />
+    <ClInclude Include="ECS\Util.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{6AEBDD0C-4209-440C-8736-1B5346BDA655}</ProjectGuid>
