@@ -24,15 +24,22 @@
     <ClInclude Include="ECS\Containers.h" />
     <ClInclude Include="ECS\ECS.h" />
     <ClInclude Include="ECS\ECSTypes.h" />
+    <ClInclude Include="ECS\Entity.h" />
+    <ClInclude Include="ECS\EntityContainer.h" />
+    <ClInclude Include="ECS\EntityManager.h" />
+    <ClInclude Include="ECS\GEngine.h" />
     <ClInclude Include="ECS\Handle.h" />
     <ClInclude Include="ECS\IComponent.h" />
     <ClInclude Include="ECS\IEntity.h" />
+    <ClInclude Include="ECS\ISystem.h" />
+    <ClInclude Include="ECS\SystemManager.h" />
     <ClInclude Include="ECS\Test.h" />
     <ClInclude Include="ECS\Util.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ECS\ComponentManager.cpp" />
     <ClCompile Include="ECS\IComponent.cpp" />
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="ECS\Source.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

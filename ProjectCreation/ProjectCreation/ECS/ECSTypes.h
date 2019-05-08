@@ -1,20 +1,31 @@
 #pragma once
 #include <stdint.h>
-struct TypeId
+
+
+struct ITypeId
 {
         uint32_t m_Data;
-
-        TypeId operator++(int)
+        ITypeId(uint32_t data) : m_Data(data)
+        {}
+        ITypeId operator++(int)
         {
-                TypeId temp(*this);
+                ITypeId temp(*this);
                 m_Data++;
                 return temp;
         }
 };
-struct EntityTypeId : public TypeId
-{};
-struct ComponentTypeId : public TypeId
-{};
+
+
+struct EntityTypeId : public ITypeId
+{
+        EntityTypeId(ITypeId other) : ITypeId(other)
+        {}
+};
+struct ComponentTypeId : public ITypeId
+{
+        ComponentTypeId(ITypeId other) : ITypeId(other)
+        {}
+};
 enum ERESULT_FLAG
 {
         SUCCESS      = 0b00000000,

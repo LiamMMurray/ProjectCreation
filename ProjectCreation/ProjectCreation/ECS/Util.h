@@ -4,15 +4,15 @@
 template <typename T>
 class TypeIdCreator
 {
-        static TypeId m_Count;
+        static ITypeId m_Count;
 
     public:
         template <typename U>
-        static TypeId GetUniqueTypeId()
+        static ITypeId GetUniqueTypeId()
         {
-                static const TypeId increment_once_per_secondary_type{m_Count++};
+                static const ITypeId increment_once_per_secondary_type{m_Count++};
                 return increment_once_per_secondary_type;
         }
 };
 template <typename T>
-TypeId TypeIdCreator<T>::m_Count{0};
+ITypeId TypeIdCreator<T>::m_Count{0}; 
