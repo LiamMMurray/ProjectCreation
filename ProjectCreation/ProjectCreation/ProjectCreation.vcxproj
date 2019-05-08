@@ -19,15 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="ECS\Component.h" />
     <ClInclude Include="ECS\Containers.h" />
     <ClInclude Include="ECS\ECS.h" />
     <ClInclude Include="ECS\ECSTypes.h" />
     <ClInclude Include="ECS\Handle.h" />
+    <ClInclude Include="ECS\IComponent.h" />
+    <ClInclude Include="ECS\Test.h" />
     <ClInclude Include="ECS\Util.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ECS\IComponent.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
