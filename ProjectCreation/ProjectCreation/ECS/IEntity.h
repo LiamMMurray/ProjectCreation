@@ -23,4 +23,5 @@ class IEntity
         void DestroyComponent(ComponentHandle);
         void Activate();
         void Deactivate();
+		EntityTypeID
 };
