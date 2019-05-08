@@ -17,7 +17,7 @@ class IComponent
         {}
 
 		// required to implement functions
-        virtual TypeId          GetTypeID() = 0;
+        virtual ComponentTypeId          GetTypeID() = 0;
 		// implement functions
         EntityHandle    GetOwner();
         ComponentHandle GetHandle();

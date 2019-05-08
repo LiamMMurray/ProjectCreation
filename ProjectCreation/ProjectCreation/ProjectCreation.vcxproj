@@ -26,6 +26,7 @@
     <ClInclude Include="ECS\ECSTypes.h" />
     <ClInclude Include="ECS\Handle.h" />
     <ClInclude Include="ECS\IComponent.h" />
+    <ClInclude Include="ECS\IEntity.h" />
     <ClInclude Include="ECS\Test.h" />
     <ClInclude Include="ECS\Util.h" />
   </ItemGroup>

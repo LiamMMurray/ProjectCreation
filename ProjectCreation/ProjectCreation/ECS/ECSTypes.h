@@ -11,6 +11,10 @@ struct TypeId
                 return temp;
         }
 };
+struct EntityTypeId : public TypeId
+{};
+struct ComponentTypeId : public TypeId
+{};
 enum ERESULT_FLAG
 {
         SUCCESS      = 0b00000000,
