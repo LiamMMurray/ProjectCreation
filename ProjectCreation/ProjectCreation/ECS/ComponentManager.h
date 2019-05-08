@@ -8,6 +8,6 @@ class ComponentManager
     public:
         ComponentManager()
         {}
-         T       GetComponent(ComponentHandle componentHandle);
+         T*       GetComponent(ComponentHandle componentHandle);
          EResult CreateComponent(ComponentHandle componentHandle);
 };
