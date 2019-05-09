@@ -34,6 +34,7 @@
     <ClInclude Include="ECS\ISystem.h" />
     <ClInclude Include="ECS\SystemManager.h" />
     <ClInclude Include="ECS\Util.h" />
+    <ClInclude Include="ErrorHandling\ErrorTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ECS\ComponentManager.cpp" />

@@ -13,52 +13,61 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\ECS">
+      <UniqueIdentifier>{d56894a5-5ae0-4848-9a9b-2f29ba00b4ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ErrorHandling">
+      <UniqueIdentifier>{fa6971b0-7ba2-4d88-ac91-782e1246d8e1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ECS\ECS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\ECSTypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ECS\Component.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\Handle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\Util.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\ECS</Filter>
     </ClInclude>
     <ClInclude Include="ECS\Containers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\IComponent.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\ECS</Filter>
     </ClInclude>
     <ClInclude Include="ECS\ComponentManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\ECS</Filter>
     </ClInclude>
-    <ClInclude Include="ECS\IEntity.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="ECS\ECS.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\ECSTypes.h">
+      <Filter>Header Files\ECS</Filter>
     </ClInclude>
     <ClInclude Include="ECS\Entity.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\ECS</Filter>
     </ClInclude>
     <ClInclude Include="ECS\EntityContainer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\EntityManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\ISystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\SystemManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\ECS</Filter>
     </ClInclude>
     <ClInclude Include="ECS\GEngine.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\EntityManager.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\Handle.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\IComponent.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\ISystem.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\IEntity.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\SystemManager.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\Util.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="ErrorHandling\ErrorTypes.h">
+      <Filter>Header Files\ErrorHandling</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
