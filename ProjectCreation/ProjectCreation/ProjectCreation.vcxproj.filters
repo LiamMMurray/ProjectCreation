@@ -19,6 +19,9 @@
     <Filter Include="Header Files\ErrorHandling">
       <UniqueIdentifier>{fa6971b0-7ba2-4d88-ac91-782e1246d8e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\CoreInput">
+      <UniqueIdentifier>{3d99c3e2-d0c2-4960-89d8-f7e9c7f19694}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ECS\Component.h">
@@ -70,7 +73,7 @@
       <Filter>Header Files\ErrorHandling</Filter>
     </ClInclude>
     <ClInclude Include="CoreInput\CoreInput.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\CoreInput</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
