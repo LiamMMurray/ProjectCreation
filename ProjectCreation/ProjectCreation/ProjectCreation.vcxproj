@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CoreInput\CoreInput.h" />
     <ClInclude Include="ECS\Component.h" />
     <ClInclude Include="ECS\ComponentManager.h" />
     <ClInclude Include="ECS\Containers.h" />
@@ -36,6 +37,7 @@
     <ClInclude Include="ECS\Util.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CoreInput\CoreInput.cpp" />
     <ClCompile Include="ECS\ComponentManager.cpp" />
     <ClCompile Include="ECS\GEngine.cpp" />
     <ClCompile Include="ECS\IComponent.cpp" />

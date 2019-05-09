@@ -60,6 +60,9 @@
     <ClInclude Include="ECS\GEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CoreInput\CoreInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ECS\IComponent.cpp">
@@ -81,6 +84,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ECS\SystemManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreInput\CoreInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
