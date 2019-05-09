@@ -1,4 +1,4 @@
-#include "Entity.h"
+#include "ECS.h"
 
 //	comment out to disable tests
 // ____________________________________________________________________________
