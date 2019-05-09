@@ -33,13 +33,16 @@
     <ClInclude Include="ECS\IEntity.h" />
     <ClInclude Include="ECS\ISystem.h" />
     <ClInclude Include="ECS\SystemManager.h" />
-    <ClInclude Include="ECS\Test.h" />
     <ClInclude Include="ECS\Util.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ECS\ComponentManager.cpp" />
+    <ClCompile Include="ECS\GEngine.cpp" />
     <ClCompile Include="ECS\IComponent.cpp" />
-    <ClCompile Include="ECS\Source.cpp" />
+    <ClCompile Include="ECS\IEntity.cpp" />
+    <ClCompile Include="ECS\ISystem.cpp" />
+    <ClCompile Include="ECS\SystemManager.cpp" />
+    <ClCompile Include="ECS\TestsMain.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

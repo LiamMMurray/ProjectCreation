@@ -4,6 +4,7 @@
 
 class IComponent
 {
+
     protected:
         bool            m_Enabled;
         EntityHandle    m_Owner;
@@ -16,9 +17,7 @@ class IComponent
         virtual ~IComponent()
         {}
 
-		// required to implement functions
-        virtual ComponentTypeId          GetTypeID() = 0;
-		// implement functions
+
         EntityHandle    GetOwner();
         ComponentHandle GetHandle();
         void            Enable();
