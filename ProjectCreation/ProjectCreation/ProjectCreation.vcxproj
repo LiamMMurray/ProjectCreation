@@ -18,6 +18,32 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ECS\Component.h" />
+    <ClInclude Include="ECS\ComponentManager.h" />
+    <ClInclude Include="ECS\Containers.h" />
+    <ClInclude Include="ECS\ECS.h" />
+    <ClInclude Include="ECS\ECSTypes.h" />
+    <ClInclude Include="ECS\Entity.h" />
+    <ClInclude Include="ECS\EntityContainer.h" />
+    <ClInclude Include="ECS\EntityManager.h" />
+    <ClInclude Include="ECS\GEngine.h" />
+    <ClInclude Include="ECS\Handle.h" />
+    <ClInclude Include="ECS\IComponent.h" />
+    <ClInclude Include="ECS\IEntity.h" />
+    <ClInclude Include="ECS\ISystem.h" />
+    <ClInclude Include="ECS\SystemManager.h" />
+    <ClInclude Include="ECS\Util.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ECS\ComponentManager.cpp" />
+    <ClCompile Include="ECS\GEngine.cpp" />
+    <ClCompile Include="ECS\IComponent.cpp" />
+    <ClCompile Include="ECS\IEntity.cpp" />
+    <ClCompile Include="ECS\ISystem.cpp" />
+    <ClCompile Include="ECS\SystemManager.cpp" />
+    <ClCompile Include="ECS\TestsMain.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{6AEBDD0C-4209-440C-8736-1B5346BDA655}</ProjectGuid>
