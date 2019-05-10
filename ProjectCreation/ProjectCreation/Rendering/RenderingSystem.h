@@ -11,6 +11,4 @@ class CRenderingSystem : ISystem
         virtual void OnShutdown() override;
         virtual void OnResume() override;
         virtual void OnSuspend() override;
-
-
 };

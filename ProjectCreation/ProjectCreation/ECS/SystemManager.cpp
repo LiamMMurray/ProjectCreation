@@ -22,17 +22,17 @@ void SystemManager::InitializeSystem(FSystemInitProperties* systemProperties, IS
 
         if (systemProperties->bSuspendOnStart)
         {
-                mActiveSystemsQueue.push(isystem);
+                m_ActiveSystemsQueue.push(isystem);
         }
         else
         {
-                mInactiveSystems.push_back(isystem);
+                m_InactiveSystems.push_back(isystem);
         }
 }
 
 std::priority_queue<ISystem*, std::vector<ISystem*>, SystemManager::PriorityComparator> SystemManager::GetSystemQueue()
 {
-        return mActiveSystemsQueue;
+        return m_ActiveSystemsQueue;
 }
 
 void SystemManager::Initialize()
@@ -42,7 +42,7 @@ void SystemManager::Initialize()
 
 void SystemManager::Shutdown()
 {
-        for (auto it : mSystemsMap)
+        for (auto it : m_SystemsMap)
         {
                 delete it.second;
         }

@@ -8,8 +8,8 @@
 
 struct FSystemInitProperties
 {
-        uint16_t mPriority       = 300;
-        float    mUpdateRate     = 0.0f;
+        uint16_t m_Priority       = 300;
+        float    m_UpdateRate     = 0.0f;
         bool     bSuspendOnStart = false;
 };
 
@@ -21,13 +21,13 @@ class SystemManager
         {
                 bool operator()(ISystem* lhs, ISystem* rhs)
                 {
-                        return lhs->mPriority < rhs->mPriority;
+                        return lhs->m_Priority < rhs->m_Priority;
                 }
         };
 
-        std::unordered_map<SystemTypeID, ISystem*>                                    mSystemsMap;
-        std::priority_queue<ISystem*, std::vector<ISystem*>, SystemManager::PriorityComparator> mActiveSystemsQueue;
-        std::vector<ISystem*>                                                         mInactiveSystems;
+        std::unordered_map<SystemTypeID, ISystem*>                                    m_SystemsMap;
+        std::priority_queue<ISystem*, std::vector<ISystem*>, SystemManager::PriorityComparator> m_ActiveSystemsQueue;
+        std::vector<ISystem*>                                                         m_InactiveSystems;
 
     public:
         template <typename T>
@@ -60,10 +60,10 @@ inline EResult SystemManager::CreateSystem(T* outSystem)
 
         SystemTypeID typeID = ISystem::GetTypeID<T>();
 
-        assert(mSystemsMap.find(typeID) == mSystemsMap.end());
+        assert(m_SystemsMap.find(typeID) == m_SystemsMap.end());
 
         outSystem = new T();
-        auto it   = mSystemsMap.insert(std::make_pair(typeID, outSystem));
+        auto it   = m_SystemsMap.insert(std::make_pair(typeID, outSystem));
 
         EResult output;
         output.m_Flags = ERESULT_FLAG::SUCCESS;
@@ -101,8 +101,8 @@ T* SystemManager::GetSystem()
 {
         static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
         SystemTypeID typeID = ISystem::GetTypeID<T>();
-        auto         it     = mSystemsMap.find(typeID);
-        static_assert(it != mSystemsMap.end());
+        auto         it     = m_SystemsMap.find(typeID);
+        static_assert(it != m_SystemsMap.end());
 
         return it->second;
 }

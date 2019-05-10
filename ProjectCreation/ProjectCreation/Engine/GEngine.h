@@ -1,14 +1,13 @@
 #pragma once
 
-#include "../ECS/EntityManager.h"
-#include "../ECS/SystemManager.h"
+#include "../ECS/ECS.h"
 #include "XTime.h"
 class GEngine
 {
-        EntityManager*    mEntityManager;
-        ComponentManager* mComponentManager;
-        SystemManager*    mSystemManager;
-        XTime             mXTime;			  		  
+        EntityManager*    m_EntityManager;
+        ComponentManager* m_ComponentManager;
+        SystemManager*    m_SystemManager;
+        XTime             m_XTime;			  		  
 
 		static GEngine* instance;
 

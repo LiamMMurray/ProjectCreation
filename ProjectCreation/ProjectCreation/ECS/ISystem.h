@@ -14,8 +14,8 @@ class ISystem
         static SystemTypeID systemTypeID;
 
     private:
-        uint16_t mPriority;
-        float    mUpdateRateMs;
+        uint16_t m_Priority;
+        float    m_UpdateRateMs;
 
     protected:
         virtual void OnPreUpdate(float deltaTime)  = 0;

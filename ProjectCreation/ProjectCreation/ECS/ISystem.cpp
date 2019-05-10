@@ -4,20 +4,20 @@ SystemTypeID ISystem::systemTypeID = 0;
 
 uint16_t ISystem::GetPriority()
 {
-        return mPriority;
+        return m_Priority;
 }
 
 void ISystem::SetPriority(uint16_t priority)
 {
-        mPriority = priority;
+        m_Priority = priority;
 }
 
 float ISystem::GetUpdateRateMs()
 {
-        return mUpdateRateMs;
+        return m_UpdateRateMs;
 }
 
 void ISystem::SetUpdateRateMs(float updateRateMs)
 {
-        mUpdateRateMs = updateRateMs;
+        m_UpdateRateMs = updateRateMs;
 }

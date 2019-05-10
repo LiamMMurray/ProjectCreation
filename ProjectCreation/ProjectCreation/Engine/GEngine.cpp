@@ -7,20 +7,20 @@ void GEngine::Initialize()
         static GEngine engine;
         instance = &engine;
 
-        instance->mEntityManager = new EntityManager;
-        instance->mComponentManager = new ComponentManager;
-        instance->mSystemManager    = new SystemManager;
+        instance->m_EntityManager = new EntityManager;
+        instance->m_ComponentManager = new ComponentManager;
+        instance->m_SystemManager    = new SystemManager;
 
-		instance->mSystemManager->Initialize();
+		instance->m_SystemManager->Initialize();
 }
 
 void GEngine::Shutdown()
 {
-        instance->mSystemManager->Shutdown();
+        instance->m_SystemManager->Shutdown();
 
-        delete instance->mEntityManager;
-        delete instance->mComponentManager;
-        delete instance->mSystemManager;
+        delete instance->m_EntityManager;
+        delete instance->m_ComponentManager;
+        delete instance->m_SystemManager;
 }
 
 GEngine* GEngine::Get()
@@ -31,30 +31,30 @@ GEngine* GEngine::Get()
 
 void GEngine::Signal()
 {
-        mXTime.Signal();
+        m_XTime.Signal();
 }
 
 EntityManager* GEngine::GetEntityManager()
 {
-        return mEntityManager;
+        return m_EntityManager;
 }
 
 ComponentManager* GEngine::GetComponentManager()
 {
-        return mComponentManager;
+        return m_ComponentManager;
 }
 
 SystemManager* GEngine::GetSystemManager()
 {
-        return mSystemManager;
+        return m_SystemManager;
 }
 
 float GEngine::GetDeltaTime()
 {
-        return mXTime.Delta();
+        return m_XTime.Delta();
 }
 
 double GEngine::GetTotalTime()
 {
-        return mXTime.TotalTime();
+        return m_XTime.TotalTime();
 }
