@@ -1,22 +1,23 @@
 #include "ISystem.h"
 
-void ISystem::OnPreUpdate(float deltaTime)
-{}
+SystemTypeID ISystem::systemTypeID = 0;
 
-void ISystem::OnUpdate(float deltaTime)
-{}
+uint16_t ISystem::GetPriority()
+{
+        return m_Priority;
+}
 
-void ISystem::OnPostUpdate(float deltaTime)
-{}
+void ISystem::SetPriority(uint16_t priority)
+{
+        m_Priority = priority;
+}
 
-void ISystem::OnInitialize()
-{}
+float ISystem::GetUpdateRateMs()
+{
+        return m_UpdateRateMs;
+}
 
-void ISystem::OnShutdown()
-{}
-
-void ISystem::OnResume()
-{}
-
-void ISystem::OnSuspend()
-{}
+void ISystem::SetUpdateRateMs(float updateRateMs)
+{
+        m_UpdateRateMs = updateRateMs;
+}

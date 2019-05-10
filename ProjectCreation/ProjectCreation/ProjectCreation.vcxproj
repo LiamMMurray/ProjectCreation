@@ -28,24 +28,29 @@
     <ClInclude Include="ECS\Entity.h" />
     <ClInclude Include="ECS\EntityContainer.h" />
     <ClInclude Include="ECS\EntityManager.h" />
-    <ClInclude Include="ECS\GEngine.h" />
+    <ClInclude Include="Engine\GEngine.h" />
     <ClInclude Include="ECS\Handle.h" />
     <ClInclude Include="ECS\IComponent.h" />
     <ClInclude Include="ECS\IEntity.h" />
     <ClInclude Include="ECS\ISystem.h" />
     <ClInclude Include="ECS\SystemManager.h" />
     <ClInclude Include="ECS\Util.h" />
+    <ClInclude Include="Engine\XTime.h" />
     <ClInclude Include="ErrorHandling\ErrorTypes.h" />
+    <ClInclude Include="Rendering\RenderingSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreInput\CoreInput.cpp" />
     <ClCompile Include="ECS\ComponentManager.cpp" />
-    <ClCompile Include="ECS\GEngine.cpp" />
+    <ClCompile Include="Engine\GEngine.cpp" />
     <ClCompile Include="ECS\IComponent.cpp" />
     <ClCompile Include="ECS\IEntity.cpp" />
     <ClCompile Include="ECS\ISystem.cpp" />
     <ClCompile Include="ECS\SystemManager.cpp" />
     <ClCompile Include="ECS\TestsMain.cpp" />
+    <ClCompile Include="Engine\XTime.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Rendering\RenderingSystem.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -107,7 +112,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -118,7 +123,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -131,7 +136,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
@@ -146,7 +151,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>

@@ -22,6 +22,12 @@
     <Filter Include="Header Files\CoreInput">
       <UniqueIdentifier>{3d99c3e2-d0c2-4960-89d8-f7e9c7f19694}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Rendering">
+      <UniqueIdentifier>{a099b430-8830-4cd2-8049-29cdf5a165b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{97dabdec-bf0c-4d2a-a63a-c20fd2ae8c00}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ECS\Component.h">
@@ -43,9 +49,6 @@
       <Filter>Header Files\ECS</Filter>
     </ClInclude>
     <ClInclude Include="ECS\EntityContainer.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\GEngine.h">
       <Filter>Header Files\ECS</Filter>
     </ClInclude>
     <ClInclude Include="ECS\EntityManager.h">
@@ -75,15 +78,21 @@
     <ClInclude Include="CoreInput\CoreInput.h">
       <Filter>Header Files\CoreInput</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\XTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\RenderingSystem.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GEngine.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ECS\IComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ECS\ComponentManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS\GEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ECS\IEntity.cpp">
@@ -99,6 +108,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CoreInput\CoreInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\RenderingSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\XTime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
