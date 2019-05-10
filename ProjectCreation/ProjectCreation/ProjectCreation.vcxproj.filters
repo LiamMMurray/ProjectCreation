@@ -78,13 +78,13 @@
     <ClInclude Include="CoreInput\CoreInput.h">
       <Filter>Header Files\CoreInput</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\XTime.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\RenderingSystem.h">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="Engine\GEngine.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\XTime.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
