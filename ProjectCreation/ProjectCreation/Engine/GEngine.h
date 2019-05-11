@@ -7,7 +7,8 @@ class GEngine
         EntityManager*    m_EntityManager;
         ComponentManager* m_ComponentManager;
         SystemManager*    m_SystemManager;
-        XTime             m_XTime;			  		  
+        XTime             m_XTime;
+
 
 		static GEngine* instance;
 

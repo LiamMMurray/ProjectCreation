@@ -5,6 +5,8 @@
 #include "CoreInput/CoreInput.h"
 #include "Engine/GEngine.h"
 
+#include "Rendering/RenderingSystem.h"
+
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
         // switch based on the input message
@@ -68,7 +70,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         HWND handle = CreateWindowEx(WS_EX_APPWINDOW,
                                      appName, // Window class name again
                                      appName, // window title text
-                                     WS_OVERLAPPED  | WS_SYSMENU ,
+                                     WS_OVERLAPPED | WS_SYSMENU,
                                      posX,                // x pos
                                      posY,                // y pos
                                      wr.right - wr.left,  // width of the window
@@ -78,9 +80,19 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                                      GetModuleHandleW(0), // app instance
                                      nullptr);            // parameters passed to new window (32 bit value)
 
-		ShowWindow(handle, SW_SHOW);
+        ShowWindow(handle, SW_SHOW);
 
         GEngine::Initialize();
+
+        SystemManager*    systemManager    = GEngine::Get()->GetSystemManager();
+        EntityManager*    entityManager    = GEngine::Get()->GetEntityManager();
+        ComponentManager* componentManager = GEngine::Get()->GetComponentManager();
+
+        CRenderSystem* renderSystem;
+        systemManager->CreateSystem<CRenderSystem>(&renderSystem);
+		FSystemInitProperties sysInitProps;
+        renderSystem->SetWindowHandle((WindowHandle*)&handle);
+        systemManager->RegisterSystem(&sysInitProps, renderSystem);
 
         GCoreInput::InitializeInput(handle);
         // message loop
@@ -101,7 +113,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                                 return false;
                 }
 
-				//Main application loop goes here.
+                // Main application loop goes here.
                 GEngine::Get()->Signal();
 
                 GCoreInput::UpdateInput();

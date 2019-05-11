@@ -51,7 +51,7 @@ SystemManager* GEngine::GetSystemManager()
 
 float GEngine::GetDeltaTime()
 {
-        return m_XTime.Delta();
+        return (float)m_XTime.Delta();
 }
 
 double GEngine::GetTotalTime()

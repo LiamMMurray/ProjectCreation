@@ -1,22 +1,46 @@
 #include "RenderingSystem.h"
 
-void CRenderingSystem::OnPreUpdate(float deltaTime)
+#include <d3d11_1.h>
+#pragma comment(lib, "d3d11.lib")
+
+#define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
+#include <Windows.h>
+#include <windowsx.h>
+
+void CRenderSystem::OnPreUpdate(float deltaTime)
 {}
 
-void CRenderingSystem::OnUpdate(float deltaTime)
+void CRenderSystem::OnUpdate(float deltaTime)
 {}
 
-void CRenderingSystem::OnPostUpdate(float deltaTime)
+void CRenderSystem::OnPostUpdate(float deltaTime)
 {}
 
-void CRenderingSystem::OnInitialize()
+void CRenderSystem::OnInitialize()
+{
+        assert(m_WindowHandle);
+
+		RECT rect;
+        bool bWindowRect = GetWindowRect((HWND)m_WindowHandle, &rect);
+        assert(bWindowRect);
+
+
+}
+
+void CRenderSystem::OnShutdown()
+{
+        m_Swapchain->Release();
+        m_Context->Release();
+        m_Device->Release();
+}
+
+void CRenderSystem::OnResume()
 {}
 
-void CRenderingSystem::OnShutdown()
+void CRenderSystem::OnSuspend()
 {}
 
-void CRenderingSystem::OnResume()
-{}
-
-void CRenderingSystem::OnSuspend()
-{}
+void CRenderSystem::SetWindowHandle(WindowHandle* handle)
+{
+        m_WindowHandle = handle;
+}
