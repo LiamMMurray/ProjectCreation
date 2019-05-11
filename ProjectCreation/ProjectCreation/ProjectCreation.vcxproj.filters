@@ -87,6 +87,12 @@
     <ClInclude Include="Engine\XTime.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="IController.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMovement.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ECS\IComponent.cpp">
@@ -120,6 +126,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\XTime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMovement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
