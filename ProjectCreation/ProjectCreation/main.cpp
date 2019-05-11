@@ -7,9 +7,12 @@
 
 #include "Rendering/RenderingSystem.h"
 
+bool g_Running = false;
+
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
         // switch based on the input message
+        if (g_Running)
         switch (message)
         {
                 // We are told to close the app
@@ -25,6 +28,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 }
                 case WM_SIZE:
                 {
+                        GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>()->OnWindowResize(wParam, lParam);
                         break;
                 }
         }
@@ -80,7 +84,6 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                                      GetModuleHandleW(0), // app instance
                                      nullptr);            // parameters passed to new window (32 bit value)
 
-        ShowWindow(handle, SW_SHOW);
 
         GEngine::Initialize();
 
@@ -91,15 +94,19 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         CRenderSystem* renderSystem;
         systemManager->CreateSystem<CRenderSystem>(&renderSystem);
 		FSystemInitProperties sysInitProps;
-        renderSystem->SetWindowHandle((WindowHandle*)&handle);
+        renderSystem->SetWindowHandle(handle);
         systemManager->RegisterSystem(&sysInitProps, renderSystem);
 
         GCoreInput::InitializeInput(handle);
         // message loop
+        ShowWindow(handle, SW_SHOW);
+        g_Running = true;
         MSG msg;
         ZeroMemory(&msg, sizeof(msg));
         while (msg.message != WM_QUIT)
         {
+                GCoreInput::UpdateInput();
+
                 while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
                 {
                         // translate keystroke messages into the right format
@@ -116,7 +123,6 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
 
-                GCoreInput::UpdateInput();
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
         }
 

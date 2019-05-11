@@ -105,7 +105,7 @@ T* SystemManager::GetSystem()
         static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
         SystemTypeID typeID = ISystem::GetTypeID<T>();
         auto         it     = m_SystemsMap.find(typeID);
-        static_assert(it != m_SystemsMap.end());
+        assert(it != m_SystemsMap.end());
 
-        return it->second;
+        return (T*)it->second;
 }
