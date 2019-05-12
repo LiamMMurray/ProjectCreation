@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <queue>
 #include <unordered_map>
+#include "../ErrorHandling/ErrorTypes.h"
 #include "ECSTypes.h"
 #include "ISystem.h"
 
@@ -79,7 +80,7 @@ inline void SystemManager::DestroySystem()
 {
         static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
 
-        ISystem* system = GetSystem<T>();
+        ISystem*     system = GetSystem<T>();
         SystemTypeID typeID = ISystem::GetTypeID<T>();
         assert(m_SystemsMap.find(typeID) == m_SystemsMap.end());
 
@@ -104,7 +105,7 @@ T* SystemManager::GetSystem()
 {
         static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
         TypeId<ISystem> typeID = ISystem::GetTypeID<T>();
-        auto         it     = m_SystemsMap.find(typeID);
+        auto            it     = m_SystemsMap.find(typeID);
         assert(it != m_SystemsMap.end());
 
         return (T*)it->second;
