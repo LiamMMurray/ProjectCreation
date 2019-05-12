@@ -1,6 +1,6 @@
 #include "ISystem.h"
 
-SystemTypeID ISystem::systemTypeID = 0;
+TypeId<ISystem> ISystem::systemTypeID = 0;
 
 uint16_t ISystem::GetPriority()
 {

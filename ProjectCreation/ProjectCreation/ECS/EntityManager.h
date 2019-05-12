@@ -8,13 +8,13 @@ class EntityManager
         template <typename T>
         Entity<T>* GetEntity();
         template <typename T>
-        EResult CreateEntity(EntityHandle entityHandle);
+        EResult CreateEntity(Handle<IEntity> entityHandle);
         template <typename T>
-        void DestroyEntity(EntityHandle entityHandle);
+        void DestroyEntity(Handle<IEntity> entityHandle);
 		template <typename T>
-        void ActivateEntity(EntityHandle entityHandle);
+        void ActivateEntity(Handle<IEntity> entityHandle);
         template <typename T>
-        void DeactivateEntity(EntityHandle entityHandle);
+        void DeactivateEntity(Handle<IEntity> entityHandle);
 		template <typename T>
         size_t GetContainerSize();
 		template <typename entityType>
@@ -30,21 +30,21 @@ inline Entity<T>* EntityManager::GetEntity()
 }
 
 template <typename T>
-inline EResult EntityManager::CreateEntity(EntityHandle entityHandle)
+inline EResult EntityManager::CreateEntity(Handle<IEntity> entityHandle)
 {
         return EResult();
 }
 
 template <typename T>
-inline void EntityManager::DestroyEntity(EntityHandle entityHandle)
+inline void EntityManager::DestroyEntity(Handle<IEntity> entityHandle)
 {}
 
 template <typename T>
-inline void EntityManager::ActivateEntity(EntityHandle entityHandle)
+inline void EntityManager::ActivateEntity(Handle<IEntity> entityHandle)
 {}
 
 template <typename T>
-inline void EntityManager::DeactivateEntity(EntityHandle entityHandle)
+inline void EntityManager::DeactivateEntity(Handle<IEntity> entityHandle)
 {}
 
 template <typename T>

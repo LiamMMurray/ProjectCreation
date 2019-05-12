@@ -8,8 +8,8 @@
 
 struct FSystemInitProperties
 {
-        uint16_t m_Priority       = 300;
-        float    m_UpdateRate     = 0.0f;
+        uint16_t m_Priority      = 300;
+        float    m_UpdateRate    = 0.0f;
         bool     bSuspendOnStart = false;
 };
 
@@ -25,9 +25,9 @@ class SystemManager
                 }
         };
 
-        std::unordered_map<SystemTypeID, ISystem*>                                    m_SystemsMap;
+        std::unordered_map<TypeId<ISystem>, ISystem*>                                              m_SystemsMap;
         std::priority_queue<ISystem*, std::vector<ISystem*>, SystemManager::PriorityComparator> m_ActiveSystemsQueue;
-        std::vector<ISystem*>                                                         m_InactiveSystems;
+        std::vector<ISystem*>                                                                   m_InactiveSystems;
 
     public:
         template <typename T>
@@ -48,7 +48,7 @@ class SystemManager
 
         std::priority_queue<ISystem*, std::vector<ISystem*>, SystemManager::PriorityComparator> GetSystemQueue();
 
-		void Initialize();
+        void Initialize();
         void Shutdown();
 };
 
@@ -58,7 +58,7 @@ inline EResult SystemManager::CreateSystem(T* outSystem)
         static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
         assert(outSystem != nullptr);
 
-        SystemTypeID typeID = ISystem::GetTypeID<T>();
+        TypeId<ISystem> typeID = ISystem::GetTypeID<T>();
 
         assert(m_SystemsMap.find(typeID) == m_SystemsMap.end());
 
@@ -100,7 +100,7 @@ template <typename T>
 T* SystemManager::GetSystem()
 {
         static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
-        SystemTypeID typeID = ISystem::GetTypeID<T>();
+        TypeId<ISystem> typeID = ISystem::GetTypeID<T>();
         auto         it     = m_SystemsMap.find(typeID);
         static_assert(it != m_SystemsMap.end());
 
