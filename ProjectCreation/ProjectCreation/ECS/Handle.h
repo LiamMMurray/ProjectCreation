@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 
+template <typename T>
 struct Handle
 {
         union
@@ -13,7 +14,3 @@ struct Handle
                 };
         };
 };
-struct EntityHandle : public Handle
-{};
-struct ComponentHandle : public Handle
-{};
