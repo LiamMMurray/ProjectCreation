@@ -3,7 +3,7 @@
 //	comment out to disable tests
 // ____________________________________________________________________________
 
-//#define ECS_TESTS
+//#define ENABLE_ECS_TESTS
 
 //	commentcomment out to disable individual tests
 // ____________________________________________________________________________

@@ -1,5 +1,4 @@
-#define ENABLE_MAIN
-#ifdef ENABLE_MAIN
+#ifndef ENABLE_ECS_TESTS
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #include <Windows.h>
@@ -16,25 +15,25 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 {
         // switch based on the input message
         if (g_Running)
-        switch (message)
-        {
-                // We are told to close the app
-                case WM_DESTROY:
+                switch (message)
                 {
-                        PostQuitMessage(0);
-                        return 0;
+                        // We are told to close the app
+                        case WM_DESTROY:
+                        {
+                                PostQuitMessage(0);
+                                return 0;
+                        }
+                        case WM_INPUT:
+                        {
+                                GCoreInput::GatherInput(hWnd, message, wParam, lParam);
+                                break;
+                        }
+                        case WM_SIZE:
+                        {
+                                GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>()->OnWindowResize(wParam, lParam);
+                                break;
+                        }
                 }
-                case WM_INPUT:
-                {
-                        GCoreInput::GatherInput(hWnd, message, wParam, lParam);
-                        break;
-                }
-                case WM_SIZE:
-                {
-                        GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>()->OnWindowResize(wParam, lParam);
-                        break;
-                }
-        }
 
         // Any other messages, handle the default way
         return DefWindowProc(hWnd, message, wParam, lParam);
@@ -96,7 +95,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
         CRenderSystem* renderSystem;
         systemManager->CreateSystem<CRenderSystem>(&renderSystem);
-		FSystemInitProperties sysInitProps;
+        FSystemInitProperties sysInitProps;
         renderSystem->SetWindowHandle(handle);
         systemManager->RegisterSystem(&sysInitProps, renderSystem);
 
