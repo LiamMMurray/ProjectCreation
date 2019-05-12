@@ -1,8 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 #include "IController.h"
-
-typedef int HandleAsInt;
+#include "../ECS/ECSTypes.h"
 
 class PlayerMovement : public IController
 {
@@ -30,7 +29,7 @@ class PlayerMovement : public IController
                 ON_WATER
         };
 
-		HandleAsInt handle;
+		Handle<IComponent> m_handle;
 
 		int SpeedModifier;
 
