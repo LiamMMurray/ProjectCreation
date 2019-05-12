@@ -10,15 +10,15 @@ class GEngine
         XTime             m_XTime;
 
 
-		static GEngine* instance;
+        static GEngine* instance;
 
     public:
         static void Initialize();
-        static void  Shutdown();
+        static void Shutdown();
 
         static GEngine* Get();
 
-		void Signal();
+        void Signal();
 
         EntityManager*    GetEntityManager();
         ComponentManager* GetComponentManager();

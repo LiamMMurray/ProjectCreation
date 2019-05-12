@@ -14,7 +14,6 @@ struct FSystemInitProperties
         uint32_t m_Flags      = 0;
         float    m_UpdateRate = 0.0f;
         uint16_t m_Priority   = 300;
-        
 };
 
 class ISystem

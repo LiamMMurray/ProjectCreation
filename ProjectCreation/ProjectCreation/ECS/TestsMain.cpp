@@ -3,7 +3,7 @@
 //	comment out to disable tests
 // ____________________________________________________________________________
 
-//#define ENABLE_ECS_TESTS
+#define ENABLE_ECS_TESTS
 
 //	commentcomment out to disable individual tests
 // ____________________________________________________________________________
@@ -19,9 +19,9 @@
 #include <windowsx.h>
 
 int WinMain(HINSTANCE hInstance,     // ptr to current instance of app
-                   HINSTANCE hPrevInstance, // prev instance of app. Is always null nowadays.
-                   LPSTR     lpCmdLine,     // command line of app excluding program name
-                   int       nCmdShow       // how the windows is shown. Legacy. Can ignore
+            HINSTANCE hPrevInstance, // prev instance of app. Is always null nowadays.
+            LPSTR     lpCmdLine,     // command line of app excluding program name
+            int       nCmdShow       // how the windows is shown. Legacy. Can ignore
 )
 {
         Entity<float> test_0;

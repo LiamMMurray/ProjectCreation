@@ -19,4 +19,3 @@ class TypeIdCreator
 };
 template <typename T>
 uint32_t TypeIdCreator<T>::m_Count{0};
-

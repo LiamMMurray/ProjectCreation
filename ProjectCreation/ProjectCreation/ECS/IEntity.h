@@ -6,8 +6,8 @@
 
 class IEntity
 {
-  //  public:
-		//virtual static const TypeId<IEntity> GetTypeId() const = 0;
+        //  public:
+        // virtual static const TypeId<IEntity> GetTypeId() const = 0;
 
     public:
         template <typename T>

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../ECS/ECS.h"
-#include "../Utility/ForwardDeclarations/WinProcTypes.h"
 #include "../Utility/ForwardDeclarations/D3DNativeTypes.h"
+#include "../Utility/ForwardDeclarations/WinProcTypes.h"
 
 struct EVIEWPORT
 {
@@ -128,4 +128,3 @@ class CRenderSystem : public ISystem
         void SetFullscreen(bool);
         bool GetFullscreen();
 };
-

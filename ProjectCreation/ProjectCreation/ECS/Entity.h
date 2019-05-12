@@ -15,7 +15,7 @@ template <typename T>
 const TypeId<IEntity> Entity<T>::m_TypeId{TypeIdCreator<IEntity>::GetUniqueTypeId<T>()};
 
 template <typename T>
-inline  const TypeId<IEntity> Entity<T>::GetTypeId()
+inline const TypeId<IEntity> Entity<T>::GetTypeId()
 {
         return m_TypeId;
 }
