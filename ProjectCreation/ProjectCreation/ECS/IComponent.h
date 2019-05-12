@@ -7,8 +7,8 @@ class IComponent
 
     protected:
         bool            m_Enabled;
-        EntityHandle    m_Owner;
-        ComponentHandle m_Handle;
+        Handle<IEntity>    m_Owner;
+        Handle<IComponent> m_Handle;
 
     public:
         IComponent()
@@ -18,8 +18,8 @@ class IComponent
         {}
 
 
-        EntityHandle    GetOwner();
-        ComponentHandle GetHandle();
+        Handle<IEntity> GetOwner();
+        Handle<IComponent> GetHandle();
         void            Enable();
         void            Disable();
         void            SetActive(bool state);

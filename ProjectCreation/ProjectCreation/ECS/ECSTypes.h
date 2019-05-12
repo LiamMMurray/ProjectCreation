@@ -1,7 +1,9 @@
 #pragma once
 #include <stdint.h>
-//class null_type
-//{};
+#include <functional>
+class IComponent;
+class IEntity;
+class ISystem;
 
 // Making TypeId a templated type prevents doing things like comparing
 // TypeId (for a component) == TypeId (for an Entity)
@@ -33,6 +35,7 @@ struct TypeId
 
         TypeId() : m_Data(0)
         {}
+
         TypeId(uint32_t data) : m_Data(data)
         {}
 
@@ -41,6 +44,16 @@ struct TypeId
                 TypeId temp(*this);
                 m_Data++;
                 return temp;
+        }
+};
+
+template <typename T>
+class std::hash<TypeId<T>>
+{
+    public:
+        size_t operator()(const TypeId<T> id) const
+        {
+                return hash<uint32_t>()(id.m_Data);
         }
 };
 

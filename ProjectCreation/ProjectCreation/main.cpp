@@ -1,3 +1,6 @@
+#define ENABLE_MAIN
+#ifdef ENABLE_MAIN
+
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #include <Windows.h>
 #include <windowsx.h>
@@ -113,3 +116,5 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
         return 0;
 }
+
+#endif
