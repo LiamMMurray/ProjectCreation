@@ -40,6 +40,12 @@
     <Filter Include="Source Files\Rendering">
       <UniqueIdentifier>{4115749b-830a-4722-ab40-4c2b87ecf98b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Components">
+      <UniqueIdentifier>{70551b91-387b-432f-adf4-9a320b6376ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Components">
+      <UniqueIdentifier>{d38c91f1-4482-42f7-8e84-65075ca62a65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ECS\Component.h">
@@ -87,9 +93,6 @@
     <ClInclude Include="ErrorHandling\ErrorTypes.h">
       <Filter>Header Files\ErrorHandling</Filter>
     </ClInclude>
-    <ClInclude Include="CoreInput\CoreInput.h">
-      <Filter>Header Files\CoreInput</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\RenderingSystem.h">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
@@ -99,11 +102,17 @@
     <ClInclude Include="Engine\XTime.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="IController.h">
+    <ClInclude Include="ECS\IController.h">
       <Filter>Header Files\ECS</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerMovement.h">
-      <Filter>Header Files\ECS</Filter>
+    <ClInclude Include="Components\PlayerMovement.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreInput\CoreInput.h">
+      <Filter>Header Files\CoreInput</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\IController.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -140,11 +149,11 @@
     <ClCompile Include="ECS\TestsMain.cpp">
       <Filter>Source Files\ECS</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerMovement.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Components\PlayerMovement.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="IController.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Components\IController.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
