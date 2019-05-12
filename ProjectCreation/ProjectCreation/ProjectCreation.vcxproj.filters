@@ -40,6 +40,12 @@
     <Filter Include="Source Files\Rendering">
       <UniqueIdentifier>{4115749b-830a-4722-ab40-4c2b87ecf98b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Utility">
+      <UniqueIdentifier>{8c3cb67f-f040-43b7-988f-028d63a1131a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utility\ForwardDeclarations">
+      <UniqueIdentifier>{e4cf9f64-1246-4dbf-bd2e-00747fdad207}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ECS\Component.h">
@@ -99,11 +105,11 @@
     <ClInclude Include="Engine\XTime.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Utility\ForwardDeclarations</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h">
+      <Filter>Header Files\Utility\ForwardDeclarations</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
