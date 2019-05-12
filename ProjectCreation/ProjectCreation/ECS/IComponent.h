@@ -1,6 +1,5 @@
 #pragma once
 #include "ECSTypes.h"
-#include "Handle.h"
 
 class IComponent
 {

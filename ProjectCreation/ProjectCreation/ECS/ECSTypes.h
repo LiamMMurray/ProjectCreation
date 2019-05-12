@@ -1,10 +1,12 @@
 #pragma once
 #include <stdint.h>
 #include <functional>
+#include "Handle.h"
+
 class IComponent;
 class IEntity;
 class ISystem;
-
+class Transform;
 // Making TypeId a templated type prevents doing things like comparing
 // TypeId (for a component) == TypeId (for an Entity)
 // without writing individual inherited classes for every class we wish to have a typeId
