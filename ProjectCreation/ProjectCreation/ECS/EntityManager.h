@@ -1,7 +1,7 @@
 #pragma once
+#include "Component.h"
 #include "ECSTypes.h"
 #include "Entity.h"
-#include "Component.h"
 class EntityManager
 {
     public:
@@ -11,15 +11,15 @@ class EntityManager
         EResult CreateEntity(Handle<IEntity> entityHandle);
         template <typename T>
         void DestroyEntity(Handle<IEntity> entityHandle);
-		template <typename T>
+        template <typename T>
         void ActivateEntity(Handle<IEntity> entityHandle);
         template <typename T>
         void DeactivateEntity(Handle<IEntity> entityHandle);
-		template <typename T>
+        template <typename T>
         size_t GetContainerSize();
-		template <typename entityType>
+        template <typename entityType>
         size_t GetContainerActiveCount();
-		template <typename T>
+        template <typename T>
         Component<T>* GetActiveComponents();
 };
 

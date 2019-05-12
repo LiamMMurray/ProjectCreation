@@ -159,8 +159,8 @@ void CRenderSystem::OnPreUpdate(float deltaTime)
 void CRenderSystem::OnUpdate(float deltaTime)
 {
         m_Context->OMSetRenderTargets(1, &m_RenderTargets[ERENDER_TARGET::BACKBUFFER], nullptr);
-        static FLOAT color[] = {1.0f, 1.0f, 1.0f, 1.0f};
-        static float totalTime     = 0.0f;
+        static FLOAT color[]   = {1.0f, 1.0f, 1.0f, 1.0f};
+        static float totalTime = 0.0f;
         totalTime += deltaTime;
         color[0] = sin(totalTime);
         color[1] = cos(totalTime);

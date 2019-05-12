@@ -1,12 +1,11 @@
 #pragma once
+#include "../ErrorHandling/ErrorTypes.h"
 #include "ECSTypes.h"
 #include "IComponent.h"
 
 template <typename T>
 class ComponentIterator
-{
-
-};
+{};
 
 class ComponentManager
 {

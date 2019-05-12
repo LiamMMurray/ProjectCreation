@@ -108,4 +108,3 @@ KeyState GCoreInput::GetMouseState(MouseCode target)
         KeyState output = static_cast<KeyState>(0x3 & MouseStates[static_cast<int>(target)]);
         return output;
 }
-

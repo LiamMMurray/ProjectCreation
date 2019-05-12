@@ -48,7 +48,7 @@ struct TypeId
                 return temp;
         }
 };
-// define std::hash and std::equal_to to allow hashing of TypeId
+// defininitions for std::hash and std::equal_to allows hashing of TypeId
 template <typename T>
 class std::hash<TypeId<T>>
 {
@@ -60,29 +60,10 @@ class std::hash<TypeId<T>>
 };
 template <typename T>
 class std::equal_to<TypeId<T>>
-{ 
-	public:
+{
+    public:
         constexpr bool operator()(const TypeId<T>& _Left, const TypeId<T>& _Right) const
-        { 
+        {
                 return _Left.m_Data == _Right.m_Data;
         }
-};
-
-
-
-enum ERESULT_FLAG
-{
-        SUCCESS      = 0b00000000,
-        PLACEHOLDER1 = 0b00000001,
-        PLACEHOLDER2 = 0b00000010,
-        PLACEHOLDER3 = 0b00000100,
-        PLACEHOLDER4 = 0b00001000,
-        PLACEHOLDER5 = 0b00010000,
-        PLACEHOLDER6 = 0b00100000,
-        PLACEHOLDER7 = 0b01000000,
-        PLACEHOLDER8 = 0b10000000
-};
-struct EResult
-{
-        uint64_t m_Flags;
 };
