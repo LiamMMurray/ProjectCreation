@@ -3,7 +3,7 @@
 //	comment out to disable tests
 // ____________________________________________________________________________
 
-//#define ECS_TESTS
+#define ECS_TESTS
 
 //	commentcomment out to disable individual tests
 // ____________________________________________________________________________
@@ -13,9 +13,17 @@
 
 
 #ifdef ECS_TESTS
-int main()
-{
 
+#define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
+#include <Windows.h>
+#include <windowsx.h>
+
+int WinMain(HINSTANCE hInstance,     // ptr to current instance of app
+                   HINSTANCE hPrevInstance, // prev instance of app. Is always null nowadays.
+                   LPSTR     lpCmdLine,     // command line of app excluding program name
+                   int       nCmdShow       // how the windows is shown. Legacy. Can ignore
+)
+{
         Entity<float> test_0;
         Entity<float> test_1;
         Entity<float> test_2;
@@ -34,7 +42,6 @@ int main()
         Entity<int>   test_15;
         Entity<float> test_16;
         Entity<float> test_17;
-
 
 #ifdef TYPEID_TESTS
         // it is a compile time-error to perform operations between typeids belonging to different primary types
