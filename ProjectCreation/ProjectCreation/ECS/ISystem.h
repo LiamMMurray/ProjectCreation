@@ -2,8 +2,10 @@
 
 #include <stdint.h>
 #include <type_traits>
+#include "ECSTypes.h"
 
 class SystemManager;
+
 
 typedef uint32_t SystemTypeID;
 
@@ -19,7 +21,7 @@ class ISystem
 {
         friend class SystemManager;
 
-        static SystemTypeID systemTypeID;
+        static TypeId<ISystem> systemTypeID;
 
     private:
         uint16_t m_Priority;
@@ -36,11 +38,12 @@ class ISystem
 
     public:
         template <typename T>
-        static SystemTypeID GetTypeID()
+
+        static TypeId<ISystem> GetTypeID()
         {
                 static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
 
-                static const SystemTypeID id{systemTypeID++};
+                static const TypeId<ISystem> id{systemTypeID++};
                 return id;
         }
 

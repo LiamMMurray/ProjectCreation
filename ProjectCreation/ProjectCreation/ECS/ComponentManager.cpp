@@ -1,17 +1,17 @@
 #include "ComponentManager.h"
 
-EResult ComponentManager::CreateComponent(ComponentHandle componentHandle)
+EResult ComponentManager::CreateComponent(Handle<IComponent> componentHandle)
 {
         return EResult();
 }
 
-void ComponentManager::DestroyComponent(ComponentHandle componentHandle)
+void ComponentManager::DestroyComponent(Handle<IComponent> componentHandle)
 {}
 
-void ComponentManager::ActivateComponent(ComponentHandle componentHandle)
+void ComponentManager::ActivateComponent(Handle<IComponent> componentHandle)
 {}
 
-void ComponentManager::DeactivateComponent(ComponentHandle componentHandle)
+void ComponentManager::DeactivateComponent(Handle<IComponent> componentHandle)
 {}
 
 size_t ComponentManager::GetCapacity()

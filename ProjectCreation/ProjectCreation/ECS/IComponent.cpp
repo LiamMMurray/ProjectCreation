@@ -1,11 +1,11 @@
 #include "IComponent.h"
 
-EntityHandle IComponent::GetOwner()
+Handle<IEntity> IComponent::GetOwner()
 {
         return m_Owner;
 }
 
-ComponentHandle IComponent::GetHandle()
+Handle<IComponent> IComponent::GetHandle()
 {
         return m_Handle;
 }

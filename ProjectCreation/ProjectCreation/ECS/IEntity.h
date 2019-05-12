@@ -12,27 +12,27 @@ class IEntity
 
     public:
         template <typename T>
-        ComponentHandle GetComponentHandle();
+        Handle<IComponent> GetComponentHandle();
         template <typename T>
         Component<T>* GetComponent();
         template <typename T>
-        std::vector<ComponentHandle> GetComponentHandles();
+        std::vector<Handle<IComponent>> GetComponentHandles();
         template <typename T>
         ComponentIterator<T> GetAllComponents();
         template <typename T>
-        EResult CreateComponent(ComponentHandle componentHandle);
+        EResult CreateComponent(Handle<IComponent> componentHandle);
         template <typename T>
         void DestroyComponent();
         template <typename T>
-        void DestroyComponent(ComponentHandle);
+        void DestroyComponent(Handle<IComponent>);
         void Activate();
         void Deactivate();
 };
 
 template <typename T>
-inline ComponentHandle IEntity::GetComponentHandle()
+inline Handle<IComponent> IEntity::GetComponentHandle()
 {
-        return ComponentHandle();
+        return TypeId<IComponent>();
 }
 
 template <typename T>
@@ -42,9 +42,9 @@ inline Component<T>* IEntity::GetComponent()
 }
 
 template <typename T>
-inline std::vector<ComponentHandle> IEntity::GetComponentHandles()
+inline std::vector<Handle<IComponent>> IEntity::GetComponentHandles()
 {
-        return std::vector<ComponentHandle>();
+        return std::vector<TypeId<IComponent>>();
 }
 
 template <typename T>
@@ -54,7 +54,7 @@ inline ComponentIterator<T> IEntity::GetAllComponents()
 }
 
 template <typename T>
-inline EResult IEntity::CreateComponent(ComponentHandle componentHandle)
+inline EResult IEntity::CreateComponent(Handle<IComponent> componentHandle)
 {
         return EResult();
 }
@@ -65,5 +65,5 @@ inline void IEntity::DestroyComponent()
 {}
 
 template <typename T>
-inline void IEntity::DestroyComponent(ComponentHandle)
+inline void IEntity::DestroyComponent(Handle<IComponent>)
 {}
