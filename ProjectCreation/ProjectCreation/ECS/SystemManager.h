@@ -6,12 +6,7 @@
 #include "ECSTypes.h"
 #include "ISystem.h"
 
-struct FSystemInitProperties
-{
-        uint16_t m_Priority      = 300;
-        float    m_UpdateRate    = 0.0f;
-        bool     bSuspendOnStart = false;
-};
+#define SYSTEM_INIT_FLAG_SUSPEND_ON_START 1
 
 
 class SystemManager
@@ -25,20 +20,20 @@ class SystemManager
                 }
         };
 
-        std::unordered_map<TypeId<ISystem>, ISystem*>                                              m_SystemsMap;
+        std::unordered_map<TypeId<ISystem>, ISystem*>                                           m_SystemsMap;
         std::priority_queue<ISystem*, std::vector<ISystem*>, SystemManager::PriorityComparator> m_ActiveSystemsQueue;
         std::vector<ISystem*>                                                                   m_InactiveSystems;
 
     public:
         template <typename T>
-        EResult CreateSystem(T* outSystem);
+        EResult CreateSystem(T** outSystem);
         void    Update(float deltaTime);
         template <typename T>
-        void ShutdownSystem();
+        void DestroySystem();
         template <typename T>
-        void InitializeSystem(FSystemInitProperties* systemProperties);
+        void RegisterSystem(FSystemInitProperties* systemProperties);
 
-        void InitializeSystem(FSystemInitProperties* systemProperties, ISystem* isystem);
+        void RegisterSystem(FSystemInitProperties* systemProperties, ISystem* isystem);
         template <typename T>
         void SuspendSystem();
         template <typename T>
@@ -53,7 +48,7 @@ class SystemManager
 };
 
 template <typename T>
-inline EResult SystemManager::CreateSystem(T* outSystem)
+inline EResult SystemManager::CreateSystem(T** outSystem)
 {
         static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
         assert(outSystem != nullptr);
@@ -62,8 +57,9 @@ inline EResult SystemManager::CreateSystem(T* outSystem)
 
         assert(m_SystemsMap.find(typeID) == m_SystemsMap.end());
 
-        outSystem = new T();
-        auto it   = m_SystemsMap.insert(std::make_pair(typeID, outSystem));
+        *outSystem   = new T();
+        ISystem* val = *outSystem;
+        auto     it  = m_SystemsMap.insert(std::make_pair(typeID, val));
 
         EResult output;
         output.m_Flags = ERESULT_FLAG::SUCCESS;
@@ -72,16 +68,23 @@ inline EResult SystemManager::CreateSystem(T* outSystem)
 }
 
 template <typename T>
-inline void SystemManager::InitializeSystem(FSystemInitProperties* systemProperties)
+inline void SystemManager::RegisterSystem(FSystemInitProperties* systemProperties)
 {
         ISystem* system = GetSystem<T>();
-        InitializeSystem(systemProperties, system);
+        RegisterSystem(systemProperties, system);
 }
 
 template <typename T>
-inline void SystemManager::ShutdownSystem()
+inline void SystemManager::DestroySystem()
 {
         static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
+
+        ISystem* system = GetSystem<T>();
+        SystemTypeID typeID = ISystem::GetTypeID<T>();
+        assert(m_SystemsMap.find(typeID) == m_SystemsMap.end());
+
+        system->OnShutdown();
+        m_SystemsMap.erase(typeID);
 }
 
 template <typename T>
@@ -102,7 +105,7 @@ T* SystemManager::GetSystem()
         static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
         TypeId<ISystem> typeID = ISystem::GetTypeID<T>();
         auto         it     = m_SystemsMap.find(typeID);
-        static_assert(it != m_SystemsMap.end());
+        assert(it != m_SystemsMap.end());
 
-        return it->second;
+        return (T*)it->second;
 }
