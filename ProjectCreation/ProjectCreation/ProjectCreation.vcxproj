@@ -41,6 +41,8 @@
     <ClInclude Include="Engine\XTime.h" />
     <ClInclude Include="ErrorHandling\ErrorTypes.h" />
     <ClInclude Include="Rendering\RenderingSystem.h" />
+    <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
+    <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Components\IController.cpp" />

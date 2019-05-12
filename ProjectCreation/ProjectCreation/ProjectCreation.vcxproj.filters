@@ -102,6 +102,11 @@
     <ClInclude Include="Engine\XTime.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h">
+      <Filter>Header Files</Filter>
     <ClInclude Include="ECS\IController.h">
       <Filter>Header Files\ECS</Filter>
     </ClInclude>
