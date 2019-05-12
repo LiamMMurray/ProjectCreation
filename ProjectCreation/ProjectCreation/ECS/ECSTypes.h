@@ -1,6 +1,8 @@
 #pragma once
 #include <stdint.h>
 #include <functional>
+#include "Handle.h"
+
 class IComponent;
 class IEntity;
 class ISystem;

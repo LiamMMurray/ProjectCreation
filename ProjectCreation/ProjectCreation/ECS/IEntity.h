@@ -3,7 +3,6 @@
 #include "Component.h"
 #include "ComponentManager.h"
 #include "ECSTypes.h"
-#include "Handle.h"
 
 class IEntity
 {
