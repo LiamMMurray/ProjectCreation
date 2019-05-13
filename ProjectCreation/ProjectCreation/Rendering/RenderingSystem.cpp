@@ -12,10 +12,7 @@
 
 
 #include <wrl/client.h>
-
-#define SAFE_RELEASE(obj) \
-        if (obj)          \
-        obj->Release()
+#include "../Utility/Macros/DirectXMacros.h"
 
 void CRenderSystem::CreateDeviceAndSwapChain()
 {
