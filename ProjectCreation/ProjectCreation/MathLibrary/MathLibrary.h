@@ -18,4 +18,6 @@ class MathLibrary
         static void              OrthoNormalize(DirectX::XMVECTOR normal, DirectX::XMVECTOR& tangent);
         DirectX::XMMATRIX LookAt(DirectX::XMVECTOR vPos, DirectX::XMVECTOR tPos, DirectX::XMVECTOR up);
         void              TurnTo(DirectX::XMMATRIX& matrix, DirectX::XMVECTOR targetPosition, float speed);
+		//Vector Function
+        DirectX::XMVECTOR getClosestPointFromLine(DirectX::XMVECTOR startPoint, DirectX::XMVECTOR endPoint, DirectX::XMVECTOR point);
 };

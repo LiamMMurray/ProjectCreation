@@ -60,3 +60,17 @@ void MathLibrary::TurnTo(DirectX::XMMATRIX& matrix, DirectX::XMVECTOR targetPosi
 
 
 }
+
+DirectX::XMVECTOR MathLibrary::getClosestPointFromLine(DirectX::XMVECTOR startPoint,
+                                                       DirectX::XMVECTOR endPoint,
+                                                       DirectX::XMVECTOR point)
+{
+        XMVECTOR output;
+        XMVECTOR length =XMVector3Normalize(endPoint - startPoint);
+        XMVECTOR targetVector = point - startPoint;
+        XMVECTOR dotValue     = XMVector3Dot(length, targetVector);
+        XMVECTOR distance     = XMVectorMultiply(length,dotValue);
+        output                = startPoint + distance;
+
+        return output;
+}
