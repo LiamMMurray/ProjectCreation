@@ -58,15 +58,19 @@ int WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 #endif
 #ifdef ENTITY_MANAGER_TESTS
         GEngine::Initialize();
-        auto            em     = GEngine::Get()->GetEntityManager();
-        Handle<IEntity> a      = em->CreateEntity<Wisp>();
-        Handle<IEntity> b      = em->CreateEntity<Wisp>();
-        Handle<IEntity> c      = em->CreateEntity<Wisp>();
-        Handle<IEntity> d      = em->CreateEntity<Skeleton>();
-        Handle<IEntity> e      = em->CreateEntity<Skeleton>();
-        Handle<IEntity> f      = em->CreateEntity<Skeleton>();
-        Handle<IEntity> g      = em->CreateEntity<Wisp>();
-        auto            test_a = em->GetEntity<Entity<Wisp>>(a);
+        auto            em = GEngine::Get()->GetEntityManager();
+        Handle<IEntity> a  = em->CreateEntity<Wisp>();
+        Handle<IEntity> b  = em->CreateEntity<Wisp>();
+        Handle<IEntity> c  = em->CreateEntity<Wisp>();
+        Handle<IEntity> d  = em->CreateEntity<Skeleton>();
+        Handle<IEntity> e  = em->CreateEntity<Skeleton>();
+        Handle<IEntity> f  = em->CreateEntity<Skeleton>();
+        Handle<IEntity> g  = em->CreateEntity<Wisp>();
+        auto            h  = em->GetEntity(a);
+        auto            i  = em->GetEntity(b);
+        auto            j  = em->GetEntity(c);
+        auto            k  = em->GetEntity(d);
+        // auto            test_a = em->GetEntity<Entity<Wisp>>(a);
         // throws build time error because float does not derive from CRTP Entity class
         // auto b  = em->CreateEntity<float>();
         // em->GetEntity()

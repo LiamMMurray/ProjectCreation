@@ -29,6 +29,6 @@ class HandleManager
         }
 		T* GetObject(Handle<T> handle)
 		{
-                return m_HandleSpace[handle.m_Id];
+                return m_HandleSpace[handle.m_Id].second;
 		}
 };
