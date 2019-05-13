@@ -19,6 +19,8 @@
     <ClCompile Include="MathLibrary\Quaternion.cpp" />
     <ClCompile Include="MathLibrary\Transform.cpp" />
     <ClCompile Include="MathLibrary\Vector.cpp" />
+    <ClCompile Include="Rendering\Vertex.cpp" />
+    <ClCompile Include="MathLibrary\MathLibrary.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CollisionLibary\CollisionComponent.h" />
