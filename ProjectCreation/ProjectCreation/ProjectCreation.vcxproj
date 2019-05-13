@@ -83,10 +83,12 @@
     <ClCompile Include="Entities\TestEntities.cpp" />
     <ClCompile Include="FileIO\FileIO.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MathLibrary\MathLibrary.cpp" />
     <ClCompile Include="MathLibrary\Quaternion.cpp" />
     <ClCompile Include="MathLibrary\Transform.cpp" />
     <ClCompile Include="MathLibrary\Vector.cpp" />
     <ClCompile Include="Rendering\RenderingSystem.cpp" />
+    <ClCompile Include="Rendering\Vertex.cpp" />
     <ClCompile Include="ResourceManager\IResource.cpp" />
     <ClCompile Include="ResourceManager\ResourceManager.cpp" />
   </ItemGroup>
