@@ -52,5 +52,11 @@ class PlayerMovement : public IController
         DirectX::XMVECTOR ZeroVector = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 
         // MoveVector will be used to apply the movement to the player
-        DirectX::XMVECTOR MoveVector;
+        DirectX::XMVECTOR MoveVector,
+
+		// oldTranslation will be used for debugging, delete when done
+		oldTranslation = ZeroVector;
+		
+		//PastDirection is used for debugging, delete when done
+        MoveDirections PastDirection;
 };
