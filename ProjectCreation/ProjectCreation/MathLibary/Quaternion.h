@@ -13,5 +13,5 @@ struct FQuaternion
         DirectX::XMVECTOR GetForward() const;
         DirectX::XMVECTOR GetRight() const;
         DirectX::XMVECTOR GetUp() const;
-        FQuaternion       RotateAxisAngle(DirectX::XMVECTOR& axis, float angle);
+        static FQuaternion       RotateAxisAngle(DirectX::XMVECTOR& axis, float angle);
 };

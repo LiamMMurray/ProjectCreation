@@ -28,5 +28,5 @@ DirectX::XMVECTOR FQuaternion::GetUp() const
 
 FQuaternion FQuaternion::RotateAxisAngle(DirectX::XMVECTOR& axis, float angle)
 {
-        return FQuaternion();
+        return FQuaternion(XMQuaternionRotationAxis(axis,XMConvertToRadians(angle)));
 }

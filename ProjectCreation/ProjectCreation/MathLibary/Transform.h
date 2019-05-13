@@ -6,11 +6,11 @@ struct FTransform
         FQuaternion       rotation;
         DirectX::XMVECTOR scale;
 
-		FTransform();
+        FTransform();
         DirectX::XMMATRIX CreateMatrix() const;
         void              SetMatrix(const DirectX::XMMATRIX& matrix);
         DirectX::XMVECTOR GetForward();
         DirectX::XMVECTOR GetRight();
         DirectX::XMVECTOR GetUp();
-        void              RotateAxisAngle(DirectX::XMVECTOR& axis, float angle);
+        static void       RotateAxisAngle(DirectX::XMVECTOR& axis, float angle);
 };

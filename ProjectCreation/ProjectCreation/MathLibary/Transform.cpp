@@ -1,7 +1,11 @@
 #include "Transform.h"
 using namespace DirectX;
 FTransform::FTransform()
-{}
+{
+        translation = XMVectorSet(0.0f, 0.0f, 0.0f,1.0f);
+        rotation    = FQuaternion();
+        scale       = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
+}
 
 DirectX::XMMATRIX FTransform::CreateMatrix() const
 {
@@ -11,23 +15,25 @@ DirectX::XMMATRIX FTransform::CreateMatrix() const
 
 void FTransform::SetMatrix(const DirectX::XMMATRIX& matrix)
 {
-
+        XMMatrixDecompose(&scale, &rotation.rotation, &translation, matrix);
 }
 
 DirectX::XMVECTOR FTransform::GetForward()
 {
-        return DirectX::XMVECTOR();
+        return rotation.GetForward();
 }
 
 DirectX::XMVECTOR FTransform::GetRight()
 {
-        return DirectX::XMVECTOR();
+        return rotation.GetRight();
 }
 
 DirectX::XMVECTOR FTransform::GetUp()
 {
-        return DirectX::XMVECTOR();
+        return rotation.GetUp();
 }
 
 void FTransform::RotateAxisAngle(DirectX::XMVECTOR& axis, float angle)
-{}
+{
+        rotation = rotation.RotateAxisAngle(axis, angle);
+}
