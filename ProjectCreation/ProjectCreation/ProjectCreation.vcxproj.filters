@@ -58,6 +58,9 @@
     <Filter Include="Source Files\Entities">
       <UniqueIdentifier>{bdf75ba7-a7f6-4b95-b43a-cf99da35cffb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Controller">
+      <UniqueIdentifier>{2d937c1e-5b53-45d0-946f-444dcca92194}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ECS\Component.h">
@@ -123,12 +126,6 @@
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h">
       <Filter>Header Files\Utility\ForwardDeclarations</Filter>
     </ClInclude>
-    <ClInclude Include="Components\IController.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Components\PlayerMovement.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Entities\TestEntities.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
@@ -137,6 +134,12 @@
     </ClInclude>
     <ClInclude Include="Components\TestComponents.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\IController.h">
+      <Filter>Header Files\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\PlayerMovement.h">
+      <Filter>Header Files\Controller</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
