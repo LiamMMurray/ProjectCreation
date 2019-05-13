@@ -35,5 +35,5 @@ DirectX::XMVECTOR FTransform::GetUp()
 
 void FTransform::RotateAxisAngle(DirectX::XMVECTOR& axis, float angle)
 {
-        rotation = rotation.RotateAxisAngle(axis, angle);
+        rotation.RotateAxisAngle(axis, angle);
 }

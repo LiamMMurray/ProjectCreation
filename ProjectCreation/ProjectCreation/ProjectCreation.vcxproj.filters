@@ -1,150 +1,59 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Header Files\ECS">
-      <UniqueIdentifier>{d56894a5-5ae0-4848-9a9b-2f29ba00b4ed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\ErrorHandling">
-      <UniqueIdentifier>{fa6971b0-7ba2-4d88-ac91-782e1246d8e1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\CoreInput">
-      <UniqueIdentifier>{3d99c3e2-d0c2-4960-89d8-f7e9c7f19694}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Rendering">
-      <UniqueIdentifier>{a099b430-8830-4cd2-8049-29cdf5a165b1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine">
-      <UniqueIdentifier>{97dabdec-bf0c-4d2a-a63a-c20fd2ae8c00}</UniqueIdentifier>
-    </Filter>
-    </Filter>
+    <ClCompile Include="Controller\IController.cpp" />
+    <ClCompile Include="Controller\PlayerMovement.cpp" />
+    <ClCompile Include="CoreInput\CoreInput.cpp" />
+    <ClCompile Include="ECS\ComponentManager.cpp" />
+    <ClCompile Include="ECS\EntityManager.cpp" />
+    <ClCompile Include="Engine\GEngine.cpp" />
+    <ClCompile Include="ECS\IComponent.cpp" />
+    <ClCompile Include="ECS\IEntity.cpp" />
+    <ClCompile Include="ECS\ISystem.cpp" />
+    <ClCompile Include="ECS\SystemManager.cpp" />
+    <ClCompile Include="ECS\TestsMain.cpp" />
+    <ClCompile Include="Engine\XTime.cpp" />
+    <ClCompile Include="Entities\TestEntities.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Rendering\RenderingSystem.cpp" />
+    <ClCompile Include="MathLibrary\Quaternion.cpp" />
+    <ClCompile Include="MathLibrary\Transform.cpp" />
+    <ClCompile Include="MathLibrary\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ECS\Component.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\Containers.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\ComponentManager.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\ECS.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\ECSTypes.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\Entity.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\EntityContainer.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\EntityManager.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\Handle.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\IComponent.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\ISystem.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\IEntity.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\SystemManager.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\Util.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ErrorHandling\ErrorTypes.h">
-      <Filter>Header Files\ErrorHandling</Filter>
-    </ClInclude>
-    <ClInclude Include="CoreInput\CoreInput.h">
-      <Filter>Header Files\CoreInput</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\RenderingSystem.h">
-      <Filter>Header Files\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\GEngine.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\XTime.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS\ComponentManager.cpp">
-      <Filter>Source Files\ECS</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS\IComponent.cpp">
-      <Filter>Source Files\ECS</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS\ISystem.cpp">
-      <Filter>Source Files\ECS</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS\SystemManager.cpp">
-      <Filter>Source Files\ECS</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS\IEntity.cpp">
-      <Filter>Source Files\ECS</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\GEngine.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="CoreInput\CoreInput.cpp">
-      <Filter>Source Files\CoreInput</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\RenderingSystem.cpp">
-      <Filter>Source Files\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\XTime.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Entities\TestEntities.cpp">
-      <Filter>Source Files\Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS\EntityManager.cpp">
-      <Filter>Source Files\ECS</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS\TestsMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\IController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\PlayerMovement.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MathLibary\Quaternion.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MathLibary\Vector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MathLibary\Transform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClInclude Include="CollisionLibary\CollisionComponent.h" />
+    <ClInclude Include="CollisionLibary\CollisionLibary.h" />
+    <ClInclude Include="Components\TestComponents.h" />
+    <ClInclude Include="Controller\IController.h" />
+    <ClInclude Include="Controller\PlayerMovement.h" />
+    <ClInclude Include="CoreInput\CoreInput.h" />
+    <ClInclude Include="ECS\Component.h" />
+    <ClInclude Include="ECS\ComponentManager.h" />
+    <ClInclude Include="ECS\Containers.h" />
+    <ClInclude Include="ECS\ECS.h" />
+    <ClInclude Include="ECS\ECSTypes.h" />
+    <ClInclude Include="ECS\Entity.h" />
+    <ClInclude Include="ECS\EntityContainer.h" />
+    <ClInclude Include="ECS\EntityManager.h" />
+    <ClInclude Include="ECS\HandleManager.h" />
+    <ClInclude Include="Engine\GEngine.h" />
+    <ClInclude Include="ECS\Handle.h" />
+    <ClInclude Include="ECS\IComponent.h" />
+    <ClInclude Include="ECS\IEntity.h" />
+    <ClInclude Include="ECS\ISystem.h" />
+    <ClInclude Include="ECS\SystemManager.h" />
+    <ClInclude Include="ECS\Util.h" />
+    <ClInclude Include="Engine\XTime.h" />
+    <ClInclude Include="Entities\TestEntities.h" />
+    <ClInclude Include="ErrorHandling\ErrorTypes.h" />
+    <ClInclude Include="Rendering\RenderingSystem.h" />
+    <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
+    <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
+    <ClInclude Include="Rendering\Vertex.h" />
+    <ClInclude Include="MathLibrary\MathLibrary.h" />
+    <ClInclude Include="MathLibrary\Quaternion.h" />
+    <ClInclude Include="MathLibrary\Transform.h" />
+    <ClInclude Include="MathLibrary\Vector.h" />
+    <ClInclude Include="MathLibrary\MathConstants.h" />
   </ItemGroup>
 </Project>
