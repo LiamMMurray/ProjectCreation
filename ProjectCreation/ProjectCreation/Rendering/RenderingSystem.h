@@ -4,7 +4,9 @@
 #include "../Utility/ForwardDeclarations/D3DNativeTypes.h"
 #include "../Utility/ForwardDeclarations/WinProcTypes.h"
 
-struct EVIEWPORT
+struct CRenderComponent;
+
+struct E_VIEWPORT
 {
         enum
         {
@@ -13,7 +15,7 @@ struct EVIEWPORT
         };
 };
 
-struct ECONSTANT_BUFFER
+struct E_CONSTANT_BUFFER
 {
         enum
         {
@@ -22,7 +24,7 @@ struct ECONSTANT_BUFFER
         };
 };
 
-struct EVERTEX_SHADER_RESOURCE_VIEW
+struct E_VERTEX_SHADER_RESOURCE_VIEW
 {
         enum
         {
@@ -31,7 +33,7 @@ struct EVERTEX_SHADER_RESOURCE_VIEW
         };
 };
 
-struct EPIXEL_SHADER_RESOURCE_VIEW
+struct E_BASE_PASS_PIXEL_SRV
 {
         enum
         {
@@ -52,16 +54,32 @@ struct EPIXEL_SHADER_RESOURCE_VIEW
         };
 };
 
-struct ERENDER_TARGET
+struct E_POSTPROCESS_PIXEL_SRV
+{
+        enum
+        {
+                BASE_PASS = 0,
+                BASE_DEPTH,
+
+
+                COUNT
+        };
+};
+
+struct E_RENDER_TARGET
 {
         enum
         {
                 BACKBUFFER = 0,
+                BASE_PASS,
+                POSITION_PASS,
+                VELOCITY_PASS,
+
                 COUNT
         };
 };
 
-struct EINPUT_LAYOUT
+struct E_INPUT_LAYOUT
 {
         enum
         {
@@ -70,7 +88,7 @@ struct EINPUT_LAYOUT
         };
 };
 
-struct ESTATE_RASTERIZER
+struct E_RASTERIZER_STATE
 {
         enum
         {
@@ -79,16 +97,25 @@ struct ESTATE_RASTERIZER
         };
 };
 
-struct EVIEW_DEPTH_STENCIL
+struct E_DEPTH_STENCIL
 {
         enum
         {
-                DEFAULT = 0,
+                BASE_PASS = 0,
                 COUNT
         };
 };
 
-struct ESTATE_DEPTH_STENCIL
+struct E_DEPTH_SHADOW
+{
+        enum
+        {
+                BASE_PASS = 0,
+                COUNT
+        };
+};
+
+struct E_STATE_DEPTH_STENCIL
 {
         enum
         {
@@ -107,10 +134,15 @@ class CRenderSystem : public ISystem
         ID3D11DeviceContext1* m_Context;
 
         void CreateDeviceAndSwapChain();
-        void CreateBackbufferRenderTarget();
+        void CreateDefaultRenderTargets();
         void CreateRasterizerStates();
 
-        ID3D11RenderTargetView* m_RenderTargets[ERENDER_TARGET::COUNT]{};
+
+        ID3D11RenderTargetView*   m_DefaultRenderTargets[E_RENDER_TARGET::COUNT]{};
+        ID3D11ShaderResourceView* m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::COUNT]{};
+        ID3D11DepthStencilView*   m_DefaultDepthStencil[E_DEPTH_STENCIL::COUNT]{};
+
+
 
     protected:
         virtual void OnPreUpdate(float deltaTime) override;
