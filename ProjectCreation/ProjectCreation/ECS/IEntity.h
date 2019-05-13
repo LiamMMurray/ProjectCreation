@@ -6,7 +6,8 @@
 
 class IEntity
 {
-        //  public:
+        public:
+        virtual const TypeId<IEntity> GetStaticTypeId() const = 0;
         // virtual static const TypeId<IEntity> GetTypeId() const = 0;
 
     public:

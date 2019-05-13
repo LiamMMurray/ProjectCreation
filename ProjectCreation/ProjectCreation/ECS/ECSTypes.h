@@ -6,7 +6,6 @@
 class IComponent;
 class IEntity;
 class ISystem;
-class Transform;
 // Making TypeId a templated type prevents doing things like comparing
 // TypeId (for a component) == TypeId (for an Entity)
 // without writing individual inherited classes for every class we wish to have a typeId
@@ -47,6 +46,10 @@ struct TypeId
                 m_Data++;
                 return temp;
         }
+		bool operator==(const TypeId<T>& other) const
+        {
+                return this->m_Data == other.m_Data;
+		}
 };
 // defininitions for std::hash and std::equal_to allows hashing of TypeId
 template <typename T>
@@ -58,12 +61,12 @@ class std::hash<TypeId<T>>
                 return hash<uint32_t>()(id.m_Data);
         }
 };
-template <typename T>
-class std::equal_to<TypeId<T>>
-{
-    public:
-        constexpr bool operator()(const TypeId<T>& _Left, const TypeId<T>& _Right) const
-        {
-                return _Left.m_Data == _Right.m_Data;
-        }
-};
+//template <typename T>
+//class std::equal_to<TypeId<T>>
+//{
+//    public:
+//        constexpr bool operator()(const TypeId<T>& _Left, const TypeId<T>& _Right) const
+//        {
+//                return _Left.m_Data == _Right.m_Data;
+//        }
+//};

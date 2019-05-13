@@ -46,6 +46,18 @@
     <Filter Include="Header Files\Utility\ForwardDeclarations">
       <UniqueIdentifier>{e4cf9f64-1246-4dbf-bd2e-00747fdad207}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Components">
+      <UniqueIdentifier>{88037edb-01bc-4605-b4bb-85f8e1b3d649}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Components">
+      <UniqueIdentifier>{dbf75fee-7668-4b96-a5a7-bcb1a823d5b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entities">
+      <UniqueIdentifier>{f28c51aa-d92a-4527-a4ad-c7788648f773}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entities">
+      <UniqueIdentifier>{bdf75ba7-a7f6-4b95-b43a-cf99da35cffb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ECS\Component.h">
@@ -111,6 +123,21 @@
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h">
       <Filter>Header Files\Utility\ForwardDeclarations</Filter>
     </ClInclude>
+    <ClInclude Include="Components\IController.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\PlayerMovement.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\TestEntities.h">
+      <Filter>Header Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\TestComponents.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\HandleManager.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -145,6 +172,18 @@
     </ClCompile>
     <ClCompile Include="ECS\TestsMain.cpp">
       <Filter>Source Files\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\PlayerMovement.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\IController.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Entities\TestEntities.cpp">
+      <Filter>Source Files\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\EntityManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
