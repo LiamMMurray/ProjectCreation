@@ -43,8 +43,12 @@
     <ClInclude Include="Entities\TestEntities.h" />
     <ClInclude Include="ErrorHandling\ErrorTypes.h" />
     <ClInclude Include="Rendering\RenderingSystem.h" />
+    <ClInclude Include="ResourceManager\Resource.h" />
+    <ClInclude Include="ResourceManager\IResource.h" />
+    <ClInclude Include="ResourceManager\ResourceManager.h" />
     <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
+    <ClInclude Include="Utility\Macros\DirectXMacros.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Components\IController.cpp" />
@@ -62,6 +66,8 @@
     <ClCompile Include="Entities\TestEntities.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Rendering\RenderingSystem.cpp" />
+    <ClCompile Include="ResourceManager\IResource.cpp" />
+    <ClCompile Include="ResourceManager\ResourceManager.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

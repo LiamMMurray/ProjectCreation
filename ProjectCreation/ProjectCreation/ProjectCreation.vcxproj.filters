@@ -138,6 +138,18 @@
     <ClInclude Include="Components\TestComponents.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Utility\Macros\DirectXMacros.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager\ResourceManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager\IResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager\Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -183,6 +195,12 @@
       <Filter>Source Files\ECS</Filter>
     </ClCompile>
     <ClCompile Include="ECS\TestsMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager\ResourceManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager\IResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
