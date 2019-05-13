@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Components\IController.h" />
-    <ClInclude Include="Components\PlayerMovement.h" />
     <ClInclude Include="Components\TestComponents.h" />
+    <ClInclude Include="Controller\IController.h" />
+    <ClInclude Include="Controller\PlayerMovement.h" />
     <ClInclude Include="CoreInput\CoreInput.h" />
     <ClInclude Include="ECS\Component.h" />
     <ClInclude Include="ECS\ComponentManager.h" />
@@ -47,8 +47,8 @@
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Components\IController.cpp" />
-    <ClCompile Include="Components\PlayerMovement.cpp" />
+    <ClCompile Include="Controller\IController.cpp" />
+    <ClCompile Include="Controller\PlayerMovement.cpp" />
     <ClCompile Include="CoreInput\CoreInput.cpp" />
     <ClCompile Include="ECS\ComponentManager.cpp" />
     <ClCompile Include="ECS\EntityManager.cpp" />
