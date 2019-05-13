@@ -29,7 +29,7 @@ class PlayerMovement : public IController
                 ON_WATER
         };
 
-		Handle<IComponent> m_handle;
+		ComponentHandle m_handle;
 
 		int SpeedModifier;
 

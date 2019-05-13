@@ -20,7 +20,7 @@ class ISystem
 {
         friend class SystemManager;
 
-        static TypeId<ISystem> systemTypeID;
+        static SystemTypeId systemTypeId;
 
     private:
         uint16_t m_Priority;
@@ -38,11 +38,11 @@ class ISystem
     public:
         template <typename T>
 
-        static TypeId<ISystem> GetTypeID()
+        static SystemTypeId GetTypeID()
         {
                 static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
 
-                static const TypeId<ISystem> id{systemTypeID++};
+                static const SystemTypeId id{systemTypeId++};
                 return id;
         }
 

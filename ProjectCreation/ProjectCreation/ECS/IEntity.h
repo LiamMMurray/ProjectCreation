@@ -6,32 +6,33 @@
 
 class IEntity
 {
-        //  public:
-        // virtual static const TypeId<IEntity> GetTypeId() const = 0;
-
     public:
+        bool m_Enabled;
+
+        virtual const EntityTypeId GetStaticTypeId() const = 0;
+
         template <typename T>
-        Handle<IComponent> GetComponentHandle();
+        ComponentHandle GetComponentHandle();
         template <typename T>
         Component<T>* GetComponent();
         template <typename T>
-        std::vector<Handle<IComponent>> GetComponentHandles();
+        std::vector<ComponentHandle> GetComponentHandles();
         template <typename T>
         ComponentIterator<T> GetAllComponents();
         template <typename T>
-        EResult CreateComponent(Handle<IComponent> componentHandle);
+        EResult CreateComponent(ComponentHandle componentHandle);
         template <typename T>
         void DestroyComponent();
         template <typename T>
-        void DestroyComponent(Handle<IComponent>);
+        void DestroyComponent(ComponentHandle);
         void Activate();
         void Deactivate();
 };
 
 template <typename T>
-inline Handle<IComponent> IEntity::GetComponentHandle()
+inline ComponentHandle IEntity::GetComponentHandle()
 {
-        return TypeId<IComponent>();
+        return ComponentTypeId();
 }
 
 template <typename T>
@@ -41,9 +42,9 @@ inline Component<T>* IEntity::GetComponent()
 }
 
 template <typename T>
-inline std::vector<Handle<IComponent>> IEntity::GetComponentHandles()
+inline std::vector<ComponentHandle> IEntity::GetComponentHandles()
 {
-        return std::vector<TypeId<IComponent>>();
+        return std::vector<ComponentTypeId>();
 }
 
 template <typename T>
@@ -53,7 +54,7 @@ inline ComponentIterator<T> IEntity::GetAllComponents()
 }
 
 template <typename T>
-inline EResult IEntity::CreateComponent(Handle<IComponent> componentHandle)
+inline EResult IEntity::CreateComponent(ComponentHandle componentHandle)
 {
         return EResult();
 }
@@ -64,5 +65,5 @@ inline void IEntity::DestroyComponent()
 {}
 
 template <typename T>
-inline void IEntity::DestroyComponent(Handle<IComponent>)
+inline void IEntity::DestroyComponent(ComponentHandle)
 {}
