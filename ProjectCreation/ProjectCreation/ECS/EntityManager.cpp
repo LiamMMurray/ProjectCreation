@@ -1,6 +1,6 @@
 #include "EntityManager.h"
 
-IEntity* EntityManager::GetEntity(Handle<IEntity> handle)
+IEntity* EntityManager::GetEntity(EntityHandle handle)
 {
         return m_HandleManager.GetObject(handle);
 }

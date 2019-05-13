@@ -9,11 +9,11 @@ template <typename T>
 class TComponentContainer
 {
     public:
-        IComponent*           GetComponent(Handle<IComponent> componentHandle);
-        bool                  CreateComponent(Handle<IComponent> componentHandle, Handle<IEntity> entityHandle);
-        void                  DestroyComponent(Handle<IComponent> componentHandle);
-        void                  ActivateComponent(Handle<IComponent> componentHandle);
-        void                  DeactivateComponent(Handle<IComponent> componentHandle);
+        IComponent*           GetComponent(ComponentHandle componentHandle);
+        bool                  CreateComponent(ComponentHandle componentHandle, EntityHandle entityHandle);
+        void                  DestroyComponent(ComponentHandle componentHandle);
+        void                  ActivateComponent(ComponentHandle componentHandle);
+        void                  DeactivateComponent(ComponentHandle componentHandle);
         size_t                GetContainerCapacity();
         size_t                GetContainerSize();
         size_t                GetContainerActiveCount();
@@ -21,27 +21,27 @@ class TComponentContainer
 };
 
 template <typename T>
-inline IComponent* TComponentContainer<T>::GetComponent(Handle<IComponent> componentHandle)
+inline IComponent* TComponentContainer<T>::GetComponent(ComponentHandle componentHandle)
 {
         return NULL;
 }
 
 template <typename T>
-inline bool TComponentContainer<T>::CreateComponent(Handle<IComponent> componentHandle, Handle<IEntity> entityHandle)
+inline bool TComponentContainer<T>::CreateComponent(ComponentHandle componentHandle, EntityHandle entityHandle)
 {
         return false;
 }
 
 template <typename T>
-inline void TComponentContainer<T>::DestroyComponent(Handle<IComponent> componentHandle)
+inline void TComponentContainer<T>::DestroyComponent(ComponentHandle componentHandle)
 {}
 
 template <typename T>
-inline void TComponentContainer<T>::ActivateComponent(Handle<IComponent> componentHandle)
+inline void TComponentContainer<T>::ActivateComponent(ComponentHandle componentHandle)
 {}
 
 template <typename T>
-inline void TComponentContainer<T>::DeactivateComponent(Handle<IComponent> componentHandle)
+inline void TComponentContainer<T>::DeactivateComponent(ComponentHandle componentHandle)
 {}
 
 template <typename T>

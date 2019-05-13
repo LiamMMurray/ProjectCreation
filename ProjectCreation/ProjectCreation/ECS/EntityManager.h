@@ -4,19 +4,19 @@
 #include <type_traits>
 #include <unordered_map>
 #include "Component.h"
+#include "ComponentManager.h"
 #include "ECSTypes.h"
 #include "Entity.h"
 #include "HandleManager.h"
-
 // TODO implement container type and possibly custom allocator in the future
 class EntityManager
 {
         HandleManager<IEntity> m_HandleManager;
 
     public:
-        IEntity* GetEntity(Handle<IEntity> handle);
+        IEntity* GetEntity(EntityHandle handle);
         template <typename T>
-        Handle<IEntity> CreateEntity();
+        EntityHandle CreateEntity();
 
 
         // NON IMPLEMENTED FUNCTIONS //
@@ -24,11 +24,11 @@ class EntityManager
         //////////////////////////////
 
         template <typename T>
-        void DestroyEntity(Handle<IEntity> entityHandle);
+        void DestroyEntity(EntityHandle entityHandle);
         template <typename T>
-        void ActivateEntity(Handle<IEntity> entityHandle);
+        void ActivateEntity(EntityHandle entityHandle);
         template <typename T>
-        void DeactivateEntity(Handle<IEntity> entityHandle);
+        void DeactivateEntity(EntityHandle entityHandle);
         template <typename T>
         size_t GetContainerSize();
         template <typename entityType>
@@ -42,7 +42,7 @@ class EntityManager
 };
 
 template <typename T>
-inline Handle<IEntity> EntityManager::CreateEntity()
+inline EntityHandle EntityManager::CreateEntity()
 {
         static_assert(std::is_base_of<Entity<T>, T>::value, "CreateEntity can only accept CRTP classes derived from Entity<T>");
         auto id = m_HandleManager.GetHandle(new T());
@@ -50,15 +50,15 @@ inline Handle<IEntity> EntityManager::CreateEntity()
 }
 
 template <typename T>
-inline void EntityManager::DestroyEntity(Handle<IEntity> entityHandle)
+inline void EntityManager::DestroyEntity(EntityHandle entityHandle)
 {}
 
 template <typename T>
-inline void EntityManager::ActivateEntity(Handle<IEntity> entityHandle)
+inline void EntityManager::ActivateEntity(EntityHandle entityHandle)
 {}
 
 template <typename T>
-inline void EntityManager::DeactivateEntity(Handle<IEntity> entityHandle)
+inline void EntityManager::DeactivateEntity(EntityHandle entityHandle)
 {}
 
 template <typename T>

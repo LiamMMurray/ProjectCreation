@@ -27,8 +27,16 @@ class HandleManager
                 m_HandleSpace.push_back(std::make_pair(0, object));
                 return Handle<T>(i, m_HandleSpace[i].first);
         }
-		T* GetObject(Handle<T> handle)
-		{
+        T* GetObject(Handle<T> handle)
+        {
                 return m_HandleSpace[handle.m_Id].second;
+        }
+        template <typename T>
+        class iterator
+        {};
+        template <typename T>
+		iterator<T> begin()
+		{
+
 		}
 };

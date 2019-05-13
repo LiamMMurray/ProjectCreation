@@ -132,11 +132,11 @@
     <ClInclude Include="Entities\TestEntities.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
-    <ClInclude Include="Entities\TestComponents.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="ECS\HandleManager.h">
       <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\TestComponents.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -170,9 +170,6 @@
     <ClCompile Include="Engine\XTime.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="ECS\TestsMain.cpp">
-      <Filter>Source Files\ECS</Filter>
-    </ClCompile>
     <ClCompile Include="Components\PlayerMovement.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
@@ -183,6 +180,9 @@
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
     <ClCompile Include="ECS\EntityManager.cpp">
+      <Filter>Source Files\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\TestsMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
