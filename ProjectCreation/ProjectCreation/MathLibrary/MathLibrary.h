@@ -20,4 +20,6 @@ class MathLibrary
         void              TurnTo(DirectX::XMMATRIX& matrix, DirectX::XMVECTOR targetPosition, float speed);
 		//Vector Function
         static DirectX::XMVECTOR GetClosestPointFromLine(DirectX::XMVECTOR startPoint, DirectX::XMVECTOR endPoint, DirectX::XMVECTOR point);
+        static float             CalulateDistance(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
+        static float             CalulateDistanceSq(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
 };
