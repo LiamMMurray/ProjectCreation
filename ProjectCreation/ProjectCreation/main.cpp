@@ -1,3 +1,4 @@
+
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #include <Windows.h>
 #include <windowsx.h>
@@ -5,27 +6,33 @@
 #include "CoreInput/CoreInput.h"
 #include "Engine/GEngine.h"
 
+#include "Rendering/RenderingSystem.h"
+
+bool g_Running = false;
+
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
         // switch based on the input message
-        switch (message)
-        {
-                // We are told to close the app
-                case WM_DESTROY:
+        if (g_Running)
+                switch (message)
                 {
-                        PostQuitMessage(0);
-                        return 0;
+                        // We are told to close the app
+                        case WM_DESTROY:
+                        {
+                                PostQuitMessage(0);
+                                return 0;
+                        }
+                        case WM_INPUT:
+                        {
+                                GCoreInput::GatherInput(hWnd, message, wParam, lParam);
+                                break;
+                        }
+                        case WM_SIZE:
+                        {
+                                GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>()->OnWindowResize(wParam, lParam);
+                                break;
+                        }
                 }
-                case WM_INPUT:
-                {
-                        GCoreInput::GatherInput(hWnd, message, wParam, lParam);
-                        break;
-                }
-                case WM_SIZE:
-                {
-                        break;
-                }
-        }
 
         // Any other messages, handle the default way
         return DefWindowProc(hWnd, message, wParam, lParam);
@@ -68,7 +75,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         HWND handle = CreateWindowEx(WS_EX_APPWINDOW,
                                      appName, // Window class name again
                                      appName, // window title text
-                                     WS_OVERLAPPED  | WS_SYSMENU ,
+                                     WS_OVERLAPPED | WS_SYSMENU,
                                      posX,                // x pos
                                      posY,                // y pos
                                      wr.right - wr.left,  // width of the window
@@ -78,16 +85,29 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                                      GetModuleHandleW(0), // app instance
                                      nullptr);            // parameters passed to new window (32 bit value)
 
-		ShowWindow(handle, SW_SHOW);
 
         GEngine::Initialize();
 
+        SystemManager*    systemManager    = GEngine::Get()->GetSystemManager();
+        EntityManager*    entityManager    = GEngine::Get()->GetEntityManager();
+        ComponentManager* componentManager = GEngine::Get()->GetComponentManager();
+
+        CRenderSystem* renderSystem;
+        systemManager->CreateSystem<CRenderSystem>(&renderSystem);
+        FSystemInitProperties sysInitProps;
+        renderSystem->SetWindowHandle(handle);
+        systemManager->RegisterSystem(&sysInitProps, renderSystem);
+
         GCoreInput::InitializeInput(handle);
         // message loop
+        ShowWindow(handle, SW_SHOW);
+        g_Running = true;
         MSG msg;
         ZeroMemory(&msg, sizeof(msg));
         while (msg.message != WM_QUIT)
         {
+                GCoreInput::UpdateInput();
+
                 while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
                 {
                         // translate keystroke messages into the right format
@@ -98,13 +118,12 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
                         // check to see if it's time to quit
                         if (msg.message == WM_QUIT)
-                                return false;
+                                break;
                 }
 
-				//Main application loop goes here.
+                // Main application loop goes here.
                 GEngine::Get()->Signal();
 
-                GCoreInput::UpdateInput();
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
         }
 

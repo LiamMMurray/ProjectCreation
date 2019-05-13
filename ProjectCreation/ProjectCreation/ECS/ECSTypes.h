@@ -1,62 +1,69 @@
 #pragma once
 #include <stdint.h>
-//class null_type
-//{};
+#include <functional>
+#include "Handle.h"
 
-// Making TypeId a templated type prevents doing things like comparing
-// TypeId (for a component) == TypeId (for an Entity)
-// without writing individual inherited classes for every class we wish to have a typeId
-//
-// /*****(WE DONT HAVE TO DO THIS)*****/
-// struct EntityTypeId : public ITypeId
-//{
-//        EntityTypeId() : ITypeId()
-//        {}
-//        EntityTypeId(ITypeId other) : ITypeId(other)
-//        {}
-//};
-// struct ComponentTypeId : public ITypeId
-//{
-//        ComponentTypeId() : ITypeId()
-//        {}
-//        ComponentTypeId(ITypeId other) : ITypeId(other)
-//        {}
-//}
-// /*****(INSTEAD WE DO THIS)*****/
-// TypeId<IEntity> m_TypeId  // (member of IEntity)
-// TypeId<IComponent> m_TypeId // (member of IComponent)
-// etc...
+namespace std
+{
+        template <class _Kty>
+        struct hash;
+
+        template <class _Ty = void>
+        struct equal_to;
+
+        template <class _Ty>
+        class allocator;
+
+        template <class _Ty1, class _Ty2>
+        struct pair;
+
+        template <class _Kty,
+                  class _Ty,
+                  class _Hasher = hash<_Kty>,
+                  class _Keyeq  = equal_to<_Kty>,
+                  class _Alloc  = allocator<pair<const _Kty, _Ty>>>
+        class unordered_map;
+} // namespace std
+
 template <typename T>
-struct TypeId
+struct ECSTypeId
 {
         uint32_t m_Data;
 
-        TypeId() : m_Data(0)
-        {}
-        TypeId(uint32_t data) : m_Data(data)
+        ECSTypeId() : m_Data(0)
         {}
 
-        TypeId operator++(int)
+        ECSTypeId(uint32_t data) : m_Data(data)
+        {}
+
+        ECSTypeId operator++(int)
         {
-                TypeId temp(*this);
+                ECSTypeId temp(*this);
                 m_Data++;
                 return temp;
         }
+        bool operator==(const ECSTypeId<T>& other) const
+        {
+                return this->m_Data == other.m_Data;
+        }
 };
 
-enum ERESULT_FLAG
+template <typename T>
+class std::hash<ECSTypeId<T>>
 {
-        SUCCESS      = 0b00000000,
-        PLACEHOLDER1 = 0b00000001,
-        PLACEHOLDER2 = 0b00000010,
-        PLACEHOLDER3 = 0b00000100,
-        PLACEHOLDER4 = 0b00001000,
-        PLACEHOLDER5 = 0b00010000,
-        PLACEHOLDER6 = 0b00100000,
-        PLACEHOLDER7 = 0b01000000,
-        PLACEHOLDER8 = 0b10000000
+    public:
+        size_t operator()(const ECSTypeId<T> id) const
+        {
+                return hash<uint32_t>()(id.m_Data);
+        }
 };
-struct EResult
-{
-        uint64_t m_Flags;
-};
+
+class IComponent;
+class IEntity;
+class ISystem;
+
+typedef Handle<IComponent>    ComponentHandle;
+typedef Handle<IEntity>       EntityHandle;
+typedef ECSTypeId<IComponent> ComponentTypeId;
+typedef ECSTypeId<IEntity>    EntityTypeId;
+typedef ECSTypeId<ISystem>    SystemTypeId;
