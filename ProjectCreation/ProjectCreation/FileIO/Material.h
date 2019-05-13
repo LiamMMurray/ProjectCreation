@@ -1,7 +1,6 @@
 #pragma once
-
+#include "BasicIOTypes.h"
 #include <string>
-
 #include <vector>
 
 namespace FileIO

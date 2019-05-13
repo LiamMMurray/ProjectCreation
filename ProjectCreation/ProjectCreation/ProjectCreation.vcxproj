@@ -44,6 +44,11 @@
     <ClInclude Include="Engine\XTime.h" />
     <ClInclude Include="Entities\TestEntities.h" />
     <ClInclude Include="ErrorHandling\ErrorTypes.h" />
+    <ClInclude Include="FileIO\BasicIOTypes.h" />
+    <ClInclude Include="FileIO\FileIO.h" />
+    <ClInclude Include="FileIO\Material.h" />
+    <ClInclude Include="FileIO\SkeletalMesh.h" />
+    <ClInclude Include="FileIO\StaticMesh.h" />
     <ClInclude Include="MathLibrary\MathConstants.h" />
     <ClInclude Include="MathLibrary\MathLibrary.h" />
     <ClInclude Include="MathLibrary\Quaternion.h" />
@@ -68,6 +73,7 @@
     <ClCompile Include="ECS\TestsMain.cpp" />
     <ClCompile Include="Engine\XTime.cpp" />
     <ClCompile Include="Entities\TestEntities.cpp" />
+    <ClCompile Include="FileIO\FileIO.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathLibrary\Quaternion.cpp" />
     <ClCompile Include="MathLibrary\Transform.cpp" />
