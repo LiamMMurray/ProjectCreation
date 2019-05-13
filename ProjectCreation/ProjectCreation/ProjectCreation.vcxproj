@@ -21,6 +21,9 @@
   <ItemGroup>
     <ClInclude Include="CollisionLibary\CollisionComponent.h" />
     <ClInclude Include="CollisionLibary\CollisionLibary.h" />
+    <ClInclude Include="Components\TestComponents.h" />
+    <ClInclude Include="Controller\IController.h" />
+    <ClInclude Include="Controller\PlayerMovement.h" />
     <ClInclude Include="CoreInput\CoreInput.h" />
     <ClInclude Include="ECS\Component.h" />
     <ClInclude Include="ECS\ComponentManager.h" />
@@ -30,6 +33,7 @@
     <ClInclude Include="ECS\Entity.h" />
     <ClInclude Include="ECS\EntityContainer.h" />
     <ClInclude Include="ECS\EntityManager.h" />
+    <ClInclude Include="ECS\HandleManager.h" />
     <ClInclude Include="Engine\GEngine.h" />
     <ClInclude Include="ECS\Handle.h" />
     <ClInclude Include="ECS\IComponent.h" />
@@ -38,16 +42,22 @@
     <ClInclude Include="ECS\SystemManager.h" />
     <ClInclude Include="ECS\Util.h" />
     <ClInclude Include="Engine\XTime.h" />
+    <ClInclude Include="Entities\TestEntities.h" />
     <ClInclude Include="ErrorHandling\ErrorTypes.h" />
     <ClInclude Include="MathLibary\MathLibary.h" />
     <ClInclude Include="MathLibary\Quaternion.h" />
     <ClInclude Include="MathLibary\Transform.h" />
     <ClInclude Include="MathLibary\Vector.h" />
     <ClInclude Include="Rendering\RenderingSystem.h" />
+    <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
+    <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Controller\IController.cpp" />
+    <ClCompile Include="Controller\PlayerMovement.cpp" />
     <ClCompile Include="CoreInput\CoreInput.cpp" />
     <ClCompile Include="ECS\ComponentManager.cpp" />
+    <ClCompile Include="ECS\EntityManager.cpp" />
     <ClCompile Include="Engine\GEngine.cpp" />
     <ClCompile Include="ECS\IComponent.cpp" />
     <ClCompile Include="ECS\IEntity.cpp" />
@@ -55,6 +65,7 @@
     <ClCompile Include="ECS\SystemManager.cpp" />
     <ClCompile Include="ECS\TestsMain.cpp" />
     <ClCompile Include="Engine\XTime.cpp" />
+    <ClCompile Include="Entities\TestEntities.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathLibary\Quaternion.cpp" />
     <ClCompile Include="MathLibary\Transform.cpp" />

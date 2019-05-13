@@ -1,38 +1,52 @@
 #pragma once
+#include <assert.h>
+#include <stdint.h>
+#include <type_traits>
+#include <unordered_map>
+#include "Component.h"
+#include "ComponentManager.h"
 #include "ECSTypes.h"
 #include "Entity.h"
-#include "Component.h"
+#include "HandleManager.h"
+// TODO implement container type and possibly custom allocator in the future
 class EntityManager
 {
+        HandleManager<IEntity> m_HandleManager;
+
     public:
+        IEntity* GetEntity(EntityHandle handle);
         template <typename T>
-        Entity<T>* GetEntity();
-        template <typename T>
-        EResult CreateEntity(EntityHandle entityHandle);
+        EntityHandle CreateEntity();
+
+
+        // NON IMPLEMENTED FUNCTIONS //
+        //////////////////////////////
+        //////////////////////////////
+
         template <typename T>
         void DestroyEntity(EntityHandle entityHandle);
-		template <typename T>
+        template <typename T>
         void ActivateEntity(EntityHandle entityHandle);
         template <typename T>
         void DeactivateEntity(EntityHandle entityHandle);
-		template <typename T>
+        template <typename T>
         size_t GetContainerSize();
-		template <typename entityType>
+        template <typename entityType>
         size_t GetContainerActiveCount();
-		template <typename T>
+        template <typename T>
         Component<T>* GetActiveComponents();
+        ~EntityManager();
+
+        //////////////////////////////
+        //////////////////////////////
 };
 
 template <typename T>
-inline Entity<T>* EntityManager::GetEntity()
+inline EntityHandle EntityManager::CreateEntity()
 {
-        return NULL;
-}
-
-template <typename T>
-inline EResult EntityManager::CreateEntity(EntityHandle entityHandle)
-{
-        return EResult();
+        static_assert(std::is_base_of<Entity<T>, T>::value, "CreateEntity can only accept CRTP classes derived from Entity<T>");
+        auto id = m_HandleManager.GetHandle(new T());
+        return id;
 }
 
 template <typename T>
