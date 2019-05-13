@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,9 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Components\IController.h" />
-    <ClInclude Include="Components\PlayerMovement.h" />
+    <ClInclude Include="CollisionLibary\CollisionComponent.h" />
+    <ClInclude Include="CollisionLibary\CollisionLibary.h" />
     <ClInclude Include="Components\TestComponents.h" />
+    <ClInclude Include="Controller\IController.h" />
+    <ClInclude Include="Controller\PlayerMovement.h" />
     <ClInclude Include="CoreInput\CoreInput.h" />
     <ClInclude Include="ECS\Component.h" />
     <ClInclude Include="ECS\ComponentManager.h" />
@@ -42,7 +44,18 @@
     <ClInclude Include="Engine\XTime.h" />
     <ClInclude Include="Entities\TestEntities.h" />
     <ClInclude Include="ErrorHandling\ErrorTypes.h" />
+    <ClInclude Include="FileIO\BasicIOTypes.h" />
+    <ClInclude Include="FileIO\FileIO.h" />
+    <ClInclude Include="FileIO\Material.h" />
+    <ClInclude Include="FileIO\SkeletalMesh.h" />
+    <ClInclude Include="FileIO\StaticMesh.h" />
+    <ClInclude Include="MathLibrary\MathConstants.h" />
+    <ClInclude Include="MathLibrary\MathLibrary.h" />
+    <ClInclude Include="MathLibrary\Quaternion.h" />
+    <ClInclude Include="MathLibrary\Transform.h" />
+    <ClInclude Include="MathLibrary\Vector.h" />
     <ClInclude Include="Rendering\RenderingSystem.h" />
+    <ClInclude Include="Rendering\Vertex.h" />
     <ClInclude Include="ResourceManager\Resource.h" />
     <ClInclude Include="ResourceManager\IResource.h" />
     <ClInclude Include="ResourceManager\ResourceManager.h" />
@@ -51,8 +64,8 @@
     <ClInclude Include="Utility\Macros\DirectXMacros.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Components\IController.cpp" />
-    <ClCompile Include="Components\PlayerMovement.cpp" />
+    <ClCompile Include="Controller\IController.cpp" />
+    <ClCompile Include="Controller\PlayerMovement.cpp" />
     <ClCompile Include="CoreInput\CoreInput.cpp" />
     <ClCompile Include="ECS\ComponentManager.cpp" />
     <ClCompile Include="ECS\EntityManager.cpp" />
@@ -64,7 +77,11 @@
     <ClCompile Include="ECS\TestsMain.cpp" />
     <ClCompile Include="Engine\XTime.cpp" />
     <ClCompile Include="Entities\TestEntities.cpp" />
+    <ClCompile Include="FileIO\FileIO.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MathLibrary\Quaternion.cpp" />
+    <ClCompile Include="MathLibrary\Transform.cpp" />
+    <ClCompile Include="MathLibrary\Vector.cpp" />
     <ClCompile Include="Rendering\RenderingSystem.cpp" />
     <ClCompile Include="ResourceManager\IResource.cpp" />
     <ClCompile Include="ResourceManager\ResourceManager.cpp" />
