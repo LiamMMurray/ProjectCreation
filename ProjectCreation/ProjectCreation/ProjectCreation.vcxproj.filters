@@ -123,12 +123,6 @@
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h">
       <Filter>Header Files\Utility\ForwardDeclarations</Filter>
     </ClInclude>
-    <ClInclude Include="Components\IController.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Components\PlayerMovement.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Entities\TestEntities.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
@@ -137,6 +131,12 @@
     </ClInclude>
     <ClInclude Include="Components\TestComponents.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\IController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\PlayerMovement.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -170,12 +170,6 @@
     <ClCompile Include="Engine\XTime.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Components\PlayerMovement.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Components\IController.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
     <ClCompile Include="Entities\TestEntities.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
@@ -183,6 +177,12 @@
       <Filter>Source Files\ECS</Filter>
     </ClCompile>
     <ClCompile Include="ECS\TestsMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\IController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\PlayerMovement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
