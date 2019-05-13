@@ -3,19 +3,34 @@
 #include "Util.h"
 
 template <typename T>
-class Component
+class Component : public IComponent
 {
     private:
-        static const TypeId<IComponent> m_TypeId;
+        static const ComponentTypeId m_TypeId;
 
     public:
-        static const TypeId<IComponent> GetTypeId();
+        Component();
+       void Init();
+        static const ComponentTypeId GetTypeId();
 };
 template <class T>
-const TypeId<IComponent> Component<T>::m_TypeId = TypeIdCreator<IComponent>::GetUniqueTypeId<T>();
+const ComponentTypeId Component<T>::m_TypeId = TypeIdCreator<IComponent>::GetUniqueTypeId<T>();
 
 template <typename T>
-inline const TypeId<IComponent> Component<T>::GetTypeId()
+inline Component<T>::Component()
 {
+        static_assert(std::is_base_of<Component<T>, T>::value, "Components must derive from Component<T>");
+}
+
+template <typename T>
+inline void Component<T>::Init()
+{
+        static_cast<T*>(this)->Init();
+}
+
+template <typename T>
+inline const ComponentTypeId Component<T>::GetTypeId()
+{
+        static_assert(std::is_base_of<Component<T>, T>::value, "Components must follow derive from Component<T>");
         return m_TypeId;
 }

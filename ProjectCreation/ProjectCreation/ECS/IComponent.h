@@ -5,9 +5,9 @@ class IComponent
 {
 
     protected:
-        bool               m_Enabled;
-        Handle<IEntity>    m_Owner;
-        Handle<IComponent> m_Handle;
+        bool            m_Enabled = true;
+        EntityHandle    m_Owner;
+        ComponentHandle m_Handle;
 
     public:
         IComponent()
@@ -17,10 +17,12 @@ class IComponent
         {}
 
 
-        Handle<IEntity>    GetOwner();
-        Handle<IComponent> GetHandle();
-        void               Enable();
-        void               Disable();
-        void               SetActive(bool state);
-        bool               isEnabled();
+        EntityHandle    GetOwner();
+        ComponentHandle GetHandle();
+        void            Enable();
+        void            Disable();
+        void            SetActive(bool state);
+        bool            isEnabled();
+
+		friend class ComponentManager;
 };
