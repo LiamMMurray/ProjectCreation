@@ -31,7 +31,7 @@ CollisionComponent::FCollideResult CollisionLibary::OverlapSphereToSphere(Collis
 {
         CollisionComponent::FCollideResult output;
         CollisionComponent::FCotactPoint   contactPoint;
-        float                              distance    = XMVectorGetX(XMVector3Dot(a.center, b.center));
+        float                              distance    = MathLibrary::CalulateDistance(a.center, b.center);
         float                              totalRadius = a.radius + b.radius;
         if (distance < totalRadius)
         {
@@ -75,7 +75,7 @@ CollisionComponent::FCollideResult CollisionLibary::SweepSphereToSphere(Collisio
 
         XMVECTOR cloestPoint = MathLibrary::GetClosestPointFromLine(capsule.startPoint, capsule.endPoint, checkB.center);
         float    totalRadius = capsule.radius + checkB.radius;
-        float    distance    = XMVectorGetX(XMVector3Dot(cloestPoint, checkB.center));
+        float    distance    = MathLibrary::CalulateDistance(cloestPoint, checkB.center);
 
         if (distance == totalRadius)
         {
@@ -102,7 +102,21 @@ CollisionComponent::FCollideResult CollisionLibary::SphereToAabb(CollisionCompon
         XMVECTOR                           aabbMin           = aabb.center - aabb.extents;
         XMVECTOR                           aabbMax           = aabb.center + aabb.extents;
         XMVECTOR                           cloestPointinAABB = XMVectorMin(XMVectorMax(sphere.center, aabbMin), aabbMax);
-        float                              distance;
+        float                              distance          = MathLibrary::CalulateDistance(cloestPointinAABB, sphere.center);
+
+ 
+        if (distance < sphere.radius)
+        {
+                output.collisionType = CollisionComponent::EOveralap;
+        }
+        else if (distance > sphere.radius)
+		{
+                output.collisionType = CollisionComponent::ENoCollision;
+		}
+        else
+        { 
+			 output.collisionType = CollisionComponent::ECollide;
+		}
         return output;
 }
 
@@ -110,7 +124,7 @@ CollisionComponent::FCollideResult CollisionLibary::AabbToAabb(CollisionComponen
 {
         CollisionComponent::FCollideResult output;
 
-		XMVECTOR aMax = a.center + a.extents;
+        XMVECTOR aMax = a.center + a.extents;
         XMVECTOR aMin = a.center - a.extents;
         XMVECTOR bMax = b.center + b.extents;
         XMVECTOR bMin = b.center - b.extents;
@@ -132,12 +146,12 @@ CollisionComponent::FCollideResult CollisionLibary::AabbToAabb(CollisionComponen
         float bMinZ = XMVectorGetZ(bMin);
 
         if (aMaxX < bMinX || aMinX > bMaxX)
-               output.collisionType = CollisionComponent::ENoCollision;
+                output.collisionType = CollisionComponent::ENoCollision;
         if (aMaxY < bMinY || aMinY > bMaxY)
                 output.collisionType = CollisionComponent::ENoCollision;
         if (aMaxZ < bMinZ || aMinZ > bMaxZ)
                 output.collisionType = CollisionComponent::ENoCollision;
 
-		 output.collisionType = CollisionComponent::EOveralap;
+        output.collisionType = CollisionComponent::EOveralap;
         return output;
 }
