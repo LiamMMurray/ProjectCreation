@@ -46,6 +46,7 @@
     <ClInclude Include="Rendering\RenderingSystem.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CollisionLibary\CollisionLibary.cpp" />
     <ClCompile Include="CoreInput\CoreInput.cpp" />
     <ClCompile Include="ECS\ComponentManager.cpp" />
     <ClCompile Include="Engine\GEngine.cpp" />
