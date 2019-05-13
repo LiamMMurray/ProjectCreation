@@ -56,9 +56,13 @@
     <ClInclude Include="MathLibrary\Vector.h" />
     <ClInclude Include="Rendering\RenderingSystem.h" />
     <ClInclude Include="Rendering\Vertex.h" />
+    <ClInclude Include="ResourceManager\Material.h" />
     <ClInclude Include="ResourceManager\Resource.h" />
     <ClInclude Include="ResourceManager\IResource.h" />
+    <ClInclude Include="ResourceManager\ResourceInfoTypes.h" />
     <ClInclude Include="ResourceManager\ResourceManager.h" />
+    <ClInclude Include="ResourceManager\SkeletalMesh.h" />
+    <ClInclude Include="ResourceManager\StaticMesh.h" />
     <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
     <ClInclude Include="Utility\Macros\DirectXMacros.h" />

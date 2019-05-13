@@ -9,5 +9,4 @@ class CResourceManager
         static void Shutdown();
         static CResourceManager* Get();
 
-
 };

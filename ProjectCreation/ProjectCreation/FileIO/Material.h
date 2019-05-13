@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "../ResourceManager/ResourceInfoTypes.h"
+
 namespace FileIO
 {
         struct FTextureDesc
@@ -19,8 +21,8 @@ namespace FileIO
         struct FMaterialData
         {
                 std::string name;
-                // EMaterialType            surfaceType;
-                // FSurfaceProperties       surfaceProperties;
+                EMaterialType            surfaceType;
+                FSurfaceProperties       surfaceProperties;
                 std::vector<FTextureDesc> textureDescs;
         };
 } // namespace FileIO

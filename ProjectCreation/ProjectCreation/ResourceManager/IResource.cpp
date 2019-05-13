@@ -13,9 +13,9 @@ ResourceHandle IResource::Acquire()
         return GetHandle();
 }
 
-void IResource::Release()
+uint16_t IResource::Release()
 {
         assert(m_ReferenceCount > 0);
         --m_ReferenceCount;
-        return;
+        return m_ReferenceCount;
 }
