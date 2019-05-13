@@ -14,19 +14,19 @@ void SystemManager::Update(float deltaTime)
         }
 }
 
-void SystemManager::InitializeSystem(FSystemInitProperties* systemProperties, ISystem* isystem)
+void SystemManager::RegisterSystem(FSystemInitProperties* systemProperties, ISystem* isystem)
 {
         assert(systemProperties != nullptr && system != nullptr);
 
         isystem->OnInitialize();
 
-        if (systemProperties->bSuspendOnStart)
+        if (systemProperties->m_Flags & SYSTEM_INIT_FLAG_SUSPEND_ON_START)
         {
-                m_ActiveSystemsQueue.push(isystem);
+                m_InactiveSystems.push_back(isystem);
         }
         else
         {
-                m_InactiveSystems.push_back(isystem);
+                m_ActiveSystemsQueue.push(isystem);
         }
 }
 
@@ -36,14 +36,13 @@ std::priority_queue<ISystem*, std::vector<ISystem*>, SystemManager::PriorityComp
 }
 
 void SystemManager::Initialize()
-{
-	
-}
+{}
 
 void SystemManager::Shutdown()
 {
         for (auto it : m_SystemsMap)
         {
+                it.second->OnShutdown();
                 delete it.second;
         }
 }

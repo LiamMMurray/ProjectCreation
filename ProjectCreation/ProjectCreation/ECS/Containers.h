@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "IEntity.h"
 template <typename T>
 class TComponentIterator
 {};

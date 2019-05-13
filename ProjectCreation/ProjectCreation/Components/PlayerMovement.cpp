@@ -1,23 +1,23 @@
 #include "PlayerMovement.h"
-#include "CoreInput/CoreInput.h"
-#include "Engine/GEngine.h"
+#include "../CoreInput/CoreInput.h"
+#include "../Engine/GEngine.h"
 
 void PlayerMovement::GatherInput()
 {
-	//Check Forward speed
+        // Check Forward speed
         ModifySpeed();
 
-	//Backward
+        // Backward
         if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
         {
                 requestedDirection = MoveDirections::BACKWARD;
         }
-	//Left
+        // Left
         else if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
         {
                 requestedDirection = MoveDirections::LEFT;
         }
-	//Right
+        // Right
         else if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
         {
                 requestedDirection = MoveDirections::RIGHT;
@@ -26,22 +26,22 @@ void PlayerMovement::GatherInput()
 
 void PlayerMovement::ProcessInput()
 {
-	// Forward
+        // Forward
         if (requestedDirection == MoveDirections::FORWARD)
         {
                 MoveVector = DirectX::XMVectorAdd(MoveVector, forwardVector);
         }
-    // Backward
+        // Backward
         else if (requestedDirection == MoveDirections::BACKWARD)
         {
                 MoveVector = DirectX::XMVectorAdd(MoveVector, backwardVector);
         }
-    // Left
+        // Left
         else if (requestedDirection == MoveDirections::LEFT)
         {
                 MoveVector = DirectX::XMVectorAdd(MoveVector, leftVector);
         }
-    // Right
+        // Right
         else if (requestedDirection == MoveDirections::RIGHT)
         {
                 MoveVector = DirectX::XMVectorAdd(MoveVector, rightVector);
@@ -50,9 +50,9 @@ void PlayerMovement::ProcessInput()
 
 void PlayerMovement::ApplyInput()
 {
-        auto& transformComponent = GEngine::Get()->GetComponentManager()->GetComponent<CTransformComponet>(handle);
+       // auto transformComponent = GEngine::Get()->GetComponentManager()->GetComponent<Transform>(handle);
 
-		//Code will not work until Transform Component is made
+        // Code will not work until Transform Component is made
 }
 
 void PlayerMovement::ModifySpeed()
