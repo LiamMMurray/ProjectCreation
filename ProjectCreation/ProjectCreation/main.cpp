@@ -118,7 +118,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
                         // check to see if it's time to quit
                         if (msg.message == WM_QUIT)
-                                return false;
+                                break;
                 }
 
                 // Main application loop goes here.
