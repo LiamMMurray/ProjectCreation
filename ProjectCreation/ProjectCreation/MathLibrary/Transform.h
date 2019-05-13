@@ -12,5 +12,5 @@ struct FTransform
         DirectX::XMVECTOR GetForward();
         DirectX::XMVECTOR GetRight();
         DirectX::XMVECTOR GetUp();
-        static void       RotateAxisAngle(DirectX::XMVECTOR& axis, float angle);
+        void       RotateAxisAngle(DirectX::XMVECTOR& axis, float angle);
 };
