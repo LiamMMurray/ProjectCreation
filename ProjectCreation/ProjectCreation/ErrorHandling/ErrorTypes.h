@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-//64 bit flag type
+// 64 bit flag type
 enum ERESULT_FLAG
 {
         SUCCESS      = 0b00000000,
@@ -12,7 +12,7 @@ enum ERESULT_FLAG
         PLACEHOLDER5 = 0b00010000,
         PLACEHOLDER6 = 0b00100000,
         PLACEHOLDER7 = 0b01000000,
-        PLACEHOLDER8 = 0b10000000
+        INVALID = 0b10000000
 };
 
 struct EResult

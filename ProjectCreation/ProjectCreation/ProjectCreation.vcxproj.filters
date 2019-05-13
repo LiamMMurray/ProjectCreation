@@ -28,6 +28,36 @@
     <Filter Include="Header Files\Engine">
       <UniqueIdentifier>{97dabdec-bf0c-4d2a-a63a-c20fd2ae8c00}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ECS">
+      <UniqueIdentifier>{b4b00ecb-2b4c-4ccf-b474-ecf4f4637bc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{ab04f879-05b8-45fc-8c20-5b5f80b4541f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CoreInput">
+      <UniqueIdentifier>{d1bc2805-74a9-4f2d-b7c8-817888333233}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Rendering">
+      <UniqueIdentifier>{4115749b-830a-4722-ab40-4c2b87ecf98b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utility">
+      <UniqueIdentifier>{8c3cb67f-f040-43b7-988f-028d63a1131a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utility\ForwardDeclarations">
+      <UniqueIdentifier>{e4cf9f64-1246-4dbf-bd2e-00747fdad207}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Components">
+      <UniqueIdentifier>{88037edb-01bc-4605-b4bb-85f8e1b3d649}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Components">
+      <UniqueIdentifier>{dbf75fee-7668-4b96-a5a7-bcb1a823d5b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entities">
+      <UniqueIdentifier>{f28c51aa-d92a-4527-a4ad-c7788648f773}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entities">
+      <UniqueIdentifier>{bdf75ba7-a7f6-4b95-b43a-cf99da35cffb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ECS\Component.h">
@@ -87,45 +117,72 @@
     <ClInclude Include="Engine\XTime.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Utility\ForwardDeclarations</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h">
+      <Filter>Header Files\Utility\ForwardDeclarations</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\IController.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\PlayerMovement.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\TestEntities.h">
+      <Filter>Header Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\HandleManager.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\TestComponents.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ECS\IComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS\ComponentManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS\IEntity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS\TestsMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS\ISystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS\SystemManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CoreInput\CoreInput.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\RenderingSystem.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="ECS\ComponentManager.cpp">
+      <Filter>Source Files\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\IComponent.cpp">
+      <Filter>Source Files\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\ISystem.cpp">
+      <Filter>Source Files\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\SystemManager.cpp">
+      <Filter>Source Files\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\IEntity.cpp">
+      <Filter>Source Files\ECS</Filter>
     </ClCompile>
     <ClCompile Include="Engine\GEngine.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreInput\CoreInput.cpp">
+      <Filter>Source Files\CoreInput</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\RenderingSystem.cpp">
+      <Filter>Source Files\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="Engine\XTime.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\PlayerMovement.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\IController.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Entities\TestEntities.cpp">
+      <Filter>Source Files\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\EntityManager.cpp">
+      <Filter>Source Files\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\TestsMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

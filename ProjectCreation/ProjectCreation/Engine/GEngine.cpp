@@ -7,11 +7,11 @@ void GEngine::Initialize()
         static GEngine engine;
         instance = &engine;
 
-        instance->m_EntityManager = new EntityManager;
+        instance->m_EntityManager    = new EntityManager;
         instance->m_ComponentManager = new ComponentManager;
         instance->m_SystemManager    = new SystemManager;
 
-		instance->m_SystemManager->Initialize();
+        instance->m_SystemManager->Initialize();
 }
 
 void GEngine::Shutdown()

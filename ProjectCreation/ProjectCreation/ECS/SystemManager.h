@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <queue>
 #include <unordered_map>
+#include "../ErrorHandling/ErrorTypes.h"
 #include "ECSTypes.h"
 #include "ISystem.h"
 
@@ -20,7 +21,7 @@ class SystemManager
                 }
         };
 
-        std::unordered_map<SystemTypeID, ISystem*>                                              m_SystemsMap;
+        std::unordered_map<SystemTypeId, ISystem*>                                              m_SystemsMap;
         std::priority_queue<ISystem*, std::vector<ISystem*>, SystemManager::PriorityComparator> m_ActiveSystemsQueue;
         std::vector<ISystem*>                                                                   m_InactiveSystems;
 
@@ -53,7 +54,7 @@ inline EResult SystemManager::CreateSystem(T** outSystem)
         static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
         assert(outSystem != nullptr);
 
-        SystemTypeID typeID = ISystem::GetTypeID<T>();
+        SystemTypeId typeID = ISystem::GetTypeID<T>();
 
         assert(m_SystemsMap.find(typeID) == m_SystemsMap.end());
 
@@ -79,7 +80,7 @@ inline void SystemManager::DestroySystem()
 {
         static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
 
-        ISystem* system = GetSystem<T>();
+        ISystem*     system = GetSystem<T>();
         SystemTypeID typeID = ISystem::GetTypeID<T>();
         assert(m_SystemsMap.find(typeID) == m_SystemsMap.end());
 
@@ -103,8 +104,8 @@ template <typename T>
 T* SystemManager::GetSystem()
 {
         static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
-        SystemTypeID typeID = ISystem::GetTypeID<T>();
-        auto         it     = m_SystemsMap.find(typeID);
+        SystemTypeId typeID = ISystem::GetTypeID<T>();
+        auto            it     = m_SystemsMap.find(typeID);
         assert(it != m_SystemsMap.end());
 
         return (T*)it->second;

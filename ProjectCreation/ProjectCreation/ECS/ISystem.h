@@ -2,8 +2,10 @@
 
 #include <stdint.h>
 #include <type_traits>
+#include "ECSTypes.h"
 
 class SystemManager;
+
 
 typedef uint32_t SystemTypeID;
 
@@ -12,14 +14,13 @@ struct FSystemInitProperties
         uint32_t m_Flags      = 0;
         float    m_UpdateRate = 0.0f;
         uint16_t m_Priority   = 300;
-        
 };
 
 class ISystem
 {
         friend class SystemManager;
 
-        static SystemTypeID systemTypeID;
+        static SystemTypeId systemTypeId;
 
     private:
         uint16_t m_Priority;
@@ -36,11 +37,12 @@ class ISystem
 
     public:
         template <typename T>
-        static SystemTypeID GetTypeID()
+
+        static SystemTypeId GetTypeID()
         {
                 static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
 
-                static const SystemTypeID id{systemTypeID++};
+                static const SystemTypeId id{systemTypeId++};
                 return id;
         }
 

@@ -1,12 +1,11 @@
 #pragma once
 #include "ECSTypes.h"
-#include "Handle.h"
 
 class IComponent
 {
 
     protected:
-        bool            m_Enabled;
+        bool            m_Enabled = true;
         EntityHandle    m_Owner;
         ComponentHandle m_Handle;
 
@@ -24,4 +23,6 @@ class IComponent
         void            Disable();
         void            SetActive(bool state);
         bool            isEnabled();
+
+		friend class ComponentManager;
 };

@@ -36,9 +36,7 @@ std::priority_queue<ISystem*, std::vector<ISystem*>, SystemManager::PriorityComp
 }
 
 void SystemManager::Initialize()
-{
-	
-}
+{}
 
 void SystemManager::Shutdown()
 {

@@ -3,14 +3,14 @@
 #include "Component.h"
 #include "ComponentManager.h"
 #include "ECSTypes.h"
-#include "Handle.h"
 
 class IEntity
 {
-  //  public:
-		//virtual static const TypeId<IEntity> GetTypeId() const = 0;
-
     public:
+        bool m_Enabled;
+
+        virtual const EntityTypeId GetStaticTypeId() const = 0;
+
         template <typename T>
         ComponentHandle GetComponentHandle();
         template <typename T>
@@ -32,7 +32,7 @@ class IEntity
 template <typename T>
 inline ComponentHandle IEntity::GetComponentHandle()
 {
-        return ComponentHandle();
+        return ComponentTypeId();
 }
 
 template <typename T>
@@ -44,7 +44,7 @@ inline Component<T>* IEntity::GetComponent()
 template <typename T>
 inline std::vector<ComponentHandle> IEntity::GetComponentHandles()
 {
-        return std::vector<ComponentHandle>();
+        return std::vector<ComponentTypeId>();
 }
 
 template <typename T>
