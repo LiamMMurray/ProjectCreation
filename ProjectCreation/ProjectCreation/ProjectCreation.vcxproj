@@ -44,11 +44,13 @@
     <ClInclude Include="Engine\XTime.h" />
     <ClInclude Include="Entities\TestEntities.h" />
     <ClInclude Include="ErrorHandling\ErrorTypes.h" />
-    <ClInclude Include="MathLibary\MathLibary.h" />
-    <ClInclude Include="MathLibary\Quaternion.h" />
-    <ClInclude Include="MathLibary\Transform.h" />
-    <ClInclude Include="MathLibary\Vector.h" />
+    <ClInclude Include="MathLibrary\MathConstants.h" />
+    <ClInclude Include="MathLibrary\MathLibrary.h" />
+    <ClInclude Include="MathLibrary\Quaternion.h" />
+    <ClInclude Include="MathLibrary\Transform.h" />
+    <ClInclude Include="MathLibrary\Vector.h" />
     <ClInclude Include="Rendering\RenderingSystem.h" />
+    <ClInclude Include="Rendering\Vertex.h" />
     <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
   </ItemGroup>
@@ -67,9 +69,9 @@
     <ClCompile Include="Engine\XTime.cpp" />
     <ClCompile Include="Entities\TestEntities.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MathLibary\Quaternion.cpp" />
-    <ClCompile Include="MathLibary\Transform.cpp" />
-    <ClCompile Include="MathLibary\Vector.cpp" />
+    <ClCompile Include="MathLibrary\Quaternion.cpp" />
+    <ClCompile Include="MathLibrary\Transform.cpp" />
+    <ClCompile Include="MathLibrary\Vector.cpp" />
     <ClCompile Include="Rendering\RenderingSystem.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
