@@ -55,6 +55,7 @@
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CollisionLibary\CollisionComponent.cpp" />
     <ClCompile Include="Controller\IController.cpp" />
     <ClCompile Include="Controller\PlayerMovement.cpp" />
     <ClCompile Include="CollisionLibary\CollisionLibary.cpp" />

@@ -1,7 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
+#include <array>
 #include <vector>
-#include<array>
 class CollisionComponent
 {
     public:
@@ -35,11 +35,20 @@ class CollisionComponent
                 DirectX::XMVECTOR extents; // max
         };
 
-		struct FPlane
-		{
+        struct FPlane
+        {
                 DirectX::XMVECTOR normal;
                 float             offset;
-		};
+        };
 
         using Frustum = std::array<FPlane, 6>;
+
+        struct FCapsule
+        {
+                DirectX::XMVECTOR startPoint;
+                DirectX::XMVECTOR endPoint;
+                float             radius;
+
+				float GetCapsuleDistance();
+        };
 };

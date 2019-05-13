@@ -21,6 +21,8 @@
     <ClCompile Include="MathLibrary\Vector.cpp" />
     <ClCompile Include="Rendering\Vertex.cpp" />
     <ClCompile Include="MathLibrary\MathLibrary.cpp" />
+    <ClCompile Include="CollisionLibary\CollisionLibary.cpp" />
+    <ClCompile Include="CollisionLibary\CollisionComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CollisionLibary\CollisionComponent.h" />
