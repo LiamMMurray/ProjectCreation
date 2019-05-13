@@ -18,6 +18,51 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Components\IController.h" />
+    <ClInclude Include="Components\PlayerMovement.h" />
+    <ClInclude Include="Components\TestComponents.h" />
+    <ClInclude Include="CoreInput\CoreInput.h" />
+    <ClInclude Include="ECS\Component.h" />
+    <ClInclude Include="ECS\ComponentManager.h" />
+    <ClInclude Include="ECS\Containers.h" />
+    <ClInclude Include="ECS\ECS.h" />
+    <ClInclude Include="ECS\ECSTypes.h" />
+    <ClInclude Include="ECS\Entity.h" />
+    <ClInclude Include="ECS\EntityContainer.h" />
+    <ClInclude Include="ECS\EntityManager.h" />
+    <ClInclude Include="ECS\HandleManager.h" />
+    <ClInclude Include="Engine\GEngine.h" />
+    <ClInclude Include="ECS\Handle.h" />
+    <ClInclude Include="ECS\IComponent.h" />
+    <ClInclude Include="ECS\IEntity.h" />
+    <ClInclude Include="ECS\ISystem.h" />
+    <ClInclude Include="ECS\SystemManager.h" />
+    <ClInclude Include="ECS\Util.h" />
+    <ClInclude Include="Engine\XTime.h" />
+    <ClInclude Include="Entities\TestEntities.h" />
+    <ClInclude Include="ErrorHandling\ErrorTypes.h" />
+    <ClInclude Include="Rendering\RenderingSystem.h" />
+    <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
+    <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Components\IController.cpp" />
+    <ClCompile Include="Components\PlayerMovement.cpp" />
+    <ClCompile Include="CoreInput\CoreInput.cpp" />
+    <ClCompile Include="ECS\ComponentManager.cpp" />
+    <ClCompile Include="ECS\EntityManager.cpp" />
+    <ClCompile Include="Engine\GEngine.cpp" />
+    <ClCompile Include="ECS\IComponent.cpp" />
+    <ClCompile Include="ECS\IEntity.cpp" />
+    <ClCompile Include="ECS\ISystem.cpp" />
+    <ClCompile Include="ECS\SystemManager.cpp" />
+    <ClCompile Include="ECS\TestsMain.cpp" />
+    <ClCompile Include="Engine\XTime.cpp" />
+    <ClCompile Include="Entities\TestEntities.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Rendering\RenderingSystem.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{6AEBDD0C-4209-440C-8736-1B5346BDA655}</ProjectGuid>
@@ -78,7 +123,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -89,7 +134,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -102,7 +147,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
@@ -117,17 +162,11 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Component.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
