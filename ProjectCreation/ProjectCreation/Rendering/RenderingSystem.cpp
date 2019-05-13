@@ -13,6 +13,9 @@
 
 #include <wrl/client.h>
 
+#define SAFE_RELEASE(obj) \
+        if (obj)          \
+        obj->Release()
 
 void CRenderSystem::CreateDeviceAndSwapChain()
 {
@@ -27,7 +30,7 @@ void CRenderSystem::CreateDeviceAndSwapChain()
 #else
         UINT flags = 0;
 #endif
-        flags = 0;
+        // flags = 0;
 
         D3D_FEATURE_LEVEL FeatureLevels[] = {
             D3D_FEATURE_LEVEL_11_1,
@@ -50,18 +53,20 @@ void CRenderSystem::CreateDeviceAndSwapChain()
                                &FeatureLevelObtained,
                                &context);
 
-        assert(SUCCEEDED(hr));
         // DirectX 11.0 platforms will not recognize D3D_FEATURE_LEVEL_11_1 so we need to retry without it
-        hr = D3D11CreateDevice(nullptr,
-                               D3D_DRIVER_TYPE_HARDWARE,
-                               nullptr,
-                               flags,
-                               FeatureLevels,
-                               numFeatureLevels,
-                               D3D11_SDK_VERSION,
-                               &device,
-                               &FeatureLevelObtained,
-                               &context);
+        if (FAILED(hr))
+        {
+                hr = D3D11CreateDevice(nullptr,
+                                       D3D_DRIVER_TYPE_HARDWARE,
+                                       nullptr,
+                                       flags,
+                                       &FeatureLevels[1],
+                                       numFeatureLevels - 1,
+                                       D3D11_SDK_VERSION,
+                                       &device,
+                                       &FeatureLevelObtained,
+                                       &context);
+        }
         assert(SUCCEEDED(hr));
 
         hr = device->QueryInterface(__uuidof(ID3D11Device1), reinterpret_cast<void**>(&m_Device));
@@ -83,7 +88,9 @@ void CRenderSystem::CreateDeviceAndSwapChain()
                         if (SUCCEEDED(hr))
                         {
                                 hr = adapter->GetParent(__uuidof(IDXGIFactory1), reinterpret_cast<void**>(&dxgiFactory));
+                                adapter->Release();
                         }
+                        dxgiDevice->Release();
                 }
         }
 
@@ -91,6 +98,7 @@ void CRenderSystem::CreateDeviceAndSwapChain()
         // Create swap chain
         IDXGIFactory2* dxgiFactory2 = nullptr;
         hr = dxgiFactory->QueryInterface(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(&dxgiFactory2));
+        dxgiFactory->Release();
 
         assert(SUCCEEDED(hr));
 
@@ -119,16 +127,32 @@ void CRenderSystem::CreateDeviceAndSwapChain()
         hr = dxgiFactory2->CreateSwapChainForHwnd(m_Device, (HWND)m_WindowHandle, &sd, &fd, nullptr, &m_Swapchain);
         // dxgiFactory->MakeWindowAssociation(window->GetHandle(), DXGI_MWA_NO_ALT_ENTER);
         dxgiFactory2->Release();
+
+		#ifdef _DEBUG
+
+        ID3D11Debug* debug = nullptr;
+        hr = m_Device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&debug));
+        assert(SUCCEEDED(hr));
+        //debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+        debug->Release();
+		#endif
+
+        device->Release();
+        context->Release();
 }
 
-void CRenderSystem::CreateBackbufferRenderTarget()
+void CRenderSystem::CreateDefaultRenderTargets()
 {
         HRESULT          hr;
         ID3D11Texture2D* pBackBuffer;
 
         // Release all outstanding references to the swap chain's buffers.
-        if (m_RenderTargets[ERENDER_TARGET::BACKBUFFER])
-                m_RenderTargets[ERENDER_TARGET::BACKBUFFER]->Release();
+        for (int i = 0; i < E_RENDER_TARGET::COUNT; ++i)
+        {
+                SAFE_RELEASE(m_DefaultRenderTargets[i]);
+        }
+
+
         m_Context->OMSetRenderTargets(0, 0, 0);
 
         // Preserve the existing buffer count and format.
@@ -138,11 +162,52 @@ void CRenderSystem::CreateBackbufferRenderTarget()
         // Perform error handling here!
         assert(SUCCEEDED(hr));
 
+        // Create backbuffer render target
         hr = m_Swapchain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
         assert(SUCCEEDED(hr));
-        hr = m_Device->CreateRenderTargetView(pBackBuffer, NULL, &m_RenderTargets[ERENDER_TARGET::BACKBUFFER]);
-        assert(SUCCEEDED(hr));
+        hr = m_Device->CreateRenderTargetView(pBackBuffer, NULL, &m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER]);
+
+        // Create Base Pass render target and resource view
+        D3D11_TEXTURE2D_DESC textureDesc;
+        pBackBuffer->GetDesc(&textureDesc);
+        textureDesc.Format    = DXGI_FORMAT_R16G16B16A16_FLOAT;
+        textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
         pBackBuffer->Release();
+
+        ID3D11Texture2D* texture;
+
+        hr = m_Device->CreateTexture2D(&textureDesc, NULL, &texture);
+        assert(SUCCEEDED(hr));
+        hr = m_Device->CreateRenderTargetView(texture, NULL, &m_DefaultRenderTargets[E_RENDER_TARGET::BASE_PASS]);
+        texture->Release();
+
+        // Create Base Pass depth stencil and resource view
+
+        // Create depth stencil texture
+        D3D11_TEXTURE2D_DESC descDepth{};
+        descDepth.Width              = textureDesc.Width;
+        descDepth.Height             = textureDesc.Height;
+        descDepth.MipLevels          = 1;
+        descDepth.ArraySize          = 1;
+        descDepth.Format             = DXGI_FORMAT_R24G8_TYPELESS;
+        descDepth.SampleDesc.Count   = 1;
+        descDepth.SampleDesc.Quality = 0;
+        descDepth.Usage              = D3D11_USAGE_DEFAULT;
+        descDepth.BindFlags          = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+        descDepth.CPUAccessFlags     = 0;
+        descDepth.MiscFlags          = 0;
+        hr                           = m_Device->CreateTexture2D(&descDepth, nullptr, &texture);
+        assert(SUCCEEDED(hr));
+
+        // Create the depth stencil view
+        D3D11_DEPTH_STENCIL_VIEW_DESC descDSV{};
+        descDSV.Format             = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        descDSV.ViewDimension      = D3D11_DSV_DIMENSION_TEXTURE2D;
+        descDSV.Texture2D.MipSlice = 0;
+        hr = m_Device->CreateDepthStencilView(texture, &descDSV, &m_DefaultDepthStencil[E_DEPTH_STENCIL::BASE_PASS]);
+        texture->Release();
+
+        assert(SUCCEEDED(hr));
 }
 
 void CRenderSystem::CreateRasterizerStates()
@@ -158,17 +223,29 @@ void CRenderSystem::OnPreUpdate(float deltaTime)
 
 void CRenderSystem::OnUpdate(float deltaTime)
 {
-        m_Context->OMSetRenderTargets(1, &m_RenderTargets[ERENDER_TARGET::BACKBUFFER], nullptr);
-        static FLOAT color[] = {1.0f, 1.0f, 1.0f, 1.0f};
-        static float totalTime     = 0.0f;
-        totalTime += deltaTime;
-        color[0] = sin(totalTime);
-        color[1] = cos(totalTime);
-        m_Context->ClearRenderTargetView(m_RenderTargets[ERENDER_TARGET::BACKBUFFER], color);
+        // Cache transforms. Update dirty transforms
+
+        // Sort scene front to back
+
+        // Perform culling
 }
 
 void CRenderSystem::OnPostUpdate(float deltaTime)
 {
+        m_Context->OMSetRenderTargets(
+            1, &m_DefaultRenderTargets[E_RENDER_TARGET::BASE_PASS], m_DefaultDepthStencil[E_DEPTH_STENCIL::BASE_PASS]);
+        static FLOAT color[]   = {1.0f, 1.0f, 1.0f, 1.0f};
+        static float totalTime = 0.0f;
+        totalTime += deltaTime;
+        color[0] = sin(totalTime);
+        color[1] = cos(totalTime);
+
+        m_Context->ClearRenderTargetView(m_DefaultRenderTargets[E_RENDER_TARGET::BASE_PASS], color);
+        m_Context->ClearDepthStencilView(
+            m_DefaultDepthStencil[E_DEPTH_STENCIL::BASE_PASS], D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+        m_Context->OMSetRenderTargets(1, &m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER], nullptr);
+
         DXGI_PRESENT_PARAMETERS parameters = {0};
         m_Swapchain->Present1(1, 0, &parameters);
 }
@@ -178,13 +255,30 @@ void CRenderSystem::OnInitialize()
         assert(m_WindowHandle);
 
         CreateDeviceAndSwapChain();
-        CreateBackbufferRenderTarget();
+        CreateDefaultRenderTargets();
         CreateRasterizerStates();
 }
 
 void CRenderSystem::OnShutdown()
 {
         SetFullscreen(false);
+
+        for (int i = 0; i < E_RENDER_TARGET::COUNT; ++i)
+        {
+                SAFE_RELEASE(m_DefaultRenderTargets[i]);
+        }
+
+		for (int i = 0; i < E_POSTPROCESS_PIXEL_SRV::COUNT; ++i)
+        {
+
+                SAFE_RELEASE(m_PostProcessSRVs[i]);
+        }
+
+		for (int i = 0; i < E_DEPTH_STENCIL::COUNT; ++i)
+        {
+
+                SAFE_RELEASE(m_DefaultDepthStencil[i]);
+        }
 
         m_Swapchain->Release();
         m_Context->Release();
@@ -206,7 +300,7 @@ void CRenderSystem::OnWindowResize(WPARAM wParam, LPARAM lParam)
 {
         if (m_Swapchain)
         {
-                CreateBackbufferRenderTarget();
+                CreateDefaultRenderTargets();
         }
 }
 
