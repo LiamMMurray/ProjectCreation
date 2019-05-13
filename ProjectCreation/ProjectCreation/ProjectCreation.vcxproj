@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CollisionLibary\CollisionComponent.h" />
+    <ClInclude Include="CollisionLibary\CollisionLibary.h" />
     <ClInclude Include="CoreInput\CoreInput.h" />
     <ClInclude Include="ECS\Component.h" />
     <ClInclude Include="ECS\ComponentManager.h" />
@@ -37,6 +39,10 @@
     <ClInclude Include="ECS\Util.h" />
     <ClInclude Include="Engine\XTime.h" />
     <ClInclude Include="ErrorHandling\ErrorTypes.h" />
+    <ClInclude Include="MathLibary\MathLibary.h" />
+    <ClInclude Include="MathLibary\Quaternion.h" />
+    <ClInclude Include="MathLibary\Transform.h" />
+    <ClInclude Include="MathLibary\Vector.h" />
     <ClInclude Include="Rendering\RenderingSystem.h" />
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +56,9 @@
     <ClCompile Include="ECS\TestsMain.cpp" />
     <ClCompile Include="Engine\XTime.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MathLibary\Quaternion.cpp" />
+    <ClCompile Include="MathLibary\Transform.cpp" />
+    <ClCompile Include="MathLibary\Vector.cpp" />
     <ClCompile Include="Rendering\RenderingSystem.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

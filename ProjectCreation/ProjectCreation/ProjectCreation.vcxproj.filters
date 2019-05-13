@@ -28,6 +28,9 @@
     <Filter Include="Header Files\Engine">
       <UniqueIdentifier>{97dabdec-bf0c-4d2a-a63a-c20fd2ae8c00}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\MathLibary">
+      <UniqueIdentifier>{debd36bb-a230-4b5b-a18e-c3fa505cb45b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ECS\Component.h">
@@ -87,6 +90,24 @@
     <ClInclude Include="Engine\XTime.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="MathLibary\Transform.h">
+      <Filter>Header Files\MathLibary</Filter>
+    </ClInclude>
+    <ClInclude Include="MathLibary\MathLibary.h">
+      <Filter>Header Files\MathLibary</Filter>
+    </ClInclude>
+    <ClInclude Include="MathLibary\Quaternion.h">
+      <Filter>Header Files\MathLibary</Filter>
+    </ClInclude>
+    <ClInclude Include="MathLibary\Vector.h">
+      <Filter>Header Files\MathLibary</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionLibary\CollisionComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionLibary\CollisionLibary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ECS\IComponent.cpp">
@@ -120,6 +141,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\XTime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MathLibary\Quaternion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MathLibary\Vector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MathLibary\Transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
