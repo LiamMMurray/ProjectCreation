@@ -3,9 +3,10 @@
 #include "Component.h"
 #include "ComponentManager.h"
 #include "ECSTypes.h"
-
+class EntityManager;
 class IEntity
 {
+        EntityManager* m_EntityManager;
     public:
         bool m_Enabled;
 
