@@ -7,6 +7,7 @@ class EntityManager;
 class IEntity
 {
         EntityManager* m_EntityManager;
+        ComponentManager* m_ComponentManager;
     public:
         bool m_Enabled;
 
