@@ -1,0 +1,138 @@
+\hypertarget{namespace_g_w_1_1_g_r_a_p_h_i_c_s}{}\section{GW\+:\+:G\+R\+A\+P\+H\+I\+CS Namespace Reference}
+\label{namespace_g_w_1_1_g_r_a_p_h_i_c_s}\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}}
+
+
+The namespace to which all Gateware Graphics library interfaces must belong.  
+
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_direct_x11_surface}{G\+Direct\+X11\+Surface}}
+\begin{DoxyCompactList}\small\item\em A library used to initialize, create, and manage a Direct\+X11 rendering context. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_open_g_l_surface}{G\+Open\+G\+L\+Surface}}
+\begin{DoxyCompactList}\small\item\em A library used to initialize, create, and manage an Open\+GL rendering context. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85b}{G\+Graphics\+Init\+Options}} \{ \newline
+\mbox{\hyperlink{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85ba955a3a5f0ed41c744182916c5bf68e15}{C\+O\+L\+O\+R\+\_\+10\+\_\+\+B\+IT}} = 0x01, 
+\mbox{\hyperlink{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85ba1bade4c85d55718f2b27dcc38c332a3a}{D\+E\+P\+T\+H\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+U\+P\+P\+O\+RT}} = 0x02, 
+\mbox{\hyperlink{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85bacac34b90e4af450189dd5e824cbbd452}{D\+E\+P\+T\+H\+\_\+\+S\+T\+E\+N\+C\+I\+L\+\_\+\+S\+U\+P\+P\+O\+RT}} = 0\+X04, 
+\mbox{\hyperlink{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85bae59cf357d12d379a206c08211dedc57f}{O\+P\+E\+N\+G\+L\+\_\+\+E\+S\+\_\+\+S\+U\+P\+P\+O\+RT}} = 0x08, 
+\newline
+\mbox{\hyperlink{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85ba9c847baaca0bdcb897b2332cc8d3b5dc}{D\+I\+R\+E\+C\+T2\+D\+\_\+\+S\+U\+P\+P\+O\+RT}} = 0x10
+ \}
+\begin{DoxyCompactList}\small\item\em G\+Graphics\+Init\+Options holds the special options that can be requested when initializing a G\+Graphics surface. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{namespace_g_w_1_1_g_r_a_p_h_i_c_s_a3fc9ce5171f60466f1e8784ea13b31ce}{Create\+G\+Direct\+X11\+Surface}} (\mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_window}{S\+Y\+S\+T\+E\+M\+::\+G\+Window}} $\ast$\+\_\+g\+Win, unsigned long long \+\_\+init\+Mask, \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_direct_x11_surface}{G\+Direct\+X11\+Surface}} $\ast$$\ast$\+\_\+out\+Surface)
+\begin{DoxyCompactList}\small\item\em Creates and outputs a new \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_direct_x11_surface}{G\+Direct\+X11\+Surface}} object. \end{DoxyCompactList}\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{namespace_g_w_1_1_g_r_a_p_h_i_c_s_a67a126b8d3c2fabc556008d2460a3b43}{Create\+G\+Open\+G\+L\+Surface}} (\mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_window}{S\+Y\+S\+T\+E\+M\+::\+G\+Window}} $\ast$\+\_\+g\+Win, unsigned long long \+\_\+init\+Mask, \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_open_g_l_surface}{G\+Open\+G\+L\+Surface}} $\ast$$\ast$\+\_\+out\+Surface)
+\begin{DoxyCompactList}\small\item\em Creates and outputs a new \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_open_g_l_surface}{G\+Open\+G\+L\+Surface}} object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The namespace to which all Gateware Graphics library interfaces must belong. 
+
+\subsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85b}\label{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85b}} 
+\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}!G\+Graphics\+Init\+Options@{G\+Graphics\+Init\+Options}}
+\index{G\+Graphics\+Init\+Options@{G\+Graphics\+Init\+Options}!G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}}
+\subsubsection{\texorpdfstring{G\+Graphics\+Init\+Options}{GGraphicsInitOptions}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85b}{G\+W\+::\+G\+R\+A\+P\+H\+I\+C\+S\+::\+G\+Graphics\+Init\+Options}}}
+
+
+
+G\+Graphics\+Init\+Options holds the special options that can be requested when initializing a G\+Graphics surface. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{C\+O\+L\+O\+R\+\_\+10\+\_\+\+B\+IT@{C\+O\+L\+O\+R\+\_\+10\+\_\+\+B\+IT}!G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}}\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}!C\+O\+L\+O\+R\+\_\+10\+\_\+\+B\+IT@{C\+O\+L\+O\+R\+\_\+10\+\_\+\+B\+IT}}}\mbox{\Hypertarget{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85ba955a3a5f0ed41c744182916c5bf68e15}\label{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85ba955a3a5f0ed41c744182916c5bf68e15}} 
+C\+O\+L\+O\+R\+\_\+10\+\_\+\+B\+IT&Require high dynamic range (H\+DR) color format \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D\+E\+P\+T\+H\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+U\+P\+P\+O\+RT@{D\+E\+P\+T\+H\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+U\+P\+P\+O\+RT}!G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}}\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}!D\+E\+P\+T\+H\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+U\+P\+P\+O\+RT@{D\+E\+P\+T\+H\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+U\+P\+P\+O\+RT}}}\mbox{\Hypertarget{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85ba1bade4c85d55718f2b27dcc38c332a3a}\label{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85ba1bade4c85d55718f2b27dcc38c332a3a}} 
+D\+E\+P\+T\+H\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+U\+P\+P\+O\+RT&Require Z-\/\+Buffer support \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D\+E\+P\+T\+H\+\_\+\+S\+T\+E\+N\+C\+I\+L\+\_\+\+S\+U\+P\+P\+O\+RT@{D\+E\+P\+T\+H\+\_\+\+S\+T\+E\+N\+C\+I\+L\+\_\+\+S\+U\+P\+P\+O\+RT}!G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}}\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}!D\+E\+P\+T\+H\+\_\+\+S\+T\+E\+N\+C\+I\+L\+\_\+\+S\+U\+P\+P\+O\+RT@{D\+E\+P\+T\+H\+\_\+\+S\+T\+E\+N\+C\+I\+L\+\_\+\+S\+U\+P\+P\+O\+RT}}}\mbox{\Hypertarget{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85bacac34b90e4af450189dd5e824cbbd452}\label{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85bacac34b90e4af450189dd5e824cbbd452}} 
+D\+E\+P\+T\+H\+\_\+\+S\+T\+E\+N\+C\+I\+L\+\_\+\+S\+U\+P\+P\+O\+RT&Require Z-\/\+Buffer to contain an 8-\/bit stencil buffer \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{O\+P\+E\+N\+G\+L\+\_\+\+E\+S\+\_\+\+S\+U\+P\+P\+O\+RT@{O\+P\+E\+N\+G\+L\+\_\+\+E\+S\+\_\+\+S\+U\+P\+P\+O\+RT}!G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}}\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}!O\+P\+E\+N\+G\+L\+\_\+\+E\+S\+\_\+\+S\+U\+P\+P\+O\+RT@{O\+P\+E\+N\+G\+L\+\_\+\+E\+S\+\_\+\+S\+U\+P\+P\+O\+RT}}}\mbox{\Hypertarget{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85bae59cf357d12d379a206c08211dedc57f}\label{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85bae59cf357d12d379a206c08211dedc57f}} 
+O\+P\+E\+N\+G\+L\+\_\+\+E\+S\+\_\+\+S\+U\+P\+P\+O\+RT&Require Open\+GL to support for mobile platforms \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D\+I\+R\+E\+C\+T2\+D\+\_\+\+S\+U\+P\+P\+O\+RT@{D\+I\+R\+E\+C\+T2\+D\+\_\+\+S\+U\+P\+P\+O\+RT}!G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}}\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}!D\+I\+R\+E\+C\+T2\+D\+\_\+\+S\+U\+P\+P\+O\+RT@{D\+I\+R\+E\+C\+T2\+D\+\_\+\+S\+U\+P\+P\+O\+RT}}}\mbox{\Hypertarget{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85ba9c847baaca0bdcb897b2332cc8d3b5dc}\label{namespace_g_w_1_1_g_r_a_p_h_i_c_s_afbd9d6f65375744d2338ce060d42c85ba9c847baaca0bdcb897b2332cc8d3b5dc}} 
+D\+I\+R\+E\+C\+T2\+D\+\_\+\+S\+U\+P\+P\+O\+RT&Require B\+G\+RA surface support for Direct\+X11 \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{namespace_g_w_1_1_g_r_a_p_h_i_c_s_a3fc9ce5171f60466f1e8784ea13b31ce}\label{namespace_g_w_1_1_g_r_a_p_h_i_c_s_a3fc9ce5171f60466f1e8784ea13b31ce}} 
+\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}!Create\+G\+Direct\+X11\+Surface@{Create\+G\+Direct\+X11\+Surface}}
+\index{Create\+G\+Direct\+X11\+Surface@{Create\+G\+Direct\+X11\+Surface}!G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}}
+\subsubsection{\texorpdfstring{Create\+G\+Direct\+X11\+Surface()}{CreateGDirectX11Surface()}}
+{\footnotesize\ttfamily G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+G\+R\+A\+P\+H\+I\+C\+S\+::\+Create\+G\+Direct\+X11\+Surface (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_window}{S\+Y\+S\+T\+E\+M\+::\+G\+Window}} $\ast$}]{\+\_\+g\+Win,  }\item[{unsigned long long}]{\+\_\+init\+Mask,  }\item[{\mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_direct_x11_surface}{G\+Direct\+X11\+Surface}} $\ast$$\ast$}]{\+\_\+out\+Surface }\end{DoxyParamCaption})}
+
+
+
+Creates and outputs a new \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_direct_x11_surface}{G\+Direct\+X11\+Surface}} object. 
+
+Initializes a handle to a \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_direct_x11_surface}{G\+Direct\+X11\+Surface}} object with an existing G\+Window. The created \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_direct_x11_surface}{G\+Direct\+X11\+Surface}} object will have its reference count initialized to one and register as a listener to the provided G\+Window object.
+
+This function accepts a bit mask that can hold supported \textquotesingle{}G\+Graphics\+Init\+Options\textquotesingle{}, which will be taken into account when creating the context. To ignore this mask, simply pass in 0 when calling this function and the context will be created with default settings.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+g\+Win} & A pointer to an existing G\+Window object. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+init\+Mask} & The bit mask that can hold special initialization options. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+out\+Surface} & Will contain the \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_direct_x11_surface}{G\+Direct\+X11\+Surface}} object if successfully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & A \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_direct_x11_surface}{G\+Direct\+X11\+Surface}} object was successfully created. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & A \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_direct_x11_surface}{G\+Direct\+X11\+Surface}} object was not created. \+\_\+out\+Surface will be null. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & Either the \+\_\+g\+Win, \+\_\+out\+Surface or both arguments are nullptrs. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{namespace_g_w_1_1_g_r_a_p_h_i_c_s_a67a126b8d3c2fabc556008d2460a3b43}\label{namespace_g_w_1_1_g_r_a_p_h_i_c_s_a67a126b8d3c2fabc556008d2460a3b43}} 
+\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}!Create\+G\+Open\+G\+L\+Surface@{Create\+G\+Open\+G\+L\+Surface}}
+\index{Create\+G\+Open\+G\+L\+Surface@{Create\+G\+Open\+G\+L\+Surface}!G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}}
+\subsubsection{\texorpdfstring{Create\+G\+Open\+G\+L\+Surface()}{CreateGOpenGLSurface()}}
+{\footnotesize\ttfamily G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+G\+R\+A\+P\+H\+I\+C\+S\+::\+Create\+G\+Open\+G\+L\+Surface (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_window}{S\+Y\+S\+T\+E\+M\+::\+G\+Window}} $\ast$}]{\+\_\+g\+Win,  }\item[{unsigned long long}]{\+\_\+init\+Mask,  }\item[{\mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_open_g_l_surface}{G\+Open\+G\+L\+Surface}} $\ast$$\ast$}]{\+\_\+out\+Surface }\end{DoxyParamCaption})}
+
+
+
+Creates and outputs a new \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_open_g_l_surface}{G\+Open\+G\+L\+Surface}} object. 
+
+Initializes a handle to a \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_open_g_l_surface}{G\+Open\+G\+L\+Surface}} object with an existing G\+Window. The created \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_open_g_l_surface}{G\+Open\+G\+L\+Surface}} object will have its reference count initialized to one and register as a listener to the provided G\+Window object.
+
+This function accepts a bit mask that can hold supported \textquotesingle{}G\+Graphics\+Init\+Options\textquotesingle{}, which will be taken into account when creating the context. To ignore this mask, simply pass in 0 when calling this function and the context will be created with default settings.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+g\+Win} & A pointer to an existing G\+Window object. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+init\+Mask} & The bit mask that can hold special initialization options. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+out\+Surface} & Will contain the \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_open_g_l_surface}{G\+Open\+G\+L\+Surface}} object if successfully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & A \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_open_g_l_surface}{G\+Open\+G\+L\+Surface}} object was successfully created. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & A \mbox{\hyperlink{class_g_w_1_1_g_r_a_p_h_i_c_s_1_1_g_open_g_l_surface}{G\+Open\+G\+L\+Surface}} object was not created. \+\_\+out\+Surface will be null. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & Either the \+\_\+g\+Win, \+\_\+out\+Surface or both arguments are nullptrs. \\
+\hline
+\end{DoxyRetVals}

@@ -1,0 +1,45 @@
+\hypertarget{struct_g_w_1_1_g_u_u_i_i_d}{}\section{GW\+:\+:G\+U\+U\+I\+ID Struct Reference}
+\label{struct_g_w_1_1_g_u_u_i_i_d}\index{G\+W\+::\+G\+U\+U\+I\+ID@{G\+W\+::\+G\+U\+U\+I\+ID}}
+
+
+Gateware Universally Unique Interface I\+Dentifier.  
+
+
+
+
+{\ttfamily \#include $<$G\+Defines.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_g_w_1_1_g_u_u_i_i_d_a91cfd5559e56d01dd58d0d60f1704bd6}\label{struct_g_w_1_1_g_u_u_i_i_d_a91cfd5559e56d01dd58d0d60f1704bd6}} 
+bool \mbox{\hyperlink{struct_g_w_1_1_g_u_u_i_i_d_a91cfd5559e56d01dd58d0d60f1704bd6}{operator==}} (const \mbox{\hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID}} \&\+\_\+cmp) const
+\begin{DoxyCompactList}\small\item\em Comparison operator overload. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_g_w_1_1_g_u_u_i_i_d_aa51f004bf72e52a4e15b7568b9a7ec50}\label{struct_g_w_1_1_g_u_u_i_i_d_aa51f004bf72e52a4e15b7568b9a7ec50}} 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+union \{\\
+\mbox{\Hypertarget{union_g_w_1_1_g_u_u_i_i_d_1_1_0D0_a408b2437c2ea63a4cb75888db0ac62fb}\label{union_g_w_1_1_g_u_u_i_i_d_1_1_0D0_a408b2437c2ea63a4cb75888db0ac62fb}} 
+\>struct \{\\
+\>\>unsigned int {\bfseries byte4}\\
+\>\>unsigned short {\bfseries byte2a}\\
+\>\>unsigned short {\bfseries byte2b}\\
+\>\>unsigned char {\bfseries byte8} \mbox{[}8\mbox{]}\\
+\>\} \\
+\>unsigned long long {\bfseries parts} \mbox{[}2\mbox{]}\\
+\}; \\
+
+\end{tabbing}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Gateware Universally Unique Interface I\+Dentifier. 
+
+Each \mbox{\hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID}} defines a unique 128bit number identifying a particular version of an interface. This allows interfaces to be upgraded down the line safely without breaking legacy code. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+G\+\_\+\+Core/G\+Defines.\+h\end{DoxyCompactItemize}

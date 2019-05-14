@@ -1,0 +1,57 @@
+\hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller}{}\section{GW\+:\+:S\+Y\+S\+T\+EM\+:\+:G\+Controller Class Reference}
+\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller}\index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Controller@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Controller}}
+
+
+A multi-\/threaded controller input library.  
+
+
+
+
+{\ttfamily \#include $<$G\+Controller.\+h$>$}
+
+Inheritance diagram for GW\+:\+:S\+Y\+S\+T\+EM\+:\+:G\+Controller\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_a82063acba6d46aa5aed46413cdc0e4a6}\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_a82063acba6d46aa5aed46413cdc0e4a6}} 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_a82063acba6d46aa5aed46413cdc0e4a6}{Get\+State}} (int \+\_\+controller\+Index, int \+\_\+input\+Code, float \&\+\_\+out\+State)=0
+\begin{DoxyCompactList}\small\item\em Used to poll the current state of a button or axis on a controller. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_ac0692af48ccfd57c3f786ab15ed671b2}\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_ac0692af48ccfd57c3f786ab15ed671b2}} 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_ac0692af48ccfd57c3f786ab15ed671b2}{Is\+Connected}} (int \+\_\+controller\+Index, bool \&\+\_\+out\+Is\+Connected)=0
+\begin{DoxyCompactList}\small\item\em Used to check if a controller is connected at a specified index. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_a137bbcedb9bc62675e4c3606bb483d5b}\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_a137bbcedb9bc62675e4c3606bb483d5b}} 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_a137bbcedb9bc62675e4c3606bb483d5b}{Get\+Max\+Index}} (int \&\+\_\+out\+Max)=0
+\begin{DoxyCompactList}\small\item\em Outputs the max index of the array of controllers. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_ae7905c691a0304c11c70d337d708e5b8}\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_ae7905c691a0304c11c70d337d708e5b8}} 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_ae7905c691a0304c11c70d337d708e5b8}{Get\+Num\+Connected}} (int \&\+\_\+out\+Connected\+Count)=0
+\begin{DoxyCompactList}\small\item\em Outputs the number of controllers connected. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_a5ef56fa1c46f57feebf45e8c1cb3055d}\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_a5ef56fa1c46f57feebf45e8c1cb3055d}} 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_a5ef56fa1c46f57feebf45e8c1cb3055d}{Set\+Dead\+Zone}} (\mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a31011e5fdef70ea7c975794fe99319d4}{G\+Controller\+Deadzone\+Types}} \+\_\+type, float \+\_\+deadzone\+Percentage)=0
+\begin{DoxyCompactList}\small\item\em Set how the stick deadzones should be calculated. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_a4d33790f8116be094858618617c65b01}\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_a4d33790f8116be094858618617c65b01}} 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_a4d33790f8116be094858618617c65b01}{Start\+Vibration}} (float \+\_\+pan, float \+\_\+duration, float \+\_\+strength, unsigned int \+\_\+controller\+Index)=0
+\begin{DoxyCompactList}\small\item\em Start vibration in selected controller. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_aee5451a8bed11fa01f9a51e5506719e8}\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_aee5451a8bed11fa01f9a51e5506719e8}} 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_aee5451a8bed11fa01f9a51e5506719e8}{Is\+Vibrating}} (unsigned int \+\_\+controller\+Index, bool \&\+\_\+out\+Is\+Vibrating)=0
+\begin{DoxyCompactList}\small\item\em Used to check if a controller is currently vibrating. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_a2d1451549619519089a31ab6a075cb09}\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_a2d1451549619519089a31ab6a075cb09}} 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_a2d1451549619519089a31ab6a075cb09}{Stop\+Virbration}} (unsigned int \+\_\+controller\+Index)=0
+\begin{DoxyCompactList}\small\item\em Used to stop a controller from vibrating. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_aea5a523d30ebedb5d9923d61d77f1583}\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_aea5a523d30ebedb5d9923d61d77f1583}} 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller_aea5a523d30ebedb5d9923d61d77f1583}{Stop\+All\+Virbrations}} ()=0
+\begin{DoxyCompactList}\small\item\em Stops all currently vibrating controllers. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A multi-\/threaded controller input library. 
+
+This library can be used to poll the current state of connected controllers. The controllers are assigned indices in a array for the lifetime that they are connected. It also provides events for controller connections and disconnections, which a G\+Listener can be writen to receive. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+G\+\_\+\+System/G\+Controller.\+h\end{DoxyCompactItemize}

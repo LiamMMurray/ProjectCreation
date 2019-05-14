@@ -1,0 +1,143 @@
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface}{}\section{GW\+:\+:C\+O\+RE\+:\+:G\+Interface Class Reference}
+\label{class_g_w_1_1_c_o_r_e_1_1_g_interface}\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}}
+
+
+Base interface all Gateware interfaces must support at a minimum.  
+
+
+
+
+{\ttfamily \#include $<$G\+Interface.\+h$>$}
+
+Inheritance diagram for GW\+:\+:C\+O\+RE\+:\+:G\+Interface\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=6.810811cm]{class_g_w_1_1_c_o_r_e_1_1_g_interface}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_aacf5834174a7024f8a3c361122ee9e76}{Get\+Count}} (unsigned int \&\+\_\+out\+Count)=0
+\begin{DoxyCompactList}\small\item\em Return the total number of active references to this object. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_a2d710f20bb78e544e8309b5b75c21260}{Increment\+Count}} ()=0
+\begin{DoxyCompactList}\small\item\em Increase the total number of active references to this object. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_a19a368c77ad0aa7f49b5a4f772f173ba}{Decrement\+Count}} ()=0
+\begin{DoxyCompactList}\small\item\em Decrease the total number of active references to this object. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_ad6c8324970172784964f484686d4fdad}{Request\+Interface}} (const \mbox{\hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID}} \&\+\_\+interface\+ID, void $\ast$$\ast$\+\_\+output\+Interface)=0
+\begin{DoxyCompactList}\small\item\em Requests an interface that may or may not be supported by this object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Base interface all Gateware interfaces must support at a minimum. 
+
+Core features include\+: Interface Upgrades, Reference Counting, Event Broadcasting. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_a19a368c77ad0aa7f49b5a4f772f173ba}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_a19a368c77ad0aa7f49b5a4f772f173ba}} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}!Decrement\+Count@{Decrement\+Count}}
+\index{Decrement\+Count@{Decrement\+Count}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}}
+\subsubsection{\texorpdfstring{Decrement\+Count()}{DecrementCount()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Decrement\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Decrease the total number of active references to this object. 
+
+Once the internal count reaches zero this object will be deallocated and your pointer will become invalid.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully decremented the internal reference count. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Decrementing of internal reference count would underflow the value. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implemented in \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_afa9587ca984fc5ad2d5cdd47c3aebbcb}{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}, \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_music_a1385376fffc42c40f5922b4722d10b5c}{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Music}}, and \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio_a9bdc3d4a8668b702db98dde91a0fa423}{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Audio}}.
+
+\mbox{\Hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_aacf5834174a7024f8a3c361122ee9e76}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_aacf5834174a7024f8a3c361122ee9e76}} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}!Get\+Count@{Get\+Count}}
+\index{Get\+Count@{Get\+Count}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}}
+\subsubsection{\texorpdfstring{Get\+Count()}{GetCount()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Get\+Count (\begin{DoxyParamCaption}\item[{unsigned int \&}]{\+\_\+out\+Count }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Return the total number of active references to this object. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em \+\_\+out\+Count} & The total number of active references of this object.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully ran. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Either class does not exist or the internal reference count is corrupt. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implemented in \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_afbac022010da2fc1a917ece2803a36a4}{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}, \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_music_ae41f54531b8325848215596fb2f821ac}{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Music}}, and \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio_a079dfab7b9db1536b10c9d2afa20c89c}{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Audio}}.
+
+\mbox{\Hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_a2d710f20bb78e544e8309b5b75c21260}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_a2d710f20bb78e544e8309b5b75c21260}} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}!Increment\+Count@{Increment\+Count}}
+\index{Increment\+Count@{Increment\+Count}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}}
+\subsubsection{\texorpdfstring{Increment\+Count()}{IncrementCount()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Increment\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Increase the total number of active references to this object. 
+
+End users should only call this operation if they are familiar with reference counting behavior.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully incremented the internal reference count. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Incrementation of internal reference count would overflow the value. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implemented in \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_a33149257f0958b4db57f5508492410ad}{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}, \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_music_a22d7a170b4d307e5398ebb92f950431f}{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Music}}, and \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio_aba5697a3a308026ecaa12737d6fe6705}{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Audio}}.
+
+\mbox{\Hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_ad6c8324970172784964f484686d4fdad}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_ad6c8324970172784964f484686d4fdad}} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}!Request\+Interface@{Request\+Interface}}
+\index{Request\+Interface@{Request\+Interface}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}}
+\subsubsection{\texorpdfstring{Request\+Interface()}{RequestInterface()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Request\+Interface (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID}} \&}]{\+\_\+interface\+ID,  }\item[{void $\ast$$\ast$}]{\+\_\+output\+Interface }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Requests an interface that may or may not be supported by this object. 
+
+Can be used by the end-\/user to query for a new interface using the unique ID of the interface they want and implement an interface update.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+interface\+ID} & The \mbox{\hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID}} of the interface you are requesting. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+output\+Interface} & Where the interface will be stored if function is successful.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & The interface is supported and function succeded. \\
+\hline
+{\em I\+N\+T\+E\+R\+F\+A\+C\+E\+\_\+\+U\+N\+S\+U\+P\+P\+O\+R\+T\+ED} & The requested interface is not supported. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implemented in \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ac3c8f8dd06b71f86356a3e316fb3b4dc}{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}, \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_music_a45b07d7915cfe61ab27338c42b78dcfb}{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Music}}, and \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio_a29561ad9852a36dd14746adbaac21c80}{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Audio}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+G\+\_\+\+Core/G\+Interface.\+h\end{DoxyCompactItemize}

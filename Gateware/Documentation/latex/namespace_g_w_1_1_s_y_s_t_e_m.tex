@@ -1,0 +1,367 @@
+\hypertarget{namespace_g_w_1_1_s_y_s_t_e_m}{}\section{GW\+:\+:S\+Y\+S\+T\+EM Namespace Reference}
+\label{namespace_g_w_1_1_s_y_s_t_e_m}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+
+
+The namespace to which all Gateware library interfaces must belong.  
+
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_buffered_input}{G\+Buffered\+Input}}
+\begin{DoxyCompactList}\small\item\em A Multi-\/threaded buffered input library. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_g_w_1_1_s_y_s_t_e_m_1_1_g_b_u_f_f_e_r_e_d_i_n_p_u_t___e_v_e_n_t___d_a_t_a}{G\+B\+U\+F\+F\+E\+R\+E\+D\+I\+N\+P\+U\+T\+\_\+\+E\+V\+E\+N\+T\+\_\+\+D\+A\+TA}}
+\begin{DoxyCompactList}\small\item\em Ensure identical binary padding for structures on all platforms. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller}{G\+Controller}}
+\begin{DoxyCompactList}\small\item\em A multi-\/threaded controller input library. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_g_w_1_1_s_y_s_t_e_m_1_1_g_c_o_n_t_r_o_l_l_e_r___e_v_e_n_t___d_a_t_a}{G\+C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+\_\+\+E\+V\+E\+N\+T\+\_\+\+D\+A\+TA}}
+\begin{DoxyCompactList}\small\item\em Ensure identical binary padding for structures on all platforms. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}}
+\begin{DoxyCompactList}\small\item\em Cross platform File\+I\+O/\+Directory handling. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_input}{G\+Input}}
+\begin{DoxyCompactList}\small\item\em A single threaded input library. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}}
+\begin{DoxyCompactList}\small\item\em Cross platform threadsafe logger. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_window}{G\+Window}}
+\begin{DoxyCompactList}\small\item\em A thread-\/safe window creation and management library. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_g_w_1_1_s_y_s_t_e_m_1_1_g_w_i_n_d_o_w___e_v_e_n_t___d_a_t_a}{G\+W\+I\+N\+D\+O\+W\+\_\+\+E\+V\+E\+N\+T\+\_\+\+D\+A\+TA}}
+\begin{DoxyCompactList}\small\item\em Ensure identical binary padding for structures on all platforms. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_g_w_1_1_s_y_s_t_e_m_1_1_l_i_n_u_x___w_i_n_d_o_w}{L\+I\+N\+U\+X\+\_\+\+W\+I\+N\+D\+OW}}
+\begin{DoxyCompactList}\small\item\em The structure used to pass into Input libraries on Linux. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcb}{G\+Buffered\+Input\+Events}} \{ \newline
+\mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcbaf8bb58b0791c2d5d33b224213327f960}{K\+E\+Y\+P\+R\+E\+S\+S\+ED}}, 
+\mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcbabb708a216e7e8ef33cc542e6def7a688}{K\+E\+Y\+R\+E\+L\+E\+A\+S\+ED}}, 
+\mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcba56314f1a5b4d09751ed354a45a3a78fb}{B\+U\+T\+T\+O\+N\+P\+R\+E\+S\+S\+ED}}, 
+\mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcba9f7d6e613de276b27e471cd30eac08de}{B\+U\+T\+T\+O\+N\+R\+E\+L\+E\+A\+S\+ED}}, 
+\newline
+\mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcbae4066728a571d6456cf5def5742a92bf}{M\+O\+U\+S\+E\+S\+C\+R\+O\+LL}}
+ \}
+\begin{DoxyCompactList}\small\item\em G\+Buffered\+Input\+Events holds the possible events that can be sent from G\+Buffered\+Input. \end{DoxyCompactList}\item 
+enum \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7}{G\+Controller\+Events}} \{ \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7aa57b1c382c899e2a72f0691284971e93}{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+B\+U\+T\+T\+O\+N\+V\+A\+L\+U\+E\+C\+H\+A\+N\+G\+ED}}, 
+\mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7a9d30e7d5901b3b0619caf4c027f2cb15}{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+A\+X\+I\+S\+V\+A\+L\+U\+E\+C\+H\+A\+N\+G\+ED}}, 
+\mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7a797da82d4139f6f9ba5ce660389934f7}{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+C\+O\+N\+N\+E\+C\+T\+ED}}, 
+\mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7a6e7765910e63d5babc83ee42acb46eb3}{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+D\+I\+S\+C\+O\+N\+N\+E\+C\+T\+ED}}
+ \}
+\begin{DoxyCompactList}\small\item\em G\+Controller\+Events holds the possible events that can be sent from G\+Controller. \end{DoxyCompactList}\item 
+enum \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a31011e5fdef70ea7c975794fe99319d4}{G\+Controller\+Deadzone\+Types}} \{ \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a31011e5fdef70ea7c975794fe99319d4a2607a103270014a3cd2944001009848a}{D\+E\+A\+D\+Z\+O\+N\+E\+S\+Q\+U\+A\+RE}}, 
+\mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a31011e5fdef70ea7c975794fe99319d4a96eca15634dfc446bcbf235e559052fa}{D\+E\+A\+D\+Z\+O\+N\+E\+C\+I\+R\+C\+LE}}
+ \}
+\begin{DoxyCompactList}\small\item\em G\+Controller\+Deadzone\+Types holds the diffrent type of deadzone calculations. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_ad117891e556631f842625c348d36a071}\label{namespace_g_w_1_1_s_y_s_t_e_m_ad117891e556631f842625c348d36a071}} 
+enum \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_ad117891e556631f842625c348d36a071}{G\+Window\+Style}} \{ \newline
+{\bfseries W\+I\+N\+D\+O\+W\+E\+D\+B\+O\+R\+D\+E\+R\+ED}, 
+{\bfseries W\+I\+N\+D\+O\+W\+E\+D\+B\+O\+R\+D\+E\+R\+L\+E\+SS}, 
+{\bfseries F\+U\+L\+L\+S\+C\+R\+E\+E\+N\+B\+O\+R\+D\+E\+R\+ED}, 
+{\bfseries F\+U\+L\+L\+S\+C\+R\+E\+E\+N\+B\+O\+R\+D\+E\+R\+L\+E\+SS}, 
+\newline
+{\bfseries M\+I\+N\+I\+M\+I\+Z\+ED}
+ \}
+\begin{DoxyCompactList}\small\item\em G\+Window\+Style holds the possible types of window G\+Window can create. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a7d3a00c7f94541cb6f446fde944ab309}\label{namespace_g_w_1_1_s_y_s_t_e_m_a7d3a00c7f94541cb6f446fde944ab309}} 
+enum \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a7d3a00c7f94541cb6f446fde944ab309}{G\+Window\+Input\+Events}} \{ \newline
+{\bfseries N\+O\+T\+I\+FY}, 
+{\bfseries M\+I\+N\+I\+M\+I\+ZE}, 
+{\bfseries M\+A\+X\+I\+M\+I\+ZE}, 
+{\bfseries R\+E\+S\+I\+ZE}, 
+\newline
+{\bfseries M\+O\+VE}, 
+{\bfseries D\+E\+S\+T\+R\+OY}
+ \}
+\begin{DoxyCompactList}\small\item\em G\+Window\+Input\+Events holds the possible events a G\+Window window can broadcast. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_ad32802f3cb2ba314449915b556af4a33}{Create\+G\+Buffered\+Input}} (void $\ast$\+\_\+window\+Handle, unsigned int \+\_\+handle\+Size, \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_buffered_input}{G\+Buffered\+Input}} $\ast$$\ast$\+\_\+out\+Buffered\+Input)
+\begin{DoxyCompactList}\small\item\em Creates a \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_buffered_input}{G\+Buffered\+Input}} Object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a1550dcf674356c9e76ec056ae53526c1}\label{namespace_g_w_1_1_s_y_s_t_e_m_a1550dcf674356c9e76ec056ae53526c1}} 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a1550dcf674356c9e76ec056ae53526c1}{Create\+G\+Controller}} (int \+\_\+controller\+Type, \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller}{G\+Controller}} $\ast$$\ast$\+\_\+out\+Controller)
+\begin{DoxyCompactList}\small\item\em Creates a new \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller}{G\+Controller}} object. \end{DoxyCompactList}\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a7f850145f185eed4a6aad4f07a2c2a93}{Create\+G\+File}} (\mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} $\ast$$\ast$\+\_\+out\+File)
+\begin{DoxyCompactList}\small\item\em Creates a \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} Object. \end{DoxyCompactList}\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a65ed7fd4a26607544d8477d0bbd02fa7}{Create\+G\+Input}} (void $\ast$\+\_\+window\+Handle, unsigned int \+\_\+handle\+Size, \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_input}{G\+Input}} $\ast$$\ast$\+\_\+out\+Input)
+\begin{DoxyCompactList}\small\item\em Creates a \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_input}{G\+Input}} Object. \end{DoxyCompactList}\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_ad3886cfd0e64d8e38b62161f4d3e7496}{Create\+G\+Log}} (const char $\ast$const \+\_\+file\+Name, \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} $\ast$$\ast$\+\_\+out\+Log)
+\begin{DoxyCompactList}\small\item\em Creates a \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} object. \end{DoxyCompactList}\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_adc1b7d81acb493280fb43e36ef5fca56}{Create\+G\+Log\+Custom}} (\mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} $\ast$\+\_\+file, \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} $\ast$$\ast$\+\_\+out\+Log)
+\begin{DoxyCompactList}\small\item\em Creates a \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} object. \end{DoxyCompactList}\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a4e046f8c5f7a2eabd19a903c9a0651f7}{Create\+G\+Window}} (int \+\_\+x, int \+\_\+y, int \+\_\+width, int \+\_\+height, \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_ad117891e556631f842625c348d36a071}{G\+Window\+Style}} \+\_\+style, \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_window}{G\+Window}} $\ast$$\ast$\+\_\+out\+Window)
+\begin{DoxyCompactList}\small\item\em Creates and outputs a new \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_window}{G\+Window}} object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The namespace to which all Gateware library interfaces must belong. 
+
+\subsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcb}\label{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcb}} 
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!G\+Buffered\+Input\+Events@{G\+Buffered\+Input\+Events}}
+\index{G\+Buffered\+Input\+Events@{G\+Buffered\+Input\+Events}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection{\texorpdfstring{G\+Buffered\+Input\+Events}{GBufferedInputEvents}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcb}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Buffered\+Input\+Events}}}
+
+
+
+G\+Buffered\+Input\+Events holds the possible events that can be sent from \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_buffered_input}{G\+Buffered\+Input}}. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{K\+E\+Y\+P\+R\+E\+S\+S\+ED@{K\+E\+Y\+P\+R\+E\+S\+S\+ED}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!K\+E\+Y\+P\+R\+E\+S\+S\+ED@{K\+E\+Y\+P\+R\+E\+S\+S\+ED}}}\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcbaf8bb58b0791c2d5d33b224213327f960}\label{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcbaf8bb58b0791c2d5d33b224213327f960}} 
+K\+E\+Y\+P\+R\+E\+S\+S\+ED&Key pressed event. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{K\+E\+Y\+R\+E\+L\+E\+A\+S\+ED@{K\+E\+Y\+R\+E\+L\+E\+A\+S\+ED}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!K\+E\+Y\+R\+E\+L\+E\+A\+S\+ED@{K\+E\+Y\+R\+E\+L\+E\+A\+S\+ED}}}\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcbabb708a216e7e8ef33cc542e6def7a688}\label{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcbabb708a216e7e8ef33cc542e6def7a688}} 
+K\+E\+Y\+R\+E\+L\+E\+A\+S\+ED&Key released event. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{B\+U\+T\+T\+O\+N\+P\+R\+E\+S\+S\+ED@{B\+U\+T\+T\+O\+N\+P\+R\+E\+S\+S\+ED}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!B\+U\+T\+T\+O\+N\+P\+R\+E\+S\+S\+ED@{B\+U\+T\+T\+O\+N\+P\+R\+E\+S\+S\+ED}}}\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcba56314f1a5b4d09751ed354a45a3a78fb}\label{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcba56314f1a5b4d09751ed354a45a3a78fb}} 
+B\+U\+T\+T\+O\+N\+P\+R\+E\+S\+S\+ED&Mouse/\+Pointer Button pressed event. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{B\+U\+T\+T\+O\+N\+R\+E\+L\+E\+A\+S\+ED@{B\+U\+T\+T\+O\+N\+R\+E\+L\+E\+A\+S\+ED}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!B\+U\+T\+T\+O\+N\+R\+E\+L\+E\+A\+S\+ED@{B\+U\+T\+T\+O\+N\+R\+E\+L\+E\+A\+S\+ED}}}\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcba9f7d6e613de276b27e471cd30eac08de}\label{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcba9f7d6e613de276b27e471cd30eac08de}} 
+B\+U\+T\+T\+O\+N\+R\+E\+L\+E\+A\+S\+ED&Mouse/\+Pointer Button released event. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{M\+O\+U\+S\+E\+S\+C\+R\+O\+LL@{M\+O\+U\+S\+E\+S\+C\+R\+O\+LL}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!M\+O\+U\+S\+E\+S\+C\+R\+O\+LL@{M\+O\+U\+S\+E\+S\+C\+R\+O\+LL}}}\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcbae4066728a571d6456cf5def5742a92bf}\label{namespace_g_w_1_1_s_y_s_t_e_m_a309fd3a92512dd2bfa8065d99c0d7fcbae4066728a571d6456cf5def5742a92bf}} 
+M\+O\+U\+S\+E\+S\+C\+R\+O\+LL&Mouse/\+Pointer scroll event. \\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a31011e5fdef70ea7c975794fe99319d4}\label{namespace_g_w_1_1_s_y_s_t_e_m_a31011e5fdef70ea7c975794fe99319d4}} 
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!G\+Controller\+Deadzone\+Types@{G\+Controller\+Deadzone\+Types}}
+\index{G\+Controller\+Deadzone\+Types@{G\+Controller\+Deadzone\+Types}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection{\texorpdfstring{G\+Controller\+Deadzone\+Types}{GControllerDeadzoneTypes}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a31011e5fdef70ea7c975794fe99319d4}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Controller\+Deadzone\+Types}}}
+
+
+
+G\+Controller\+Deadzone\+Types holds the diffrent type of deadzone calculations. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D\+E\+A\+D\+Z\+O\+N\+E\+S\+Q\+U\+A\+RE@{D\+E\+A\+D\+Z\+O\+N\+E\+S\+Q\+U\+A\+RE}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!D\+E\+A\+D\+Z\+O\+N\+E\+S\+Q\+U\+A\+RE@{D\+E\+A\+D\+Z\+O\+N\+E\+S\+Q\+U\+A\+RE}}}\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a31011e5fdef70ea7c975794fe99319d4a2607a103270014a3cd2944001009848a}\label{namespace_g_w_1_1_s_y_s_t_e_m_a31011e5fdef70ea7c975794fe99319d4a2607a103270014a3cd2944001009848a}} 
+D\+E\+A\+D\+Z\+O\+N\+E\+S\+Q\+U\+A\+RE&Calulates the deadzone of x and y separately \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D\+E\+A\+D\+Z\+O\+N\+E\+C\+I\+R\+C\+LE@{D\+E\+A\+D\+Z\+O\+N\+E\+C\+I\+R\+C\+LE}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!D\+E\+A\+D\+Z\+O\+N\+E\+C\+I\+R\+C\+LE@{D\+E\+A\+D\+Z\+O\+N\+E\+C\+I\+R\+C\+LE}}}\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a31011e5fdef70ea7c975794fe99319d4a96eca15634dfc446bcbf235e559052fa}\label{namespace_g_w_1_1_s_y_s_t_e_m_a31011e5fdef70ea7c975794fe99319d4a96eca15634dfc446bcbf235e559052fa}} 
+D\+E\+A\+D\+Z\+O\+N\+E\+C\+I\+R\+C\+LE&Calulates the deadzone of x and y as a single magnitude \\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7}\label{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7}} 
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!G\+Controller\+Events@{G\+Controller\+Events}}
+\index{G\+Controller\+Events@{G\+Controller\+Events}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection{\texorpdfstring{G\+Controller\+Events}{GControllerEvents}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Controller\+Events}}}
+
+
+
+G\+Controller\+Events holds the possible events that can be sent from \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_controller}{G\+Controller}}. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+B\+U\+T\+T\+O\+N\+V\+A\+L\+U\+E\+C\+H\+A\+N\+G\+ED@{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+B\+U\+T\+T\+O\+N\+V\+A\+L\+U\+E\+C\+H\+A\+N\+G\+ED}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+B\+U\+T\+T\+O\+N\+V\+A\+L\+U\+E\+C\+H\+A\+N\+G\+ED@{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+B\+U\+T\+T\+O\+N\+V\+A\+L\+U\+E\+C\+H\+A\+N\+G\+ED}}}\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7aa57b1c382c899e2a72f0691284971e93}\label{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7aa57b1c382c899e2a72f0691284971e93}} 
+C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+B\+U\+T\+T\+O\+N\+V\+A\+L\+U\+E\+C\+H\+A\+N\+G\+ED&Input event for button value change \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+A\+X\+I\+S\+V\+A\+L\+U\+E\+C\+H\+A\+N\+G\+ED@{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+A\+X\+I\+S\+V\+A\+L\+U\+E\+C\+H\+A\+N\+G\+ED}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+A\+X\+I\+S\+V\+A\+L\+U\+E\+C\+H\+A\+N\+G\+ED@{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+A\+X\+I\+S\+V\+A\+L\+U\+E\+C\+H\+A\+N\+G\+ED}}}\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7a9d30e7d5901b3b0619caf4c027f2cb15}\label{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7a9d30e7d5901b3b0619caf4c027f2cb15}} 
+C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+A\+X\+I\+S\+V\+A\+L\+U\+E\+C\+H\+A\+N\+G\+ED&Input event for axis value changed \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+C\+O\+N\+N\+E\+C\+T\+ED@{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+C\+O\+N\+N\+E\+C\+T\+ED}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+C\+O\+N\+N\+E\+C\+T\+ED@{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+C\+O\+N\+N\+E\+C\+T\+ED}}}\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7a797da82d4139f6f9ba5ce660389934f7}\label{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7a797da82d4139f6f9ba5ce660389934f7}} 
+C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+C\+O\+N\+N\+E\+C\+T\+ED&Connection event for a controller being connected \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+D\+I\+S\+C\+O\+N\+N\+E\+C\+T\+ED@{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+D\+I\+S\+C\+O\+N\+N\+E\+C\+T\+ED}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+D\+I\+S\+C\+O\+N\+N\+E\+C\+T\+ED@{C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+D\+I\+S\+C\+O\+N\+N\+E\+C\+T\+ED}}}\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7a6e7765910e63d5babc83ee42acb46eb3}\label{namespace_g_w_1_1_s_y_s_t_e_m_a90b22b31302f4172043122adfa8e49d7a6e7765910e63d5babc83ee42acb46eb3}} 
+C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+D\+I\+S\+C\+O\+N\+N\+E\+C\+T\+ED&Connection event for a controller being disconnected \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_ad32802f3cb2ba314449915b556af4a33}\label{namespace_g_w_1_1_s_y_s_t_e_m_ad32802f3cb2ba314449915b556af4a33}} 
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!Create\+G\+Buffered\+Input@{Create\+G\+Buffered\+Input}}
+\index{Create\+G\+Buffered\+Input@{Create\+G\+Buffered\+Input}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection{\texorpdfstring{Create\+G\+Buffered\+Input()}{CreateGBufferedInput()}}
+{\footnotesize\ttfamily G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+Create\+G\+Buffered\+Input (\begin{DoxyParamCaption}\item[{void $\ast$}]{\+\_\+window\+Handle,  }\item[{unsigned int}]{\+\_\+handle\+Size,  }\item[{\mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_buffered_input}{G\+Buffered\+Input}} $\ast$$\ast$}]{\+\_\+out\+Buffered\+Input }\end{DoxyParamCaption})}
+
+
+
+Creates a \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_buffered_input}{G\+Buffered\+Input}} Object. 
+
+Initializes a handle to a window based on the void$\ast$ data passed in. The created \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_buffered_input}{G\+Buffered\+Input}} object will have its reference count initialized to one.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+window\+Handle} & (Windows) The handle to the window (H\+W\+ND). \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+window\+Handle} & (Linux) \mbox{\hyperlink{struct_g_w_1_1_s_y_s_t_e_m_1_1_l_i_n_u_x___w_i_n_d_o_w}{L\+I\+N\+U\+X\+\_\+\+W\+I\+N\+D\+OW}} data. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+window\+Handle} & (Mac) N\+S\+Window data. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+handle\+Size} & The size of the handle to the window in bytes. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+out\+Buffered\+Input} & Will contain the \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_buffered_input}{G\+Buffered\+Input}} object if successfully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & no problems found. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & could not make an Buffered\+Input Object. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & \+\_\+out\+Input and or \+\_\+window\+Handle is nullptr. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a7f850145f185eed4a6aad4f07a2c2a93}\label{namespace_g_w_1_1_s_y_s_t_e_m_a7f850145f185eed4a6aad4f07a2c2a93}} 
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!Create\+G\+File@{Create\+G\+File}}
+\index{Create\+G\+File@{Create\+G\+File}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection{\texorpdfstring{Create\+G\+File()}{CreateGFile()}}
+{\footnotesize\ttfamily G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+Create\+G\+File (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} $\ast$$\ast$}]{\+\_\+out\+File }\end{DoxyParamCaption})}
+
+
+
+Creates a \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} Object. 
+
+The \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} created by this function will have its current working directory defaulted to the directory where the program was ran from. Call Set\+Current\+Working\+Directory to change it. No file will be opened in creation of \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}}. Call an Open function to open one. Created \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} object will have its reference count initialized to one.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em \+\_\+out\+File} & Will contain the \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} object if successfully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Gfile successfully created. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} could not be created. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & A nullptr was passed in. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a65ed7fd4a26607544d8477d0bbd02fa7}\label{namespace_g_w_1_1_s_y_s_t_e_m_a65ed7fd4a26607544d8477d0bbd02fa7}} 
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!Create\+G\+Input@{Create\+G\+Input}}
+\index{Create\+G\+Input@{Create\+G\+Input}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection{\texorpdfstring{Create\+G\+Input()}{CreateGInput()}}
+{\footnotesize\ttfamily G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+Create\+G\+Input (\begin{DoxyParamCaption}\item[{void $\ast$}]{\+\_\+window\+Handle,  }\item[{unsigned int}]{\+\_\+handle\+Size,  }\item[{\mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_input}{G\+Input}} $\ast$$\ast$}]{\+\_\+out\+Input }\end{DoxyParamCaption})}
+
+
+
+Creates a \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_input}{G\+Input}} Object. 
+
+Initializes a handle to a window based on the void$\ast$ data passed in. The ~\newline
+created \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_input}{G\+Input}} object will have its reference count initialized to one.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+window\+Handle} & (Windows) The handle to the window (H\+W\+ND). \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+window\+Handle} & (Linux) \mbox{\hyperlink{struct_g_w_1_1_s_y_s_t_e_m_1_1_l_i_n_u_x___w_i_n_d_o_w}{L\+I\+N\+U\+X\+\_\+\+W\+I\+N\+D\+OW}} data. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+window\+Handle} & (Mac) N\+S\+Window data. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+handle\+Size} & The size of the handle to the window in bytes. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+out\+Input} & Will contain the \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_input}{G\+Input}} object if successfully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & no problems found. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & could not make an Input Object. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & \+\_\+out\+Input and or \+\_\+window\+Handle is nullptr. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_ad3886cfd0e64d8e38b62161f4d3e7496}\label{namespace_g_w_1_1_s_y_s_t_e_m_ad3886cfd0e64d8e38b62161f4d3e7496}} 
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!Create\+G\+Log@{Create\+G\+Log}}
+\index{Create\+G\+Log@{Create\+G\+Log}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection{\texorpdfstring{Create\+G\+Log()}{CreateGLog()}}
+{\footnotesize\ttfamily G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+Create\+G\+Log (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{\+\_\+file\+Name,  }\item[{\mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} $\ast$$\ast$}]{\+\_\+out\+Log }\end{DoxyParamCaption})}
+
+
+
+Creates a \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} object. 
+
+This function will create a \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} object with the log file being created in the directory the program was ran from. If you want to control where the log file is going to be created then use the custom function below to pass in a G\+File$\ast$ that is pre set the way you want it. Reference count of created object is initialized to one.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+file\+Name} & The name of the log file. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+out\+Log} & Will contain the \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} if successfully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} was successfully created. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} was not created. \+\_\+out\+Log will be null. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & Either one or both arguments are nullptrs. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_adc1b7d81acb493280fb43e36ef5fca56}\label{namespace_g_w_1_1_s_y_s_t_e_m_adc1b7d81acb493280fb43e36ef5fca56}} 
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!Create\+G\+Log\+Custom@{Create\+G\+Log\+Custom}}
+\index{Create\+G\+Log\+Custom@{Create\+G\+Log\+Custom}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection{\texorpdfstring{Create\+G\+Log\+Custom()}{CreateGLogCustom()}}
+{\footnotesize\ttfamily G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+Create\+G\+Log\+Custom (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} $\ast$}]{\+\_\+file,  }\item[{\mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} $\ast$$\ast$}]{\+\_\+out\+Log }\end{DoxyParamCaption})}
+
+
+
+Creates a \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} object. 
+
+This function will create a \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} object with the \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} object that was passed in. This is so you can have more control over your log by setting up a \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} in advance. The \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} object should already have a file open for text writing. Created \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} object will have its reference count initialized to one.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+file} & The \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} object that this log will use. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+out\+Log} & Will contain the \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} object if successfully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} was successfully created. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} was not created. \+\_\+out\+Log will be null. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & Either one or both the arguments are nullptr. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{namespace_g_w_1_1_s_y_s_t_e_m_a4e046f8c5f7a2eabd19a903c9a0651f7}\label{namespace_g_w_1_1_s_y_s_t_e_m_a4e046f8c5f7a2eabd19a903c9a0651f7}} 
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!Create\+G\+Window@{Create\+G\+Window}}
+\index{Create\+G\+Window@{Create\+G\+Window}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection{\texorpdfstring{Create\+G\+Window()}{CreateGWindow()}}
+{\footnotesize\ttfamily G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+Create\+G\+Window (\begin{DoxyParamCaption}\item[{int}]{\+\_\+x,  }\item[{int}]{\+\_\+y,  }\item[{int}]{\+\_\+width,  }\item[{int}]{\+\_\+height,  }\item[{\mbox{\hyperlink{namespace_g_w_1_1_s_y_s_t_e_m_ad117891e556631f842625c348d36a071}{G\+Window\+Style}}}]{\+\_\+style,  }\item[{\mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_window}{G\+Window}} $\ast$$\ast$}]{\+\_\+out\+Window }\end{DoxyParamCaption})}
+
+
+
+Creates and outputs a new \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_window}{G\+Window}} object. 
+
+Initializes a handle to a \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_window}{G\+Window}} object with the parameters specified. Created \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_window}{G\+Window}} object will have its reference count initialized to one.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+x} & The x position of the window on the screen. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+y} & The y position of the window on the screen. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+width} & The width of the window. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+height} & The height of the window. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+style} & The style of the window. (see G\+Window\+Style for style options) \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+out\+Window} & Will contain the \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_window}{G\+Window}} object if successfully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_window}{G\+Window}} was successfully created. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_window}{G\+Window}} was not created. \+\_\+out\+Window will be null. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & Either one or some arguments are nullptrs or invalid integers. \\
+\hline
+\end{DoxyRetVals}

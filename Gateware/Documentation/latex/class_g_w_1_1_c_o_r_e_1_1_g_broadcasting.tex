@@ -1,0 +1,83 @@
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting}{}\section{GW\+:\+:C\+O\+RE\+:\+:G\+Broadcasting Class Reference}
+\label{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting}\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting}}
+
+
+The \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting}{G\+Broadcasting}} Interface is capable of registering \& deregistering \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener}} interfaces.  
+
+
+
+
+{\ttfamily \#include $<$G\+Broadcasting.\+h$>$}
+
+Inheritance diagram for GW\+:\+:C\+O\+RE\+:\+:G\+Broadcasting\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.971631cm]{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting_a293251421ba1169016f722df2f5b573b}{Register\+Listener}} (\mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener}} $\ast$\+\_\+add\+Listener, unsigned long long \+\_\+event\+Mask)=0
+\begin{DoxyCompactList}\small\item\em Any listener added to this class must receive all events unless otherwise specified by the \+\_\+event\+Mask (optional). \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting_afd6b1f41b646c668b1fcce2580681dd5}{Deregister\+Listener}} (\mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener}} $\ast$\+\_\+remove\+Listener)=0
+\begin{DoxyCompactList}\small\item\em A successfully deregistered listener will no longer receive events and have its reference count decremented by one. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting}{G\+Broadcasting}} Interface is capable of registering \& deregistering \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener}} interfaces. 
+
+The G\+Broadcaster will notify all registered listeners with the listeners On\+Event function. The events being registered for can be filtered with the \+\_\+event\+Mask (optional). \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting}{G\+Broadcasting}} Inherits directly from \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_multi_threaded}{G\+Multi\+Threaded}}, therefore its implementation must be thread safe. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting_afd6b1f41b646c668b1fcce2580681dd5}\label{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting_afd6b1f41b646c668b1fcce2580681dd5}} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting}!Deregister\+Listener@{Deregister\+Listener}}
+\index{Deregister\+Listener@{Deregister\+Listener}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting}}
+\subsubsection{\texorpdfstring{Deregister\+Listener()}{DeregisterListener()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting\+::\+Deregister\+Listener (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener}} $\ast$}]{\+\_\+remove\+Listener }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+A successfully deregistered listener will no longer receive events and have its reference count decremented by one. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+remove\+Listener} & The listener to deregister from events.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & The listener was successfully deregistered. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting_a293251421ba1169016f722df2f5b573b}\label{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting_a293251421ba1169016f722df2f5b573b}} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting}!Register\+Listener@{Register\+Listener}}
+\index{Register\+Listener@{Register\+Listener}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting}}
+\subsubsection{\texorpdfstring{Register\+Listener()}{RegisterListener()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting\+::\+Register\+Listener (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener}} $\ast$}]{\+\_\+add\+Listener,  }\item[{unsigned long long}]{\+\_\+event\+Mask }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Any listener added to this class must receive all events unless otherwise specified by the \+\_\+event\+Mask (optional). 
+
+Listeners registered to a broadcaster will have their reference counts increased by one until deregistered.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+add\+Listener} & The listener object that is registering for messages. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+event\+Mask} & The events the listener is registering for. 0 will register for all events.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & The listener was successfully registered. \\
+\hline
+{\em R\+E\+D\+U\+N\+D\+A\+N\+T\+\_\+\+O\+P\+E\+R\+A\+T\+I\+ON} & The listener has already been registered by a previous call. \\
+\hline
+\end{DoxyRetVals}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+G\+\_\+\+Core/G\+Broadcasting.\+h\end{DoxyCompactItemize}

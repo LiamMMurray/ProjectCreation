@@ -1,0 +1,56 @@
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_listener}{}\section{GW\+:\+:C\+O\+RE\+:\+:G\+Listener Class Reference}
+\label{class_g_w_1_1_c_o_r_e_1_1_g_listener}\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener}}
+
+
+A \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener}} Interface may be registered with a G\+Broadcaster interface to receive event notifications.  
+
+
+
+
+{\ttfamily \#include $<$G\+Listener.\+h$>$}
+
+Inheritance diagram for GW\+:\+:C\+O\+RE\+:\+:G\+Listener\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{class_g_w_1_1_c_o_r_e_1_1_g_listener}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener_a5c1d1fac213b7a1cc15d384aa0c33105}{On\+Event}} (const \mbox{\hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID}} \&\+\_\+sender\+Interface, unsigned int \+\_\+event\+ID, void $\ast$\+\_\+event\+Data, unsigned int \+\_\+data\+Size)=0
+\begin{DoxyCompactList}\small\item\em This operation is called whenever a G\+Broadcaster a listener is registered to generates an event. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener}} Interface may be registered with a G\+Broadcaster interface to receive event notifications. 
+
+\mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener}} is directly inherited from \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_multi_threaded}{G\+Multi\+Threaded}}, therefore its implementation must be thread safe. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_listener_a5c1d1fac213b7a1cc15d384aa0c33105}\label{class_g_w_1_1_c_o_r_e_1_1_g_listener_a5c1d1fac213b7a1cc15d384aa0c33105}} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener}!On\+Event@{On\+Event}}
+\index{On\+Event@{On\+Event}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener}}
+\subsubsection{\texorpdfstring{On\+Event()}{OnEvent()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener\+::\+On\+Event (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID}} \&}]{\+\_\+sender\+Interface,  }\item[{unsigned int}]{\+\_\+event\+ID,  }\item[{void $\ast$}]{\+\_\+event\+Data,  }\item[{unsigned int}]{\+\_\+data\+Size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+This operation is called whenever a G\+Broadcaster a listener is registered to generates an event. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+sender\+Interface} & The interface of the sender object. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+event\+ID} & The ID of the event sent. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+event\+Data} & The data of the event. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+data\+Size} & The size of \+\_\+event\+Data in bytes. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+G\+\_\+\+Core/G\+Listener.\+h\end{DoxyCompactItemize}

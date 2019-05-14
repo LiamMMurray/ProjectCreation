@@ -1,0 +1,150 @@
+\hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{}\section{GW\+:\+:S\+Y\+S\+T\+EM\+:\+:G\+Log Class Reference}
+\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}\index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}}
+
+
+Cross platform threadsafe logger.  
+
+
+
+
+{\ttfamily \#include $<$G\+Log.\+h$>$}
+
+Inheritance diagram for GW\+:\+:S\+Y\+S\+T\+EM\+:\+:G\+Log\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log_a9e21e702d012065fe799b4c49f7ac670}{Log}} (const char $\ast$const \+\_\+log)=0
+\begin{DoxyCompactList}\small\item\em Logs a null terminated string. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log_a5d10397fa6aeeebaf8430df6029ec3c5}{Log\+Catergorized}} (const char $\ast$const \+\_\+category, const char $\ast$const \+\_\+log)=0
+\begin{DoxyCompactList}\small\item\em Logs a null terminated string with a category. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log_adea469091bba33b419f7e88a9c2c3049}{Enable\+Verbose\+Logging}} (bool \+\_\+value)=0
+\begin{DoxyCompactList}\small\item\em Turns verbose logging on or off. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log_a1eb651aa3d5b6b8baac389be284a569d}{Enable\+Console\+Logging}} (bool \+\_\+value)=0
+\begin{DoxyCompactList}\small\item\em Turns console logging on or off. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log_a07147c15ecb17caa1c83974b3c54f7d4}{Flush}} ()=0
+\begin{DoxyCompactList}\small\item\em Forces a log dump to file. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Cross platform threadsafe logger. 
+
+\mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log}{G\+Log}} inherits directly from G\+Multi\+Threaded, therefore its implementation must be thread safe. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log_a1eb651aa3d5b6b8baac389be284a569d}\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log_a1eb651aa3d5b6b8baac389be284a569d}} 
+\index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}!Enable\+Console\+Logging@{Enable\+Console\+Logging}}
+\index{Enable\+Console\+Logging@{Enable\+Console\+Logging}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}}
+\subsubsection{\texorpdfstring{Enable\+Console\+Logging()}{EnableConsoleLogging()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log\+::\+Enable\+Console\+Logging (\begin{DoxyParamCaption}\item[{bool}]{\+\_\+value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Turns console logging on or off. 
+
+Use this function to ensure or prevent the additional console logging.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+value} & true to turn on or false to turn off. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log_adea469091bba33b419f7e88a9c2c3049}\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log_adea469091bba33b419f7e88a9c2c3049}} 
+\index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}!Enable\+Verbose\+Logging@{Enable\+Verbose\+Logging}}
+\index{Enable\+Verbose\+Logging@{Enable\+Verbose\+Logging}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}}
+\subsubsection{\texorpdfstring{Enable\+Verbose\+Logging()}{EnableVerboseLogging()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log\+::\+Enable\+Verbose\+Logging (\begin{DoxyParamCaption}\item[{bool}]{\+\_\+value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Turns verbose logging on or off. 
+
+Use this function to ensure or prevent the addition of date, time, and thread\+ID to your log messages.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+value} & true to turn on or false to turn off. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log_a07147c15ecb17caa1c83974b3c54f7d4}\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log_a07147c15ecb17caa1c83974b3c54f7d4}} 
+\index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}!Flush@{Flush}}
+\index{Flush@{Flush}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}}
+\subsubsection{\texorpdfstring{Flush()}{Flush()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log\+::\+Flush (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Forces a log dump to file. 
+
+This will force a log dump to the file and clear the log queue.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully dumped the logs. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Most likely a file corruption or a file is not open. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log_a9e21e702d012065fe799b4c49f7ac670}\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log_a9e21e702d012065fe799b4c49f7ac670}} 
+\index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}!Log@{Log}}
+\index{Log@{Log}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}}
+\subsubsection{\texorpdfstring{Log()}{Log()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log\+::\+Log (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{\+\_\+log }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Logs a null terminated string. 
+
+Date, Time, and thread ID will be appended to the front of the message unless specified otherwise (See Enable\+Verbose\+Logging). A new line character will be appended to the end of the string so your log messages do not require a new line. The string is logged to the internal \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} object.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+log} & The message to log out.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully queued the message to the log. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & The queue has reached maximum size (call flush). \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & A nullptr was passed in. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log_a5d10397fa6aeeebaf8430df6029ec3c5}\label{class_g_w_1_1_s_y_s_t_e_m_1_1_g_log_a5d10397fa6aeeebaf8430df6029ec3c5}} 
+\index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}!Log\+Catergorized@{Log\+Catergorized}}
+\index{Log\+Catergorized@{Log\+Catergorized}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}}
+\subsubsection{\texorpdfstring{Log\+Catergorized()}{LogCatergorized()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log\+::\+Log\+Catergorized (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{\+\_\+category,  }\item[{const char $\ast$const}]{\+\_\+log }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Logs a null terminated string with a category. 
+
+Date, Time, and thread ID will be appended to the front of the message unless specified otherwise (See Enable\+Verbose\+Logging). A new line character will be appended to the end of the string so your log messages do not require a new line. The string is logged to the internal \mbox{\hyperlink{class_g_w_1_1_s_y_s_t_e_m_1_1_g_file}{G\+File}} object.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+category} & The category the log belongs in. ie. E\+R\+R\+OR, W\+A\+R\+N\+I\+NG, I\+N\+FO, etc. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+log} & The message to log out.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully queued the message to the log. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & The queue has reached maximum size (call flush). \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & Either \+\_\+category or \+\_\+log are nullptr. \\
+\hline
+\end{DoxyRetVals}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+G\+\_\+\+System/G\+Log.\+h\end{DoxyCompactItemize}

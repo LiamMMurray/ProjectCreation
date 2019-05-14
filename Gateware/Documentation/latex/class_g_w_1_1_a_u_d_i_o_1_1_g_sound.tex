@@ -1,0 +1,375 @@
+\hypertarget{class_g_w_1_1_a_u_d_i_o_1_1_g_sound}{}\section{GW\+:\+:A\+U\+D\+IO\+:\+:G\+Sound Class Reference}
+\label{class_g_w_1_1_a_u_d_i_o_1_1_g_sound}\index{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}
+Inheritance diagram for GW\+:\+:A\+U\+D\+IO\+:\+:G\+Sound\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_g_w_1_1_a_u_d_i_o_1_1_g_sound}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ac35f84bd0c936940bf641f9a937ca82a}{Set\+Channel\+Volumes}} (float $\ast$\+\_\+values, int \+\_\+num\+Channels)=0
+\begin{DoxyCompactList}\small\item\em Attempts to set the output volume for the specified number of outputs to the passed in values. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ad6d7995a245002485d8c2ec3a2051196}{Set\+Volume}} (float \+\_\+new\+Volume)=0
+\begin{DoxyCompactList}\small\item\em Attempts to change the overall volume. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ae8bb1895e457825d81ce9ab4494d7c66}{Play}} ()=0
+\begin{DoxyCompactList}\small\item\em Attempts to playback a sound effect. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ababa7089fe9bf95d2763e4fde9c5a746}{Pause}} ()=0
+\begin{DoxyCompactList}\small\item\em Attempts to pause a currently playing sound effect. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_aae7e8c6cd723ba35d67e6c0ec2c4f794}{Resume}} ()=0
+\begin{DoxyCompactList}\small\item\em Attempts to resume a currently paused sound effect. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_adb9e958fc6f853a37d0d84a7fcbe806c}{Stop\+Sound}} ()=0
+\begin{DoxyCompactList}\small\item\em Attempts to stop playback of sound effect and reset it to begining for future use. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_acca8a7684851e32f4022006fd9eacf6c}{Get\+Sound\+Source\+Channels}} (unsigned int \&returned\+Channel\+Num)=0
+\begin{DoxyCompactList}\small\item\em Stores the .wav files internal amount of channels the sound was recorded with into the passed in unsigned int. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_a9dcb3529b8819eedfd40e865a3bc611f}{Get\+Sound\+Output\+Channels}} (unsigned int \&returned\+Channel\+Num)=0
+\begin{DoxyCompactList}\small\item\em Stores the number of specified outputs into the passed in unsigned int. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_a904241837e93254806b2518f7da24ba9}{is\+Sound\+Playing}} (bool \&\+\_\+returned\+Bool)=0
+\begin{DoxyCompactList}\small\item\em Fills out the passed in bool with information as to if the sound thinks it is playing or not. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_afbac022010da2fc1a917ece2803a36a4}{Get\+Count}} (unsigned int \&\+\_\+out\+Count)=0
+\begin{DoxyCompactList}\small\item\em Return the total number of active references to this object. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_a33149257f0958b4db57f5508492410ad}{Increment\+Count}} ()=0
+\begin{DoxyCompactList}\small\item\em Increase the total number of active references to this object. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_afa9587ca984fc5ad2d5cdd47c3aebbcb}{Decrement\+Count}} ()=0
+\begin{DoxyCompactList}\small\item\em Decrease the total number of active references to this object. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ac3c8f8dd06b71f86356a3e316fb3b4dc}{Request\+Interface}} (const \mbox{\hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID}} \&\+\_\+interface\+ID, void $\ast$$\ast$\+\_\+output\+Interface)=0
+\begin{DoxyCompactList}\small\item\em Requests an interface that may or may not be supported by this object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_afa9587ca984fc5ad2d5cdd47c3aebbcb}\label{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_afa9587ca984fc5ad2d5cdd47c3aebbcb}} 
+\index{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}!Decrement\+Count@{Decrement\+Count}}
+\index{Decrement\+Count@{Decrement\+Count}!G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}
+\subsubsection{\texorpdfstring{Decrement\+Count()}{DecrementCount()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound\+::\+Decrement\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Decrease the total number of active references to this object. 
+
+Once the internal count reaches zero this object will be deallocated and your pointer will become invalid.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully decremented the internal reference count. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Decrementing of internal reference count would underflow the value. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_a19a368c77ad0aa7f49b5a4f772f173ba}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}}.
+
+\mbox{\Hypertarget{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_afbac022010da2fc1a917ece2803a36a4}\label{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_afbac022010da2fc1a917ece2803a36a4}} 
+\index{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}!Get\+Count@{Get\+Count}}
+\index{Get\+Count@{Get\+Count}!G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}
+\subsubsection{\texorpdfstring{Get\+Count()}{GetCount()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound\+::\+Get\+Count (\begin{DoxyParamCaption}\item[{unsigned int \&}]{\+\_\+out\+Count }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Return the total number of active references to this object. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em \+\_\+out\+Count} & The total number of active references of this object.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Always, boolean passed in will tell you if sound is playing or not. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_aacf5834174a7024f8a3c361122ee9e76}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}}.
+
+\mbox{\Hypertarget{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_a9dcb3529b8819eedfd40e865a3bc611f}\label{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_a9dcb3529b8819eedfd40e865a3bc611f}} 
+\index{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}!Get\+Sound\+Output\+Channels@{Get\+Sound\+Output\+Channels}}
+\index{Get\+Sound\+Output\+Channels@{Get\+Sound\+Output\+Channels}!G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}
+\subsubsection{\texorpdfstring{Get\+Sound\+Output\+Channels()}{GetSoundOutputChannels()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound\+::\+Get\+Sound\+Output\+Channels (\begin{DoxyParamCaption}\item[{unsigned int \&}]{returned\+Channel\+Num }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Stores the number of specified outputs into the passed in unsigned int. 
+
+This value is obtained from the \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}} that created this sound effect. By default the number of output channels is 2 unless \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}} was created with a different amount.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em The} & unsigned int which will be stored with the value.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em F\+A\+I\+L\+U\+RE} & \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}} has not filled it out this object with \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s fuunction\+: \char`\"{}\+Create\+Sound\char`\"{}. \\
+\hline
+{\em S\+U\+C\+C\+E\+SS} & Successfully ran without running into any of the above issues. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_acca8a7684851e32f4022006fd9eacf6c}\label{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_acca8a7684851e32f4022006fd9eacf6c}} 
+\index{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}!Get\+Sound\+Source\+Channels@{Get\+Sound\+Source\+Channels}}
+\index{Get\+Sound\+Source\+Channels@{Get\+Sound\+Source\+Channels}!G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}
+\subsubsection{\texorpdfstring{Get\+Sound\+Source\+Channels()}{GetSoundSourceChannels()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound\+::\+Get\+Sound\+Source\+Channels (\begin{DoxyParamCaption}\item[{unsigned int \&}]{returned\+Channel\+Num }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Stores the .wav files internal amount of channels the sound was recorded with into the passed in unsigned int. 
+
+This value is read and stored upon creation of \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound}{G\+Sound}}.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em The} & unsigned int which will be stored with the value.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em F\+A\+I\+L\+U\+RE} & \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}} has not filled it out this object with \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s fuunction\+: \char`\"{}\+Create\+Sound\char`\"{}. \\
+\hline
+{\em S\+U\+C\+C\+E\+SS} & Successfully ran without running into any of the above issues. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_a33149257f0958b4db57f5508492410ad}\label{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_a33149257f0958b4db57f5508492410ad}} 
+\index{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}!Increment\+Count@{Increment\+Count}}
+\index{Increment\+Count@{Increment\+Count}!G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}
+\subsubsection{\texorpdfstring{Increment\+Count()}{IncrementCount()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound\+::\+Increment\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Increase the total number of active references to this object. 
+
+End users should only call this operation if they are familiar with reference counting behavior.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully incremented the internal reference count. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Incrementation of internal reference count would overflow the value. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_a2d710f20bb78e544e8309b5b75c21260}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}}.
+
+\mbox{\Hypertarget{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_a904241837e93254806b2518f7da24ba9}\label{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_a904241837e93254806b2518f7da24ba9}} 
+\index{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}!is\+Sound\+Playing@{is\+Sound\+Playing}}
+\index{is\+Sound\+Playing@{is\+Sound\+Playing}!G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}
+\subsubsection{\texorpdfstring{is\+Sound\+Playing()}{isSoundPlaying()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound\+::is\+Sound\+Playing (\begin{DoxyParamCaption}\item[{bool \&}]{\+\_\+returned\+Bool }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Fills out the passed in bool with information as to if the sound thinks it is playing or not. 
+
+\mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound}{G\+Sound}} internally keeps track of whether or not it playing via the Play,Pause,Resume,Stop functions as well as if the buffer has finished playing.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em The} & bool which will be stored with the value.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em F\+A\+I\+L\+U\+RE} & \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}} has not filled it out this object with \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s fuunction\+: \char`\"{}\+Create\+Sound\char`\"{}. \\
+\hline
+{\em S\+U\+C\+C\+E\+SS} & Always, boolean passed in will tell you if sound is playing or not. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ababa7089fe9bf95d2763e4fde9c5a746}\label{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ababa7089fe9bf95d2763e4fde9c5a746}} 
+\index{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}!Pause@{Pause}}
+\index{Pause@{Pause}!G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}
+\subsubsection{\texorpdfstring{Pause()}{Pause()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound\+::\+Pause (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Attempts to pause a currently playing sound effect. 
+
+Currenntly only supports .wav files. \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound}{G\+Sound}} fully loads entire audio file into memory. If file is extremely large, consider using \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_music}{G\+Music}} instead. If sound is currently paused, will not attempt to pause playback without returning an error.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em F\+A\+I\+L\+U\+RE} & \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}} has not filled it out this object with \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s fuunction\+: \char`\"{}\+Create\+Sound\char`\"{}. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Internal Source voice is N\+U\+LL -\/ (which could happen if specified .wav file could not be found or encountered an error upon reading in data). \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & If internal object incounters an error. Unlikely to occur if \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s \char`\"{}\+Create\+Sound\char`\"{} did not return an error upon filling out this object. \\
+\hline
+{\em S\+U\+C\+C\+E\+SS} & Successfully ran without running into any of the above issues. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ae8bb1895e457825d81ce9ab4494d7c66}\label{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ae8bb1895e457825d81ce9ab4494d7c66}} 
+\index{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}!Play@{Play}}
+\index{Play@{Play}!G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}
+\subsubsection{\texorpdfstring{Play()}{Play()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound\+::\+Play (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Attempts to playback a sound effect. 
+
+Currenntly only supports .wav files. \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound}{G\+Sound}} fully loads entire audio file into memory. If file is extremely large, consider using \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_music}{G\+Music}} instead. If sound is currently playing, will attempt to stop and restart playback.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em F\+A\+I\+L\+U\+RE} & \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}} has not filled it out this object with \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s fuunction\+: \char`\"{}\+Create\+Sound\char`\"{}. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Internal Source voice is N\+U\+LL -\/ (which could happen if specified .wav file could not be found or encountered an error upon reading in data). \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & If internal object incounters an error. Unlikely to occur if \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s \char`\"{}\+Create\+Sound\char`\"{} did not return an error upon filling out this object. \\
+\hline
+{\em S\+U\+C\+C\+E\+SS} & Successfully ran without running into any of the above issues. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ac3c8f8dd06b71f86356a3e316fb3b4dc}\label{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ac3c8f8dd06b71f86356a3e316fb3b4dc}} 
+\index{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}!Request\+Interface@{Request\+Interface}}
+\index{Request\+Interface@{Request\+Interface}!G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}
+\subsubsection{\texorpdfstring{Request\+Interface()}{RequestInterface()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound\+::\+Request\+Interface (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID}} \&}]{\+\_\+interface\+ID,  }\item[{void $\ast$$\ast$}]{\+\_\+output\+Interface }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Requests an interface that may or may not be supported by this object. 
+
+Can be used by the end-\/user to query for a new interface using the unique ID of the interface they want and implement an interface update.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+interface\+ID} & The \mbox{\hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID}} of the interface you are requesting. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+output\+Interface} & Where the interface will be stored if function is successful.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & The interface is supported and function succeded. \\
+\hline
+{\em I\+N\+T\+E\+R\+F\+A\+C\+E\+\_\+\+U\+N\+S\+U\+P\+P\+O\+R\+T\+ED} & The requested interface is not supported. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \mbox{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_ad6c8324970172784964f484686d4fdad}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}}.
+
+\mbox{\Hypertarget{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_aae7e8c6cd723ba35d67e6c0ec2c4f794}\label{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_aae7e8c6cd723ba35d67e6c0ec2c4f794}} 
+\index{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}!Resume@{Resume}}
+\index{Resume@{Resume}!G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}
+\subsubsection{\texorpdfstring{Resume()}{Resume()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound\+::\+Resume (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Attempts to resume a currently paused sound effect. 
+
+Currenntly only supports .wav files. \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound}{G\+Sound}} fully loads entire audio file into memory. If file is extremely large, consider using \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_music}{G\+Music}} instead. If sound is currently playing, will not attempt to play file without returning an error.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em F\+A\+I\+L\+U\+RE} & \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}} has not filled it out this object with \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s fuunction\+: \char`\"{}\+Create\+Sound\char`\"{}. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Internal Source voice is N\+U\+LL -\/ (which could happen if specified .wav file could not be found or encountered an error upon reading in data). \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & If internal object incounters an error. Unlikely to occur if \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s \char`\"{}\+Create\+Sound\char`\"{} did not return an error upon filling out this object. \\
+\hline
+{\em S\+U\+C\+C\+E\+SS} & Successfully ran without running into any of the above issues. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ac35f84bd0c936940bf641f9a937ca82a}\label{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ac35f84bd0c936940bf641f9a937ca82a}} 
+\index{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}!Set\+Channel\+Volumes@{Set\+Channel\+Volumes}}
+\index{Set\+Channel\+Volumes@{Set\+Channel\+Volumes}!G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}
+\subsubsection{\texorpdfstring{Set\+Channel\+Volumes()}{SetChannelVolumes()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound\+::\+Set\+Channel\+Volumes (\begin{DoxyParamCaption}\item[{float $\ast$}]{\+\_\+values,  }\item[{int}]{\+\_\+num\+Channels }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Attempts to set the output volume for the specified number of outputs to the passed in values. 
+
+The amount of values in \+\_\+values that will be used is based on \+\_\+num\+Channels. If you attempt to set the volume of an output your hardware does not support, it will be ignored. If you attempt to set a volume higher that \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s master volume, it will be set to the master volume without an error message.
+
+Channels\+: Supports up to 6 channels A\+KA 5.\+1 Audio\+: I\+N\+D\+EX\mbox{[}0\mbox{]} = Left, I\+N\+D\+EX\mbox{[}1\mbox{]} = Right, I\+N\+D\+EX\mbox{[}2\mbox{]} = Front Center, I\+N\+D\+EX\mbox{[}3\mbox{]} = L\+FE, I\+N\+D\+EX\mbox{[}4\mbox{]} = Rear Left, I\+N\+D\+EX\mbox{[}5\mbox{]} = Rear Right,
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+values} & The output volumes to be set. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+num\+Channels} & The number of channels affected.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em F\+A\+I\+L\+U\+RE} & \+\_\+num\+Channels is less than 1. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}} has not filled it out this object with \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s fuunction\+: \char`\"{}\+Create\+Sound\char`\"{}. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Internal Source voice is N\+U\+LL -\/ (which could happen if specified .wav file could not be found or encountered an error upon reading in data) \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & \+\_\+values is N\+U\+LL \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & \+\_\+values tried to read garbadge data -\/ (\+\_\+num\+Channels $>$ amoutn of values in \+\_\+values) \\
+\hline
+{\em S\+U\+C\+C\+E\+SS} & Successfully ran without running into any of the above issues. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ad6d7995a245002485d8c2ec3a2051196}\label{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_ad6d7995a245002485d8c2ec3a2051196}} 
+\index{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}!Set\+Volume@{Set\+Volume}}
+\index{Set\+Volume@{Set\+Volume}!G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}
+\subsubsection{\texorpdfstring{Set\+Volume()}{SetVolume()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound\+::\+Set\+Volume (\begin{DoxyParamCaption}\item[{float}]{\+\_\+new\+Volume }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Attempts to change the overall volume. 
+
+The amount of values in \+\_\+values that will be used is based on \+\_\+num\+Channels. If you attempt to set a volume higher that \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s master volume, it will be set to the master volume without an error message.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+new\+Volume} & The output volume to be set.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em F\+A\+I\+L\+U\+RE} & \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}} has not filled it out this object with \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s fuunction\+: \char`\"{}\+Create\+Sound\char`\"{}. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & \+\_\+new\+Volume is less than Zero. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & If internal object incounters an error. Unlikely to occur if \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s \char`\"{}\+Create\+Sound\char`\"{} did not return an error upon filling out this object. $\ast$\\
+\hline
+{\em S\+U\+C\+C\+E\+SS} & Successfully ran without running into any of the above issues. \\
+\hline
+{\em S\+U\+C\+C\+E\+SS} & Successfully ran without running into any of the above issues. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_adb9e958fc6f853a37d0d84a7fcbe806c}\label{class_g_w_1_1_a_u_d_i_o_1_1_g_sound_adb9e958fc6f853a37d0d84a7fcbe806c}} 
+\index{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}!Stop\+Sound@{Stop\+Sound}}
+\index{Stop\+Sound@{Stop\+Sound}!G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound@{G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound}}
+\subsubsection{\texorpdfstring{Stop\+Sound()}{StopSound()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespace_g_w_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+A\+U\+D\+I\+O\+::\+G\+Sound\+::\+Stop\+Sound (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Attempts to stop playback of sound effect and reset it to begining for future use. 
+
+Currenntly only supports .wav files. \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_sound}{G\+Sound}} fully loads entire audio file into memory. If file is extremely large, consider using \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_music}{G\+Music}} instead. Will attempt to comppletely stop playback regaurdless of whether or not sound is playing or paused.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em F\+A\+I\+L\+U\+RE} & \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}} has not filled it out this object with \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s fuunction\+: \char`\"{}\+Create\+Sound\char`\"{}. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Internal Source voice is N\+U\+LL -\/ (which could happen if specified .wav file could not be found or encountered an error upon reading in data). \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & If internal object incounters an error. Unlikely to occur if \mbox{\hyperlink{class_g_w_1_1_a_u_d_i_o_1_1_g_audio}{G\+Audio}}\textquotesingle{}s \char`\"{}\+Create\+Sound\char`\"{} did not return an error upon filling out this object. \\
+\hline
+{\em S\+U\+C\+C\+E\+SS} & Successfully ran without running into any of the above issues. \\
+\hline
+\end{DoxyRetVals}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+G\+\_\+\+Audio/G\+Sound.\+h\end{DoxyCompactItemize}

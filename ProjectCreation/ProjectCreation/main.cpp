@@ -8,6 +8,8 @@
 
 #include "Rendering/RenderingSystem.h"
 
+#include "Audio/AudioManager.h"
+
 bool g_Running = false;
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -99,6 +101,8 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         systemManager->RegisterSystem(&sysInitProps, renderSystem);
 
         GCoreInput::InitializeInput(handle);
+
+		AudioManager::Initialize();
         // message loop
         ShowWindow(handle, SW_SHOW);
         g_Running = true;
@@ -123,10 +127,11 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
-
+                AudioManager::Get()->PlaySounds();
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
         }
 
+		AudioManager::Shutdown();
 
         GEngine::Shutdown();
 

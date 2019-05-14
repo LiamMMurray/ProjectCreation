@@ -1,0 +1,20 @@
+Status: Beta
+
+Includes: GFile GLog GInput GBufferedInput GWindow GAudio GMusic GSound 
+	  GMatrix GVector GQuaternion GOpenGLSurface GDirectX11Surface
+	  GController
+
+Branch: Alpha
+
+Release Number: 6.3.B
+
+Commit ID: 22ace115dc5f69a4e203d13a341ed6809a5b35ee
+
+Provided build options:
+
+Static Libraries: win32, Linux, Mac
+Implicit Dynamical Libraries: win32
+Explicit Dynamical Libraries: win32, Linux, Mac
+Source: win32, Linux, Mac
+
+See included doucmentation for more information.
