@@ -1,8 +1,8 @@
 #pragma once
 
+#include <string>
 #include "../ECS/ECSTypes.h"
 #include "../ECS/Util.h"
-#include <string>
 
 class IResource;
 
@@ -13,14 +13,23 @@ class IResource
 
     protected:
         ResourceHandle m_Handle;
-        uint16_t       m_ReferenceCount = 0;
+        int16_t        m_ReferenceCount = 0;
         std::string    m_Name;
 
 
     public:
-        ResourceHandle GetHandle();
-        ResourceHandle Acquire();
-        uint16_t       Release();
+        void Init(std::string name, ResourceHandle handle)
+        {
+                m_Handle = handle;
+				m_Name = name;
+		}
 
-        friend class ResourceManager;
+        inline std::string GetName() const
+        {
+                return m_Name;
+        }
+        ResourceHandle GetHandle();
+        ResourceHandle AcquireHandle();
+        int16_t        ReleaseHandle();
+        virtual void   Release() = 0;
 };

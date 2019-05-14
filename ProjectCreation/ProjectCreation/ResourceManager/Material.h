@@ -4,10 +4,15 @@
 
 #include "../Utility/ForwardDeclarations/D3DNativeTypes.h"
 
+#include "ResourceInfoTypes.h"
 
-
-class Material : public Resource<Material>
+struct Material : public Resource<Material>
 {
-        ID3D11VertexShader* m_VertexShader;
-        ID3D11PixelShader*  m_PixelShader;
+        ResourceHandle            m_VertexShaderHandle;
+        ResourceHandle            m_PixelShaderHandle;
+        EMaterialType             m_MaterialType;
+        FSurfaceProperties        m_SurfaceProperties;
+        ResourceHandle            m_TextureHandles[ETexture2DType::COUNT];
+
+        virtual void Release() override;
 };

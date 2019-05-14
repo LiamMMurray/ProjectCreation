@@ -7,10 +7,12 @@
 #include "Material.h"
 #include "SkeletalMesh.h"
 #include "StaticMesh.h"
+#include "Shader.h"
 
 namespace FileIO
 {
         EResult LoadStaticMeshDataFromFile(const char* fileName, FStaticMeshData* staticMeshOutput);
-        EResult LoadSkeletalMeshDataFromFile(const char* fileName, FSkeletalMeshData* staticMeshOutput);
-        EResult LoadMaterialDataFromFile(const char* fileName, FMaterialData* staticMeshOutput);
+        EResult LoadSkeletalMeshDataFromFile(const char* fileName, FSkeletalMeshData* skelMeshOutput);
+        EResult LoadMaterialDataFromFile(const char* fileName, FMaterialData* matDataOutput);
+        EResult LoadShaderDataFromFile(const char* fileName, FShaderData* shaderDataOutput);
 }

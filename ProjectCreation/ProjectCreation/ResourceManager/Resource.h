@@ -8,7 +8,7 @@ class Resource : public IResource
 {
         static const ResourceTypeID m_TypeId;
 
-
+    public:
         static const ResourceTypeID GetTypeID();
 };
 

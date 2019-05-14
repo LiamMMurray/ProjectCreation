@@ -26,9 +26,9 @@ EResult FileIO::LoadStaticMeshDataFromFile(const char* fileName, FStaticMeshData
                 myfile.read((char*)staticMeshOutput->materialName.data(), staticMeshOutput->materialName.size());
                 myfile.read((char*)&vertCount, sizeof(uint32_t));
                 myfile.read((char*)&indCount, sizeof(uint32_t));
-                //staticMeshOutput->vertices.resize(vertCount);
+                staticMeshOutput->vertices.resize(vertCount);
                 staticMeshOutput->indices.resize(indCount);
-                //myfile.read((char*)staticMeshOutput->vertices.data(), sizeof(Vertex) * vertCount);
+                myfile.read((char*)staticMeshOutput->vertices.data(), sizeof(FVertex) * vertCount);
                 myfile.read((char*)staticMeshOutput->indices.data(), sizeof(uint32_t) * indCount);
                 staticMeshOutput->name = fileName;
 
@@ -36,6 +36,8 @@ EResult FileIO::LoadStaticMeshDataFromFile(const char* fileName, FStaticMeshData
 
                 output.m_Flags = ERESULT_FLAG::SUCCESS;
         }
+        assert(output.m_Flags != ERESULT_FLAG::INVALID);
+
         return output;
 }
 
@@ -58,12 +60,12 @@ EResult FileIO::LoadSkeletalMeshDataFromFile(const char* fileName, FSkeletalMesh
                 uint32_t vertCount;
                 uint32_t indCount;
                 myfile.seekg(0, ios::beg);
-                //myfile.read((char*)skeletalMeshOutput->materialName.data(), skeletalMeshOutput->materialName.size());
+                myfile.read((char*)skeletalMeshOutput->materialName.data(), skeletalMeshOutput->materialName.size());
                 myfile.read((char*)&vertCount, sizeof(uint32_t));
                 myfile.read((char*)&indCount, sizeof(uint32_t));
-                // staticMeshOutput->vertices.resize(vertCount);
+                skeletalMeshOutput->vertices.resize(vertCount);
                 skeletalMeshOutput->indices.resize(indCount);
-                // myfile.read((char*)staticMeshOutput->vertices.data(), sizeof(Vertex) * vertCount);
+                myfile.read((char*)skeletalMeshOutput->vertices.data(), sizeof(FSkinnedVertex) * vertCount);
                 myfile.read((char*)skeletalMeshOutput->indices.data(), sizeof(uint32_t) * indCount);
                 skeletalMeshOutput->name = fileName;
 
@@ -71,6 +73,8 @@ EResult FileIO::LoadSkeletalMeshDataFromFile(const char* fileName, FSkeletalMesh
 
                 output.m_Flags = ERESULT_FLAG::SUCCESS;
         }
+        assert(output.m_Flags != ERESULT_FLAG::INVALID);
+
         return output;
 }
 
@@ -91,15 +95,15 @@ EResult FileIO::LoadMaterialDataFromFile(const char* fileName, FMaterialData* ma
         if (myfile.is_open())
         {
                 FMaterialData inMat;
-                //myfile.read((char*)&inMat.surfaceProperties, sizeof(inMat.surfaceProperties));
-                //myfile.read((char*)&inMat.surfaceType, sizeof(inMat.surfaceType));
+                myfile.read((char*)&inMat.surfaceProperties, sizeof(inMat.surfaceProperties));
+                myfile.read((char*)&inMat.surfaceType, sizeof(inMat.surfaceType));
 
                 uint32_t descCount;
                 myfile.read((char*)&descCount, sizeof(uint32_t));
                 for (int i = 0; i < descCount; ++i)
                 {
                         FTextureDesc desc{};
-                        //myfile.read((char*)&desc.textureType, sizeof(ETextureType));
+                        myfile.read((char*)&desc.textureType, sizeof(ETexture2DType));
                         myfile.read(desc.filePath.data(), desc.filePath.size());
                         inMat.textureDescs.push_back(desc);
                 }
@@ -108,5 +112,34 @@ EResult FileIO::LoadMaterialDataFromFile(const char* fileName, FMaterialData* ma
 
                 output.m_Flags = ERESULT_FLAG::SUCCESS;
         }
+
+        assert(output.m_Flags != ERESULT_FLAG::INVALID);
+
+        return output;
+}
+
+EResult FileIO::LoadShaderDataFromFile(const char* fileName, FShaderData* shaderDataOutput)
+{
+        assert(shaderDataOutput != nullptr);
+        EResult output;
+        output.m_Flags = ERESULT_FLAG::INVALID;
+
+        std::ostringstream filePathStream;
+        filePathStream << "../Shaders/" << fileName << ".cso";
+
+        std::basic_ifstream<char> stream(filePathStream.str(), std::ios::binary);
+
+        if (stream.is_open())
+        {
+                shaderDataOutput->bytes =
+                    std::vector<char>((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
+
+                stream.close();
+
+                output.m_Flags = ERESULT_FLAG::SUCCESS;
+        }
+
+        assert(output.m_Flags != ERESULT_FLAG::INVALID);
+
         return output;
 }

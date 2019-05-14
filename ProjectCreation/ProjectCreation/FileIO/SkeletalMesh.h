@@ -4,6 +4,8 @@
 
 #include <vector>
 
+#include "../Rendering/Vertex.h"
+
 namespace FileIO
 {
         struct FSkeletalMeshData
@@ -11,7 +13,7 @@ namespace FileIO
                 std::string                   name;
                 //std::vector<Animation::Joint> joints;
                 //std::vector<Animation::Joint> inverseJoints;
-                //std::vector<SkinnedVertex>    vertices;
+                std::vector<FSkinnedVertex>   vertices;
                 std::vector<uint32_t>         indices;
                 file_path_t                   materialName;
         };

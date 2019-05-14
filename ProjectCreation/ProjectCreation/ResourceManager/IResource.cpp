@@ -7,15 +7,14 @@ ResourceHandle IResource::GetHandle()
         return m_Handle;
 }
 
-ResourceHandle IResource::Acquire()
+ResourceHandle IResource::AcquireHandle()
 {
         ++m_ReferenceCount;
         return GetHandle();
 }
 
-uint16_t IResource::Release()
+int16_t IResource::ReleaseHandle()
 {
-        assert(m_ReferenceCount > 0);
         --m_ReferenceCount;
         return m_ReferenceCount;
 }

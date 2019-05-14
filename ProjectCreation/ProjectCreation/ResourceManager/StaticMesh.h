@@ -2,7 +2,7 @@
 
 #include "Resource.h"
 
-class StaticMesh : public Resource<StaticMesh>
+struct StaticMesh : public Resource<StaticMesh>
 {
-
+        virtual void Release() override;
 };

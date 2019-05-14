@@ -1,5 +1,7 @@
 #include "GEngine.h"
 
+
+
 GEngine* GEngine::instance;
 
 void GEngine::Initialize()
@@ -10,17 +12,21 @@ void GEngine::Initialize()
         instance->m_EntityManager    = new EntityManager;
         instance->m_ComponentManager = new ComponentManager;
         instance->m_SystemManager    = new SystemManager;
+        instance->m_ResourceManager  = new ResourceManager;
 
         instance->m_SystemManager->Initialize();
+        instance->m_ResourceManager->Initialize();
 }
 
 void GEngine::Shutdown()
 {
         instance->m_SystemManager->Shutdown();
+        instance->m_ResourceManager->Shutdown();
 
         delete instance->m_EntityManager;
         delete instance->m_ComponentManager;
         delete instance->m_SystemManager;
+        delete instance->m_ResourceManager;
 }
 
 GEngine* GEngine::Get()

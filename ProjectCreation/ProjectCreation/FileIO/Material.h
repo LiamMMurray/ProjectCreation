@@ -9,13 +9,13 @@ namespace FileIO
 {
         struct FTextureDesc
         {
-                //ETextureType textureType;
+                ETexture2DType textureType;
                 file_path_t  filePath;
 
-                /*inline bool operator==(const TextureDesc& other)
+                inline bool operator==(const FTextureDesc& other)
                 {
-                        return textureType == other.textureType;
-                }*/
+                        return textureType.textureType == other.textureType.textureType;
+                }
         };
 
         struct FMaterialData

@@ -47,6 +47,7 @@
     <ClInclude Include="FileIO\BasicIOTypes.h" />
     <ClInclude Include="FileIO\FileIO.h" />
     <ClInclude Include="FileIO\Material.h" />
+    <ClInclude Include="FileIO\Shader.h" />
     <ClInclude Include="FileIO\SkeletalMesh.h" />
     <ClInclude Include="FileIO\StaticMesh.h" />
     <ClInclude Include="MathLibrary\MathConstants.h" />
@@ -54,15 +55,19 @@
     <ClInclude Include="MathLibrary\Quaternion.h" />
     <ClInclude Include="MathLibrary\Transform.h" />
     <ClInclude Include="MathLibrary\Vector.h" />
+    <ClInclude Include="Rendering\StaticMeshComponent.h" />
     <ClInclude Include="Rendering\RenderingSystem.h" />
     <ClInclude Include="Rendering\Vertex.h" />
     <ClInclude Include="ResourceManager\Material.h" />
+    <ClInclude Include="ResourceManager\PixelShader.h" />
     <ClInclude Include="ResourceManager\Resource.h" />
     <ClInclude Include="ResourceManager\IResource.h" />
     <ClInclude Include="ResourceManager\ResourceInfoTypes.h" />
     <ClInclude Include="ResourceManager\ResourceManager.h" />
     <ClInclude Include="ResourceManager\SkeletalMesh.h" />
     <ClInclude Include="ResourceManager\StaticMesh.h" />
+    <ClInclude Include="ResourceManager\Texture2D.h" />
+    <ClInclude Include="ResourceManager\VertexShader.h" />
     <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
     <ClInclude Include="Utility\Macros\DirectXMacros.h" />
@@ -88,9 +93,15 @@
     <ClCompile Include="MathLibrary\Transform.cpp" />
     <ClCompile Include="MathLibrary\Vector.cpp" />
     <ClCompile Include="Rendering\RenderingSystem.cpp" />
+    <ClCompile Include="Rendering\StaticMeshComponent.cpp" />
     <ClCompile Include="Rendering\Vertex.cpp" />
     <ClCompile Include="ResourceManager\IResource.cpp" />
+    <ClCompile Include="ResourceManager\Material.cpp" />
+    <ClCompile Include="ResourceManager\PixelShader.cpp" />
     <ClCompile Include="ResourceManager\ResourceManager.cpp" />
+    <ClCompile Include="ResourceManager\StaticMesh.cpp" />
+    <ClCompile Include="ResourceManager\Texture2D.cpp" />
+    <ClCompile Include="ResourceManager\VertexShader.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

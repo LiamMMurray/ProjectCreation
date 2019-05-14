@@ -126,6 +126,8 @@ struct E_STATE_DEPTH_STENCIL
 
 class CRenderSystem : public ISystem
 {
+        friend class ResourceManager;
+
         using native_handle_type = void*;
         native_handle_type m_WindowHandle;
 
@@ -141,7 +143,6 @@ class CRenderSystem : public ISystem
         ID3D11RenderTargetView*   m_DefaultRenderTargets[E_RENDER_TARGET::COUNT]{};
         ID3D11ShaderResourceView* m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::COUNT]{};
         ID3D11DepthStencilView*   m_DefaultDepthStencil[E_DEPTH_STENCIL::COUNT]{};
-
 
 
     protected:

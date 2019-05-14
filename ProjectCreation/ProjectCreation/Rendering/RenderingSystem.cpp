@@ -1,5 +1,6 @@
 #include "RenderingSystem.h"
 #include "../CoreInput/CoreInput.h"
+#include "../Engine/GEngine.h"
 
 #include <math.h>
 
@@ -224,7 +225,7 @@ void CRenderSystem::OnUpdate(float deltaTime)
 
         // Sort scene front to back
 
-        // Perform culling
+		// Perform culling
 }
 
 void CRenderSystem::OnPostUpdate(float deltaTime)
@@ -237,7 +238,7 @@ void CRenderSystem::OnPostUpdate(float deltaTime)
         color[0] = sin(totalTime);
         color[1] = cos(totalTime);
 
-        m_Context->ClearRenderTargetView(m_DefaultRenderTargets[E_RENDER_TARGET::BASE_PASS], color);
+		m_Context->ClearRenderTargetView(m_DefaultRenderTargets[E_RENDER_TARGET::BASE_PASS], color);
         m_Context->ClearDepthStencilView(
             m_DefaultDepthStencil[E_DEPTH_STENCIL::BASE_PASS], D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -254,6 +255,8 @@ void CRenderSystem::OnInitialize()
         CreateDeviceAndSwapChain();
         CreateDefaultRenderTargets();
         CreateRasterizerStates();
+
+		GEngine::Get()->GetResourceManager()->LoadStaticMesh("Test");
 }
 
 void CRenderSystem::OnShutdown()

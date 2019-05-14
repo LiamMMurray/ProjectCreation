@@ -5,12 +5,14 @@
 
 #include "BasicIOTypes.h"
 
+#include "../Rendering/Vertex.h"
+
 namespace FileIO
 {
         struct FStaticMeshData
         {
                 std::string           name;
-                //std::vector<Vertex>   vertices;
+                std::vector<FVertex>   vertices;
                 std::vector<uint32_t> indices;
                 file_path_t           materialName;
         };
