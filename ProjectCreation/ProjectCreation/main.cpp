@@ -51,7 +51,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                    int       nCmdShow       // how the windows is shown. Legacy. Can ignore
 )
 {
-        const char* appName = "Inanis";
+        constexpr char appName[] = "Inanis";
         // window info
         WNDCLASSEX winInfo;
 
