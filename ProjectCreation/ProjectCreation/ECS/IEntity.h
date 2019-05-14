@@ -14,7 +14,7 @@ class IEntity
         template <typename T>
         ComponentHandle GetComponentHandle();
         template <typename T>
-        Component<T>* GetComponent();
+        T* GetComponent();
         template <typename T>
         std::vector<ComponentHandle> GetComponentHandles();
         template <typename T>
@@ -36,9 +36,9 @@ inline ComponentHandle IEntity::GetComponentHandle()
 }
 
 template <typename T>
-inline Component<T>* IEntity::GetComponent()
+inline T* IEntity::GetComponent()
 {
-        return NULL;
+        return nullptr;
 }
 
 template <typename T>
