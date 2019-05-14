@@ -86,6 +86,8 @@ CollisionComponent::FCollideResult CollisionLibary::SweepSphereToSphere(Collisio
         else if (distance < totalRadius)
         {
                 output.collisionType = CollisionComponent::ECollisionType::EOveralap;
+                output.collideSurfaces.push_back(CollidePoint(checkB.center, cloestPoint, capsule.radius));
+                output.collideSurfaces.push_back(CollidePoint(cloestPoint, checkB.center, checkB.radius));
         }
         else if (distance > totalRadius)
         {
