@@ -81,7 +81,6 @@ CollisionComponent::FCollideResult CollisionLibary::SweepSphereToSphere(Collisio
         {
                 output.collisionType = CollisionComponent::ECollisionType::ECollide;
                 output.collideSurfaces.push_back(CollidePoint(checkB.center, cloestPoint, capsule.radius));
-
                 output.collideSurfaces.push_back(CollidePoint(cloestPoint, checkB.center, checkB.radius));
         }
         else if (distance < totalRadius)
@@ -104,19 +103,21 @@ CollisionComponent::FCollideResult CollisionLibary::SphereToAabb(CollisionCompon
         XMVECTOR                           cloestPointinAABB = XMVectorMin(XMVectorMax(sphere.center, aabbMin), aabbMax);
         float                              distance          = MathLibrary::CalulateDistance(cloestPointinAABB, sphere.center);
 
- 
+
         if (distance < sphere.radius)
         {
                 output.collisionType = CollisionComponent::EOveralap;
         }
         else if (distance > sphere.radius)
-		{
+        {
                 output.collisionType = CollisionComponent::ENoCollision;
-		}
+        }
         else
-        { 
-			 output.collisionType = CollisionComponent::ECollide;
-		}
+        {
+                output.collisionType = CollisionComponent::ECollide;
+                output.collideSurfaces.push_back(CollidePoint(cloestPointinAABB, sphere.center, sphere.radius));
+                output.collideSurfaces.push_back(CollidePoint(sphere.center, cloestPointinAABB, (distance - sphere.radius)));
+        }
         return output;
 }
 
@@ -151,6 +152,7 @@ CollisionComponent::FCollideResult CollisionLibary::AabbToAabb(CollisionComponen
                 output.collisionType = CollisionComponent::ENoCollision;
         if (aMaxZ < bMinZ || aMinZ > bMaxZ)
                 output.collisionType = CollisionComponent::ENoCollision;
+
 
         output.collisionType = CollisionComponent::EOveralap;
         return output;
