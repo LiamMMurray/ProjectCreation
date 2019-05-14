@@ -1,9 +1,20 @@
 #include "PlayerMovement.h"
 #include "../CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
+#include "../ECS/Entity.h"
+#include "../Components/PhysicsComponent.h"
+
+// v Testing only delete when done v
+#include <iostream>
+// ^ Testing only delete when done ^
 
 void PlayerMovement::GatherInput()
 {
+		PastDirection = requestedDirection;
+
+        //requestedDirection = MoveDirections::NO_DIRECTION;
+
+        MoveVector = ZeroVector;
         // Check Forward speed
         ModifySpeed();
 
@@ -26,6 +37,7 @@ void PlayerMovement::GatherInput()
 
 void PlayerMovement::ProcessInput()
 {
+
         // Forward
         if (requestedDirection == MoveDirections::FORWARD)
         {
@@ -46,13 +58,14 @@ void PlayerMovement::ProcessInput()
         {
                 MoveVector = DirectX::XMVectorAdd(MoveVector, rightVector);
         }
+
 }
 
 void PlayerMovement::ApplyInput()
 {
-       // auto transformComponent = GEngine::Get()->GetComponentManager()->GetComponent<Transform>(handle);
-
-        // Code will not work until Transform Component is made
+        PhysicsComponent physicsComponent;
+		
+		physicsComponent.AddForce(MoveVector);
 }
 
 void PlayerMovement::ModifySpeed()
@@ -66,11 +79,13 @@ void PlayerMovement::ModifySpeed()
 
         if (GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Down)
         {
+                requestedDirection = MoveDirections::FORWARD;
                 SpeedModifier += 1;
         }
 
         if (GCoreInput::GetKeyState(KeyCode::E) == KeyState::Down)
         {
+                requestedDirection = MoveDirections::FORWARD;
                 SpeedModifier += 1;
         }
 }

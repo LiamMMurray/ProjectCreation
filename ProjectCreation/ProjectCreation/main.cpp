@@ -8,6 +8,10 @@
 
 #include "Rendering/RenderingSystem.h"
 
+#include "ConsoleWindow/ConsoleWindow.h"
+
+#include "System/PhysicsSystem.h"
+
 bool g_Running = false;
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -36,6 +40,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
         // Any other messages, handle the default way
         return DefWindowProc(hWnd, message, wParam, lParam);
+
 }
 
 
@@ -49,6 +54,10 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         const char* appName = "Inanis";
         // window info
         WNDCLASSEX winInfo;
+
+		// console window creation
+        ConsoleWindow CW;
+        CW.CreateConsoleWindow("Inanis Console Window");
 
         // zero out the win info struct
         ZeroMemory(&winInfo, sizeof(WNDCLASSEX));
@@ -92,11 +101,19 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         EntityManager*    entityManager    = GEngine::Get()->GetEntityManager();
         ComponentManager* componentManager = GEngine::Get()->GetComponentManager();
 
+		//Create Render System
         CRenderSystem* renderSystem;
         systemManager->CreateSystem<CRenderSystem>(&renderSystem);
         FSystemInitProperties sysInitProps;
         renderSystem->SetWindowHandle(handle);
         systemManager->RegisterSystem(&sysInitProps, renderSystem);
+
+		//Create Physics System
+        PhysicsSystem* physicsSystem;
+        systemManager->CreateSystem<PhysicsSystem>(&physicsSystem);
+        sysInitProps.m_Priority = E_SYSTEM_PRIORITY::VERY_HIGH;
+        sysInitProps.m_UpdateRate = 0.0125f;
+        systemManager->RegisterSystem(&sysInitProps, physicsSystem);
 
         GCoreInput::InitializeInput(handle);
         // message loop
@@ -123,6 +140,9 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
+
+				PlayerMovement pMovement;
+                pMovement.OnUpdate(GEngine::Get()->GetDeltaTime());
 
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
         }

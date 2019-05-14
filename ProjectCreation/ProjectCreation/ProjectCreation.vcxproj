@@ -21,7 +21,10 @@
   <ItemGroup>
     <ClInclude Include="CollisionLibary\CollisionComponent.h" />
     <ClInclude Include="CollisionLibary\CollisionLibary.h" />
+    <ClInclude Include="Components\PhysicsComponent.h" />
     <ClInclude Include="Components\TestComponents.h" />
+    <ClInclude Include="Components\CTransformComponent.h" />
+    <ClInclude Include="ConsoleWindow\ConsoleWindow.h" />
     <ClInclude Include="Controller\IController.h" />
     <ClInclude Include="Controller\PlayerMovement.h" />
     <ClInclude Include="CoreInput\CoreInput.h" />
@@ -43,6 +46,7 @@
     <ClInclude Include="ECS\Util.h" />
     <ClInclude Include="Engine\XTime.h" />
     <ClInclude Include="Entities\TestEntities.h" />
+    <ClInclude Include="Entities\BaseEntities.h" />
     <ClInclude Include="ErrorHandling\ErrorTypes.h" />
     <ClInclude Include="MathLibrary\MathConstants.h" />
     <ClInclude Include="MathLibrary\MathLibrary.h" />
@@ -51,10 +55,12 @@
     <ClInclude Include="MathLibrary\Vector.h" />
     <ClInclude Include="Rendering\RenderingSystem.h" />
     <ClInclude Include="Rendering\Vertex.h" />
+    <ClInclude Include="System\PhysicsSystem.h" />
     <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Components\PhysicsComponent.cpp" />
     <ClCompile Include="Controller\IController.cpp" />
     <ClCompile Include="Controller\PlayerMovement.cpp" />
     <ClCompile Include="CoreInput\CoreInput.cpp" />
@@ -73,6 +79,7 @@
     <ClCompile Include="MathLibrary\Transform.cpp" />
     <ClCompile Include="MathLibrary\Vector.cpp" />
     <ClCompile Include="Rendering\RenderingSystem.cpp" />
+    <ClCompile Include="System\PhysicsSystem.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
