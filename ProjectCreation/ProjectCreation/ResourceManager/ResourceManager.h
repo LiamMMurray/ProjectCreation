@@ -50,23 +50,25 @@ class ResourceContainer : public ResourceContainerBase
                 T* resource = m_ResourceTable[handle];
                 assert(resource && "Resource doesn't exist");
                 m_ResourceTable.erase(handle);
-                m_NameTable.erase(resource.GetName());
+                m_NameTable.erase(resource->GetName());
                 UpdateHandles();
+
+				return resource;
         }
 
         T* AcquireResource(ResourceHandle handle)
         {
                 T* resource = m_ResourceTable[handle];
                 assert(resource && "Resource doesn't exist");
-                resource.AcquireHandle();
+                resource->AcquireHandle();
                 return resource;
         }
 
-        uint16_t Release(ResourceHandle handle)
+        uint16_t ReleaseResource(ResourceHandle handle)
         {
                 T* resource = m_ResourceTable[handle];
                 assert(resource && "Resource doesn't exist");
-                int16_t refCount = resource.ReleaseHandle();
+                int16_t refCount = resource->ReleaseHandle();
 
                 if (refCount <= 0)
                         DestroyResource(handle);
@@ -92,7 +94,7 @@ class ResourceContainer : public ResourceContainerBase
                         UpdateHandles();
                 }
 
-				return outHandle;
+                return outHandle;
         }
 
         friend class ResourceManager;
@@ -114,6 +116,16 @@ class ResourceManager
         ResourceHandle LoadVertexShader(const char* name);
         ResourceHandle LoadPixelShader(const char* name);
         ResourceHandle LoadStaticMesh(const char* name);
+
+        template <typename T>
+        T* AcquireResource(ResourceHandle handle);
+
+        template <typename T>
+        uint16_t ReleaseResource(ResourceHandle handle);
+
+        template <typename T>
+        T* GetResource(ResourceHandle handle);
+
 
         void Initialize();
         void Shutdown();
@@ -143,4 +155,25 @@ ResourceContainer<T>* ResourceManager::GetResourceContainer()
 
         assert(rc != nullptr && "Failed to create ComponentContainer<T>");
         return rc;
+}
+
+template <typename T>
+T* ResourceManager::AcquireResource(ResourceHandle handle)
+{
+        ResourceContainer<T>* container = GetResourceContainer<T>();
+        return container->AcquireResource(handle);
+}
+
+template <typename T>
+uint16_t ResourceManager::ReleaseResource(ResourceHandle handle)
+{
+        ResourceContainer<T>* container = GetResourceContainer<T>();
+        return container->ReleaseResource(handle);
+}
+
+template <typename T>
+T* ResourceManager::GetResource(ResourceHandle handle)
+{
+        ResourceContainer<T>* container = GetResourceContainer<T>();
+        return container->GetResource(handle);
 }

@@ -30,6 +30,8 @@
     <ClCompile Include="ResourceManager\PixelShader.cpp" />
     <ClCompile Include="ResourceManager\Texture2D.cpp" />
     <ClCompile Include="ResourceManager\StaticMesh.cpp" />
+    <ClCompile Include="FileIO\DDSTextureLoader.cpp" />
+    <ClCompile Include="Utility\StringUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CollisionLibary\CollisionComponent.h" />
@@ -84,5 +86,14 @@
     <ClInclude Include="ResourceManager\PixelShader.h" />
     <ClInclude Include="ResourceManager\Texture2D.h" />
     <ClInclude Include="FileIO\Shader.h" />
+    <ClInclude Include="FileIO\DDSTextureLoader.h" />
+    <ClInclude Include="Utility\StringUtility.h" />
+    <ClInclude Include="Shaders\DefaultVertexIn.hlsl" />
+    <ClInclude Include="Shaders\DefaultPixelIn.hlsl" />
+    <ClInclude Include="Rendering\ConstantBuffers.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\Default_VS.hlsl" />
+    <FxCompile Include="Shaders\Default_PS.hlsl" />
   </ItemGroup>
 </Project>

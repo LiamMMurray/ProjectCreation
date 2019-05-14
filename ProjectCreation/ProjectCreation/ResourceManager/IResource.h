@@ -10,14 +10,18 @@ typedef Handle<IResource> ResourceHandle;
 
 class IResource
 {
-
     protected:
         ResourceHandle m_Handle;
         int16_t        m_ReferenceCount = 0;
         std::string    m_Name;
 
 
+        ResourceHandle AcquireHandle();
+        int16_t        ReleaseHandle();
+        virtual void   Release() = 0;
     public:
+        ResourceHandle GetHandle();
+
         void Init(std::string name, ResourceHandle handle)
         {
                 m_Handle = handle;
@@ -28,8 +32,4 @@ class IResource
         {
                 return m_Name;
         }
-        ResourceHandle GetHandle();
-        ResourceHandle AcquireHandle();
-        int16_t        ReleaseHandle();
-        virtual void   Release() = 0;
 };

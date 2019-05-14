@@ -100,7 +100,7 @@ EResult FileIO::LoadMaterialDataFromFile(const char* fileName, FMaterialData* ma
 
                 uint32_t descCount;
                 myfile.read((char*)&descCount, sizeof(uint32_t));
-                for (int i = 0; i < descCount; ++i)
+                for (int i = 0; i < (int)descCount; ++i)
                 {
                         FTextureDesc desc{};
                         myfile.read((char*)&desc.textureType, sizeof(ETexture2DType));
@@ -118,14 +118,14 @@ EResult FileIO::LoadMaterialDataFromFile(const char* fileName, FMaterialData* ma
         return output;
 }
 
-EResult FileIO::LoadShaderDataFromFile(const char* fileName, FShaderData* shaderDataOutput)
+EResult FileIO::LoadShaderDataFromFile(const char* fileName, const char* suffix, FShaderData* shaderDataOutput)
 {
         assert(shaderDataOutput != nullptr);
         EResult output;
         output.m_Flags = ERESULT_FLAG::INVALID;
 
         std::ostringstream filePathStream;
-        filePathStream << "../Shaders/" << fileName << ".cso";
+        filePathStream << "../Shaders/" << fileName << suffix << ".cso";
 
         std::basic_ifstream<char> stream(filePathStream.str(), std::ios::binary);
 

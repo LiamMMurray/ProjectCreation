@@ -45,6 +45,7 @@
     <ClInclude Include="Entities\TestEntities.h" />
     <ClInclude Include="ErrorHandling\ErrorTypes.h" />
     <ClInclude Include="FileIO\BasicIOTypes.h" />
+    <ClInclude Include="FileIO\DDSTextureLoader.h" />
     <ClInclude Include="FileIO\FileIO.h" />
     <ClInclude Include="FileIO\Material.h" />
     <ClInclude Include="FileIO\Shader.h" />
@@ -55,6 +56,7 @@
     <ClInclude Include="MathLibrary\Quaternion.h" />
     <ClInclude Include="MathLibrary\Transform.h" />
     <ClInclude Include="MathLibrary\Vector.h" />
+    <ClInclude Include="Rendering\ConstantBuffers.h" />
     <ClInclude Include="Rendering\StaticMeshComponent.h" />
     <ClInclude Include="Rendering\RenderingSystem.h" />
     <ClInclude Include="Rendering\Vertex.h" />
@@ -71,6 +73,7 @@
     <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
     <ClInclude Include="Utility\Macros\DirectXMacros.h" />
+    <ClInclude Include="Utility\StringUtility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\IController.cpp" />
@@ -86,6 +89,7 @@
     <ClCompile Include="ECS\TestsMain.cpp" />
     <ClCompile Include="Engine\XTime.cpp" />
     <ClCompile Include="Entities\TestEntities.cpp" />
+    <ClCompile Include="FileIO\DDSTextureLoader.cpp" />
     <ClCompile Include="FileIO\FileIO.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathLibrary\MathLibrary.cpp" />
@@ -102,6 +106,43 @@
     <ClCompile Include="ResourceManager\StaticMesh.cpp" />
     <ClCompile Include="ResourceManager\Texture2D.cpp" />
     <ClCompile Include="ResourceManager\VertexShader.cpp" />
+    <ClCompile Include="Utility\StringUtility.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Shaders\DefaultPixelIn.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </ClInclude>
+    <FxCompile Include="Shaders\Default_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Shaders\Default_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <ClInclude Include="Shaders\DefaultVertexIn.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </ClInclude>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -165,6 +206,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <FxCompile>
+      <ObjectFileOutput>$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -176,6 +220,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <FxCompile>
+      <ObjectFileOutput>$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -191,6 +238,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <FxCompile>
+      <ObjectFileOutput>$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -206,6 +256,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <FxCompile>
+      <ObjectFileOutput>$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

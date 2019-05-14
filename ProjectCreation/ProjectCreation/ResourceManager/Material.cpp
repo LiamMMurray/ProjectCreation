@@ -5,6 +5,15 @@
 
 #include "../Utility/Macros/DirectXMacros.h"
 
+#include "../Engine/GEngine.h"
+
+#include "VertexShader.h"
+#include "PixelShader.h"
+
 void Material::Release()
 {
+        auto rm = GEngine::Get()->GetResourceManager();
+
+       rm->ReleaseResource<VertexShader>(m_VertexShaderHandle);
+       rm->ReleaseResource<PixelShader>(m_PixelShaderHandle);
 }

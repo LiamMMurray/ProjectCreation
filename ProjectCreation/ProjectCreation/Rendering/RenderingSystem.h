@@ -4,6 +4,10 @@
 #include "../Utility/ForwardDeclarations/D3DNativeTypes.h"
 #include "../Utility/ForwardDeclarations/WinProcTypes.h"
 
+#include "../ResourceManager/IResource.h"
+
+#include "ConstantBuffers.h"
+
 struct CRenderComponent;
 
 struct E_VIEWPORT
@@ -15,7 +19,7 @@ struct E_VIEWPORT
         };
 };
 
-struct E_CONSTANT_BUFFER
+struct E_CONSTANT_BUFFER_BASE_PASS
 {
         enum
         {
@@ -54,14 +58,31 @@ struct E_BASE_PASS_PIXEL_SRV
         };
 };
 
+struct E_VERTEX_SHADERS
+{
+        enum
+        {
+                DEFAULT = 0,
+                SKINNED,
+                COUNT
+        };
+};
+
+struct E_PIXEL_SHADERS
+{
+        enum
+        {
+                DEFAULT = 0,
+                COUNT
+        };
+};
+
 struct E_POSTPROCESS_PIXEL_SRV
 {
         enum
         {
                 BASE_PASS = 0,
                 BASE_DEPTH,
-
-
                 COUNT
         };
 };
@@ -84,6 +105,7 @@ struct E_INPUT_LAYOUT
         enum
         {
                 DEFAULT = 0,
+                SKINNED,
                 COUNT
         };
 };
@@ -138,12 +160,19 @@ class CRenderSystem : public ISystem
         void CreateDeviceAndSwapChain();
         void CreateDefaultRenderTargets();
         void CreateRasterizerStates();
-
+        void CreateInputLayouts();
+        void CreateCommonShaders();
 
         ID3D11RenderTargetView*   m_DefaultRenderTargets[E_RENDER_TARGET::COUNT]{};
         ID3D11ShaderResourceView* m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::COUNT]{};
         ID3D11DepthStencilView*   m_DefaultDepthStencil[E_DEPTH_STENCIL::COUNT]{};
+        ID3D11InputLayout*        m_DefaultInputLayouts[E_INPUT_LAYOUT::COUNT]{};
+        ID3D11RasterizerState*    m_DefaultRasterizerStates[E_RASTERIZER_STATE::COUNT]{};
 
+        ResourceHandle m_CommonVertexShaderHandles[E_VERTEX_SHADERS::COUNT];
+        ResourceHandle m_CommonPixelShaderHandles[E_PIXEL_SHADERS::COUNT];
+
+        ID3D11Buffer* m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::COUNT];
 
     protected:
         virtual void OnPreUpdate(float deltaTime) override;

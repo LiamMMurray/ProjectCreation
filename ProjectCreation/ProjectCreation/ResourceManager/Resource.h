@@ -3,9 +3,13 @@
 
 typedef ECSTypeId<IResource> ResourceTypeID;
 
+
 template <typename ResourceType>
 class Resource : public IResource
 {
+        template <typename T>
+        friend class ResourceContainer;
+
         static const ResourceTypeID m_TypeId;
 
     public:
