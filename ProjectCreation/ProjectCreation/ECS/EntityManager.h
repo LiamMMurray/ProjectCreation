@@ -46,7 +46,11 @@ template <typename T>
 inline EntityHandle EntityManager::CreateEntity()
 {
         static_assert(std::is_base_of<Entity<T>, T>::value, "CreateEntity can only accept CRTP classes derived from Entity<T>");
-        auto id = m_HandleManager.GetHandle(new T());
+        T*   _entity = new T();
+        _entity->m_EntityManager    = this;
+        _entity->m_ComponentManager = m_ComponentManager;
+        auto id = m_HandleManager.GetHandle(_entity);
+
         return id;
 }
 
