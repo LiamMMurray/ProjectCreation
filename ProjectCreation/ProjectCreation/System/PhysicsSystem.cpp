@@ -1,7 +1,8 @@
 #include "PhysicsSystem.h"
-#include "../Components/CTransformComponent.h"
-#include "../Components/PhysicsComponent.h"
+#include <iostream>
 #include "../Engine/GEngine.h"
+
+#include "../Controller/PlayerMovement.h"
 
 #include <DirectXMath.h>
 
@@ -16,13 +17,24 @@ void PhysicsSystem::OnUpdate(float deltaTime)
 
         // for (iter == iter.begin(); iter != iter.end(); ++iter)
         {
-                PhysicsComponent*   currPhysics = nullptr;
-                IEntity*            currEntity  = GEngine::Get()->GetEntityManager()->GetEntity(currPhysics->GetOwner());
-                TransformComponent* currComponent = dynamic_cast<TransformComponent*>(currEntity->GetComponent<TransformComponent>());
+			//Testing use of static PhysicsComponent
+                PhysicsComponent* currPhysics = &PlayerMovement::physicsComponent;
 
-                currComponent->transform.translation = currComponent->transform.translation + currPhysics->GetVelocity() * deltaTime;
+                TransformComponent*       currComponent = &PlayerMovement::transformComponent;
+
+                //IEntity*            currEntity = GEngine::Get()->GetEntityManager()->GetEntity(currPhysics->GetOwner());
+                //TransformComponent* currComponent =
+                //    dynamic_cast<TransformComponent*>(currEntity->GetComponent<TransformComponent>());
+
+                currComponent->transform.translation =
+                    currComponent->transform.translation + currPhysics->GetVelocity() * deltaTime;
 
                 currPhysics->ApplyForce(currPhysics->GetForce());
+
+                std::cout << "Current Position < " << XMVectorGetX(currComponent->transform.translation) << ", "
+                          << XMVectorGetY(currComponent->transform.translation) << ", "
+                          << XMVectorGetZ(currComponent->transform.translation) << ", "
+                          << XMVectorGetW(currComponent->transform.translation) << " >" << std::endl;
         }
 }
 
@@ -31,7 +43,7 @@ void PhysicsSystem::OnPostUpdate(float deltaTime)
 
 void PhysicsSystem::OnInitialize()
 {
-	m_Gravity = m_OneG;
+        m_Gravity = m_OneG;
 }
 
 void PhysicsSystem::OnShutdown()

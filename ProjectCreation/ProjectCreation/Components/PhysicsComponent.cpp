@@ -43,7 +43,13 @@ void PhysicsComponent::SetVelocity(DirectX::XMVECTOR _Velocity)
 
 DirectX::XMVECTOR PhysicsComponent::GetVelocity()
 {
-        return DirectX::XMVECTOR();
+        return m_Velocity;
+}
+
+void PhysicsComponent::CalculateFriction()
+{
+        using namespace DirectX;
+        m_Friction = m_NormalForce * m_FrictionCoefficient;
 }
 
 bool PhysicsComponent::UsesGravity()

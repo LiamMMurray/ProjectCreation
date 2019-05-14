@@ -3,6 +3,9 @@
 #include "IController.h"
 #include "../ECS/ECSTypes.h"
 
+#include "../Components/PhysicsComponent.h"
+#include "../Components/CTransformComponent.h"
+
 class PlayerMovement : public IController
 {
     private:
@@ -59,4 +62,7 @@ class PlayerMovement : public IController
 		
 		//PastDirection is used for debugging, delete when done
         MoveDirections PastDirection;
+
+		static PhysicsComponent physicsComponent;
+        static TransformComponent transformComponent;
 };

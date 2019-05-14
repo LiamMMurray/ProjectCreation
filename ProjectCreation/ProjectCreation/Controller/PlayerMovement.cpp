@@ -1,8 +1,8 @@
 #include "PlayerMovement.h"
-#include "../CoreInput/CoreInput.h"
-#include "../Engine/GEngine.h"
-#include "../ECS/Entity.h"
 #include "../Components/PhysicsComponent.h"
+#include "../CoreInput/CoreInput.h"
+#include "../ECS/Entity.h"
+#include "../Engine/GEngine.h"
 
 // v Testing only delete when done v
 #include <iostream>
@@ -10,11 +10,10 @@
 
 void PlayerMovement::GatherInput()
 {
-		PastDirection = requestedDirection;
+        PastDirection = requestedDirection;
 
-        //requestedDirection = MoveDirections::NO_DIRECTION;
+        // requestedDirection = MoveDirections::NO_DIRECTION;
 
-        MoveVector = ZeroVector;
         // Check Forward speed
         ModifySpeed();
 
@@ -58,14 +57,12 @@ void PlayerMovement::ProcessInput()
         {
                 MoveVector = DirectX::XMVectorAdd(MoveVector, rightVector);
         }
-
 }
 
 void PlayerMovement::ApplyInput()
 {
-        PhysicsComponent physicsComponent;
-		
-		physicsComponent.AddForce(MoveVector);
+        physicsComponent.SetMass(1.0f);
+        physicsComponent.AddForce(MoveVector);
 }
 
 void PlayerMovement::ModifySpeed()
@@ -89,3 +86,6 @@ void PlayerMovement::ModifySpeed()
                 SpeedModifier += 1;
         }
 }
+
+PhysicsComponent   PlayerMovement::physicsComponent;
+TransformComponent PlayerMovement::transformComponent;
