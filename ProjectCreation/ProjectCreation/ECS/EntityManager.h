@@ -17,7 +17,7 @@ class EntityManager
         IEntity* GetEntity(EntityHandle handle);
         template <typename T>
         EntityHandle CreateEntity();
-
+        EntityHandle GetEntityHandle(IEntity* pEntity);
 
         // NON IMPLEMENTED FUNCTIONS //
         //////////////////////////////
