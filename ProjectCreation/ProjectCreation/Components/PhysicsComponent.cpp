@@ -46,9 +46,10 @@ DirectX::XMVECTOR PhysicsComponent::GetVelocity()
         return m_Velocity;
 }
 
-void PhysicsComponent::CalculateFriction()
+void PhysicsComponent::CalculateFriction(DirectX::XMVECTOR _Velocity)
 {
         using namespace DirectX;
+
         m_Friction = m_NormalForce * m_FrictionCoefficient;
 }
 

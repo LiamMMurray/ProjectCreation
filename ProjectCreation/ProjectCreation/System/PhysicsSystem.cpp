@@ -15,6 +15,7 @@ void PhysicsSystem::OnUpdate(float deltaTime)
 
         auto iter = GEngine::Get()->GetComponentManager()->GetActiveComponents<PhysicsComponent>();
 
+
         // for (iter == iter.begin(); iter != iter.end(); ++iter)
         {
 			//Testing use of static PhysicsComponent
