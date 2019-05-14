@@ -14,5 +14,5 @@ struct FTransform
         DirectX::XMVECTOR GetRight();
         DirectX::XMVECTOR GetUp();
         void       RotateAxisAngle(DirectX::XMVECTOR& axis, float angle);
-
+        static FTransform Lerp(const FTransform& lhs, const FTransform& rhs, float ratio);
 };

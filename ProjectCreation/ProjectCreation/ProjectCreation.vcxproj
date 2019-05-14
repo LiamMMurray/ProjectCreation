@@ -61,8 +61,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Components\PhysicsComponent.cpp" />
+    <ClCompile Include="CollisionLibary\CollisionComponent.cpp" />
     <ClCompile Include="Controller\IController.cpp" />
     <ClCompile Include="Controller\PlayerMovement.cpp" />
+    <ClCompile Include="CollisionLibary\CollisionLibary.cpp" />
     <ClCompile Include="CoreInput\CoreInput.cpp" />
     <ClCompile Include="ECS\ComponentManager.cpp" />
     <ClCompile Include="ECS\EntityManager.cpp" />
@@ -75,11 +77,13 @@
     <ClCompile Include="Engine\XTime.cpp" />
     <ClCompile Include="Entities\TestEntities.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MathLibrary\MathLibrary.cpp" />
     <ClCompile Include="MathLibrary\Quaternion.cpp" />
     <ClCompile Include="MathLibrary\Transform.cpp" />
     <ClCompile Include="MathLibrary\Vector.cpp" />
     <ClCompile Include="Rendering\RenderingSystem.cpp" />
     <ClCompile Include="System\PhysicsSystem.cpp" />
+    <ClCompile Include="Rendering\Vertex.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
