@@ -16,13 +16,14 @@ void PhysicsSystem::OnUpdate(float deltaTime)
 
         // for (iter == iter.begin(); iter != iter.end(); ++iter)
         {
-                PhysicsComponent*   currPhysics = nullptr;
-                IEntity*            currEntity  = GEngine::Get()->GetEntityManager()->GetEntity(currPhysics->GetOwner());
-                TransformComponent* currComponent = dynamic_cast<TransformComponent*>(currEntity->GetComponent<TransformComponent>());
+			// CRITICAL_TODO: Implement iterator
+                //PhysicsComponent*   currPhysics = nullptr;
+                //IEntity*            currEntity  = GEngine::Get()->GetEntityManager()->GetEntity(currPhysics->GetOwner());
+                //TransformComponent* currComponent = dynamic_cast<TransformComponent*>(currEntity->GetComponent<TransformComponent>());
 
-                currComponent->transform.translation = currComponent->transform.translation + currPhysics->GetVelocity() * deltaTime;
+                //currComponent->transform.translation = currComponent->transform.translation + currPhysics->GetVelocity() * deltaTime;
 
-                currPhysics->ApplyForce(currPhysics->GetForce());
+                //currPhysics->ApplyForce(currPhysics->GetForce());
         }
 }
 
