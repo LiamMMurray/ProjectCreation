@@ -1,5 +1,10 @@
 #include "EntityManager.h"
 
+void EntityManager::Initialize(ComponentManager* componentManager)
+{
+        m_ComponentManager = componentManager;
+}
+
 IEntity* EntityManager::GetEntity(EntityHandle handle)
 {
         return m_HandleManager.GetObject(handle);

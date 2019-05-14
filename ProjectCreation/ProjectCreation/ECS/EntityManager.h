@@ -12,8 +12,9 @@
 class EntityManager
 {
         HandleManager<IEntity> m_HandleManager;
-
+        ComponentManager*      m_ComponentManager;
     public:
+        void     Initialize(ComponentManager* componentManager);
         IEntity* GetEntity(EntityHandle handle);
         template <typename T>
         EntityHandle CreateEntity();

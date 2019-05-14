@@ -11,6 +11,7 @@ void GEngine::Initialize()
         instance->m_ComponentManager = new ComponentManager;
         instance->m_SystemManager    = new SystemManager;
 
+		instance->m_EntityManager->Initialize(instance->m_ComponentManager);
         instance->m_SystemManager->Initialize();
 }
 
