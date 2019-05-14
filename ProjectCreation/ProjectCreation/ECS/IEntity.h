@@ -20,8 +20,6 @@ class IEntity
         template <typename T>
         std::vector<ComponentHandle> GetComponentHandles();
         template <typename T>
-        ComponentIterator<T> GetAllComponents();
-        template <typename T>
         EResult CreateComponent(ComponentHandle componentHandle);
         template <typename T>
         void DestroyComponent();
@@ -47,12 +45,6 @@ template <typename T>
 inline std::vector<ComponentHandle> IEntity::GetComponentHandles()
 {
         return std::vector<ComponentTypeId>();
-}
-
-template <typename T>
-inline ComponentIterator<T> IEntity::GetAllComponents()
-{
-        return ComponentIterator<T>();
 }
 
 template <typename T>
