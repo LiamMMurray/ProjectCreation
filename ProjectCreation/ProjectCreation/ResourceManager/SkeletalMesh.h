@@ -2,7 +2,7 @@
 
 #include "Resource.h"
 
-class SkeletalMesh : public Resource<SkeletalMesh>
+struct SkeletalMesh : public Resource<SkeletalMesh>
 {
 
 };

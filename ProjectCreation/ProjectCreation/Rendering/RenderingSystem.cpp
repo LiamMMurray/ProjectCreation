@@ -2,6 +2,8 @@
 #include "../CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
 
+#include "../MathLibrary/MathLibrary.h"
+
 #include "../FileIO/FileIO.h"
 
 #include <math.h>
@@ -12,7 +14,6 @@
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #include <Windows.h>
 #include <windowsx.h>
-
 
 #include <wrl/client.h>
 #include "../Utility/Macros/DirectXMacros.h"
@@ -183,6 +184,9 @@ void CRenderSystem::CreateDefaultRenderTargets()
         textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
         pBackBuffer->Release();
 
+        m_BackBufferWidth  = (float)textureDesc.Width;
+        m_BackBufferHeight = (float)textureDesc.Height;
+
         ID3D11Texture2D* texture;
 
         hr = m_Device->CreateTexture2D(&textureDesc, NULL, &texture);
@@ -250,10 +254,66 @@ void CRenderSystem::CreateInputLayouts()
 
 void CRenderSystem::CreateCommonShaders()
 {
-        ResourceManager* rm                                    = GEngine::Get()->GetResourceManager();
-        m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT] = rm->LoadVertexShader("Default");
-        m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEFAULT]   = rm->LoadPixelShader("Default");
+        m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT] = m_ResourceManager->LoadVertexShader("Default");
+        m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEFAULT]   = m_ResourceManager->LoadPixelShader("Default");
 }
+
+void CRenderSystem::CrateCommonConstantBuffers()
+{
+        HRESULT           hr;
+        D3D11_BUFFER_DESC bd{};
+        bd.Usage          = D3D11_USAGE_DYNAMIC;
+        bd.ByteWidth      = sizeof(CTransformBuffer);
+        bd.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
+        bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        hr                = m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP]);
+}
+
+void CRenderSystem::UpdateConstantBuffer(ID3D11Buffer* gpuBuffer, void* cpuBuffer, size_t size)
+{
+        D3D11_MAPPED_SUBRESOURCE mappedResource{};
+        m_Context->Map(gpuBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+        memcpy(mappedResource.pData, cpuBuffer, size);
+        m_Context->Unmap(gpuBuffer, 0);
+}
+
+void CRenderSystem::DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
+{
+        using namespace DirectX;
+
+        const UINT strides[] = {sizeof(FVertex)};
+        const UINT offsets[] = {0};
+
+        m_Context->IASetVertexBuffers(0, 1, &mesh->m_VertexBuffer, strides, offsets);
+        m_Context->IASetIndexBuffer(mesh->m_IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
+        m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+        VertexShader* vs = m_ResourceManager->GetResource<VertexShader>(material->m_VertexShaderHandle);
+        PixelShader*  ps = m_ResourceManager->GetResource<PixelShader>(material->m_PixelShaderHandle);
+
+        m_Context->VSSetShader(vs->m_VertexShader, nullptr, 0);
+        m_Context->VSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
+
+
+        m_ConstantBuffer_MVP.World = XMMatrixIdentity();
+
+        UpdateConstantBuffer(
+            m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP], &m_ConstantBuffer_MVP, sizeof(m_ConstantBuffer_MVP));
+
+        m_Context->PSSetShader(ps->m_PixelShader, nullptr, 0);
+
+        m_Context->DrawIndexed(mesh->m_IndexCount, 0, 0);
+}
+
+void CRenderSystem::DrawOpaqueSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
+{}
+
+void CRenderSystem::DrawTransparentStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
+{}
+
+void CRenderSystem::DrawTransparentSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
+{}
 
 void CRenderSystem::OnPreUpdate(float deltaTime)
 {
@@ -274,9 +334,15 @@ void CRenderSystem::OnUpdate(float deltaTime)
 
 void CRenderSystem::OnPostUpdate(float deltaTime)
 {
+        using namespace DirectX;
+
+        ResourceManager* rm = GEngine::Get()->GetResourceManager();
+
         // Set base pass texture as render target
         m_Context->OMSetRenderTargets(
             1, &m_DefaultRenderTargets[E_RENDER_TARGET::BASE_PASS], m_DefaultDepthStencil[E_DEPTH_STENCIL::BASE_PASS]);
+
+        /** Test clear render target **/
         static FLOAT color[]   = {1.0f, 1.0f, 1.0f, 1.0f};
         static float totalTime = 0.0f;
         totalTime += deltaTime;
@@ -287,42 +353,41 @@ void CRenderSystem::OnPostUpdate(float deltaTime)
         m_Context->ClearDepthStencilView(
             m_DefaultDepthStencil[E_DEPTH_STENCIL::BASE_PASS], D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-        ResourceManager* rm = GEngine::Get()->GetResourceManager();
-
+        /** Create viewport. This should be replaced**/
+        D3D11_VIEWPORT viewport;
+        viewport.Height                        = m_BackBufferHeight;
+        viewport.Width                         = m_BackBufferWidth;
+        viewport.MaxDepth                      = 1.0f;
+        viewport.MinDepth                      = 0.0f;
+        viewport.TopLeftX                      = 0;
+        viewport.TopLeftY                      = 0;
         static ResourceHandle staticMeshHandle = rm->LoadStaticMesh("Test");
 
         StaticMesh* sm = rm->GetResource<StaticMesh>(staticMeshHandle);
 
-        const UINT strides[] = {sizeof(FVertex)};
-        const UINT offsets[] = {0};
+        FTransform cameraPos;
+        cameraPos.translation = XMVectorSet(0.f, 2.f, -30.0f, 1.0f);
+        XMMATRIX view         = (XMMatrixInverse(nullptr, cameraPos.CreateMatrix()));
+        XMMATRIX proj =
+            XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), m_BackBufferWidth / m_BackBufferHeight, 0.01f, 1500.0f);
 
-        m_Context->IASetVertexBuffers(0, 1, &sm->m_VertexBuffer, strides, offsets);
-        m_Context->IASetIndexBuffer(sm->m_IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
-        m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(view * proj);
+
         m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
-
-        D3D11_VIEWPORT viewport;
-        viewport.Height = 1280;
-        viewport.Width  = 720;
-        viewport.MaxDepth = 1.0f;
-        viewport.MinDepth = 0.0f;
-        viewport.TopLeftX = 0;
-        viewport.TopLeftY = 0;
         m_Context->RSSetViewports(1, &viewport);
 
-        VertexShader* vs = rm->GetResource<VertexShader>(m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT]);
-        PixelShader*  ps = rm->GetResource<PixelShader>(m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT]);
-
-        m_Context->VSSetShader(vs->m_VertexShader, nullptr, 0);
-
-        m_Context->PSSetShader(ps->m_PixelShader, nullptr, 0);
-
-        m_Context->DrawIndexed(sm->m_IndexCount, 0, 0);
+        /** Draw Mesh. Should be replaced by loop **/
+		XMMATRIX world = XMMatrixIdentity();
+        Material mat;
+        mat.m_VertexShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT];
+        mat.m_PixelShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT];
+		DrawOpaqueStaticMesh(sm, &mat, &world);
 
         // Set the backbuffer as render target
         m_Context->OMSetRenderTargets(1, &m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER], nullptr);
 
+
+        /** Move from base pass to backbuffer. Should be replaced by post processing **/
         ID3D11Resource* dest;
         ID3D11Resource* src;
         m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER]->GetResource(&dest);
@@ -339,11 +404,14 @@ void CRenderSystem::OnInitialize()
 {
         assert(m_WindowHandle);
 
+        m_ResourceManager = GEngine::Get()->GetResourceManager();
+
         CreateDeviceAndSwapChain();
         CreateDefaultRenderTargets();
         CreateRasterizerStates();
         CreateCommonShaders();
         CreateInputLayouts();
+        CrateCommonConstantBuffers();
 }
 
 void CRenderSystem::OnShutdown()
@@ -373,10 +441,16 @@ void CRenderSystem::OnShutdown()
                 SAFE_RELEASE(m_DefaultInputLayouts[i]);
         }
 
-		for (int i = 0; i < E_RASTERIZER_STATE::COUNT; ++i)
+        for (int i = 0; i < E_RASTERIZER_STATE::COUNT; ++i)
         {
 
                 SAFE_RELEASE(m_DefaultRasterizerStates[i]);
+        }
+
+        for (int i = 0; i < E_CONSTANT_BUFFER_BASE_PASS::COUNT; ++i)
+        {
+
+                SAFE_RELEASE(m_BasePassConstantBuffers[i]);
         }
 
         m_Swapchain->Release();

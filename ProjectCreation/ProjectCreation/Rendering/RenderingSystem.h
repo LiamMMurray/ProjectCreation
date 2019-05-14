@@ -8,7 +8,16 @@
 
 #include "ConstantBuffers.h"
 
+#include <DirectXMath.h>
+
+struct StaticMesh;
+struct SkeletalMesh;
+struct Material;
+struct FTransform;
+
 struct CRenderComponent;
+
+class ResourceManager;
 
 struct E_VIEWPORT
 {
@@ -162,6 +171,7 @@ class CRenderSystem : public ISystem
         void CreateRasterizerStates();
         void CreateInputLayouts();
         void CreateCommonShaders();
+        void CrateCommonConstantBuffers();
 
         ID3D11RenderTargetView*   m_DefaultRenderTargets[E_RENDER_TARGET::COUNT]{};
         ID3D11ShaderResourceView* m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::COUNT]{};
@@ -174,6 +184,18 @@ class CRenderSystem : public ISystem
 
         ID3D11Buffer* m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::COUNT];
 
+        CTransformBuffer m_ConstantBuffer_MVP;
+
+        float m_BackBufferWidth;
+        float m_BackBufferHeight;
+
+        void UpdateConstantBuffer(ID3D11Buffer* gpuBuffer, void* cpuBuffer, size_t size);
+
+        void DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        void DrawOpaqueSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        void DrawTransparentStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        void DrawTransparentSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        ResourceManager* m_ResourceManager;
     protected:
         virtual void OnPreUpdate(float deltaTime) override;
         virtual void OnUpdate(float deltaTime) override;
