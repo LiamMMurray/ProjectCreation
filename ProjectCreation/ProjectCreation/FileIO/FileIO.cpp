@@ -57,6 +57,16 @@ EResult FileIO::LoadSkeletalMeshDataFromFile(const char* fileName, FSkeletalMesh
 
         if (myfile.is_open())
         {
+
+                uint32_t jointCount;
+                myfile.seekg(0, ios::beg);
+                myfile.read((char*)&jointCount, sizeof(jointCount));
+                skeletalMeshOutput->joints.resize(jointCount);
+                skeletalMeshOutput->inverseJoints.resize(jointCount);
+                myfile.read((char*)skeletalMeshOutput->joints.data(), sizeof(Animation::Joint) * jointCount);
+                myfile.read((char*)skeletalMeshOutput->inverseJoints.data(), sizeof(Animation::Joint) * jointCount);
+
+
                 uint32_t vertCount;
                 uint32_t indCount;
                 myfile.seekg(0, ios::beg);
@@ -139,6 +149,47 @@ EResult FileIO::LoadShaderDataFromFile(const char* fileName, const char* suffix,
                 output.m_Flags = ERESULT_FLAG::SUCCESS;
         }
 
+        assert(output.m_Flags != ERESULT_FLAG::INVALID);
+
+        return output;
+}
+
+EResult FileIO::ImportAnimClipData(const char* fileName, Animation::AnimClip& animClip, const Animation::Skeleton& skeleton)
+{
+        EResult output;
+        output.m_Flags = ERESULT_FLAG::INVALID;
+
+        std::ostringstream filePathStream;
+        filePathStream << "../Animations/" << fileName << ".anim";
+
+        std::ifstream myfile;
+        myfile.open(filePathStream.str(), std::ios::in | std::ios::binary);
+
+        int jointCount = skeleton.jointTransforms.size();
+
+        if (myfile.is_open())
+        {
+                myfile.read((char*)&animClip.duration, sizeof(animClip.duration));
+                uint32_t frameCount;
+                myfile.read((char*)&frameCount, sizeof(uint32_t));
+                animClip.frames.resize(frameCount);
+
+                for (int i = 0; i < frameCount; ++i)
+                {
+                        animClip.frames[i].joints.resize(jointCount);
+                        myfile.read((char*)&animClip.frames[i].time, sizeof(animClip.frames[i].time));
+                        myfile.read((char*)animClip.frames[i].joints.data(), sizeof(FTransform) * jointCount);
+                }
+
+                animClip.frames.push_back(animClip.frames.front());
+                animClip.duration += 1.0f / 24.0f;
+                animClip.frames.back().time = animClip.duration;
+
+
+                myfile.close();
+
+                output.m_Flags = ERESULT_FLAG::SUCCESS;
+        }
         assert(output.m_Flags != ERESULT_FLAG::INVALID);
 
         return output;

@@ -7,6 +7,32 @@
 #include <unordered_map>
 #include <vector>
 
+struct byteStructA
+{
+        float a;
+        char  b;
+
+        static constexpr size_t headerSize = sizeof(a) + sizeof(b);
+        static constexpr size_t dataSize   = 64 - headerSize;
+
+        char data[];
+};
+struct byteStructB
+{
+        float a;
+        float c;
+        char  b;
+
+        static constexpr size_t headerSize = sizeof(a) + sizeof(b) + sizeof(c);
+        static constexpr size_t dataSize   = 64 - headerSize;
+
+        char data[];
+};
+template <typename T>
+struct G
+{
+       int g = T::headerSize;
+};
 class ResourceContainerBase
 {
     public:
@@ -53,7 +79,7 @@ class ResourceContainer : public ResourceContainerBase
                 m_NameTable.erase(resource->GetName());
                 UpdateHandles();
 
-				return resource;
+                return resource;
         }
 
         T* AcquireResource(ResourceHandle handle)
@@ -116,6 +142,7 @@ class ResourceManager
         ResourceHandle LoadVertexShader(const char* name);
         ResourceHandle LoadPixelShader(const char* name);
         ResourceHandle LoadStaticMesh(const char* name);
+        ResourceHandle LoadAnimationClip(const char* name);
 
         template <typename T>
         T* AcquireResource(ResourceHandle handle);

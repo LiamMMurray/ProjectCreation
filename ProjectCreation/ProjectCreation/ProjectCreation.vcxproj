@@ -34,6 +34,9 @@
     <ClInclude Include="ECS\EntityContainer.h" />
     <ClInclude Include="ECS\EntityManager.h" />
     <ClInclude Include="ECS\HandleManager.h" />
+    <ClInclude Include="Engine\Animation\AnimationComponent.h" />
+    <ClInclude Include="Engine\Animation\AnimationContainers.h" />
+    <ClInclude Include="Engine\Animation\AnimationSystem.h" />
     <ClInclude Include="Engine\GEngine.h" />
     <ClInclude Include="ECS\Handle.h" />
     <ClInclude Include="ECS\IComponent.h" />
@@ -57,9 +60,11 @@
     <ClInclude Include="MathLibrary\Transform.h" />
     <ClInclude Include="MathLibrary\Vector.h" />
     <ClInclude Include="Rendering\ConstantBuffers.h" />
+    <ClInclude Include="Rendering\SkeletalMeshComponent.h" />
     <ClInclude Include="Rendering\StaticMeshComponent.h" />
     <ClInclude Include="Rendering\RenderingSystem.h" />
     <ClInclude Include="Rendering\Vertex.h" />
+    <ClInclude Include="ResourceManager\AnimationClip.h" />
     <ClInclude Include="ResourceManager\Material.h" />
     <ClInclude Include="ResourceManager\PixelShader.h" />
     <ClInclude Include="ResourceManager\Resource.h" />
@@ -81,6 +86,7 @@
     <ClCompile Include="CoreInput\CoreInput.cpp" />
     <ClCompile Include="ECS\ComponentManager.cpp" />
     <ClCompile Include="ECS\EntityManager.cpp" />
+    <ClCompile Include="Engine\Animation\AnimationSystem.cpp" />
     <ClCompile Include="Engine\GEngine.cpp" />
     <ClCompile Include="ECS\IComponent.cpp" />
     <ClCompile Include="ECS\IEntity.cpp" />
@@ -97,12 +103,15 @@
     <ClCompile Include="MathLibrary\Transform.cpp" />
     <ClCompile Include="MathLibrary\Vector.cpp" />
     <ClCompile Include="Rendering\RenderingSystem.cpp" />
+    <ClCompile Include="Rendering\SkeletalMeshComponent.cpp" />
     <ClCompile Include="Rendering\StaticMeshComponent.cpp" />
     <ClCompile Include="Rendering\Vertex.cpp" />
+    <ClCompile Include="ResourceManager\AnimationClip.cpp" />
     <ClCompile Include="ResourceManager\IResource.cpp" />
     <ClCompile Include="ResourceManager\Material.cpp" />
     <ClCompile Include="ResourceManager\PixelShader.cpp" />
     <ClCompile Include="ResourceManager\ResourceManager.cpp" />
+    <ClCompile Include="ResourceManager\SkeletalMesh.cpp" />
     <ClCompile Include="ResourceManager\StaticMesh.cpp" />
     <ClCompile Include="ResourceManager\Texture2D.cpp" />
     <ClCompile Include="ResourceManager\VertexShader.cpp" />

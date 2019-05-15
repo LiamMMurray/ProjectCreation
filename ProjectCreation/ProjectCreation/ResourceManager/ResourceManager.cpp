@@ -188,6 +188,37 @@ ResourceHandle ResourceManager::LoadStaticMesh(const char* name)
         return outputHandle;
 }
 
+ResourceHandle ResourceManager::LoadAnimationClip(const char* name)
+{
+        FileIO::FMaterialData materialData;
+
+        CRenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>();
+
+        auto container = GetResourceContainer<PixelShader>();
+        auto it        = container->m_NameTable.find(name);
+
+        ResourceHandle outputHandle;
+
+        if (it == container->m_NameTable.end())
+        {
+                outputHandle = container->CreateResource(name);
+        }
+        else
+        {
+                outputHandle = it->second;
+        }
+
+        PixelShader* resource = container->GetResource(outputHandle);
+
+        FileIO::FShaderData shaderData;
+        FileIO::LoadShaderDataFromFile(name, "_PS", &shaderData);
+
+        renderSystem->m_Device->CreatePixelShader(
+            shaderData.bytes.data(), shaderData.bytes.size(), nullptr, &resource->m_PixelShader);
+
+        return outputHandle;
+}
+
 void ResourceManager::Initialize()
 {}
 

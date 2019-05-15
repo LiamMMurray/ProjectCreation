@@ -7,6 +7,7 @@
 #include "Engine/GEngine.h"
 
 #include "Rendering/RenderingSystem.h"
+#include "Engine/Animation/AnimationSystem.h"
 
 bool g_Running = false;
 

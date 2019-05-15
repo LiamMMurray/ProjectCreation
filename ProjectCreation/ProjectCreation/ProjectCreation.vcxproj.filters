@@ -32,6 +32,10 @@
     <ClCompile Include="ResourceManager\StaticMesh.cpp" />
     <ClCompile Include="FileIO\DDSTextureLoader.cpp" />
     <ClCompile Include="Utility\StringUtility.cpp" />
+    <ClCompile Include="Rendering\SkeletalMeshComponent.cpp" />
+    <ClCompile Include="Engine\Animation\AnimationSystem.cpp" />
+    <ClCompile Include="ResourceManager\SkeletalMesh.cpp" />
+    <ClCompile Include="ResourceManager\AnimationClip.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CollisionLibary\CollisionComponent.h" />
@@ -91,6 +95,11 @@
     <ClInclude Include="Shaders\DefaultVertexIn.hlsl" />
     <ClInclude Include="Shaders\DefaultPixelIn.hlsl" />
     <ClInclude Include="Rendering\ConstantBuffers.h" />
+    <ClInclude Include="Rendering\SkeletalMeshComponent.h" />
+    <ClInclude Include="Engine\Animation\AnimationComponent.h" />
+    <ClInclude Include="Engine\Animation\AnimationSystem.h" />
+    <ClInclude Include="Engine\Animation\AnimationContainers.h" />
+    <ClInclude Include="ResourceManager\AnimationClip.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Default_VS.hlsl" />
