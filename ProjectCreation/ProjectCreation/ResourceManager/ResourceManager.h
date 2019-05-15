@@ -7,6 +7,14 @@
 #include <unordered_map>
 #include <vector>
 
+<<<<<<< HEAD
+=======
+namespace Animation
+{
+        struct FSkeleton;
+} // namespace Animation
+
+>>>>>>> developmentMilestoneCRUNCH
 class ResourceContainerBase
 {
     public:
@@ -116,7 +124,8 @@ class ResourceManager
         ResourceHandle LoadVertexShader(const char* name);
         ResourceHandle LoadPixelShader(const char* name);
         ResourceHandle LoadStaticMesh(const char* name);
-        ResourceHandle LoadAnimationClip(const char* name);
+        ResourceHandle LoadSkeletalMesh(const char* name);
+        ResourceHandle LoadAnimationClip(const char* name, const Animation::FSkeleton* skeleton);
 
         template <typename T>
         T* AcquireResource(ResourceHandle handle);

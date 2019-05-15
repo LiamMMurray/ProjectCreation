@@ -14,18 +14,7 @@
 // ^ Testing only delete when done ^
 using namespace DirectX;
 
-template <typename T>
-inline T lerp(T v0, T v1, T t)
-{
-        return fma(t, v1, fma(-t, v0, v0));
-}
 
-
-template <typename T>
-inline T clamp(const T& n, const T& lower, const T& upper)
-{
-        return max(lower, min(n, upper));
-}
 
 void PlayerMovement::GatherInput()
 {
@@ -81,10 +70,10 @@ void PlayerMovement::ApplyInput()
         float    currSpeed   = XMVectorGetX(XMVector3Length(m_CurrentInput));
         float    currForward = XMVectorGetZ(m_CurrentInput);
         XMVECTOR desiredDir  = XMVector3Normalize(m_CurrentInput);
-        float    maxSpeed    = lerp(minMaxSpeed, maxMaxSpeed, currForward - minMaxSpeed);
+        float    maxSpeed    = MathLibrary::lerp(minMaxSpeed, maxMaxSpeed, currForward - minMaxSpeed);
 
         if (fabs(currSpeed) > fabs(maxSpeed))
-                currSpeed = clamp(currSpeed, -maxSpeed, maxSpeed);
+                currSpeed = MathLibrary::clamp(currSpeed, -maxSpeed, maxSpeed);
 
         XMVECTOR desiredVelocity = currSpeed * desiredDir;
 

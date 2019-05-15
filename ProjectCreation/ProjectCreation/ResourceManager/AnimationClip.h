@@ -10,5 +10,5 @@ struct AnimationClip : public Resource<AnimationClip>
 {
         virtual void Release() override;
 
-        Animation::AnimClip m_AnimClip;
+        Animation::FAnimClip m_AnimClip;
 };

@@ -18,6 +18,7 @@
 #include <wrl/client.h>
 #include "../Utility/Macros/DirectXMacros.h"
 
+#include "../ResourceManager/AnimationClip.h"
 #include "../ResourceManager/Material.h"
 #include "../ResourceManager/PixelShader.h"
 #include "../ResourceManager/SkeletalMesh.h"
@@ -269,16 +270,17 @@ void CRenderSystem::CreateInputLayouts()
         assert(er.m_Flags == ERESULT_FLAG::SUCCESS);
 
         hr = m_Device->CreateInputLayout(vLayoutSkinned,
-                                                 ARRAYSIZE(vLayoutSkinned),
-                                                 shaderData.bytes.data(),
-                                                 shaderData.bytes.size(),
-                                                 &m_DefaultInputLayouts[E_INPUT_LAYOUT::SKINNED]);
+                                         ARRAYSIZE(vLayoutSkinned),
+                                         shaderData.bytes.data(),
+                                         shaderData.bytes.size(),
+                                         &m_DefaultInputLayouts[E_INPUT_LAYOUT::SKINNED]);
         assert(SUCCEEDED(hr));
 }
 
 void CRenderSystem::CreateCommonShaders()
 {
         m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT] = m_ResourceManager->LoadVertexShader("Default");
+        m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED] = m_ResourceManager->LoadVertexShader("DefaultSkinned");
         m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEFAULT]   = m_ResourceManager->LoadPixelShader("Default");
 }
 
@@ -298,7 +300,7 @@ void CRenderSystem::CreateCommonConstantBuffers()
         bd.ByteWidth = sizeof(FSurfaceProperties);
         hr           = m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE]);
 
-		bd.ByteWidth = sizeof(CAnimationBuffer);
+        bd.ByteWidth = sizeof(CAnimationBuffer);
         hr           = m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::ANIM]);
 }
 
@@ -422,8 +424,50 @@ void CRenderSystem::DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, D
         m_Context->DrawIndexed(mesh->m_IndexCount, 0, 0);
 }
 
-void CRenderSystem::DrawOpaqueSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
-{}
+void CRenderSystem::DrawOpaqueSkeletalMesh(SkeletalMesh*               mesh,
+                                           Material*                   material,
+                                           DirectX::XMMATRIX*          mtx,
+                                           const Animation::FSkeleton* skel)
+{
+        using namespace DirectX;
+
+        const UINT strides[] = {sizeof(FSkinnedVertex)};
+        const UINT offsets[] = {0};
+
+        int jointCount = skel->jointTransforms.size();
+
+        for (int i = 0; i < jointCount; ++i)
+        {
+                m_ConstantBuffer_ANIM.jointTransforms[i] =
+                    skel->inverseBindPose[i].transform.CreateMatrix() * skel->jointTransforms[i].transform.CreateMatrix();
+                m_ConstantBuffer_ANIM.jointTransforms[i] = XMMatrixTranspose(m_ConstantBuffer_ANIM.jointTransforms[i]);
+        }
+
+        UpdateConstantBuffer(m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::ANIM],
+                             &m_ConstantBuffer_ANIM,
+                             sizeof(m_ConstantBuffer_ANIM));
+
+        m_Context->IASetVertexBuffers(0, 1, &mesh->m_VertexBuffer, strides, offsets);
+        m_Context->IASetIndexBuffer(mesh->m_IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+        VertexShader* vs = m_ResourceManager->GetResource<VertexShader>(material->m_VertexShaderHandle);
+        PixelShader*  ps = m_ResourceManager->GetResource<PixelShader>(material->m_PixelShaderHandle);
+
+        m_Context->VSSetShader(vs->m_VertexShader, nullptr, 0);
+        m_Context->PSSetShader(ps->m_PixelShader, nullptr, 0);
+
+        m_ConstantBuffer_MVP.World = *mtx;
+
+        FSurfaceProperties surfaceProps;
+
+        UpdateConstantBuffer(
+            m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP], &m_ConstantBuffer_MVP, sizeof(m_ConstantBuffer_MVP));
+        UpdateConstantBuffer(
+            m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE], &surfaceProps, sizeof(surfaceProps));
+
+
+        m_Context->DrawIndexed(mesh->m_IndexCount, 0, 0);
+}
 
 void CRenderSystem::DrawTransparentStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
 {}
@@ -466,15 +510,13 @@ void CRenderSystem::OnPostUpdate(float deltaTime)
 
         /** Create viewport. This should be replaced**/
         D3D11_VIEWPORT viewport;
-        viewport.Height                        = m_BackBufferHeight;
-        viewport.Width                         = m_BackBufferWidth;
-        viewport.MaxDepth                      = 1.0f;
-        viewport.MinDepth                      = 0.0f;
-        viewport.TopLeftX                      = 0;
-        viewport.TopLeftY                      = 0;
-        static ResourceHandle staticMeshHandle = rm->LoadStaticMesh("Test");
+        viewport.Height   = m_BackBufferHeight;
+        viewport.Width    = m_BackBufferWidth;
+        viewport.MaxDepth = 1.0f;
+        viewport.MinDepth = 0.0f;
+        viewport.TopLeftX = 0;
+        viewport.TopLeftY = 0;
 
-        StaticMesh* sm = rm->GetResource<StaticMesh>(staticMeshHandle);
 
         XMMATRIX view = (XMMatrixInverse(nullptr, PlayerMovement::transformComponent.transform.CreateMatrix()));
         XMMATRIX proj =
@@ -488,10 +530,10 @@ void CRenderSystem::OnPostUpdate(float deltaTime)
         /** Draw Mesh. Should be replaced by loop **/
         XMMATRIX world = XMMatrixScaling(0.1f, 0.1f, 0.1f);
         Material mat;
-        mat.m_VertexShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT];
-        mat.m_PixelShaderHandle  = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT];
+        mat.m_VertexShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED];
+        mat.m_PixelShaderHandle  = m_CommonVertexShaderHandles[E_PIXEL_SHADERS::DEFAULT];
 
-        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
+        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::SKINNED]);
         m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         m_Context->VSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
         m_Context->PSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
@@ -503,7 +545,53 @@ void CRenderSystem::OnPostUpdate(float deltaTime)
                              sizeof(m_ConstantBuffer_SCENE));
 
 
-        DrawOpaqueStaticMesh(sm, &mat, &world);
+        static ResourceHandle skelMeshHandle = rm->LoadSkeletalMesh("Run");
+        auto&                 skel           = m_ResourceManager->GetResource<SkeletalMesh>(skelMeshHandle)->m_BindPoseSkeleton;
+        static ResourceHandle animClipHandle = rm->LoadAnimationClip("Run", &skel);
+        AnimationClip*        animClip       = m_ResourceManager->GetResource<AnimationClip>(animClipHandle);
+
+        SkeletalMesh* sm = rm->GetResource<SkeletalMesh>(skelMeshHandle);
+
+        static float animTime = 0;
+        float        change   = 0;
+
+        change += deltaTime;
+
+        int   prevFrame  = 0;
+        int   nextFrame  = 0;
+        float ratio      = 0.0f;
+        int   frameCount = animClip->m_AnimClip.frames.size();
+        for (prevFrame = 0; prevFrame < frameCount - 1; prevFrame++)
+        {
+                if (animTime >= animClip->m_AnimClip.frames[prevFrame].time &&
+                    animTime <= animClip->m_AnimClip.frames[prevFrame + 1].time)
+                {
+                        break;
+                }
+
+                nextFrame = prevFrame;
+        }
+
+        nextFrame     = prevFrame + 1;
+        auto prevTime = animClip->m_AnimClip.frames[prevFrame].time;
+        auto nextTime = animClip->m_AnimClip.frames[nextFrame].time;
+
+        ratio = (animTime - prevTime) / (nextTime - prevTime);
+
+        animTime = MathLibrary::Warprange(animTime + change, 0.0f, (float)animClip->m_AnimClip.duration);
+
+        static Animation::FSkeleton skel2 = skel;
+        ratio                             = MathLibrary::clamp(ratio, 0.0f, 1.0f);
+        for (int i = 0; i < skel2.jointTransforms.size(); ++i)
+        {
+                auto& prevTransform = animClip->m_AnimClip.frames[prevFrame].joints[i];
+                auto& nextTransform = animClip->m_AnimClip.frames[nextFrame].joints[i];
+
+                // skeletalMesh.joints[i].transform = Transform::Lerp(skeletalMesh.joints[i].transform, nextTransform, ratio);
+                skel2.jointTransforms[i].transform = FTransform::Lerp(prevTransform, nextTransform, ratio);
+        }
+
+        DrawOpaqueSkeletalMesh(sm, &mat, &world, &skel2);
 
         // Set the backbuffer as render target
         m_Context->OMSetRenderTargets(1, &m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER], nullptr);
