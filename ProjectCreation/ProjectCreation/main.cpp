@@ -16,6 +16,7 @@
 #include "ConsoleWindow/ConsoleWindow.h"
 
 #include "System/PhysicsSystem.h"
+#pragma comment(lib, "dbghelp")
 
 using namespace DirectX;
 bool g_Running = false;
