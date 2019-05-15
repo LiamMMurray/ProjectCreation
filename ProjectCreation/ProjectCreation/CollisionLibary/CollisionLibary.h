@@ -13,10 +13,11 @@ class CollisionLibary
                                                                        CollisionComponent::FSphere& endA,
                                                                        CollisionComponent::FSphere& checkB,
                                                                        float                        offset);
-        static CollisionComponent::FSweepCollision MovingSphereToMovingSphere(CollisionComponent::FSphere& startA,
-                                                                              CollisionComponent::FSphere& endA,
-                                                                              CollisionComponent::FSphere& startB,
-                                                                              CollisionComponent::FSphere  endB,
+        static CollisionComponent::FSweepCollision MovingSphereToMovingSphere(CollisionComponent::FSphere& a,
+                                                                              CollisionComponent::FSphere& b,
+                                                                              DirectX::XMVECTOR            velocityA,
+                                                                              DirectX::XMVECTOR            velocityB,
+                                                                              float&                       time,
                                                                               float                        offset);
         static CollisionComponent::FCollideResult  SphereToAabb(CollisionComponent::FSphere& sphere,
                                                                 CollisionComponent::FAabb&   aabb,
