@@ -10,7 +10,7 @@ class MathLibrary
         // Common Math Function
         float RandomFloatInRange(float min, float max);
         template <typename T>
-        T Warprange(T val, T min, T max)
+        static T Warprange(T val, T min, T max)
         {
                 return val - (max - min) * floor(val / (max - min));
         }
@@ -26,5 +26,19 @@ class MathLibrary
         static float             CalulateDistance(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateDistanceSq(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateVectorLength(DirectX::XMVECTOR vector);
+
+
+		template <typename T>
+        static T lerp(T v0, T v1, T t)
+        {
+                return fma(t, v1, fma(-t, v0, v0));
+        }
+
+
+        template <typename T>
+        static T clamp(const T& n, const T& lower, const T& upper)
+        {
+                return max(lower, min(n, upper));
+        }
 
 };

@@ -12,5 +12,5 @@ struct SkeletalMeshComponent : public Component<SkeletalMeshComponent>
         ResourceHandle m_MaterialHandle;
         ResourceHandle m_SkeletalMeshHandle;
 
-		Animation::Skeleton m_Skeleton;
+		Animation::FSkeleton m_Skeleton;
 };

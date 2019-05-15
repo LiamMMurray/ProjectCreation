@@ -19,5 +19,5 @@ namespace FileIO
         EResult LoadSkeletalMeshDataFromFile(const char* fileName, FSkeletalMeshData* skelMeshOutput);
         EResult LoadMaterialDataFromFile(const char* fileName, FMaterialData* matDataOutput);
         EResult LoadShaderDataFromFile(const char* fileName, const char* suffix, FShaderData* shaderDataOutput);
-        EResult ImportAnimClipData(const char* fileName, Animation::AnimClip& animClip, const Animation::Skeleton& skeleton);
+        EResult ImportAnimClipData(const char* fileName, Animation::FAnimClip& animClip, const Animation::FSkeleton& skeleton);
 }
