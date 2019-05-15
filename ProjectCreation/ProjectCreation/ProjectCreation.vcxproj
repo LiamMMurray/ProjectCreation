@@ -21,7 +21,10 @@
   <ItemGroup>
     <ClInclude Include="CollisionLibary\CollisionComponent.h" />
     <ClInclude Include="CollisionLibary\CollisionLibary.h" />
+    <ClInclude Include="Components\PhysicsComponent.h" />
     <ClInclude Include="Components\TestComponents.h" />
+    <ClInclude Include="Components\CTransformComponent.h" />
+    <ClInclude Include="ConsoleWindow\ConsoleWindow.h" />
     <ClInclude Include="Controller\IController.h" />
     <ClInclude Include="Controller\PlayerMovement.h" />
     <ClInclude Include="CoreInput\CoreInput.h" />
@@ -46,6 +49,7 @@
     <ClInclude Include="ECS\Util.h" />
     <ClInclude Include="Engine\XTime.h" />
     <ClInclude Include="Entities\TestEntities.h" />
+    <ClInclude Include="Entities\BaseEntities.h" />
     <ClInclude Include="ErrorHandling\ErrorTypes.h" />
     <ClInclude Include="FileIO\BasicIOTypes.h" />
     <ClInclude Include="FileIO\DDSTextureLoader.h" />
@@ -75,12 +79,14 @@
     <ClInclude Include="ResourceManager\StaticMesh.h" />
     <ClInclude Include="ResourceManager\Texture2D.h" />
     <ClInclude Include="ResourceManager\VertexShader.h" />
+    <ClInclude Include="System\PhysicsSystem.h" />
     <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
     <ClInclude Include="Utility\Macros\DirectXMacros.h" />
     <ClInclude Include="Utility\StringUtility.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Components\PhysicsComponent.cpp" />
     <ClCompile Include="Controller\IController.cpp" />
     <ClCompile Include="Controller\PlayerMovement.cpp" />
     <ClCompile Include="CoreInput\CoreInput.cpp" />
@@ -152,6 +158,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <FileType>Document</FileType>
     </ClInclude>
+    <ClCompile Include="System\PhysicsSystem.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -46,6 +46,10 @@ struct ECSTypeId
         {
                 return this->m_Data == other.m_Data;
         }
+		bool operator!=(const ECSTypeId<T>& other) const
+		{
+                return this->m_Data != other.m_Data;
+		}
 };
 
 template <typename T>

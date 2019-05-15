@@ -3,9 +3,13 @@
 #include "Component.h"
 #include "ComponentManager.h"
 #include "ECSTypes.h"
-
+class EntityManager;
 class IEntity
 {
+	// TODO use friend class for entity manager and make this protected
+    public:
+        EntityManager* m_EntityManager;
+        ComponentManager* m_ComponentManager;
     public:
         bool m_Enabled;
 
@@ -14,11 +18,9 @@ class IEntity
         template <typename T>
         ComponentHandle GetComponentHandle();
         template <typename T>
-        Component<T>* GetComponent();
+        T* GetComponent();
         template <typename T>
         std::vector<ComponentHandle> GetComponentHandles();
-        template <typename T>
-        ComponentIterator<T> GetAllComponents();
         template <typename T>
         EResult CreateComponent(ComponentHandle componentHandle);
         template <typename T>
@@ -36,21 +38,15 @@ inline ComponentHandle IEntity::GetComponentHandle()
 }
 
 template <typename T>
-inline Component<T>* IEntity::GetComponent()
+inline T* IEntity::GetComponent()
 {
-        return NULL;
+        return nullptr;
 }
 
 template <typename T>
 inline std::vector<ComponentHandle> IEntity::GetComponentHandles()
 {
         return std::vector<ComponentTypeId>();
-}
-
-template <typename T>
-inline ComponentIterator<T> IEntity::GetAllComponents()
-{
-        return ComponentIterator<T>();
 }
 
 template <typename T>
