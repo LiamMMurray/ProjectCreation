@@ -50,7 +50,7 @@ EResult FileIO::LoadSkeletalMeshDataFromFile(const char* fileName, FSkeletalMesh
         output.m_Flags = ERESULT_FLAG::INVALID;
 
         std::ostringstream filePathStream;
-        filePathStream << "../Models/" << fileName << ".mesh";
+        filePathStream << "../Models/" << fileName << ".skel";
 
         ifstream myfile;
         myfile.open(filePathStream.str(), ios::in | ios::binary);
@@ -63,13 +63,12 @@ EResult FileIO::LoadSkeletalMeshDataFromFile(const char* fileName, FSkeletalMesh
                 myfile.read((char*)&jointCount, sizeof(jointCount));
                 skeletalMeshOutput->joints.resize(jointCount);
                 skeletalMeshOutput->inverseJoints.resize(jointCount);
-                myfile.read((char*)skeletalMeshOutput->joints.data(), sizeof(Animation::Joint) * jointCount);
-                myfile.read((char*)skeletalMeshOutput->inverseJoints.data(), sizeof(Animation::Joint) * jointCount);
+                myfile.read((char*)skeletalMeshOutput->joints.data(), sizeof(Animation::FJoint) * jointCount);
+                myfile.read((char*)skeletalMeshOutput->inverseJoints.data(), sizeof(Animation::FJoint) * jointCount);
 
 
                 uint32_t vertCount;
                 uint32_t indCount;
-                myfile.seekg(0, ios::beg);
                 myfile.read((char*)skeletalMeshOutput->materialName.data(), skeletalMeshOutput->materialName.size());
                 myfile.read((char*)&vertCount, sizeof(uint32_t));
                 myfile.read((char*)&indCount, sizeof(uint32_t));
@@ -154,7 +153,7 @@ EResult FileIO::LoadShaderDataFromFile(const char* fileName, const char* suffix,
         return output;
 }
 
-EResult FileIO::ImportAnimClipData(const char* fileName, Animation::AnimClip& animClip, const Animation::Skeleton& skeleton)
+EResult FileIO::ImportAnimClipData(const char* fileName, Animation::FAnimClip& animClip, const Animation::FSkeleton& skeleton)
 {
         EResult output;
         output.m_Flags = ERESULT_FLAG::INVALID;

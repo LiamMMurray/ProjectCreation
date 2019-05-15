@@ -14,5 +14,5 @@ struct SkeletalMesh : public Resource<SkeletalMesh>
         uint32_t      m_VertexCount;
         uint32_t      m_IndexCount;
 
-		Animation::Skeleton m_BindPoseSkeleton;
+		Animation::FSkeleton m_BindPoseSkeleton;
 };

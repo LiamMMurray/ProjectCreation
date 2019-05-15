@@ -19,6 +19,11 @@ struct CRenderComponent;
 
 class ResourceManager;
 
+namespace Animation
+{
+        struct FSkeleton;
+}
+
 struct E_VIEWPORT
 {
         enum
@@ -35,7 +40,7 @@ struct E_CONSTANT_BUFFER_BASE_PASS
                 MVP = 0,
                 SCENE,
                 SURFACE,
-				ANIM,
+                ANIM,
                 COUNT
         };
 };
@@ -108,7 +113,7 @@ struct E_SAMPLER_STATE
                 CLAMP,
                 NEAREST,
                 SKY,
-				COUNT
+                COUNT
         };
 };
 
@@ -204,6 +209,7 @@ class CRenderSystem : public ISystem
 
         CTransformBuffer m_ConstantBuffer_MVP;
         CSceneInfoBuffer m_ConstantBuffer_SCENE;
+        CAnimationBuffer m_ConstantBuffer_ANIM;
 
         float m_BackBufferWidth;
         float m_BackBufferHeight;
@@ -211,7 +217,10 @@ class CRenderSystem : public ISystem
         void UpdateConstantBuffer(ID3D11Buffer* gpuBuffer, void* cpuBuffer, size_t size);
 
         void             DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
-        void             DrawOpaqueSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        void             DrawOpaqueSkeletalMesh(SkeletalMesh*               mesh,
+                                                Material*                   material,
+                                                DirectX::XMMATRIX*          mtx,
+                                                const Animation::FSkeleton* skel);
         void             DrawTransparentStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
         void             DrawTransparentSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
         ResourceManager* m_ResourceManager;

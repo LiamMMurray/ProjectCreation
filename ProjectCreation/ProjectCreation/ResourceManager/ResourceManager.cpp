@@ -16,6 +16,7 @@
 #include "StaticMesh.h"
 #include "Texture2D.h"
 #include "VertexShader.h"
+#include "AnimationClip.h"
 
 
 ResourceHandle ResourceManager::LoadMaterial(const char* name)
@@ -188,13 +189,17 @@ ResourceHandle ResourceManager::LoadStaticMesh(const char* name)
         return outputHandle;
 }
 
-ResourceHandle ResourceManager::LoadAnimationClip(const char* name)
+ResourceHandle ResourceManager::LoadSkeletalMesh(const char* name)
 {
-        FileIO::FMaterialData materialData;
+        FileIO::FSkeletalMeshData meshData;
+        EResult                   result = FileIO::LoadSkeletalMeshDataFromFile(name, &meshData);
+
+        assert(result.m_Flags == ERESULT_FLAG::SUCCESS);
 
         CRenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>();
 
-        auto container = GetResourceContainer<PixelShader>();
+
+        auto container = GetResourceContainer<SkeletalMesh>();
         auto it        = container->m_NameTable.find(name);
 
         ResourceHandle outputHandle;
@@ -208,13 +213,56 @@ ResourceHandle ResourceManager::LoadAnimationClip(const char* name)
                 outputHandle = it->second;
         }
 
-        PixelShader* resource = container->GetResource(outputHandle);
+        SkeletalMesh* resource  = container->GetResource(outputHandle);
+        resource->m_BindPoseSkeleton.inverseBindPose = meshData.inverseJoints;
+        resource->m_BindPoseSkeleton.jointTransforms = meshData.joints;
+        resource->m_VertexCount = (uint32_t)meshData.vertices.size();
+        resource->m_IndexCount  = (uint32_t)meshData.indices.size();
 
-        FileIO::FShaderData shaderData;
-        FileIO::LoadShaderDataFromFile(name, "_PS", &shaderData);
+        D3D11_BUFFER_DESC bd{};
+        bd.Usage          = D3D11_USAGE_DEFAULT;
+        bd.ByteWidth      = UINT(sizeof(FSkinnedVertex) * resource->m_VertexCount);
+        bd.BindFlags      = D3D11_BIND_VERTEX_BUFFER;
+        bd.CPUAccessFlags = 0;
 
-        renderSystem->m_Device->CreatePixelShader(
-            shaderData.bytes.data(), shaderData.bytes.size(), nullptr, &resource->m_PixelShader);
+        D3D11_SUBRESOURCE_DATA InitData{};
+        InitData.pSysMem = meshData.vertices.data();
+
+        renderSystem->m_Device->CreateBuffer(&bd, &InitData, &resource->m_VertexBuffer);
+
+        bd.ByteWidth     = UINT(sizeof(uint32_t) * resource->m_IndexCount);
+        bd.BindFlags     = D3D11_BIND_INDEX_BUFFER;
+        InitData.pSysMem = meshData.indices.data();
+
+        renderSystem->m_Device->CreateBuffer(&bd, &InitData, &resource->m_IndexBuffer);
+
+        return outputHandle;
+}
+
+ResourceHandle ResourceManager::LoadAnimationClip(const char* name, const Animation::FSkeleton* skeleton)
+{
+        Animation::FAnimClip animClip;
+        FileIO::ImportAnimClipData(name, animClip, *skeleton);
+
+        CRenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>();
+
+        auto container = GetResourceContainer<AnimationClip>();
+        auto it        = container->m_NameTable.find(name);
+
+        ResourceHandle outputHandle;
+
+        if (it == container->m_NameTable.end())
+        {
+                outputHandle = container->CreateResource(name);
+        }
+        else
+        {
+                outputHandle = it->second;
+        }
+
+        AnimationClip* resource = container->GetResource(outputHandle);
+
+        resource->m_AnimClip = animClip;
 
         return outputHandle;
 }
