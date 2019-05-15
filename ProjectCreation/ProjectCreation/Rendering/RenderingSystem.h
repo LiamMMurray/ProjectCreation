@@ -216,14 +216,16 @@ class CRenderSystem : public ISystem
 
         void UpdateConstantBuffer(ID3D11Buffer* gpuBuffer, void* cpuBuffer, size_t size);
 
-        void             DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
-        void             DrawOpaqueSkeletalMesh(SkeletalMesh*               mesh,
-                                                Material*                   material,
-                                                DirectX::XMMATRIX*          mtx,
-                                                const Animation::FSkeleton* skel);
-        void             DrawTransparentStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
-        void             DrawTransparentSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
-        ResourceManager* m_ResourceManager;
+        void              DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        void              DrawOpaqueSkeletalMesh(SkeletalMesh*               mesh,
+                                                 Material*                   material,
+                                                 DirectX::XMMATRIX*          mtx,
+                                                 const Animation::FSkeleton* skel);
+        void              DrawTransparentStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        void              DrawTransparentSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        ResourceManager*  m_ResourceManager;
+        ComponentManager* m_ComponentManager;
+        EntityManager*    m_EntityManager;
 
     protected:
         virtual void OnPreUpdate(float deltaTime) override;
