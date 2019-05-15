@@ -86,6 +86,8 @@
     <ClInclude Include="Utility\StringUtility.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CollisionLibary\CollisionComponent.cpp" />
+    <ClCompile Include="CollisionLibary\CollisionLibary.cpp" />
     <ClCompile Include="Components\PhysicsComponent.cpp" />
     <ClCompile Include="Controller\IController.cpp" />
     <ClCompile Include="Controller\PlayerMovement.cpp" />
