@@ -23,6 +23,13 @@ class CollisionComponent
                 std::vector<FCotactPoint> collideSurfaces;
         };
 
+		struct FSweepCollision
+		{
+                ECollisionType collisionType;
+                std::vector<FCotactPoint> collideSurfaces;
+                DirectX::XMVECTOR         finalPoaition;
+
+		};
         struct FSphere
         {
                 DirectX::XMVECTOR center;
@@ -49,6 +56,6 @@ class CollisionComponent
                 DirectX::XMVECTOR endPoint;
                 float             radius;
 
-				float GetCapsuleDistance();
+                float GetCapsuleDistance();
         };
 };

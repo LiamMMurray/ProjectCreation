@@ -27,11 +27,12 @@ CollisionComponent::FCotactPoint CollisionLibary::CollidePoint(DirectX::XMVECTOR
 }
 
 CollisionComponent::FCollideResult CollisionLibary::OverlapSphereToSphere(CollisionComponent::FSphere& a,
-                                                                          CollisionComponent::FSphere& b)
+                                                                          CollisionComponent::FSphere& b,
+                                                                          float                        offset)
 {
         CollisionComponent::FCollideResult output;
         CollisionComponent::FCotactPoint   contactPoint;
-        float                              distance    = MathLibrary::CalulateDistance(a.center, b.center);
+        float                              distance    = MathLibrary::CalulateDistance(a.center, b.center) + offset;
         float                              totalRadius = a.radius + b.radius;
         if (distance < totalRadius)
         {
@@ -61,11 +62,12 @@ CollisionComponent::FCollideResult CollisionLibary::OverlapSphereToSphere(Collis
         return output;
 }
 
-CollisionComponent::FCollideResult CollisionLibary::SweepSphereToSphere(CollisionComponent::FSphere& startA,
+CollisionComponent::FSweepCollision CollisionLibary::SweepSphereToSphere(CollisionComponent::FSphere& startA,
                                                                         CollisionComponent::FSphere& endA,
-                                                                        CollisionComponent::FSphere& checkB)
+                                                                        CollisionComponent::FSphere& checkB,
+                                                                        float                        offset)
 {
-        CollisionComponent::FCollideResult output;
+        CollisionComponent::FSweepCollision output;
         CollisionComponent::FCotactPoint   contactPoint;
         CollisionComponent::FCapsule       capsule;
 
@@ -75,7 +77,9 @@ CollisionComponent::FCollideResult CollisionLibary::SweepSphereToSphere(Collisio
 
         XMVECTOR cloestPoint = MathLibrary::GetClosestPointFromLine(capsule.startPoint, capsule.endPoint, checkB.center);
         float    totalRadius = capsule.radius + checkB.radius;
-        float    distance    = MathLibrary::CalulateDistance(cloestPoint, checkB.center);
+        float    distance    = MathLibrary::CalulateDistance(cloestPoint, checkB.center) + offset;
+
+        XMVECTOR axis = startA.center - checkB.center;
 
         if (distance == totalRadius)
         {
@@ -88,6 +92,7 @@ CollisionComponent::FCollideResult CollisionLibary::SweepSphereToSphere(Collisio
                 output.collisionType = CollisionComponent::ECollisionType::EOveralap;
                 output.collideSurfaces.push_back(CollidePoint(checkB.center, cloestPoint, capsule.radius));
                 output.collideSurfaces.push_back(CollidePoint(cloestPoint, checkB.center, checkB.radius));
+                output.finalPoaition;
         }
         else if (distance > totalRadius)
         {
@@ -96,14 +101,16 @@ CollisionComponent::FCollideResult CollisionLibary::SweepSphereToSphere(Collisio
         return output;
 }
 
+
 CollisionComponent::FCollideResult CollisionLibary::SphereToAabb(CollisionComponent::FSphere& sphere,
-                                                                 CollisionComponent::FAabb&   aabb)
+                                                                 CollisionComponent::FAabb&   aabb,
+                                                                 float                        offset)
 {
         CollisionComponent::FCollideResult output;
         XMVECTOR                           aabbMin           = aabb.center - aabb.extents;
         XMVECTOR                           aabbMax           = aabb.center + aabb.extents;
         XMVECTOR                           cloestPointinAABB = XMVectorMin(XMVectorMax(sphere.center, aabbMin), aabbMax);
-        float                              distance          = MathLibrary::CalulateDistance(cloestPointinAABB, sphere.center);
+        float                              distance          = MathLibrary::CalulateDistance(cloestPointinAABB, sphere.center) + offset;
 
 
         if (distance < sphere.radius)
@@ -123,7 +130,9 @@ CollisionComponent::FCollideResult CollisionLibary::SphereToAabb(CollisionCompon
         return output;
 }
 
-CollisionComponent::FCollideResult CollisionLibary::AabbToAabb(CollisionComponent::FAabb& a, CollisionComponent::FAabb& b)
+CollisionComponent::FCollideResult CollisionLibary::AabbToAabb(CollisionComponent::FAabb& a,
+                                                               CollisionComponent::FAabb& b,
+                                                               float                      offset)
 {
         CollisionComponent::FCollideResult output;
 
