@@ -252,6 +252,28 @@ void CRenderSystem::CreateInputLayouts()
                                                  shaderData.bytes.size(),
                                                  &m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
         assert(SUCCEEDED(hr));
+
+
+        D3D11_INPUT_ELEMENT_DESC vLayoutSkinned[] = {
+            {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"JOINTINDICES", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"WEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}};
+
+        er = FileIO::LoadShaderDataFromFile("DefaultSkinned", "_VS", &shaderData);
+
+        assert(er.m_Flags == ERESULT_FLAG::SUCCESS);
+
+        hr = m_Device->CreateInputLayout(vLayoutSkinned,
+                                                 ARRAYSIZE(vLayoutSkinned),
+                                                 shaderData.bytes.data(),
+                                                 shaderData.bytes.size(),
+                                                 &m_DefaultInputLayouts[E_INPUT_LAYOUT::SKINNED]);
+        assert(SUCCEEDED(hr));
 }
 
 void CRenderSystem::CreateCommonShaders()
@@ -260,7 +282,7 @@ void CRenderSystem::CreateCommonShaders()
         m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEFAULT]   = m_ResourceManager->LoadPixelShader("Default");
 }
 
-void CRenderSystem::CrateCommonConstantBuffers()
+void CRenderSystem::CreateCommonConstantBuffers()
 {
         HRESULT           hr;
         D3D11_BUFFER_DESC bd{};
@@ -269,6 +291,98 @@ void CRenderSystem::CrateCommonConstantBuffers()
         bd.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
         bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
         hr                = m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP]);
+
+        bd.ByteWidth = sizeof(CSceneInfoBuffer);
+        hr           = m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE]);
+
+        bd.ByteWidth = sizeof(FSurfaceProperties);
+        hr           = m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE]);
+
+		bd.ByteWidth = sizeof(CAnimationBuffer);
+        hr           = m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::ANIM]);
+}
+
+void CRenderSystem::CreateSamplerStates()
+{
+        HRESULT hr;
+
+        D3D11_SAMPLER_DESC sampDesc = {};
+        sampDesc.Filter             = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        sampDesc.AddressU           = D3D11_TEXTURE_ADDRESS_WRAP;
+        sampDesc.AddressV           = D3D11_TEXTURE_ADDRESS_WRAP;
+        sampDesc.AddressW           = D3D11_TEXTURE_ADDRESS_WRAP;
+        sampDesc.MipLODBias         = 0.0f;
+        sampDesc.MaxAnisotropy      = 1;
+        sampDesc.ComparisonFunc     = D3D11_COMPARISON_ALWAYS;
+        sampDesc.BorderColor[0]     = 0;
+        sampDesc.BorderColor[1]     = 0;
+        sampDesc.BorderColor[2]     = 0;
+        sampDesc.BorderColor[3]     = 0;
+        sampDesc.MinLOD             = 0;
+        sampDesc.MaxLOD             = D3D11_FLOAT32_MAX;
+
+        hr = m_Device->CreateSamplerState(&sampDesc, &m_DefaultSamplerStates[E_SAMPLER_STATE::WRAP]);
+        assert(SUCCEEDED(hr));
+
+        sampDesc.Filter         = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        sampDesc.AddressU       = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampDesc.AddressV       = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampDesc.AddressW       = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampDesc.MipLODBias     = 0.0f;
+        sampDesc.MaxAnisotropy  = 1;
+        sampDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+        sampDesc.BorderColor[0] = 0;
+        sampDesc.BorderColor[1] = 0;
+        sampDesc.BorderColor[2] = 0;
+        sampDesc.BorderColor[3] = 0;
+        sampDesc.MinLOD         = 0;
+        sampDesc.MaxLOD         = D3D11_FLOAT32_MAX;
+
+        hr = m_Device->CreateSamplerState(&sampDesc, &m_DefaultSamplerStates[E_SAMPLER_STATE::CLAMP]);
+        assert(SUCCEEDED(hr));
+
+
+        sampDesc.Filter         = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        sampDesc.AddressU       = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampDesc.AddressV       = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampDesc.AddressW       = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+        sampDesc.MinLOD = 0;
+        sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+        hr = m_Device->CreateSamplerState(&sampDesc, &m_DefaultSamplerStates[E_SAMPLER_STATE::SKY]);
+        assert(SUCCEEDED(hr));
+
+
+        sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR;
+        sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR;
+        sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_MIRROR;
+        sampDesc.Filter   = D3D11_FILTER_MIN_MAG_MIP_POINT;
+        hr                = m_Device->CreateSamplerState(&sampDesc, &m_DefaultSamplerStates[E_SAMPLER_STATE::NEAREST]);
+        assert(SUCCEEDED(hr));
+
+
+        // Create the sample state clamp
+        float               black[] = {0.f, 0.f, 0.f, 1.f};
+        CD3D11_SAMPLER_DESC SamDescShad(D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT,
+                                        D3D11_TEXTURE_ADDRESS_BORDER,
+                                        D3D11_TEXTURE_ADDRESS_BORDER,
+                                        D3D11_TEXTURE_ADDRESS_BORDER,
+                                        0.f,
+                                        0,
+                                        D3D11_COMPARISON_LESS,
+                                        black,
+                                        0,
+                                        0);
+        hr = m_Device->CreateSamplerState(&SamDescShad, &m_DefaultSamplerStates[E_SAMPLER_STATE::SHADOWS]);
+        assert(SUCCEEDED(hr));
+
+
+        m_Context->VSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
+        m_Context->PSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
+        m_Context->HSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
+        m_Context->DSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
 }
 
 void CRenderSystem::UpdateConstantBuffer(ID3D11Buffer* gpuBuffer, void* cpuBuffer, size_t size)
@@ -288,22 +402,22 @@ void CRenderSystem::DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, D
 
         m_Context->IASetVertexBuffers(0, 1, &mesh->m_VertexBuffer, strides, offsets);
         m_Context->IASetIndexBuffer(mesh->m_IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
-        m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         VertexShader* vs = m_ResourceManager->GetResource<VertexShader>(material->m_VertexShaderHandle);
         PixelShader*  ps = m_ResourceManager->GetResource<PixelShader>(material->m_PixelShaderHandle);
 
         m_Context->VSSetShader(vs->m_VertexShader, nullptr, 0);
-        m_Context->VSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
+        m_Context->PSSetShader(ps->m_PixelShader, nullptr, 0);
 
+        m_ConstantBuffer_MVP.World = *mtx;
 
-        m_ConstantBuffer_MVP.World = XMMatrixIdentity();
+        FSurfaceProperties surfaceProps;
 
         UpdateConstantBuffer(
             m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP], &m_ConstantBuffer_MVP, sizeof(m_ConstantBuffer_MVP));
+        UpdateConstantBuffer(
+            m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE], &surfaceProps, sizeof(surfaceProps));
 
-        m_Context->PSSetShader(ps->m_PixelShader, nullptr, 0);
 
         m_Context->DrawIndexed(mesh->m_IndexCount, 0, 0);
 }
@@ -318,9 +432,7 @@ void CRenderSystem::DrawTransparentSkeletalMesh(SkeletalMesh* mesh, Material* ma
 {}
 
 void CRenderSystem::OnPreUpdate(float deltaTime)
-{
-       
-}
+{}
 
 void CRenderSystem::OnUpdate(float deltaTime)
 {
@@ -364,7 +476,7 @@ void CRenderSystem::OnPostUpdate(float deltaTime)
 
         StaticMesh* sm = rm->GetResource<StaticMesh>(staticMeshHandle);
 
-        XMMATRIX view         = (XMMatrixInverse(nullptr, PlayerMovement::transformComponent.transform.CreateMatrix()));
+        XMMATRIX view = (XMMatrixInverse(nullptr, PlayerMovement::transformComponent.transform.CreateMatrix()));
         XMMATRIX proj =
             XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), m_BackBufferWidth / m_BackBufferHeight, 0.01f, 1500.0f);
 
@@ -374,11 +486,24 @@ void CRenderSystem::OnPostUpdate(float deltaTime)
         m_Context->RSSetViewports(1, &viewport);
 
         /** Draw Mesh. Should be replaced by loop **/
-		XMMATRIX world = XMMatrixIdentity();
+        XMMATRIX world = XMMatrixScaling(0.1f, 0.1f, 0.1f);
         Material mat;
         mat.m_VertexShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT];
-        mat.m_PixelShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT];
-		DrawOpaqueStaticMesh(sm, &mat, &world);
+        mat.m_PixelShaderHandle  = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT];
+
+        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
+        m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        m_Context->VSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
+        m_Context->PSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
+
+        XMStoreFloat3(&m_ConstantBuffer_SCENE.eyePosition, PlayerMovement::transformComponent.transform.translation);
+        m_ConstantBuffer_SCENE.time = (float)GEngine::Get()->GetTotalTime();
+        UpdateConstantBuffer(m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE],
+                             &m_ConstantBuffer_SCENE,
+                             sizeof(m_ConstantBuffer_SCENE));
+
+
+        DrawOpaqueStaticMesh(sm, &mat, &world);
 
         // Set the backbuffer as render target
         m_Context->OMSetRenderTargets(1, &m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER], nullptr);
@@ -408,7 +533,18 @@ void CRenderSystem::OnInitialize()
         CreateRasterizerStates();
         CreateCommonShaders();
         CreateInputLayouts();
-        CrateCommonConstantBuffers();
+        CreateCommonConstantBuffers();
+        CreateSamplerStates();
+
+        ID3D11ShaderResourceView* srvs[7] = {0};
+        srvs[0] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("PPG_3D_Player_D"))->m_SRV;
+        srvs[1] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("PPG_3D_Player_N"))->m_SRV;
+        srvs[2] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("PPG_3D_Player_spec"))->m_SRV;
+        srvs[4] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("IBLTestDiffuseHDR"))->m_SRV;
+        srvs[5] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("IBLTestSpecularHDR"))->m_SRV;
+        srvs[6] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("IBLTestBrdf"))->m_SRV;
+
+        m_Context->PSSetShaderResources(0, 7, srvs);
 }
 
 void CRenderSystem::OnShutdown()
@@ -448,6 +584,12 @@ void CRenderSystem::OnShutdown()
         {
 
                 SAFE_RELEASE(m_BasePassConstantBuffers[i]);
+        }
+
+        for (int i = 0; i < E_SAMPLER_STATE::COUNT; ++i)
+        {
+
+                SAFE_RELEASE(m_DefaultSamplerStates[i]);
         }
 
         m_Swapchain->Release();

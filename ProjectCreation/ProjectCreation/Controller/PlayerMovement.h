@@ -62,8 +62,8 @@ class PlayerMovement : public IController
 		float minMaxSpeed = 1.0f;
         float maxMaxSpeed = 3.0f;
 
-		float acceleration = 2.0;
-        float deacceleration = 3.5f;
+		float acceleration = 1.0;
+        float deacceleration = 1.5f;
 
 		int32_t m_MouseXDelta;
         int32_t m_MouseYDelta;

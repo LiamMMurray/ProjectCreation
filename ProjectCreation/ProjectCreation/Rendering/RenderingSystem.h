@@ -33,6 +33,9 @@ struct E_CONSTANT_BUFFER_BASE_PASS
         enum
         {
                 MVP = 0,
+                SCENE,
+                SURFACE,
+				ANIM,
                 COUNT
         };
 };
@@ -93,6 +96,19 @@ struct E_POSTPROCESS_PIXEL_SRV
                 BASE_PASS = 0,
                 BASE_DEPTH,
                 COUNT
+        };
+};
+
+struct E_SAMPLER_STATE
+{
+        enum
+        {
+                WRAP = 0,
+                SHADOWS,
+                CLAMP,
+                NEAREST,
+                SKY,
+				COUNT
         };
 };
 
@@ -171,13 +187,15 @@ class CRenderSystem : public ISystem
         void CreateRasterizerStates();
         void CreateInputLayouts();
         void CreateCommonShaders();
-        void CrateCommonConstantBuffers();
+        void CreateCommonConstantBuffers();
+        void CreateSamplerStates();
 
         ID3D11RenderTargetView*   m_DefaultRenderTargets[E_RENDER_TARGET::COUNT]{};
         ID3D11ShaderResourceView* m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::COUNT]{};
         ID3D11DepthStencilView*   m_DefaultDepthStencil[E_DEPTH_STENCIL::COUNT]{};
         ID3D11InputLayout*        m_DefaultInputLayouts[E_INPUT_LAYOUT::COUNT]{};
         ID3D11RasterizerState*    m_DefaultRasterizerStates[E_RASTERIZER_STATE::COUNT]{};
+        ID3D11SamplerState*       m_DefaultSamplerStates[E_SAMPLER_STATE::COUNT]{};
 
         ResourceHandle m_CommonVertexShaderHandles[E_VERTEX_SHADERS::COUNT];
         ResourceHandle m_CommonPixelShaderHandles[E_PIXEL_SHADERS::COUNT];
@@ -185,17 +203,19 @@ class CRenderSystem : public ISystem
         ID3D11Buffer* m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::COUNT];
 
         CTransformBuffer m_ConstantBuffer_MVP;
+        CSceneInfoBuffer m_ConstantBuffer_SCENE;
 
         float m_BackBufferWidth;
         float m_BackBufferHeight;
 
         void UpdateConstantBuffer(ID3D11Buffer* gpuBuffer, void* cpuBuffer, size_t size);
 
-        void DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
-        void DrawOpaqueSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
-        void DrawTransparentStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
-        void DrawTransparentSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        void             DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        void             DrawOpaqueSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        void             DrawTransparentStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        void             DrawTransparentSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
         ResourceManager* m_ResourceManager;
+
     protected:
         virtual void OnPreUpdate(float deltaTime) override;
         virtual void OnUpdate(float deltaTime) override;

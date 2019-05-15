@@ -3,8 +3,8 @@
 using namespace DirectX;
 using namespace std;
 
-random_device                    rd;
-default_random_engine            generator(rd());
+random_device         rd;
+default_random_engine generator(rd());
 
 uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
@@ -69,6 +69,11 @@ DirectX::XMVECTOR MathLibrary::GetClosestPointFromLine(DirectX::XMVECTOR startPo
         XMVECTOR dotValue     = XMVector3Dot(length, targetVector);
         XMVECTOR distance     = XMVectorMultiply(length, dotValue);
         output                = startPoint + distance;
+        XMVECTOR minv         = XMVectorMin(startPoint, endPoint);
+        XMVECTOR maxv         = XMVectorMin(startPoint, endPoint);
+
+		output = XMVectorMin(output, maxv);
+		output = XMVectorMax(output, minv);
 
         return output;
 }
@@ -83,10 +88,9 @@ float MathLibrary::CalulateDistance(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
 
 float MathLibrary::CalulateDistanceSq(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
 {
-        float output;
-        XMVECTOR temp = (a-b);
+        float    output;
+        XMVECTOR temp = (a - b);
         temp          = XMVector3Dot(temp, temp);
         output        = XMVectorGetX(temp);
-		return output;
-
+        return output;
 }
