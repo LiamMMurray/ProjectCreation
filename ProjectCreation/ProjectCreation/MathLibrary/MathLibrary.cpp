@@ -94,3 +94,9 @@ float MathLibrary::CalulateDistanceSq(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
         output        = XMVectorGetX(temp);
         return output;
 }
+
+float MathLibrary::CalulateVectorLength(DirectX::XMVECTOR vector)
+{
+        return sqrtf(XMVectorGetX(vector) * XMVectorGetX(vector) + XMVectorGetY(vector) * XMVectorGetY(vector) +
+                     XMVectorGetZ(vector) * XMVectorGetZ(vector));
+}
