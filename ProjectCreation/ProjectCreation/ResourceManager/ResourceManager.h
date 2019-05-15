@@ -7,32 +7,6 @@
 #include <unordered_map>
 #include <vector>
 
-struct byteStructA
-{
-        float a;
-        char  b;
-
-        static constexpr size_t headerSize = sizeof(a) + sizeof(b);
-        static constexpr size_t dataSize   = 64 - headerSize;
-
-        char data[];
-};
-struct byteStructB
-{
-        float a;
-        float c;
-        char  b;
-
-        static constexpr size_t headerSize = sizeof(a) + sizeof(b) + sizeof(c);
-        static constexpr size_t dataSize   = 64 - headerSize;
-
-        char data[];
-};
-template <typename T>
-struct G
-{
-       int g = T::headerSize;
-};
 class ResourceContainerBase
 {
     public:
