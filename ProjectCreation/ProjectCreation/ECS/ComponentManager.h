@@ -16,6 +16,7 @@ class ComponentManager
         typedef std::unordered_map<EntityHandle, ComponentTypeIdHandleMap> EntityComponentIdMap;
 
         HandleManager<IComponent> m_HandleManager;
+        //HandleManagerNew<IComponent> m_HandleManagerNew;
         EntityComponentIdMap      m_EntityComponentIdMap;
 
     public:
