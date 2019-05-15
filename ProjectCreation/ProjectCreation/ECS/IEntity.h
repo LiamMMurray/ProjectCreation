@@ -6,6 +6,8 @@
 class EntityManager;
 class IEntity
 {
+	// TODO use friend class for entity manager and make this protected
+    public:
         EntityManager* m_EntityManager;
         ComponentManager* m_ComponentManager;
     public:
