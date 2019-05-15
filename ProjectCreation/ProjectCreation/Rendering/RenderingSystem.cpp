@@ -27,6 +27,8 @@
 
 #include "Vertex.h"
 
+#include "../Controller/PlayerMovement.h"
+
 void CRenderSystem::CreateDeviceAndSwapChain()
 {
         using namespace Microsoft::WRL;
@@ -317,10 +319,7 @@ void CRenderSystem::DrawTransparentSkeletalMesh(SkeletalMesh* mesh, Material* ma
 
 void CRenderSystem::OnPreUpdate(float deltaTime)
 {
-        if (GCoreInput::GetKeyState(KeyCode::W) == KeyState::DownFirst)
-        {
-                SetFullscreen(!GetFullscreen());
-        }
+       
 }
 
 void CRenderSystem::OnUpdate(float deltaTime)
@@ -365,9 +364,7 @@ void CRenderSystem::OnPostUpdate(float deltaTime)
 
         StaticMesh* sm = rm->GetResource<StaticMesh>(staticMeshHandle);
 
-        FTransform cameraPos;
-        cameraPos.translation = XMVectorSet(0.f, 2.f, -30.0f, 1.0f);
-        XMMATRIX view         = (XMMatrixInverse(nullptr, cameraPos.CreateMatrix()));
+        XMMATRIX view         = (XMMatrixInverse(nullptr, PlayerMovement::transformComponent.transform.CreateMatrix()));
         XMMATRIX proj =
             XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), m_BackBufferWidth / m_BackBufferHeight, 0.01f, 1500.0f);
 

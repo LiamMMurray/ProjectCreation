@@ -223,7 +223,9 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
 
+				if (GCoreInput::GetKeyState(KeyCode::P) == KeyState::DownFirst)
                 AudioManager::Get()->PlaySounds();
+
                 pMovement.OnUpdate(GEngine::Get()->GetDeltaTime());
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
         }

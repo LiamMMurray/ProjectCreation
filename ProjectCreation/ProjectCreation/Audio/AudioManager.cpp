@@ -44,7 +44,7 @@ void AudioManager::PlayMusic()
 {
         if (G_FAIL(fSoundEngine->CreateMusicStream(music.c_str(), &fMusic)))
         {
-                printf("ERROR");
+                //printf("ERROR");
         }
         else
         {
