@@ -54,6 +54,7 @@ LONG WINAPI errorFunc(_EXCEPTION_POINTERS* pExceptionInfo)
                 ExInfo.ExceptionPointers = pExceptionInfo;
                 ExInfo.ClientPointers    = NULL;
                 MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal, &ExInfo, NULL, NULL);
+				
                 // MessageBox("Dump File Saved look x directory please email to developer at the following email adress
                 // crashdmp@gmail.com with the subject Gamename - Version ");
                 ::CloseHandle(hFile);
