@@ -1,5 +1,6 @@
 #pragma once
 #include "../ECS/ISystem.h"
+#include <DirectXMath.h>
 
 class PhysicsSystem : public ISystem
 {
@@ -10,10 +11,13 @@ class PhysicsSystem : public ISystem
 		//m_TwoG is 2.0 times earth's gravity
 		//All Gravity is measured in Meters per Second squared (m/s^2)
 
-        float m_ZeroG = 0.0f, m_HalfG = -4.9f, m_OneG = -9.8f, m_TwoG = -19.6f;
+        DirectX::XMVECTOR m_ZeroG = DirectX::XMVectorSet(0, 0, 0, 0); 
+		DirectX::XMVECTOR m_HalfG = DirectX::XMVectorSet(0, -4.9f, 0, 0);
+        DirectX::XMVECTOR m_OneG  = DirectX::XMVectorSet(0, -9.8f, 0, 0); 
+		DirectX::XMVECTOR m_TwoG = DirectX::XMVectorSet(0, -19.6f, 0, 0);
 
         // m_Gravity is the active gravity
-        float m_Gravity = m_ZeroG;
+        DirectX::XMVECTOR m_Gravity = m_ZeroG;
 
     public:
         void OnPreUpdate(float deltaTime) override;

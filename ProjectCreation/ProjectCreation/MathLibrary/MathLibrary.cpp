@@ -3,8 +3,9 @@
 using namespace DirectX;
 using namespace std;
 
-random_device                rd;
-default_random_engine        generator(rd());
+random_device                    rd;
+default_random_engine            generator(rd());
+
 uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
 float MathLibrary::RandomFloatInRange(float min, float max)
@@ -22,7 +23,7 @@ void MathLibrary::OrthoNormalize(DirectX::XMVECTOR normal, DirectX::XMVECTOR& ta
 }
 
 
-XMMATRIX MathLibrary::LookAt( DirectX::XMVECTOR vPos, DirectX::XMVECTOR tPos, DirectX::XMVECTOR up)
+XMMATRIX MathLibrary::LookAt(DirectX::XMVECTOR vPos, DirectX::XMVECTOR tPos, DirectX::XMVECTOR up)
 {
         XMMATRIX output;
         XMVECTOR zValue = tPos - vPos;
@@ -39,8 +40,7 @@ XMMATRIX MathLibrary::LookAt( DirectX::XMVECTOR vPos, DirectX::XMVECTOR tPos, Di
         output.r[2] = zValue;
         output.r[3] = vPos;
 
-		return output;
-
+        return output;
 }
 
 void MathLibrary::TurnTo(DirectX::XMMATRIX& matrix, DirectX::XMVECTOR targetPosition, float speed)
@@ -56,7 +56,37 @@ void MathLibrary::TurnTo(DirectX::XMMATRIX& matrix, DirectX::XMVECTOR targetPosi
         XMMATRIX output = XMMatrixRotationQuaternion(blend);
         output.r[3]     = pos;
 
-		matrix = output;
+        matrix = output;
+}
 
+DirectX::XMVECTOR MathLibrary::GetClosestPointFromLine(DirectX::XMVECTOR startPoint,
+                                                       DirectX::XMVECTOR endPoint,
+                                                       DirectX::XMVECTOR point)
+{
+        XMVECTOR output;
+        XMVECTOR length       = XMVector3Normalize(endPoint - startPoint);
+        XMVECTOR targetVector = point - startPoint;
+        XMVECTOR dotValue     = XMVector3Dot(length, targetVector);
+        XMVECTOR distance     = XMVectorMultiply(length, dotValue);
+        output                = startPoint + distance;
+
+        return output;
+}
+
+float MathLibrary::CalulateDistance(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
+{
+
+        float output;
+        output = sqrtf(CalulateDistanceSq(a, b));
+        return output;
+}
+
+float MathLibrary::CalulateDistanceSq(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
+{
+        float output;
+        XMVECTOR temp = (a-b);
+        temp          = XMVector3Dot(temp, temp);
+        output        = XMVectorGetX(temp);
+		return output;
 
 }

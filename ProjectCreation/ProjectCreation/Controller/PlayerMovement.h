@@ -1,7 +1,10 @@
 #pragma once
 #include <DirectXMath.h>
-#include "IController.h"
 #include "../ECS/ECSTypes.h"
+#include "IController.h"
+
+#include "../Components/CTransformComponent.h"
+#include "../Components/PhysicsComponent.h"
 
 class PlayerMovement : public IController
 {
@@ -10,16 +13,17 @@ class PlayerMovement : public IController
         void ProcessInput() override;
         void ApplyInput() override;
 
-		void ModifySpeed();
 
     public:
+        PlayerMovement();
+
         enum MoveDirections
         {
-			NO_DIRECTION = 0,
-			FORWARD,
-			BACKWARD,
-			LEFT,
-			RIGHT
+                NO_DIRECTION = 0,
+                FORWARD,
+                BACKWARD,
+                LEFT,
+                RIGHT
         };
 
         enum PlayerStates
@@ -29,11 +33,9 @@ class PlayerMovement : public IController
                 ON_WATER
         };
 
-		ComponentHandle m_handle;
+        ComponentHandle m_handle;
 
-		int SpeedModifier;
-
-		// Requested direction is set when we process the player's input
+        // Requested direction is set when we process the player's input
         MoveDirections requestedDirection;
 
         // Forward is the players local positive Z
@@ -52,11 +54,25 @@ class PlayerMovement : public IController
         DirectX::XMVECTOR ZeroVector = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 
         // MoveVector will be used to apply the movement to the player
-        DirectX::XMVECTOR MoveVector,
+        DirectX::XMVECTOR MoveVector = ZeroVector;
 
-		// oldTranslation will be used for debugging, delete when done
-		oldTranslation = ZeroVector;
-		
-		//PastDirection is used for debugging, delete when done
+        // PastDirection is used for debugging, delete when done
         MoveDirections PastDirection;
+
+		float minMaxSpeed = 1.0f;
+        float maxMaxSpeed = 3.0f;
+
+		float acceleration = 2.0;
+        float deacceleration = 3.5f;
+
+		int32_t m_MouseXDelta;
+        int32_t m_MouseYDelta;
+
+		DirectX::XMVECTOR m_CurrentInput;
+
+        DirectX::XMVECTOR m_CurrentVelocity;
+
+
+        static PhysicsComponent   physicsComponent;
+        static TransformComponent transformComponent;
 };

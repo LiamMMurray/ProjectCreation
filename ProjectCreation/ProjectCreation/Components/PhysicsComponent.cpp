@@ -1,7 +1,7 @@
 #include "PhysicsComponent.h"
-#include "../Engine/GEngine.h"
 #include "../Components/CTransformComponent.h"
 #include "../ECS/Entity.h"
+#include "../Engine/GEngine.h"
 
 void PhysicsComponent::AddForce(DirectX::XMVECTOR force)
 {
@@ -43,7 +43,7 @@ void PhysicsComponent::SetVelocity(DirectX::XMVECTOR _Velocity)
 
 DirectX::XMVECTOR PhysicsComponent::GetVelocity()
 {
-        return DirectX::XMVECTOR();
+        return m_Velocity;
 }
 
 bool PhysicsComponent::UsesGravity()
