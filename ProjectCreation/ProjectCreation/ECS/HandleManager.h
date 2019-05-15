@@ -5,11 +5,12 @@
 template <typename T>
 class HandleManager
 {
+
+    public:
         // uint32_t  version number
         // T* raw data pointer
         std::vector<std::pair<uint32_t, T*>> m_HandleSpace;
 
-    public:
         Handle<T> GetHandle(T* object)
         {
                 uint32_t i = 0;
@@ -31,12 +32,8 @@ class HandleManager
         {
                 return m_HandleSpace[handle.m_Id].second;
         }
-        template <typename T>
-        class iterator
-        {};
-        template <typename T>
-		iterator<T> begin()
+		size_t GetSize()
 		{
-
+                return m_HandleSpace.size();
 		}
 };

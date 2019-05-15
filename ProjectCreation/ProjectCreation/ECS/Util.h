@@ -10,9 +10,6 @@ class TypeIdCreator
         template <typename U>
         static uint32_t GetUniqueTypeId()
         {
-                static_assert(std::is_base_of<IComponent, T>::value || std::is_base_of<IEntity, T>::value,
-                              "Error. Template type must be subclass of IComponent or IEntity");
-
                 static const uint32_t increment_once_per_secondary_type{m_Count++};
                 return increment_once_per_secondary_type;
         }
