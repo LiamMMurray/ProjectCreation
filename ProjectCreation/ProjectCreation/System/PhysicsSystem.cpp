@@ -19,6 +19,7 @@ void PhysicsSystem::OnUpdate(float deltaTime)
 
         // for (iter == iter.begin(); iter != iter.end(); ++iter)
         {
+
 			//Testing use of static PhysicsComponent
                 PhysicsComponent* currPhysics = &PlayerMovement::physicsComponent;
 
@@ -44,6 +45,16 @@ void PhysicsSystem::OnUpdate(float deltaTime)
                           << XMVectorGetY(currComponent->transform.translation) << ", "
                           << XMVectorGetZ(currComponent->transform.translation) << ", "
                           << XMVectorGetW(currComponent->transform.translation) << " >" << std::endl;
+
+			// CRITICAL_TODO: Implement iterator
+                //PhysicsComponent*   currPhysics = nullptr;
+                //IEntity*            currEntity  = GEngine::Get()->GetEntityManager()->GetEntity(currPhysics->GetOwner());
+                //TransformComponent* currComponent = dynamic_cast<TransformComponent*>(currEntity->GetComponent<TransformComponent>());
+
+                //currComponent->transform.translation = currComponent->transform.translation + currPhysics->GetVelocity() * deltaTime;
+
+                //currPhysics->ApplyForce(currPhysics->GetForce());
+
         }
 }
 

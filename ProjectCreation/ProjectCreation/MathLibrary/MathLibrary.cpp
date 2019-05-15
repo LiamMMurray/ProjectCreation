@@ -5,6 +5,7 @@ using namespace std;
 
 random_device                    rd;
 default_random_engine            generator(rd());
+
 uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
 float MathLibrary::RandomFloatInRange(float min, float max)

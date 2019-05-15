@@ -18,6 +18,7 @@ class MathLibrary
         static void              OrthoNormalize(DirectX::XMVECTOR normal, DirectX::XMVECTOR& tangent);
         DirectX::XMMATRIX LookAt(DirectX::XMVECTOR vPos, DirectX::XMVECTOR tPos, DirectX::XMVECTOR up);
         void              TurnTo(DirectX::XMMATRIX& matrix, DirectX::XMVECTOR targetPosition, float speed);
+
 		//Vector Function
         static DirectX::XMVECTOR GetClosestPointFromLine(DirectX::XMVECTOR startPoint, DirectX::XMVECTOR endPoint, DirectX::XMVECTOR point);
         static float             CalulateDistance(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
