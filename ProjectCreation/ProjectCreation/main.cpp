@@ -6,17 +6,18 @@
 #include <stdio.h>
 #include <time.h>
 
+#include "CollisionLibary/CollisionComponent.h"
+#include "CollisionLibary/CollisionLibary.h"
 #include "CoreInput/CoreInput.h"
 #include "Engine/GEngine.h"
-
 #include "Rendering/RenderingSystem.h"
+#include "Engine/Animation/AnimationSystem.h"
 
 #include "ConsoleWindow/ConsoleWindow.h"
 
 #include "System/PhysicsSystem.h"
 
-#pragma comment(lib, "dbghelp")
-
+using namespace DirectX;
 bool g_Running = false;
 
 
@@ -102,9 +103,6 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         // window info
         WNDCLASSEX winInfo;
 
-        // set up the function to create the dump file
-        SetUnhandledExceptionFilter(errorFunc);
-
 		// console window creation
         ConsoleWindow CW;
         CW.CreateConsoleWindow("Inanis Console Window");
@@ -144,6 +142,33 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                                      GetModuleHandleW(0), // app instance
                                      nullptr);            // parameters passed to new window (32 bit value)
 
+        ///////////
+        // Collision test
+        CollisionComponent::FSphere sphere1;
+        CollisionComponent::FSphere sphere2;
+        CollisionComponent::FSphere sphereObj;
+        // setup
+        sphere1.center = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+        sphere1.radius = 3;
+
+        sphere2.center = XMVectorSet(6.0f, 0.0f, 0.0f, 1.0f);
+        sphere2.radius = 3;
+
+        sphereObj.center = XMVectorSet(3.0f, 10.0f, 0.0f, 1.0f);
+        sphereObj.radius = 3;
+
+        CollisionComponent::FCollideResult result;
+        result = CollisionLibary::SweepSphereToSphere(sphere1, sphere2, sphereObj);
+
+        if (result.collisionType == CollisionComponent::ECollide || result.collisionType == CollisionComponent::EOveralap)
+        {
+                int x = 0;
+        }
+		else
+		{
+                int y = 0;
+		}
+        //////////
 
         GEngine::Initialize();
 
@@ -171,6 +196,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         g_Running = true;
         MSG msg;
         ZeroMemory(&msg, sizeof(msg));
+        PlayerMovement pMovement;
 
         while (msg.message != WM_QUIT)
         {
@@ -192,7 +218,6 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
 
-				PlayerMovement pMovement;
                 pMovement.OnUpdate(GEngine::Get()->GetDeltaTime());
 
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());

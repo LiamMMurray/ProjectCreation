@@ -37,3 +37,12 @@ void FTransform::RotateAxisAngle(DirectX::XMVECTOR& axis, float angle)
 {
         rotation.RotateAxisAngle(axis, angle);
 }
+
+FTransform FTransform::Lerp(const FTransform& lhs, const FTransform& rhs, float ratio)
+{
+        FTransform output;
+        output.translation = XMVectorLerp(lhs.translation, rhs.translation, ratio);
+        output.rotation    = FQuaternion::Lerp(lhs.rotation, rhs.rotation, ratio);
+        output.scale       = XMVectorLerp(lhs.scale, rhs.scale, ratio);
+        return output;
+}
