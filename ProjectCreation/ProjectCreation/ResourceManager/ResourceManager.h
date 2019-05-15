@@ -7,14 +7,11 @@
 #include <unordered_map>
 #include <vector>
 
-<<<<<<< HEAD
-=======
 namespace Animation
 {
         struct FSkeleton;
 } // namespace Animation
 
->>>>>>> developmentMilestoneCRUNCH
 class ResourceContainerBase
 {
     public:
