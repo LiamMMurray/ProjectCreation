@@ -161,16 +161,16 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         sphereObj.radius = 3;
 
         CollisionComponent::FCollideResult result;
-        result = CollisionLibary::SweepSphereToSphere(sphere1, sphere2, sphereObj);
+        //result = CollisionLibary::SweepSphereToSphere(sphere1, sphere2, sphereObj);
 
-        if (result.collisionType == CollisionComponent::ECollide || result.collisionType == CollisionComponent::EOveralap)
-        {
-                int x = 0;
-        }
-		else
-		{
-                int y = 0;
-		}
+        //if (result.collisionType == CollisionComponent::ECollide || result.collisionType == CollisionComponent::EOveralap)
+        //{
+        //        int x = 0;
+        //}
+		//else
+		//{
+        //        int y = 0;
+		//}
         //////////
 
         GEngine::Initialize();

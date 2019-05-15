@@ -67,7 +67,7 @@ void PhysicsSystem::OnInitialize()
 
 void PhysicsSystem::OnShutdown()
 {
-        int activeCount = GEngine::Get()->GetComponentManager()->GetActiveComponentCount();
+        //int activeCount = GEngine::Get()->GetComponentManager()->GetActiveComponentCount();
 
         // for (iter == iter.begin(); iter != iter.end(); ++iter)
         {
@@ -77,7 +77,7 @@ void PhysicsSystem::OnShutdown()
 
 void PhysicsSystem::OnResume()
 {
-        int activeCount = GEngine::Get()->GetComponentManager()->GetActiveComponentCount();
+        //int activeCount = GEngine::Get()->GetComponentManager()->GetActiveComponentCount();
 
         // for (iter == iter.begin(); iter != iter.end(); ++iter)
         {
@@ -87,7 +87,7 @@ void PhysicsSystem::OnResume()
 
 void PhysicsSystem::OnSuspend()
 {
-        int activeCount = GEngine::Get()->GetComponentManager()->GetActiveComponentCount();
+        //int activeCount = GEngine::Get()->GetComponentManager()->GetActiveComponentCount();
 
         // for (iter == iter.begin(); iter != iter.end(); ++iter)
         {

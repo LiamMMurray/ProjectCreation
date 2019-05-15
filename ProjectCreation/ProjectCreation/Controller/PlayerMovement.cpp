@@ -7,6 +7,8 @@
 #include "../MathLibrary/MathLibrary.h"
 #include "../MathLibrary/Quaternion.h"
 
+#include "../CollisionLibary/CollisionLibary.h"
+
 // v Testing only delete when done v
 #include <iostream>
 // ^ Testing only delete when done ^
@@ -62,8 +64,8 @@ void PlayerMovement::GatherInput()
         {
                 tempDir.x += 1.0f;
         }
-		
-		m_MouseXDelta = GCoreInput::GetMouseX();
+
+        m_MouseXDelta = GCoreInput::GetMouseX();
         m_MouseYDelta = GCoreInput::GetMouseY();
 
         m_CurrentInput = XMLoadFloat4(&tempDir);
@@ -99,16 +101,15 @@ void PlayerMovement::ApplyInput()
         m_CurrentVelocity = m_CurrentVelocity + deltaVec * delta;
 
 
-
-        m_MouseXDelta                 = static_cast<float>(GCoreInput::GetMouseX());
-        m_MouseYDelta                 = static_cast<float>(GCoreInput::GetMouseY());
+        m_MouseXDelta = (GCoreInput::GetMouseX());
+        m_MouseYDelta = (GCoreInput::GetMouseY());
 
         static float accumAngleY = 0.f;
         float        angleX      = XMConvertToRadians(m_MouseXDelta * 10.f);
         float        angleY      = XMConvertToRadians(m_MouseYDelta * 10.f);
         ;
 
-        XMVECTOR YAxis = transformComponent.transform.GetUp();
+        XMVECTOR YAxis = VectorConstants::Up;
         XMVECTOR XAxis = transformComponent.transform.GetRight();
 
         FQuaternion rot           = transformComponent.transform.rotation;
@@ -123,29 +124,49 @@ void PlayerMovement::ApplyInput()
         if (angle > 90.f)
                 verticalRot = XMQuaternionIdentity();
 
-		
+        XMVECTOR offset = XMVector3Rotate(m_CurrentVelocity * deltaTime, transformComponent.transform.rotation.rotation);
+        // offset          = XMVectorSetY(offset, 0.0f);
 
+        CollisionComponent::FSphere fSphereStart;
+        fSphereStart.center = transformComponent.transform.translation;
+        fSphereStart.radius = 0.1f;
+        CollisionComponent::FSphere fSphereEnd;
+        fSphereEnd.center = transformComponent.transform.translation + offset;
+        fSphereEnd.radius = 0.1f;
+        CollisionComponent::FSphere fSphereCheck;
+        fSphereCheck.center = XMVectorSet(0.0f, 0.0f, 0.f, 1.0f);
+        fSphereCheck.radius = 0.1f;
 
-        transformComponent.transform.translation += XMVector3Rotate(m_CurrentVelocity * deltaTime, transformComponent.transform.rotation.rotation);
+        CollisionComponent::FCollideResult result =
+            CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck);
+
+        if (result.collisionType != CollisionComponent::ECollisionType::EOveralap &&
+            result.collisionType != CollisionComponent::ECollisionType::ECollide)
+        {
+                transformComponent.transform.translation += offset;
+        }
+		else
+		{
+                //m_CurrentVelocity = m_CurrentVelocity - deltaVec * delta;
+		}
         transformComponent.transform.rotation = transformComponent.transform.rotation * verticalRot * horizontalRot;
-        //std::cout << accel << std::endl;
+        // std::cout << accel << std::endl;
 
-        //std::cout << "Current Position < " << XMVectorGetX(transformComponent.transform.translation) << ", "
+        // std::cout << "Current Position < " << XMVectorGetX(transformComponent.transform.translation) << ", "
         //          << XMVectorGetY(transformComponent.transform.translation) << ", "
         //          << XMVectorGetZ(transformComponent.transform.translation) << ", "
         //          << XMVectorGetW(transformComponent.transform.translation) << " >" << std::endl;
 
-        std::cout << "Current Forward < " << XMVectorGetX(nextFw) << ", "
-                  << XMVectorGetY(nextFw) << ", "
-                  << XMVectorGetZ(nextFw) << ", "
-                  << XMVectorGetW(nextFw) << " >" << std::endl;
+        std::cout << "Current Forward < " << XMVectorGetX(nextFw) << ", " << XMVectorGetY(nextFw) << ", "
+                  << XMVectorGetZ(nextFw) << ", " << XMVectorGetW(nextFw) << " >" << std::endl;
 }
 
 PlayerMovement::PlayerMovement()
 {
-        m_CurrentVelocity = DirectX::XMVectorZero();
-        m_MouseXDelta     = 0;
-        m_MouseYDelta     = 0;
+        m_CurrentVelocity                        = DirectX::XMVectorZero();
+        m_MouseXDelta                            = 0;
+        m_MouseYDelta                            = 0;
+        transformComponent.transform.translation = XMVectorSet(0.0f, 0.0f, -2.0f, 1.0f);
 }
 
 PhysicsComponent   PlayerMovement::physicsComponent;
