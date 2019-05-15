@@ -54,7 +54,6 @@ void PhysicsSystem::OnUpdate(float deltaTime)
                 //currComponent->transform.translation = currComponent->transform.translation + currPhysics->GetVelocity() * deltaTime;
 
                 //currPhysics->ApplyForce(currPhysics->GetForce());
-
         }
 }
 

@@ -2,6 +2,9 @@
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #include <Windows.h>
 #include <windowsx.h>
+#include <DbgHelp.h>
+#include <stdio.h>
+#include <time.h>
 
 #include "CollisionLibary/CollisionComponent.h"
 #include "CollisionLibary/CollisionLibary.h"
@@ -16,6 +19,48 @@
 
 using namespace DirectX;
 bool g_Running = false;
+
+
+LONG WINAPI errorFunc(_EXCEPTION_POINTERS* pExceptionInfo)
+{
+        /*
+            This will give you a date/time formatted string for your dump files
+            Make sure to include these files:
+            #include <stdio.h>
+            #include <DbgHelp.h>
+            #include <time.h>
+
+            AND this lib:
+            dbghelp.lib
+        */
+
+        struct tm newTime;
+        time_t    ltime;
+        wchar_t   buff[100] = {0};
+
+        ltime = time(&ltime);
+        localtime_s(&newTime, &ltime);
+
+        wcsftime(buff, sizeof(buff), L"%A_%b%d_%I%M%p.mdmp", &newTime);
+
+        HANDLE hFile = ::CreateFileW(
+            /*L"dumpfile.mdmp"*/ buff, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+        if (hFile != INVALID_HANDLE_VALUE)
+        {
+                _MINIDUMP_EXCEPTION_INFORMATION ExInfo;
+
+                ExInfo.ThreadId          = ::GetCurrentThreadId();
+                ExInfo.ExceptionPointers = pExceptionInfo;
+                ExInfo.ClientPointers    = NULL;
+                MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal, &ExInfo, NULL, NULL);
+                // MessageBox("Dump File Saved look x directory please email to developer at the following email adress
+                // crashdmp@gmail.com with the subject Gamename - Version ");
+                ::CloseHandle(hFile);
+        }
+
+        return 0;
+}
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -152,6 +197,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         MSG msg;
         ZeroMemory(&msg, sizeof(msg));
         PlayerMovement pMovement;
+
         while (msg.message != WM_QUIT)
         {
                 GCoreInput::UpdateInput();

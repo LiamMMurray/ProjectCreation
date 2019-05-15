@@ -3,6 +3,12 @@
 #include "../CoreInput/CoreInput.h"
 #include "../ECS/Entity.h"
 #include "../Engine/GEngine.h"
+#include "../ECS/Entity.h"
+#include "../Components/PhysicsComponent.h"
+
+// v Testing only delete when done v
+#include <iostream>
+// ^ Testing only delete when done ^
 
 #include "../MathLibrary/MathLibrary.h"
 #include "../MathLibrary/Quaternion.h"
@@ -147,7 +153,6 @@ PlayerMovement::PlayerMovement()
         m_MouseXDelta     = 0;
         m_MouseYDelta     = 0;
 }
-
 
 PhysicsComponent   PlayerMovement::physicsComponent;
 TransformComponent PlayerMovement::transformComponent;
