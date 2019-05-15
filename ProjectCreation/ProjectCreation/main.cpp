@@ -15,6 +15,7 @@
 
 #include "ConsoleWindow/ConsoleWindow.h"
 
+#include "Audio/AudioManager.h"
 #include "System/PhysicsSystem.h"
 #pragma comment(lib, "dbghelp")
 
@@ -193,6 +194,8 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         systemManager->RegisterSystem(&sysInitProps, physicsSystem);
 
         GCoreInput::InitializeInput(handle);
+
+		AudioManager::Initialize();
         // message loop
         ShowWindow(handle, SW_SHOW);
         g_Running = true;
@@ -220,11 +223,12 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
 
+                AudioManager::Get()->PlaySounds();
                 pMovement.OnUpdate(GEngine::Get()->GetDeltaTime());
-
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
         }
 
+		AudioManager::Shutdown();
 
         GEngine::Shutdown();
 
