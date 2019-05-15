@@ -16,6 +16,15 @@ struct FSystemInitProperties
         uint16_t m_Priority   = 300;
 };
 
+enum E_SYSTEM_PRIORITY
+{
+        VERY_LOW = 100,
+		LOW = 200,
+		NORMAL = 300,
+		HIGH = 400,
+		VERY_HIGH = 500
+};
+
 class ISystem
 {
         friend class SystemManager;

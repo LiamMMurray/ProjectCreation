@@ -1,6 +1,5 @@
 #pragma once
 #include "ECSTypes.h"
-
 class IComponent
 {
 
@@ -17,12 +16,13 @@ class IComponent
         {}
 
 
-        EntityHandle    GetOwner();
-        ComponentHandle GetHandle();
-        void            Enable();
-        void            Disable();
-        void            SetActive(bool state);
-        bool            isEnabled();
+        EntityHandle                  GetOwner();
+        ComponentHandle               GetHandle();
+        void                          Enable();
+        void                          Disable();
+        void                          SetActive(bool state);
+        bool                          isEnabled();
+        virtual const ComponentTypeId GetStaticTypeId() const = 0;
 
-		friend class ComponentManager;
+        friend class ComponentManager;
 };

@@ -1,5 +1,6 @@
 #pragma once
 #include "Quaternion.h"
+#include "../ECS/Component.h"
 struct FTransform
 {
         DirectX::XMVECTOR translation;
