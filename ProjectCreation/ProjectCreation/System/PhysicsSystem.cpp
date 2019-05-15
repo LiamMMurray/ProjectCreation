@@ -11,6 +11,7 @@ void PhysicsSystem::OnPreUpdate(float deltaTime)
 
 void PhysicsSystem::OnUpdate(float deltaTime)
 {
+        return;
         using namespace DirectX;
 
         auto iter = GEngine::Get()->GetComponentManager()->GetActiveComponents<PhysicsComponent>();
@@ -27,10 +28,17 @@ void PhysicsSystem::OnUpdate(float deltaTime)
                 //TransformComponent* currComponent =
                 //    dynamic_cast<TransformComponent*>(currEntity->GetComponent<TransformComponent>());
 
-                currComponent->transform.translation =
-                    currComponent->transform.translation + currPhysics->GetVelocity() * deltaTime;
+				//Sweep Sphere
 
+				//Set startA to currComponent->transform.translation before adding velocity
+                //currComponent->transform.translation = XMVectorLerp(currComponent->transform.translation, currPhysics->GetVelocity(), ) * deltaTime;
+				//Set endA to currComponent->transform.translation after adding velocity
+
+				//Check Sweep
+				//if no collision apply force
                 currPhysics->ApplyForce(currPhysics->GetForce());
+
+				//else don't add movement
 
                 std::cout << "Current Position < " << XMVectorGetX(currComponent->transform.translation) << ", "
                           << XMVectorGetY(currComponent->transform.translation) << ", "

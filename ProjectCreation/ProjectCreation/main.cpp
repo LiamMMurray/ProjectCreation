@@ -150,6 +150,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         g_Running = true;
         MSG msg;
         ZeroMemory(&msg, sizeof(msg));
+        PlayerMovement pMovement;
         while (msg.message != WM_QUIT)
         {
                 GCoreInput::UpdateInput();
@@ -170,7 +171,6 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
 
-				PlayerMovement pMovement;
                 pMovement.OnUpdate(GEngine::Get()->GetDeltaTime());
 
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());

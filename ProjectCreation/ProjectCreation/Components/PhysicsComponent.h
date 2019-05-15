@@ -10,7 +10,6 @@ class PhysicsComponent : public Component<PhysicsComponent>
         
 		DirectX::XMVECTOR	m_Velocity    = DirectX::XMVectorSet(0, 0, 0, 0);
         DirectX::XMVECTOR m_Force		  = DirectX::XMVectorSet(0, 0, 0, 0);
-        DirectX::XMVECTOR m_NormalForce	  = DirectX::XMVectorSet(0,0,0,0);
         
 		float				m_FrictionCoefficient = 0.4f;
 		DirectX::XMVECTOR   m_Friction    = DirectX::XMVectorSet(0, 0, 0, 0);
@@ -31,10 +30,6 @@ class PhysicsComponent : public Component<PhysicsComponent>
 
         void				SetVelocity(DirectX::XMVECTOR _Velocity);
         DirectX::XMVECTOR	GetVelocity();
-
-		void				CalculateNormalForce();
-
-		void				CalculateFriction(DirectX::XMVECTOR _Velocity);
 
         bool				UsesGravity();
 };
