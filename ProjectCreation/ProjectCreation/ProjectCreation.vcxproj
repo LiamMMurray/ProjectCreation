@@ -87,10 +87,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Components\PhysicsComponent.cpp" />
-    <ClCompile Include="CollisionLibary\CollisionComponent.cpp" />
     <ClCompile Include="Controller\IController.cpp" />
     <ClCompile Include="Controller\PlayerMovement.cpp" />
-    <ClCompile Include="CollisionLibary\CollisionLibary.cpp" />
     <ClCompile Include="CoreInput\CoreInput.cpp" />
     <ClCompile Include="ECS\ComponentManager.cpp" />
     <ClCompile Include="ECS\EntityManager.cpp" />
@@ -161,7 +159,6 @@
       <FileType>Document</FileType>
     </ClInclude>
     <ClCompile Include="System\PhysicsSystem.cpp" />
-    <ClCompile Include="Rendering\Vertex.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
