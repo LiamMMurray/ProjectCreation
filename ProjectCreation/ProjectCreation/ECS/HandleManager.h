@@ -66,37 +66,37 @@ class HandleManagerAssociative
     public:
         class Container;
 
-    private:
-        // pair
-        //		uint32_t = typeId
-        //		vector<I*> = pool
-        ::std::vector<::std::pair<uint32_t, Container>> m_TypeAssociativeObjectPools;
+    //private:
+    //    // pair
+    //    //		uint32_t = typeId
+    //    //		vector<I*> = pool
+    //    std::vector<std::pair<uint32_t, Container>> m_TypeAssociativeObjectPools;
 
-    public:
+    //public:
         //template <typename B>
         //Container* GetContainer();
 };
-
+//
 template <typename I>
 class HandleManagerAssociative<I>::Container
 {
-    private
-		// Handle sorted pool
-        std::vector<I*> m_ObjectPool;
-    //public:
-    //    class iterator;
-
-    //    void      initialize(size_t);
-    //    iterator  begin() const;
-    //    iterator  end() const;
-    //    uint32_t  size() const;
-    //    I&        operator[](Handle<I>);
-    //    I         operator[](int) const;
-    //    Handle<I> AddObject(I*);
-    //    I*        GetObject(Handle<I>);
-    //    iterator  operator++(int);
-};
+//    //private
+//		// Handle sorted pool
+//        //std::vector<I*> m_ObjectPool;
+//    //public:
+//    //    class iterator;
 //
+//    //    void      initialize(size_t);
+//    //    iterator  begin() const;
+//    //    iterator  end() const;
+//    //    uint32_t  size() const;
+//    //    I&        operator[](Handle<I>);
+//    //    I         operator[](int) const;
+//    //    Handle<I> AddObject(I*);
+//    //    I*        GetObject(Handle<I>);
+//    //    iterator  operator++(int);
+};
+
 //template <typename I>
 //class HandleManagerAssociative<I>::Container::iterator
 //{
