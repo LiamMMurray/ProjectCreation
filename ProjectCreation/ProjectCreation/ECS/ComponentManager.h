@@ -126,21 +126,18 @@ inline ComponentHandle ComponentManager::AddComponent(const EntityHandle entityH
 {
         static_assert(std::is_base_of<Component<T>, T>::value,
                       "Addcomponent can only accept CRTP classes that inherit from Component<T>");
-        T*              pComponent      = new T();
-        ComponentHandle componentHandle = m_HandleManager.GetHandle(pComponent);
+        T* pComponent = new T();
         pComponent->m_Owner             = entityHandle;
         ComponentTypeId componentTypeId = pComponent->GetTypeId();
+
+        if (componentTypeId.m_Data >= m_TypeAssociativeHandleManagers.size())
+        {
+                m_TypeAssociativeHandleManagers.resize(componentTypeId.m_Data + 1);
+        }
+        ComponentHandle componentHandle = m_TypeAssociativeHandleManagers[componentTypeId.m_Data].GetHandle(pComponent);
         // TODO
         // highly convenient but also highly unoptimized (requires at minimum TWO hashes for every time this gets called)
         m_EntityComponentIdMap[entityHandle][componentTypeId] = componentHandle;
-
-		// NOTE 
-		// this if check will be called EXTREMELY RARELY
-        if (componentTypeId.m_Data >= m_TypeAssociativeHandleManagers.size())
-        {
-                m_TypeAssociativeHandleManagers.resize(componentTypeId.m_Data+1);
-        }
-        m_TypeAssociativeHandleManagers[componentTypeId.m_Data].GetHandle(pComponent);
 
         return componentHandle;
 }
