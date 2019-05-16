@@ -99,7 +99,7 @@ class ComponentManager
         void            ActivateComponent(ComponentHandle componentHandle);
         void            DeactivateComponent(ComponentHandle componentHandle);
         ComponentHandle GetComponentHandle(EntityHandle entityHandle, ComponentTypeId componentTypeId);
-        IComponent*     GetComponent(ComponentHandle componentHandle);
+        //IComponent*     GetComponent(ComponentHandle componentHandle);
         template <typename T>
         ComponentIterator<T> GetActiveComponents();
         template <typename T>

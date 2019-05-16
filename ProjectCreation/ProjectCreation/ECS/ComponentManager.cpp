@@ -12,10 +12,10 @@ ComponentHandle ComponentManager::GetComponentHandle(EntityHandle entityHandle, 
         return out;
 }
 
-IComponent* ComponentManager::GetComponent(ComponentHandle componentHandle)
-{
-        return m_HandleManager.GetObject(componentHandle);
-}
+//IComponent* ComponentManager::GetComponent(ComponentHandle componentHandle)
+//{
+//        return m_HandleManager.GetObject(componentHandle);
+//}
 
 void ComponentManager::DestroyComponent(ComponentHandle componentHandle)
 {}
