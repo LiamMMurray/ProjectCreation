@@ -19,6 +19,8 @@
 
 #include "Audio/AudioManager.h"
 #include "System/PhysicsSystem.h"
+
+#include "Components/TestComponents.h"
 #pragma comment(lib, "dbghelp")
 
 using namespace DirectX;
