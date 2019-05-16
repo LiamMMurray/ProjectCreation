@@ -138,7 +138,7 @@ inline ComponentHandle ComponentManager::AddComponent(const EntityHandle entityH
 		// this if check will be called EXTREMELY RARELY
         if (componentTypeId.m_Data >= m_TypeAssociativeHandleManagers.size())
         {
-                m_TypeAssociativeHandleManagers.resize(componentTypeId.m_Data);
+                m_TypeAssociativeHandleManagers.resize(componentTypeId.m_Data+1);
         }
         m_TypeAssociativeHandleManagers[componentTypeId.m_Data].GetHandle(pComponent);
 
