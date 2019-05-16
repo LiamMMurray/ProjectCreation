@@ -150,7 +150,7 @@ inline T* ComponentManager::GetComponent(const EntityHandle entityHandle)
 {
         ComponentTypeId componentTypeId = T::GetTypeId();
         ComponentHandle componentHandle = GetComponentHandle(entityHandle, componentTypeId);
-        if (componentHandle.IsValid())
+        if (!componentHandle.IsValid())
                 return nullptr;
         else
                 return (T*)m_HandleManager.GetObject(componentHandle);
