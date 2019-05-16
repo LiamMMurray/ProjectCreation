@@ -6,19 +6,86 @@
 #include "ECSTypes.h"
 #include "HandleManager.h"
 
-template <typename T>
-class ComponentIterator
-{};
 
 class ComponentManager
 {
-    private:
+
+        // TODO make friend class relationship
+    public:
         typedef std::unordered_map<ComponentTypeId, ComponentHandle>       ComponentTypeIdHandleMap;
         typedef std::unordered_map<EntityHandle, ComponentTypeIdHandleMap> EntityComponentIdMap;
 
         HandleManager<IComponent> m_HandleManager;
         EntityComponentIdMap      m_EntityComponentIdMap;
 
+    public:
+        // CRITICAL_TODO optimize this class
+        //////////////////////////////////////////////////////
+        // pools seperated based on type ?
+        // class id_type(true_type / false_type) with static member value pattern to store static id?
+        //		(already researched all examples use hacky code to do this)
+        // sorted pools based on m_active ?
+        //////////////////////////////////////////////////////
+        template <typename T>
+        class ComponentIterator
+        {
+                // TODO make friend class relationship
+            public:
+                uint32_t          m_CurrentIndex;
+                ComponentManager* m_ComponentManager;
+
+            public:
+                ComponentIterator(uint32_t index) :
+                    m_CurrentIndex(index){
+
+                    };
+
+
+                T* operator->()
+                {
+                        if (m_CurrentIndex >= m_ComponentManager->GetSize())
+                                return nullptr;
+                        return (T*)m_ComponentManager->m_HandleManager.m_HandleSpace[m_CurrentIndex].second;
+                }
+
+                T& operator*() const
+                {
+                        return *(m_ComponentManager->m_HandleManager.m_HandleSpace[m_CurrentIndex].second);
+                }
+
+                ComponentIterator operator++(int)
+                {
+                        ComponentIterator temp = *this;
+                        m_CurrentIndex++;
+                        if (m_CurrentIndex >= m_ComponentManager->GetSize())
+                        {
+                                return temp;
+                        }
+                        IComponent* _c = m_ComponentManager->m_HandleManager.m_HandleSpace[m_CurrentIndex].second;
+
+                        ///////////////////////////////////////////////
+                        // TODO USE ::value possibly pattern to circumvent this call to temporary var creation
+                        // WARNING getting ths to work would be complicated and hacky
+                        ///////////////////////////////////////////////
+                        auto _tempDesiredComponentInstance = T();
+                        auto _desiredTypeId                = _tempDesiredComponentInstance.GetStaticTypeId();
+                        ///////////////////////////////////////////////
+                        if (_c->GetStaticTypeId() != _desiredTypeId)
+                                return this->operator++(0);
+
+                        return temp;
+                }
+
+				bool operator!=(const ComponentIterator other) const
+				{
+                        return this->m_CurrentIndex != other.m_CurrentIndex;
+				}
+
+                bool operator==(const ComponentIterator other) const
+                {
+                        return this->m_CurrentIndex == other.m_CurrentIndex;
+                }
+        };
 
     public:
         ComponentManager()
@@ -31,18 +98,22 @@ class ComponentManager
         void            DeactivateComponent(ComponentHandle componentHandle);
         ComponentHandle GetComponentHandle(EntityHandle entityHandle, ComponentTypeId componentTypeId);
         IComponent*     GetComponent(ComponentHandle componentHandle);
+        template <typename T>
+        ComponentIterator<T> GetActiveComponents();
+        template <typename T>
+        ComponentIterator<T> end();
+
+        size_t               GetSize();
+		template <typename T>
 
         // Non-implemented
         //////////////////////////////////////
         //////////////////////////////////////
         //////////////////////////////////////
-        template <typename T>
-        ComponentIterator<T> GetActiveComponents();
-        EResult              CreateComponent(ComponentHandle componentHandle);
-        void                 DestroyComponent(ComponentHandle componentHandle);
-        size_t               GetCapacity();
-        size_t               GetSize();
-        size_t               GetActiveComponentCount();
+        EResult CreateComponent(ComponentHandle componentHandle);
+        void    DestroyComponent(ComponentHandle componentHandle);
+        size_t  GetCapacity();
+        size_t  GetActiveComponentCount();
         //////////////////////////////////////
         //////////////////////////////////////
         //////////////////////////////////////
@@ -75,7 +146,17 @@ inline T* ComponentManager::GetComponent(const EntityHandle entityHandle)
 }
 
 template <typename T>
-inline ComponentIterator<T> ComponentManager::GetActiveComponents()
+inline ComponentManager::ComponentIterator<T> ComponentManager::GetActiveComponents()
 {
-        return ComponentIterator<T>();
+        auto _itr               = ComponentIterator<T>(0);
+        _itr.m_ComponentManager = this;
+        ComponentTypeId componentTypeId = T::GetTypeId();
+        auto            test            = _itr->GetTypeId();
+        return _itr;
+}
+
+template <typename T>
+inline ComponentManager::ComponentIterator<T> ComponentManager::end()
+{
+        return ComponentManager::ComponentIterator<T>(GetSize());
 }

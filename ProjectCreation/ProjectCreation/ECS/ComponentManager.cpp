@@ -17,11 +17,6 @@ IComponent* ComponentManager::GetComponent(ComponentHandle componentHandle)
         return m_HandleManager.GetObject(componentHandle);
 }
 
-EResult ComponentManager::CreateComponent(ComponentHandle componentHandle)
-{
-        return EResult();
-}
-
 void ComponentManager::DestroyComponent(ComponentHandle componentHandle)
 {}
 
@@ -37,16 +32,18 @@ void ComponentManager::DeactivateComponent(ComponentHandle componentHandle)
 
 size_t ComponentManager::GetCapacity()
 {
-        return size_t();
+  /*      return m_HandleManager.*/
+        return 0;
 }
 
 
 size_t ComponentManager::GetSize()
 {
-        return size_t();
+        return m_HandleManager.GetSize();
 }
 
 size_t ComponentManager::GetActiveComponentCount()
 {
-        return size_t();
+    /*    return m_HandleManager.GetSize();*/
+        return 0;
 }

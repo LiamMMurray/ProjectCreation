@@ -1,10 +1,11 @@
 #pragma once
 #include "Quaternion.h"
+#include "../ECS/Component.h"
 struct FTransform
 {
         DirectX::XMVECTOR translation;
-        FQuaternion       rotation;
         DirectX::XMVECTOR scale;
+        FQuaternion       rotation;
 
         FTransform();
         DirectX::XMMATRIX CreateMatrix() const;
