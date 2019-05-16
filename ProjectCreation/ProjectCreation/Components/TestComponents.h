@@ -2,38 +2,50 @@
 #include "../ECS/Component.h"
 namespace ECSTests
 {
-        class SomeOtherClass
+        namespace Components
         {
-            public:
-                float other_data;
-
-                void Foo()
+                class NotCRTPComponent
                 {
-                        other_data += 2;
-                }
-        };
+                    public:
+                        float other_data;
+
+                        void Foo()
+                        {
+                                other_data += 2;
+                        }
+                };
 
 
-        class Transform : public Component<Transform>, public SomeOtherClass
-        {
-            public:
-                float some_data;
-
-                void Bar()
+                class Transform : public Component<Transform>, public NotCRTPComponent
                 {
-                        some_data = 42;
-                }
-        };
+                    public:
+                        float some_data;
 
-        class Mesh : public Component<Mesh>
-        {
-            public:
-                float some_data;
+                        void Bar()
+                        {
+                                some_data = 42;
+                        }
+                };
 
-                void Init()
+                class Mesh : public Component<Mesh>
                 {
-                        some_data = 27;
-                }
-        };
+                    public:
+                        float some_data;
 
+                        void Init()
+                        {
+                                some_data = 27;
+                        }
+                };
+
+                class TexasSwagger : public Component<TexasSwagger>
+                {};
+
+
+                class Monday : public Component<Monday>
+                {};
+
+                class Brocoli : public Component<Brocoli>
+                {};
+        } // namespace Components
 } // namespace ECSTests
