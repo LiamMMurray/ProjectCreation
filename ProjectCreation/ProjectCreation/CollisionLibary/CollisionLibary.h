@@ -18,7 +18,8 @@ class CollisionLibary
                                                                               DirectX::XMVECTOR            velocityA,
                                                                               DirectX::XMVECTOR            velocityB,
                                                                               float&                       time,
-                                                                              float                        offset);
+                                                                              float                        offset,
+                                                                              float                        epsilon);
         static CollisionComponent::FCollideResult  SphereToAabb(CollisionComponent::FSphere& sphere,
                                                                 CollisionComponent::FAabb&   aabb,
                                                                 float                        offset);

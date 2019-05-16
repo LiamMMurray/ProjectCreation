@@ -92,7 +92,10 @@ CollisionComponent::FSweepCollision CollisionLibary::SweepSphereToSphere(Collisi
                 output.collisionType = CollisionComponent::ECollisionType::EOveralap;
                 output.collideSurfaces.push_back(CollidePoint(checkB.center, cloestPoint, capsule.radius));
                 output.collideSurfaces.push_back(CollidePoint(cloestPoint, checkB.center, checkB.radius));
-                output.finalPoaition;
+                CollisionComponent::FCotactPoint temp;
+                temp = CollidePoint(checkB.center, cloestPoint, capsule.radius);
+                XMVECTOR tempPos = temp.position;
+                output.finalPoaition ;
         }
         else if (distance > totalRadius)
         {
@@ -106,12 +109,39 @@ CollisionComponent::FSweepCollision CollisionLibary::MovingSphereToMovingSphere(
                                                                                 DirectX::XMVECTOR            velocityA,
                                                                                 DirectX::XMVECTOR            velocityB,
                                                                                 float&                       time,
-                                                                                float                        offset)
+                                                                                float                        offset,
+                                                                                float                        epsilon)
 {
         CollisionComponent::FSweepCollision output;
         XMVECTOR                            sphereDir   = b.center - a.center;
         XMVECTOR                            velocity    = velocityB - velocityA;
         float                               TotalRadius = a.radius + b.radius;
+        float                               c = MathLibrary::VectorDotProduct(sphereDir, sphereDir) - TotalRadius * TotalRadius;
+        if (c < 0.0f)
+        {
+                time                 = 0.0f;
+                output.collisionType = CollisionComponent::EOveralap;
+        }
+
+        float velocityDotValue = MathLibrary::VectorDotProduct(velocity, velocity);
+        if (velocityDotValue < epsilon)
+        {
+                output.collisionType = CollisionComponent::ENoCollision;
+        }
+
+        float DotValue = MathLibrary::VectorDotProduct(velocity, sphereDir);
+        if (DotValue >= 0.0f)
+        {
+                output.collisionType = CollisionComponent::ENoCollision;
+        }
+
+        float d = DotValue * DotValue - velocityDotValue * c;
+        if (d < 0.0f)
+        {
+                output.collisionType = CollisionComponent::ENoCollision;
+        }
+
+		time = (-DotValue - sqrtf(d)) / velocityDotValue;
         return output;
 }
 
