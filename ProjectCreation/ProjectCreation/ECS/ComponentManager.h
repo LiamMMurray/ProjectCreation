@@ -153,7 +153,7 @@ inline T* ComponentManager::GetComponent(const EntityHandle entityHandle)
         if (!componentHandle.IsValid())
                 return nullptr;
         else
-                return (T*)m_HandleManager.GetObject(componentHandle);
+                return (T*)m_TypeAssociativeHandleManagers[componentTypeId].GetObject(componentHandle);
 }
 
 template <typename T>
