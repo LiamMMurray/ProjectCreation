@@ -72,8 +72,8 @@ DirectX::XMVECTOR MathLibrary::GetClosestPointFromLine(DirectX::XMVECTOR startPo
         XMVECTOR minv         = XMVectorMin(startPoint, endPoint);
         XMVECTOR maxv         = XMVectorMin(startPoint, endPoint);
 
-		output = XMVectorMin(output, maxv);
-		output = XMVectorMax(output, minv);
+        output = XMVectorMin(output, maxv);
+        output = XMVectorMax(output, minv);
 
         return output;
 }
@@ -99,4 +99,10 @@ float MathLibrary::CalulateVectorLength(DirectX::XMVECTOR vector)
 {
         return sqrtf(XMVectorGetX(vector) * XMVectorGetX(vector) + XMVectorGetY(vector) * XMVectorGetY(vector) +
                      XMVectorGetZ(vector) * XMVectorGetZ(vector));
+}
+
+float MathLibrary::VectorDotProduct(DirectX::XMVECTOR m, DirectX::XMVECTOR n)
+{
+        return ((XMVectorGetX(m) * XMVectorGetX(n)) + (XMVectorGetY(m) * XMVectorGetY(n)) +
+                (XMVectorGetZ(m) * XMVectorGetZ(n)));
 }

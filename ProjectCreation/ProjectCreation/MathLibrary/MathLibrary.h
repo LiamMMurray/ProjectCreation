@@ -26,7 +26,7 @@ class MathLibrary
         static float             CalulateDistance(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateDistanceSq(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateVectorLength(DirectX::XMVECTOR vector);
-
+        static float             VectorDotProduct(DirectX::XMVECTOR m, DirectX::XMVECTOR n);
 
 		template <typename T>
         static T lerp(T v0, T v1, T t)
