@@ -14,10 +14,11 @@ class ComponentManager
     public:
         typedef std::unordered_map<ComponentTypeId, ComponentHandle>       ComponentTypeIdHandleMap;
         typedef std::unordered_map<EntityHandle, ComponentTypeIdHandleMap> EntityComponentIdMap;
+        typedef std::vector<HandleManager<IComponent>>                     TypeAssociativeHandleManagers;
 
-        HandleManager<IComponent> m_HandleManager;
-        //HandleManagerNew<IComponent> m_HandleManagerNew;
-        EntityComponentIdMap      m_EntityComponentIdMap;
+        HandleManager<IComponent>     m_HandleManager;
+        TypeAssociativeHandleManagers m_TypeAssociativeHandleManagers;
+        EntityComponentIdMap          m_EntityComponentIdMap;
 
     public:
         // CRITICAL_TODO optimize this class
@@ -77,10 +78,10 @@ class ComponentManager
                         return temp;
                 }
 
-				bool operator!=(const ComponentIterator other) const
-				{
+                bool operator!=(const ComponentIterator other) const
+                {
                         return this->m_CurrentIndex != other.m_CurrentIndex;
-				}
+                }
 
                 bool operator==(const ComponentIterator other) const
                 {
@@ -104,8 +105,8 @@ class ComponentManager
         template <typename T>
         ComponentIterator<T> end();
 
-        size_t               GetSize();
-		template <typename T>
+        size_t GetSize();
+        template <typename T>
 
         // Non-implemented
         //////////////////////////////////////
@@ -132,6 +133,15 @@ inline ComponentHandle ComponentManager::AddComponent(const EntityHandle entityH
         // TODO
         // highly convenient but also highly unoptimized (requires at minimum TWO hashes for every time this gets called)
         m_EntityComponentIdMap[entityHandle][componentTypeId] = componentHandle;
+
+		// NOTE 
+		// this if check will be called EXTREMELY RARELY
+        if (componentTypeId >= m_TypeAssociativeHandleManagers.size())
+        {
+                m_TypeAssociativeHandleManagers.resize(componentTypeId);
+        }
+        m_TypeAssociativeHandleManagers[componentTypeId].GetHandle(pComponent);
+
         return componentHandle;
 }
 
@@ -149,8 +159,8 @@ inline T* ComponentManager::GetComponent(const EntityHandle entityHandle)
 template <typename T>
 inline ComponentManager::ComponentIterator<T> ComponentManager::GetActiveComponents()
 {
-        auto _itr               = ComponentIterator<T>(0);
-        _itr.m_ComponentManager = this;
+        auto _itr                       = ComponentIterator<T>(0);
+        _itr.m_ComponentManager         = this;
         ComponentTypeId componentTypeId = T::GetTypeId();
         auto            test            = _itr->GetTypeId();
         return _itr;
