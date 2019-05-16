@@ -43,7 +43,7 @@ struct Handle
         }
         bool IsValid()
         {
-                return (m_Flags & HANDLEFLAG::INACTIVE == 0);
+                return (m_Flags & HANDLEFLAG::INACTIVE) == 0;
         }
         void SetInvalid()
         {
