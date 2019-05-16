@@ -21,6 +21,7 @@
 #include "System/PhysicsSystem.h"
 
 #include "Components/TestComponents.h"
+#include "Entities/TestEntities.h"
 #pragma comment(lib, "dbghelp")
 
 using namespace DirectX;
