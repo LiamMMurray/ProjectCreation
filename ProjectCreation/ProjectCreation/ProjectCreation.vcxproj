@@ -83,6 +83,7 @@
     </FxCompile>
     <ClInclude Include="System\PhysicsSystem.h" />
     <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
+    <ClInclude Include="Utility\ForwardDeclarations\STLTypes.h" />
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
     <ClInclude Include="Utility\Macros\DirectXMacros.h" />
     <ClInclude Include="Utility\StringUtility.h" />
