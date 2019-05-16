@@ -8,28 +8,28 @@
 
 namespace Animation
 {
-        struct KeyFrame
+        struct FKeyFrame
         {
                 double                 time;
                 std::vector<FTransform> joints;
         };
 
-        struct AnimClip
+        struct FAnimClip
         {
                 double                duration;
-                std::vector<KeyFrame> frames;
+                std::vector<FKeyFrame> frames;
         };
 
-        struct Joint
+        struct FJoint
         {
                 FTransform transform;
                 int32_t   parent_index;
         };
 
-        struct Skeleton
+        struct FSkeleton
         {
-                std::vector<Animation::Joint> jointTransforms;
-                std::vector<Animation::Joint> inverseBindPose;
+                std::vector<Animation::FJoint> jointTransforms;
+                std::vector<Animation::FJoint> inverseBindPose;
         };
 
 } // namespace Animation
