@@ -1,6 +1,15 @@
 #pragma once
 #include <stdint.h>
-#include "../ErrorHandling/ErrorTypes.h"
+enum HANDLEFLAG
+{
+        INACTIVE = 0b00000001,
+        DESTROY  = 0b00000010
+};
+struct HandleData
+{
+        uint8_t  m_Flags : 8;
+        uint32_t m_DeletionAccumulator : 24;
+};
 template <typename T>
 struct Handle
 {
@@ -17,8 +26,15 @@ struct Handle
                 struct
                 {
                         uint32_t m_Id;
-                        uint32_t m_DeletionAccumulator : 24;
-                        uint8_t  m_Flags : 8;
+                        union
+                        {
+                                HandleData m_HandleData;
+                                struct
+                                {
+                                        uint8_t  m_Flags : 8;
+                                        uint32_t m_DeletionAccumulator : 24;
+                                };
+                        };
                 };
         };
         bool operator==(const Handle<T>& other) const
@@ -27,11 +43,11 @@ struct Handle
         }
         bool IsValid()
         {
-                return (m_Flags & ERESULT_FLAG::INVALID == 0);
+                return (m_Flags & HANDLEFLAG::INACTIVE == 0);
         }
         void SetInvalid()
         {
-                SetFlags(m_Flags | ERESULT_FLAG::INVALID);
+                SetFlags(m_Flags | HANDLEFLAG::INACTIVE);
         }
         void SetFlags(uint8_t flags)
         {
