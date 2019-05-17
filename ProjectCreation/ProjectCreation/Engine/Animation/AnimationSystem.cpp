@@ -89,6 +89,11 @@ void AnimationSystem::OnPreUpdate(float deltaTime)
 
 void AnimationSystem::OnUpdate(float deltaTime)
 {
+		// ITR_TODO
+        if (m_ComponentManager->ComponentsExist<AnimationComponent>())
+                return;
+		//auto animComp =  m_ComponentManager->GetActiveComponents<AnimationComponent>();
+		// for (auto itr = animComp.begin(); itr != animComp.end(); itr++) {}
         //auto it = m_ComponentManager->GetActiveComponents<AnimationComponent>();
         //while (it != m_ComponentManager->end<AnimationComponent>())
         //{

@@ -557,11 +557,18 @@ void RenderSystem::OnPostUpdate(float deltaTime)
 
         /** Render all opaque static meshes **/
         {
+                if (!m_ComponentManager->ComponentsExist<StaticMeshComponent>())
+                        return;
+
                 auto     sMeshComp = m_ComponentManager->GetActiveComponents<StaticMeshComponent>();
                 Material mat;
                 mat.m_VertexShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED];
                 mat.m_PixelShaderHandle  = m_CommonVertexShaderHandles[E_PIXEL_SHADERS::DEFAULT];
-                //while (sMeshComp != m_ComponentManager->end<StaticMeshComponent>())
+                //sMeshComp.
+                // ITR_TODO
+				// for (auto itr = sMeshComp.begin(); itr != sMeshComp.end(); itr++) {}
+
+                // while (sMeshComp != m_ComponentManager->end<StaticMeshComponent>())
                 //{
                 //        StaticMesh*  staticMesh   = m_ResourceManager->GetResource<StaticMesh>(sMeshComp->m_StaticMeshHandle);
                 //        EntityHandle entityHandle = sMeshComp->GetOwner();
@@ -577,11 +584,19 @@ void RenderSystem::OnPostUpdate(float deltaTime)
 
         /** Render all opaque skeletal meshes **/
         {
+                if (!m_ComponentManager->ComponentsExist<SkeletalMeshComponent>())
+                        return;
+
                 auto     skelComp = m_ComponentManager->GetActiveComponents<SkeletalMeshComponent>();
                 Material mat;
                 mat.m_VertexShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED];
                 mat.m_PixelShaderHandle  = m_CommonVertexShaderHandles[E_PIXEL_SHADERS::DEFAULT];
-                //while (skelComp != m_ComponentManager->end<SkeletalMeshComponent>())
+                // ITR_TODO
+
+                // for (auto itr = skelComp.begin(); itr != skelComp.end(); itr++) {}
+
+
+                // while (skelComp != m_ComponentManager->end<SkeletalMeshComponent>())
                 //{
                 //        SkeletalMesh* skelMesh = m_ResourceManager->GetResource<SkeletalMesh>(skelComp->m_SkeletalMeshHandle);
                 //        EntityHandle  entityHandle = skelComp->GetOwner();
