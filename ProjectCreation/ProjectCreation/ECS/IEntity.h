@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "ComponentManager.h"
 #include "ECSTypes.h"
+
 class EntityManager;
 class IEntity
 {
@@ -19,6 +20,8 @@ class IEntity
         ComponentHandle GetComponentHandle();
         template <typename T>
         T* GetComponent();
+        template <typename T>
+        void AddComponent();
         template <typename T>
         std::vector<ComponentHandle> GetComponentHandles();
         template <typename T>

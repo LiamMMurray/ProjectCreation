@@ -14,7 +14,7 @@ void PhysicsSystem::OnUpdate(float deltaTime)
         return;
         using namespace DirectX;
 
-        auto iter = GEngine::Get()->GetComponentManager()->GetActiveComponents<PhysicsComponent>();
+        //auto iter = GEngine::Get()->GetComponentManager()->GetActiveComponents<PhysicsComponent>();
 
 
         // for (iter == iter.begin(); iter != iter.end(); ++iter)
