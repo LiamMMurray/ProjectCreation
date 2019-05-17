@@ -84,3 +84,12 @@ inline Component<T>* EntityManager::GetActiveComponents()
 {
         return NULL;
 }
+
+
+// FOREIGN  TEMPLATE CLASS FUNCTION DEFINITIONS THAT REQUIRE ENTITY MANAGER TO BE DEFINED
+
+template <typename T>
+inline void IEntity::AddComponent()
+{
+        m_ComponentManager->AddComponent<T>(m_EntityManager->GetEntityHandle((IEntity*)this));
+}
