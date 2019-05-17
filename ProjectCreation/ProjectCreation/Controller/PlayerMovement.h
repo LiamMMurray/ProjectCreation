@@ -3,7 +3,7 @@
 #include "../ECS/ECSTypes.h"
 #include "IController.h"
 
-#include "../Components/CTransformComponent.h"
+#include "../Components/TransformComponent.h"
 #include "../Components/PhysicsComponent.h"
 
 class PlayerMovement : public IController

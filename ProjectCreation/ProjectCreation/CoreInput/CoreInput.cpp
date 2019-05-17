@@ -1,6 +1,7 @@
 #include "CoreInput.h"
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
+#define NOMINMAX
 #include <Windows.h>
 #include <windowsx.h>
 

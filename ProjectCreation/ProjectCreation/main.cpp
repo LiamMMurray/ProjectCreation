@@ -1,19 +1,26 @@
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
+#define NOMINMAX
 #include <Windows.h>
-#include <windowsx.h>
-#include <DbgHelp.h>
 #include <stdio.h>
 #include <time.h>
+#include <windowsx.h>
+
+#include <DbgHelp.h>
+
+#include <Interface/G_Audio/GMusic.h>
+#include <Interface/G_Audio/GSound.h>
 
 #include "CollisionLibary/CollisionComponent.h"
 #include "CollisionLibary/CollisionLibary.h"
 #include "CoreInput/CoreInput.h"
+#include "Engine/Animation/AnimationSystem.h"
 #include "Engine/GEngine.h"
 #include "Rendering/RenderingSystem.h"
 #include "Engine/Animation/AnimationSystem.h"
-
 #include "ConsoleWindow/ConsoleWindow.h"
+
+#include "Entities/BaseEntities.h"
 
 #include "Audio/AudioManager.h"
 #include "System/PhysicsSystem.h"
@@ -28,8 +35,8 @@ LONG WINAPI errorFunc(_EXCEPTION_POINTERS* pExceptionInfo)
         /*
             This will give you a date/time formatted string for your dump files
             Make sure to include these files:
-            #include <stdio.h>
             #include <DbgHelp.h>
+            #include <stdio.h>
             #include <time.h>
 
             AND this lib:
@@ -56,7 +63,7 @@ LONG WINAPI errorFunc(_EXCEPTION_POINTERS* pExceptionInfo)
                 ExInfo.ExceptionPointers = pExceptionInfo;
                 ExInfo.ClientPointers    = NULL;
                 MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal, &ExInfo, NULL, NULL);
-				
+
                 // MessageBox("Dump File Saved look x directory please email to developer at the following email adress
                 // crashdmp@gmail.com with the subject Gamename - Version ");
                 ::CloseHandle(hFile);
@@ -84,14 +91,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                         }
                         case WM_SIZE:
                         {
-                                GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>()->OnWindowResize(wParam, lParam);
+                                GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->OnWindowResize(wParam, lParam);
                                 break;
                         }
                 }
 
         // Any other messages, handle the default way
         return DefWindowProc(hWnd, message, wParam, lParam);
-
 }
 
 
@@ -106,7 +112,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         // window info
         WNDCLASSEX winInfo;
 
-		// console window creation
+        // console window creation
         ConsoleWindow CW;
         CW.CreateConsoleWindow("Inanis Console Window");
 
@@ -161,16 +167,16 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         sphereObj.radius = 3;
 
         CollisionComponent::FCollideResult result;
-        //result = CollisionLibary::SweepSphereToSphere(sphere1, sphere2, sphereObj);
+        // result = CollisionLibary::SweepSphereToSphere(sphere1, sphere2, sphereObj);
 
-        //if (result.collisionType == CollisionComponent::ECollide || result.collisionType == CollisionComponent::EOveralap)
+        // if (result.collisionType == CollisionComponent::ECollide || result.collisionType == CollisionComponent::EOveralap)
         //{
         //        int x = 0;
         //}
-		//else
-		//{
+        // else
+        //{
         //        int y = 0;
-		//}
+        //}
         //////////
 
         GEngine::Initialize();
@@ -179,23 +185,30 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         EntityManager*    entityManager    = GEngine::Get()->GetEntityManager();
         ComponentManager* componentManager = GEngine::Get()->GetComponentManager();
 
-		//Create Render System
-        CRenderSystem* renderSystem;
-        systemManager->CreateSystem<CRenderSystem>(&renderSystem);
+        // Create Render System
+        RenderSystem* renderSystem;
+        systemManager->CreateSystem<RenderSystem>(&renderSystem);
         FSystemInitProperties sysInitProps;
         renderSystem->SetWindowHandle(handle);
         systemManager->RegisterSystem(&sysInitProps, renderSystem);
 
-		//Create Physics System
+        // Create Physics System
         PhysicsSystem* physicsSystem;
         systemManager->CreateSystem<PhysicsSystem>(&physicsSystem);
-        sysInitProps.m_Priority = E_SYSTEM_PRIORITY::VERY_HIGH;
+        sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::VERY_HIGH;
         sysInitProps.m_UpdateRate = 0.0125f;
         systemManager->RegisterSystem(&sysInitProps, physicsSystem);
 
+		// Create Animation System
+        AnimationSystem* animSystem;
+        systemManager->CreateSystem<AnimationSystem>(&animSystem);
+        sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
+        sysInitProps.m_UpdateRate = 0.0f;
+        systemManager->RegisterSystem(&sysInitProps, animSystem);
+
         GCoreInput::InitializeInput(handle);
 
-		AudioManager::Initialize();
+        AudioManager::Initialize();
         // message loop
         ShowWindow(handle, SW_SHOW);
         g_Running = true;
@@ -203,6 +216,14 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         ZeroMemory(&msg, sizeof(msg));
         PlayerMovement pMovement;
 
+        // Sound tests
+        auto boop  = AudioManager::Get()->CreateSFX("boop");
+        auto music = AudioManager::Get()->LoadMusic("extreme");
+        AudioManager::Get()->ActivateMusicAndPause(music, true);
+
+		// Entity tests
+        auto eHandle = entityManager->CreateEntity<BaseEntity>();
+		
         while (msg.message != WM_QUIT)
         {
                 GCoreInput::UpdateInput();
@@ -223,14 +244,25 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
 
-				if (GCoreInput::GetKeyState(KeyCode::P) == KeyState::DownFirst)
-                AudioManager::Get()->PlaySounds();
+                if (GCoreInput::GetKeyState(KeyCode::P) == KeyState::Down)
+                {
+                        boop->Play();
+                }
+                if (GCoreInput::GetKeyState(KeyCode::O) == KeyState::DownFirst)
+                {
+                        bool musicIsPlaying;
+                        music->isStreamPlaying(musicIsPlaying);
+                        if (!musicIsPlaying)
+                                music->ResumeStream();
+                        else
+                                music->PauseStream();
+                }
 
                 pMovement.OnUpdate(GEngine::Get()->GetDeltaTime());
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
         }
 
-		AudioManager::Shutdown();
+        AudioManager::Shutdown();
 
         GEngine::Shutdown();
 

@@ -12,14 +12,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio\AudioManager.h" />
-    <ClInclude Include="Audio\cAudioComponent.h" />
-    <ClInclude Include="Audio\cMusicComponent.h" />
-    <ClInclude Include="Audio\cSFXComponent.h" />
+    <ClInclude Include="Audio\SFXComponent.h" />
     <ClInclude Include="CollisionLibary\CollisionComponent.h" />
     <ClInclude Include="CollisionLibary\CollisionLibary.h" />
     <ClInclude Include="Components\PhysicsComponent.h" />
     <ClInclude Include="Components\TestComponents.h" />
-    <ClInclude Include="Components\CTransformComponent.h" />
+    <ClInclude Include="Components\TransformComponent.h" />
     <ClInclude Include="ConsoleWindow\ConsoleWindow.h" />
     <ClInclude Include="Controller\IController.h" />
     <ClInclude Include="Controller\PlayerMovement.h" />
@@ -59,9 +57,12 @@
     <ClInclude Include="MathLibrary\Quaternion.h" />
     <ClInclude Include="MathLibrary\Transform.h" />
     <ClInclude Include="MathLibrary\Vector.h" />
+    <ClInclude Include="Rendering\Components\CameraComponent.h" />
+    <ClInclude Include="Rendering\Components\PointLightComponent.h" />
     <ClInclude Include="Rendering\ConstantBuffers.h" />
-    <ClInclude Include="Rendering\SkeletalMeshComponent.h" />
-    <ClInclude Include="Rendering\StaticMeshComponent.h" />
+    <ClInclude Include="Rendering\Components\SkeletalMeshComponent.h" />
+    <ClInclude Include="Rendering\Components\StaticMeshComponent.h" />
+    <ClInclude Include="Rendering\LightBuffers.h" />
     <ClInclude Include="Rendering\RenderingSystem.h" />
     <ClInclude Include="Rendering\Vertex.h" />
     <ClInclude Include="ResourceManager\AnimationClip.h" />
@@ -90,9 +91,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Audio\AudioManager.cpp" />
-    <ClCompile Include="Audio\cAudioComponent.cpp" />
-    <ClCompile Include="Audio\cMusicComponent.cpp" />
-    <ClCompile Include="Audio\cSFXComponent.cpp" />
     <ClCompile Include="CollisionLibary\CollisionComponent.cpp" />
     <ClCompile Include="CollisionLibary\CollisionLibary.cpp" />
     <ClCompile Include="Components\PhysicsComponent.cpp" />
@@ -118,8 +116,8 @@
     <ClCompile Include="MathLibrary\Transform.cpp" />
     <ClCompile Include="MathLibrary\Vector.cpp" />
     <ClCompile Include="Rendering\RenderingSystem.cpp" />
-    <ClCompile Include="Rendering\SkeletalMeshComponent.cpp" />
-    <ClCompile Include="Rendering\StaticMeshComponent.cpp" />
+    <ClCompile Include="Rendering\Components\SkeletalMeshComponent.cpp" />
+    <ClCompile Include="Rendering\Components\StaticMeshComponent.cpp" />
     <ClCompile Include="Rendering\Vertex.cpp" />
     <ClCompile Include="ResourceManager\AnimationClip.cpp" />
     <ClCompile Include="ResourceManager\IResource.cpp" />
@@ -211,7 +209,7 @@
       <AdditionalDependencies>GAudio_DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <ObjectFileOutput>$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -234,7 +232,7 @@
       <AdditionalDependencies>GAudio_DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <ObjectFileOutput>$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

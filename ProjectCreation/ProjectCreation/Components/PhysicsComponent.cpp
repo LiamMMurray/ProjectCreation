@@ -1,5 +1,5 @@
 #include "PhysicsComponent.h"
-#include "../Components/CTransformComponent.h"
+#include "../Components/TransformComponent.h"
 #include "../ECS/Entity.h"
 #include "../Engine/GEngine.h"
 
