@@ -136,6 +136,7 @@ class HandleManager<T>::iterator
         iterator  operator++(int);
         bool      operator!=(const iterator& other) const;
         T&        operator*();
+        T*        data();
 };
 
 template <typename T>
@@ -151,6 +152,11 @@ typename bool HandleManager<T>::iterator::operator!=(const iterator& other) cons
         return this->m_CurrentIndex != other.m_CurrentIndex;
 };
 
+template <typename T>
+typename T* HandleManager<T>::iterator::data()
+{
+        return m_HandleManager.m_ObjectData[m_CurrentIndex];
+};
 
 template <typename T>
 typename HandleManager<T>::iterator& HandleManager<T>::iterator::operator++()

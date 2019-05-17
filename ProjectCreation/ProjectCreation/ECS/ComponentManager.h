@@ -70,6 +70,7 @@ inline ComponentHandle ComponentManager::AddComponent(const EntityHandle entityH
         // TODO
         // highly convenient but also highly unoptimized (requires at minimum TWO hashes for every time this gets called)
         m_EntityComponentIdMap[entityHandle][componentTypeId] = componentHandle;
+        pComponent->m_Handle                                  = componentHandle;
         m_TypeIdMap[componentHandle]                          = componentTypeId;
         return componentHandle;
 }
