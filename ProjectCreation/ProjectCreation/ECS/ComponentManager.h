@@ -16,11 +16,12 @@ class ComponentManager
         typedef std::unordered_map<ComponentTypeId, ComponentHandle>       ComponentTypeIdHandleMap;
         typedef std::unordered_map<EntityHandle, ComponentTypeIdHandleMap> EntityComponentIdMap;
         typedef std::vector<HandleManager<IComponent>>                     TypeAssociativeHandleManagers;
+        typedef std::unordered_map<ComponentHandle, ComponentTypeId>       TypeIdLookUpTable;
 
         HandleManager<IComponent>     m_HandleManager;
         TypeAssociativeHandleManagers m_TypeAssociativeHandleManagers;
         EntityComponentIdMap          m_EntityComponentIdMap;
-
+        TypeIdLookUpTable             m_TypeIdMap;
 
     public:
         ComponentManager()
@@ -36,7 +37,7 @@ class ComponentManager
         ComponentHandle            GetComponentHandle(EntityHandle entityHandle, ComponentTypeId componentTypeId);
 
         size_t GetSize();
-        template <typename T>
+
 
         // Non-implemented
         //////////////////////////////////////
@@ -69,7 +70,7 @@ inline ComponentHandle ComponentManager::AddComponent(const EntityHandle entityH
         // TODO
         // highly convenient but also highly unoptimized (requires at minimum TWO hashes for every time this gets called)
         m_EntityComponentIdMap[entityHandle][componentTypeId] = componentHandle;
-
+        m_TypeIdMap[componentHandle]                          = componentTypeId;
         return componentHandle;
 }
 

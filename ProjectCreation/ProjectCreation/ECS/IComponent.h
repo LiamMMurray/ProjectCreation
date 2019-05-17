@@ -21,7 +21,7 @@ class IComponent
         void                          Enable();
         void                          Disable();
         void                          SetActive(bool state);
-        bool                          isEnabled();
+        bool                          IsEnabled();
         virtual const ComponentTypeId GetStaticTypeId() const = 0;
 
         friend class ComponentManager;

@@ -69,9 +69,8 @@ class HandleManager
     public:
         // uint32_t  HandleId
         // T* raw data pointer
-        std::vector<HandleData>              m_HandleData;
-        std::vector<T*>                      m_ObjectData;
-        std::vector<std::pair<uint32_t, T*>> m_HandleSpace;
+        std::vector<HandleData> m_HandleData;
+        std::vector<T*>         m_ObjectData;
 
         Handle<T> GetHandle(T* object)
         {
@@ -80,9 +79,6 @@ class HandleManager
                 {
                         if (m_ObjectData[i] == nullptr)
                         {
-                                // m_HandleSpace[i].second = object;
-                                // m_HandleSpace[i].first  = m_HandleSpace[i].first;
-
                                 m_ObjectData[i] = object;
                                 m_HandleData[i] = HandleData();
 
@@ -90,8 +86,6 @@ class HandleManager
                                 out.m_Id         = i;
                                 out.m_HandleData = m_HandleData[i];
                                 return out;
-
-                                // return Handle<T>(i, m_HandleSpace[i].first);
                         }
                         else if (m_ObjectData[i] == object)
                         {
@@ -99,28 +93,29 @@ class HandleManager
                                 out.m_Id         = i;
                                 out.m_HandleData = m_HandleData[i];
                         }
-                        // return Handle<T>(i, m_HandleSpace[i].first);
                 }
-                // m_HandleSpace.push_back(std::make_pair(0, object));
                 m_ObjectData.push_back(object);
                 m_HandleData.push_back(HandleData());
                 Handle<T> out;
                 out.m_Id         = i;
                 out.m_HandleData = m_HandleData[i];
                 return out;
-                // return Handle<T>(i, m_HandleSpace[i].first);
         }
         T* GetObject(Handle<T> handle)
         {
                 return m_ObjectData[handle.m_Id];
         }
-        size_t GetSize()
+        size_t size()
         {
                 return m_HandleData.size();
         }
         iterator begin()
         {
-                return iterator();
+                return iterator(*this);
+        }
+        iterator end()
+        {
+                return iterator(*this, m_HandleData.size());
         }
         T& operator[](uint32_t idx)
         {
@@ -132,25 +127,59 @@ template <typename T>
 class HandleManager<T>::iterator
 {
     private:
-        uint32_t m_CurrentIndex;
+        uint32_t          m_CurrentIndex;
+        HandleManager<T>& m_HandleManager;
 
     public:
-        HandleManager<T>::iterator();
-        iterator operator++(int);
+        iterator(HandleManager<T>& handleManager, uint32_t idx = 0U);
+        iterator& operator++();
+        iterator  operator++(int);
+        bool      operator!=(const iterator& other) const;
+        T&        operator*();
 };
 
 template <typename T>
-HandleManager<T>::iterator::iterator() :
-    m_CurrentIndex(0U){
+HandleManager<T>::iterator::iterator(HandleManager<T>& handleManager, uint32_t idx) :
+    m_HandleManager(handleManager),
+    m_CurrentIndex(idx){
 
     };
 
 template <typename T>
-typename HandleManager<T>::iterator HandleManager<T>::iterator::operator++(int)
+typename bool HandleManager<T>::iterator::operator!=(const iterator& other) const
 {
-        m_CurrentIndex++;
+        return this->m_CurrentIndex != other.m_CurrentIndex;
 };
 
+
+template <typename T>
+typename HandleManager<T>::iterator& HandleManager<T>::iterator::operator++()
+{
+        m_CurrentIndex++;
+        while (m_CurrentIndex < m_HandleManager.size() && !m_HandleManager.m_ObjectData[m_CurrentIndex]->IsEnabled())
+        {
+                m_CurrentIndex++;
+        }
+        return *this;
+};
+
+template <typename T>
+typename HandleManager<T>::iterator HandleManager<T>::iterator::operator++(int)
+{
+        auto temp = *this;
+        m_CurrentIndex++;
+        while (m_CurrentIndex < m_HandleManager.size() && !m_HandleManager.m_ObjectData[m_CurrentIndex]->IsEnabled())
+        {
+                m_CurrentIndex++;
+        }
+        return temp;
+};
+
+template <typename T>
+typename T& HandleManager<T>::iterator::operator*()
+{
+        return *m_HandleManager.m_ObjectData[m_CurrentIndex];
+};
 
 class IHandleContainer
 {};

@@ -12,38 +12,40 @@ ComponentHandle ComponentManager::GetComponentHandle(EntityHandle entityHandle, 
         return out;
 }
 
-//IComponent* ComponentManager::GetComponent(ComponentHandle componentHandle)
+// IComponent* ComponentManager::GetComponent(ComponentHandle componentHandle)
 //{
 //        return m_HandleManager.GetObject(componentHandle);
 //}
 
-//void ComponentManager::DestroyComponent(ComponentHandle componentHandle)
+// void ComponentManager::DestroyComponent(ComponentHandle componentHandle)
 //{}
 
 void ComponentManager::ActivateComponent(ComponentHandle componentHandle)
 {
-        m_HandleManager.GetObject(componentHandle)->Enable();
+        ComponentTypeId typeId = m_TypeIdMap[componentHandle];
+        m_TypeAssociativeHandleManagers[typeId.m_Data].GetObject(componentHandle)->Enable();
 }
 
 void ComponentManager::DeactivateComponent(ComponentHandle componentHandle)
 {
-        m_HandleManager.GetObject(componentHandle)->Disable();
+        ComponentTypeId typeId = m_TypeIdMap[componentHandle];
+        m_TypeAssociativeHandleManagers[typeId.m_Data].GetObject(componentHandle)->Disable();
 }
 
 size_t ComponentManager::GetCapacity()
 {
-  /*      return m_HandleManager.*/
+        /*      return m_HandleManager.*/
         return 0;
 }
 
 
 size_t ComponentManager::GetSize()
 {
-        return m_HandleManager.GetSize();
+        return 0;
 }
 
 size_t ComponentManager::GetActiveComponentCount()
 {
-    /*    return m_HandleManager.GetSize();*/
+        /*    return m_HandleManager.GetSize();*/
         return 0;
 }

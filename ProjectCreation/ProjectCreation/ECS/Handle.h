@@ -9,6 +9,19 @@ struct HandleData
 {
         uint8_t  m_Flags : 8;
         uint32_t m_DeletionAccumulator : 24;
+
+        bool IsValid()
+        {
+                return (m_Flags & HANDLEFLAG::INACTIVE) == 0;
+        }
+        void SetInvalid()
+        {
+                SetFlags(m_Flags | HANDLEFLAG::INACTIVE);
+        }
+        void SetFlags(uint8_t flags)
+        {
+                m_Flags = flags;
+        }
 };
 template <typename T>
 struct Handle
