@@ -126,7 +126,7 @@ void PlayerMovement::ApplyInput()
         fSphereCheck.radius = 0.2f;
 
         CollisionComponent::FCollideResult result =
-            CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck);
+            CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 1.0f);
 
         if (result.collisionType != CollisionComponent::ECollisionType::EOveralap &&
             result.collisionType != CollisionComponent::ECollisionType::ECollide)
