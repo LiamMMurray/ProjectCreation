@@ -159,7 +159,7 @@ inline HandleManager<IComponent>& ComponentManager::GetActiveComponents()
 {
         ComponentTypeId componentTypeId = T::GetTypeId();
         assert(componentTypeId.m_Data < m_TypeAssociativeHandleManagers.size());
-        return *m_TypeAssociativeHandleManagers[componentTypeId.m_Data];
+        return m_TypeAssociativeHandleManagers[componentTypeId.m_Data];
 }
 
 template <typename T>
