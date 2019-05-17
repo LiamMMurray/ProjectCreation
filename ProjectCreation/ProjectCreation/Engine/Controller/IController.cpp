@@ -6,3 +6,8 @@ void IController::OnUpdate(float deltaTime)
         ProcessInput();
         ApplyInput();
 }
+
+void IController::Init(EntityHandle handle)
+{
+        SetControlledEntity(handle);
+}

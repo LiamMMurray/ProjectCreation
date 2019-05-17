@@ -33,8 +33,6 @@ class PlayerMovement : public IController
                 ON_WATER
         };
 
-        ComponentHandle m_handle;
-
         // Requested direction is set when we process the player's input
         MoveDirections requestedDirection;
 
@@ -71,8 +69,4 @@ class PlayerMovement : public IController
 		DirectX::XMVECTOR m_CurrentInput;
 
         DirectX::XMVECTOR m_CurrentVelocity;
-
-
-        static PhysicsComponent   physicsComponent;
-        static TransformComponent transformComponent;
 };

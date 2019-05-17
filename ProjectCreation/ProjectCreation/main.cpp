@@ -18,8 +18,13 @@
 
 #include "Engine/ConsoleWindow/ConsoleWindow.h"
 
-#include "Engine/Entities/BaseEntities.h"
 #include "Engine/EngineInitShutdownHelpers.h"
+#include "Engine/Entities/BaseEntities.h"
+
+#include "Rendering/Components/CameraComponent.h"
+#include "Rendering/Components/SkeletalMeshComponent.h"
+#include "Rendering/Components/StaticMeshComponent.h"
+
 
 #pragma comment(lib, "dbghelp")
 
@@ -176,12 +181,13 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         //        int y = 0;
         //}
         //////////
-        
-		/** Main init engine **/
+
+        /** Main init engine **/
         EngineHelpers::InitEngineSystemManagers(handle);
         SystemManager*    systemManager    = GEngine::Get()->GetSystemManager();
         EntityManager*    entityManager    = GEngine::Get()->GetEntityManager();
         ComponentManager* componentManager = GEngine::Get()->GetComponentManager();
+        ResourceManager*  resourceManager  = GEngine::Get()->GetResourceManager();
 
         // message loop
         ShowWindow(handle, SW_SHOW);
@@ -195,9 +201,35 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         auto music = AudioManager::Get()->LoadMusic("extreme");
         AudioManager::Get()->ActivateMusicAndPause(music, true);
 
-		// Entity tests
-        auto eHandle = entityManager->CreateEntity<BaseEntity>();
-		
+        // Entity tests
+        auto playerHandle   = entityManager->CreateEntity<BaseEntity>();
+        auto testMeshHandle = entityManager->CreateEntity<BaseEntity>();
+        // auto entity  = entityManager->GetEntity(eHandle);
+        // Player entity setup
+        {
+                componentManager->AddComponent<TransformComponent>(playerHandle);
+                auto cameraHandle = componentManager->AddComponent<CameraComponent>(playerHandle);
+                componentManager->GetComponent<TransformComponent>(playerHandle);
+                auto tComp                   = componentManager->GetComponent<TransformComponent>(playerHandle);
+                tComp->transform.translation = XMVectorSet(0.0f, 0.3f, -2.0f, 1.0f);
+
+                auto cameraComp                        = componentManager->GetComponent<CameraComponent>(playerHandle);
+                cameraComp->m_Settings.m_HorizontalFOV = 90.0f;
+
+                systemManager->GetSystem<RenderSystem>()->SetMainCameraComponent(cameraHandle);
+
+                pMovement.Init(playerHandle);
+        }
+
+        // Test skeletal mesh setup
+        {
+                componentManager->AddComponent<TransformComponent>(testMeshHandle);
+                componentManager->AddComponent<SkeletalMeshComponent>(testMeshHandle);
+
+                auto skelComp                  = componentManager->GetComponent<SkeletalMeshComponent>(testMeshHandle);
+                skelComp->m_SkeletalMeshHandle = resourceManager->LoadSkeletalMesh("Run");
+        }
+
         while (msg.message != WM_QUIT)
         {
                 GCoreInput::UpdateInput();
@@ -218,7 +250,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
 
-                if (GCoreInput::GetKeyState(KeyCode::P) == KeyState::Down)
+                if (GCoreInput::GetKeyState(KeyCode::P) == KeyState::DownFirst)
                 {
                         boop->Play();
                 }

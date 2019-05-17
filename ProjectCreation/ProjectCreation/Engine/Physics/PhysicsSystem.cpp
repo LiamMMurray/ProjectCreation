@@ -21,9 +21,9 @@ void PhysicsSystem::OnUpdate(float deltaTime)
         {
 
 			//Testing use of static PhysicsComponent
-                PhysicsComponent* currPhysics = &PlayerMovement::physicsComponent;
-
-                TransformComponent*       currComponent = &PlayerMovement::transformComponent;
+                //PhysicsComponent* currPhysics = &PlayerMovement::physicsComponent;
+				//
+                //TransformComponent*       currComponent = &PlayerMovement::transformComponent;
 
                 //IEntity*            currEntity = GEngine::Get()->GetEntityManager()->GetEntity(currPhysics->GetOwner());
                 //TransformComponent* currComponent =
@@ -37,14 +37,14 @@ void PhysicsSystem::OnUpdate(float deltaTime)
 
 				//Check Sweep
 				//if no collision apply force
-                currPhysics->ApplyForce(currPhysics->GetForce());
+                //currPhysics->ApplyForce(currPhysics->GetForce());
 
 				//else don't add movement
 
-                std::cout << "Current Position < " << XMVectorGetX(currComponent->transform.translation) << ", "
-                          << XMVectorGetY(currComponent->transform.translation) << ", "
-                          << XMVectorGetZ(currComponent->transform.translation) << ", "
-                          << XMVectorGetW(currComponent->transform.translation) << " >" << std::endl;
+                //std::cout << "Current Position < " << XMVectorGetX(currComponent->transform.translation) << ", "
+                //          << XMVectorGetY(currComponent->transform.translation) << ", "
+                //          << XMVectorGetZ(currComponent->transform.translation) << ", "
+                //          << XMVectorGetW(currComponent->transform.translation) << " >" << std::endl;
 
 			// CRITICAL_TODO: Implement iterator
                 //PhysicsComponent*   currPhysics = nullptr;
