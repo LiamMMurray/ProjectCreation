@@ -1,5 +1,7 @@
 #pragma once
 
+/** Includes **/
+
 #include "../ECS/ECS.h"
 #include "../Utility/ForwardDeclarations/D3DNativeTypes.h"
 #include "../Utility/ForwardDeclarations/WinProcTypes.h"
@@ -10,12 +12,13 @@
 
 #include <DirectXMath.h>
 
+
+/** Forward Declarations **/
 struct StaticMesh;
 struct SkeletalMesh;
 struct Material;
 struct FTransform;
-
-struct CRenderComponent;
+struct FCameraSettings;
 
 class ResourceManager;
 
@@ -23,6 +26,8 @@ namespace Animation
 {
         struct FSkeleton;
 }
+
+/** Helper ENUMS **/
 
 struct E_VIEWPORT
 {
@@ -176,7 +181,9 @@ struct E_STATE_DEPTH_STENCIL
         };
 };
 
-class CRenderSystem : public ISystem
+/** Class Declarations **/
+
+class RenderSystem : public ISystem
 {
         friend class ResourceManager;
 
@@ -216,16 +223,22 @@ class CRenderSystem : public ISystem
 
         void UpdateConstantBuffer(ID3D11Buffer* gpuBuffer, void* cpuBuffer, size_t size);
 
-        void              DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
-        void              DrawOpaqueSkeletalMesh(SkeletalMesh*               mesh,
-                                                 Material*                   material,
-                                                 DirectX::XMMATRIX*          mtx,
-                                                 const Animation::FSkeleton* skel);
-        void              DrawTransparentStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
-        void              DrawTransparentSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        void DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        void DrawOpaqueSkeletalMesh(SkeletalMesh*               mesh,
+                                    Material*                   material,
+                                    DirectX::XMMATRIX*          mtx,
+                                    const Animation::FSkeleton* skel);
+        void DrawTransparentStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        void DrawTransparentSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+
+
+        ComponentHandle   m_MainCameraHandle;
+        ComponentHandle   m_MainTransformHandle;
         ResourceManager*  m_ResourceManager;
         ComponentManager* m_ComponentManager;
         EntityManager*    m_EntityManager;
+
+        DirectX::XMMATRIX m_CachedMainProjectionMatrix;
 
     protected:
         virtual void OnPreUpdate(float deltaTime) override;
@@ -237,8 +250,13 @@ class CRenderSystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
-        void SetWindowHandle(native_handle_type handle);
-
+        void         SetWindowHandle(native_handle_type handle);
+        void         SetMainCameraComponent(ComponentHandle cameraHandle);
+        void         RefreshMainCameraSettings();
+        inline float GetWindowAspectRatio()
+        {
+                return m_BackBufferWidth / m_BackBufferHeight;
+        };
         void OnWindowResize(WPARAM wParam, LPARAM lParam);
         void SetFullscreen(bool);
         bool GetFullscreen();

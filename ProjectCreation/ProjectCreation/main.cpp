@@ -17,8 +17,10 @@
 #include "Engine/Animation/AnimationSystem.h"
 #include "Engine/GEngine.h"
 #include "Rendering/RenderingSystem.h"
-
+#include "Engine/Animation/AnimationSystem.h"
 #include "ConsoleWindow/ConsoleWindow.h"
+
+#include "Entities/BaseEntities.h"
 
 #include "Audio/AudioManager.h"
 #include "System/PhysicsSystem.h"
@@ -89,7 +91,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                         }
                         case WM_SIZE:
                         {
-                                GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>()->OnWindowResize(wParam, lParam);
+                                GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->OnWindowResize(wParam, lParam);
                                 break;
                         }
                 }
@@ -184,8 +186,8 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         ComponentManager* componentManager = GEngine::Get()->GetComponentManager();
 
         // Create Render System
-        CRenderSystem* renderSystem;
-        systemManager->CreateSystem<CRenderSystem>(&renderSystem);
+        RenderSystem* renderSystem;
+        systemManager->CreateSystem<RenderSystem>(&renderSystem);
         FSystemInitProperties sysInitProps;
         renderSystem->SetWindowHandle(handle);
         systemManager->RegisterSystem(&sysInitProps, renderSystem);
@@ -196,6 +198,13 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::VERY_HIGH;
         sysInitProps.m_UpdateRate = 0.0125f;
         systemManager->RegisterSystem(&sysInitProps, physicsSystem);
+
+		// Create Animation System
+        AnimationSystem* animSystem;
+        systemManager->CreateSystem<AnimationSystem>(&animSystem);
+        sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
+        sysInitProps.m_UpdateRate = 0.0f;
+        systemManager->RegisterSystem(&sysInitProps, animSystem);
 
         GCoreInput::InitializeInput(handle);
 
@@ -212,6 +221,9 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         auto music = AudioManager::Get()->LoadMusic("extreme");
         AudioManager::Get()->ActivateMusicAndPause(music, true);
 
+		// Entity tests
+        auto eHandle = entityManager->CreateEntity<BaseEntity>();
+		
         while (msg.message != WM_QUIT)
         {
                 GCoreInput::UpdateInput();
@@ -232,7 +244,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
 
-                if (GCoreInput::GetKeyState(KeyCode::P) == KeyState::DownFirst)
+                if (GCoreInput::GetKeyState(KeyCode::P) == KeyState::Down)
                 {
                         boop->Play();
                 }

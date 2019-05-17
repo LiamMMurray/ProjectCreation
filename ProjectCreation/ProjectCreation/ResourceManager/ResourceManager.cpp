@@ -26,7 +26,7 @@ ResourceHandle ResourceManager::LoadMaterial(const char* name)
 
         assert(result.m_Flags == ERESULT_FLAG::SUCCESS);
 
-        CRenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>();
+        RenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 
         auto container = GetResourceContainer<Material>();
         auto it        = container->m_NameTable.find(name);
@@ -53,7 +53,7 @@ ResourceHandle ResourceManager::LoadTexture2D(const char* name)
 {
         FileIO::FMaterialData materialData;
 
-        CRenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>();
+        RenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 
         auto container = GetResourceContainer<Texture2D>();
         auto it        = container->m_NameTable.find(name);
@@ -84,7 +84,7 @@ ResourceHandle ResourceManager::LoadVertexShader(const char* name)
 {
         FileIO::FMaterialData materialData;
 
-        CRenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>();
+        RenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 
         auto container = GetResourceContainer<VertexShader>();
         auto it        = container->m_NameTable.find(name);
@@ -115,7 +115,7 @@ ResourceHandle ResourceManager::LoadPixelShader(const char* name)
 {
         FileIO::FMaterialData materialData;
 
-        CRenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>();
+        RenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 
         auto container = GetResourceContainer<PixelShader>();
         auto it        = container->m_NameTable.find(name);
@@ -149,7 +149,7 @@ ResourceHandle ResourceManager::LoadStaticMesh(const char* name)
 
         assert(result.m_Flags == ERESULT_FLAG::SUCCESS);
 
-        CRenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>();
+        RenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 
 
         auto container = GetResourceContainer<StaticMesh>();
@@ -197,7 +197,7 @@ ResourceHandle ResourceManager::LoadSkeletalMesh(const char* name)
 
         assert(result.m_Flags == ERESULT_FLAG::SUCCESS);
 
-        CRenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>();
+        RenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 
 
         auto container = GetResourceContainer<SkeletalMesh>();
@@ -245,7 +245,7 @@ ResourceHandle ResourceManager::LoadAnimationClip(const char* name, const Animat
         Animation::FAnimClip animClip;
         FileIO::ImportAnimClipData(name, animClip, *skeleton);
 
-        CRenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<CRenderSystem>();
+        RenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 
         auto container = GetResourceContainer<AnimationClip>();
         auto it        = container->m_NameTable.find(name);

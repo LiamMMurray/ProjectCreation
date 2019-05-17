@@ -25,7 +25,7 @@
     <ClInclude Include="CollisionLibary\CollisionLibary.h" />
     <ClInclude Include="Components\PhysicsComponent.h" />
     <ClInclude Include="Components\TestComponents.h" />
-    <ClInclude Include="Components\CTransformComponent.h" />
+    <ClInclude Include="Components\TransformComponent.h" />
     <ClInclude Include="ConsoleWindow\ConsoleWindow.h" />
     <ClInclude Include="Controller\IController.h" />
     <ClInclude Include="Controller\PlayerMovement.h" />
@@ -65,9 +65,12 @@
     <ClInclude Include="MathLibrary\Quaternion.h" />
     <ClInclude Include="MathLibrary\Transform.h" />
     <ClInclude Include="MathLibrary\Vector.h" />
+    <ClInclude Include="Rendering\Components\CameraComponent.h" />
+    <ClInclude Include="Rendering\Components\PointLightComponent.h" />
     <ClInclude Include="Rendering\ConstantBuffers.h" />
-    <ClInclude Include="Rendering\SkeletalMeshComponent.h" />
-    <ClInclude Include="Rendering\StaticMeshComponent.h" />
+    <ClInclude Include="Rendering\Components\SkeletalMeshComponent.h" />
+    <ClInclude Include="Rendering\Components\StaticMeshComponent.h" />
+    <ClInclude Include="Rendering\LightBuffers.h" />
     <ClInclude Include="Rendering\RenderingSystem.h" />
     <ClInclude Include="Rendering\Vertex.h" />
     <ClInclude Include="ResourceManager\AnimationClip.h" />
@@ -124,8 +127,8 @@
     <ClCompile Include="MathLibrary\Transform.cpp" />
     <ClCompile Include="MathLibrary\Vector.cpp" />
     <ClCompile Include="Rendering\RenderingSystem.cpp" />
-    <ClCompile Include="Rendering\SkeletalMeshComponent.cpp" />
-    <ClCompile Include="Rendering\StaticMeshComponent.cpp" />
+    <ClCompile Include="Rendering\Components\SkeletalMeshComponent.cpp" />
+    <ClCompile Include="Rendering\Components\StaticMeshComponent.cpp" />
     <ClCompile Include="Rendering\Vertex.cpp" />
     <ClCompile Include="ResourceManager\AnimationClip.cpp" />
     <ClCompile Include="ResourceManager\IResource.cpp" />

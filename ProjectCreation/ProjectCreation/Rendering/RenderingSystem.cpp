@@ -27,15 +27,14 @@
 #include "../ResourceManager/Texture2D.h"
 #include "../ResourceManager/VertexShader.h"
 
+#include "../Components/TransformComponent.h"
 #include "Vertex.h"
 
-#include "../Controller/PlayerMovement.h"
+#include "Components/CameraComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 
-#include "../Components/CTransformComponent.h"
-#include "SkeletalMeshComponent.h"
-#include "StaticMeshComponent.h"
-
-void CRenderSystem::CreateDeviceAndSwapChain()
+void RenderSystem::CreateDeviceAndSwapChain()
 {
         using namespace Microsoft::WRL;
 
@@ -159,7 +158,7 @@ void CRenderSystem::CreateDeviceAndSwapChain()
         context->Release();
 }
 
-void CRenderSystem::CreateDefaultRenderTargets()
+void RenderSystem::CreateDefaultRenderTargets()
 {
         HRESULT          hr;
         ID3D11Texture2D* pBackBuffer;
@@ -231,13 +230,13 @@ void CRenderSystem::CreateDefaultRenderTargets()
         assert(SUCCEEDED(hr));
 }
 
-void CRenderSystem::CreateRasterizerStates()
+void RenderSystem::CreateRasterizerStates()
 {
         CD3D11_RASTERIZER_DESC desc(D3D11_FILL_SOLID, D3D11_CULL_BACK, FALSE, 0, 0.f, 0.f, TRUE, FALSE, FALSE, FALSE);
         m_Device->CreateRasterizerState(&desc, &m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
 }
 
-void CRenderSystem::CreateInputLayouts()
+void RenderSystem::CreateInputLayouts()
 {
         D3D11_INPUT_ELEMENT_DESC vLayout[] = {
             {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -282,14 +281,14 @@ void CRenderSystem::CreateInputLayouts()
         assert(SUCCEEDED(hr));
 }
 
-void CRenderSystem::CreateCommonShaders()
+void RenderSystem::CreateCommonShaders()
 {
         m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT] = m_ResourceManager->LoadVertexShader("Default");
         m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED] = m_ResourceManager->LoadVertexShader("DefaultSkinned");
         m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEFAULT]   = m_ResourceManager->LoadPixelShader("Default");
 }
 
-void CRenderSystem::CreateCommonConstantBuffers()
+void RenderSystem::CreateCommonConstantBuffers()
 {
         HRESULT           hr;
         D3D11_BUFFER_DESC bd{};
@@ -309,7 +308,7 @@ void CRenderSystem::CreateCommonConstantBuffers()
         hr           = m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::ANIM]);
 }
 
-void CRenderSystem::CreateSamplerStates()
+void RenderSystem::CreateSamplerStates()
 {
         HRESULT hr;
 
@@ -392,7 +391,7 @@ void CRenderSystem::CreateSamplerStates()
         m_Context->DSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
 }
 
-void CRenderSystem::UpdateConstantBuffer(ID3D11Buffer* gpuBuffer, void* cpuBuffer, size_t size)
+void RenderSystem::UpdateConstantBuffer(ID3D11Buffer* gpuBuffer, void* cpuBuffer, size_t size)
 {
         D3D11_MAPPED_SUBRESOURCE mappedResource{};
         m_Context->Map(gpuBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -400,7 +399,7 @@ void CRenderSystem::UpdateConstantBuffer(ID3D11Buffer* gpuBuffer, void* cpuBuffe
         m_Context->Unmap(gpuBuffer, 0);
 }
 
-void CRenderSystem::DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
+void RenderSystem::DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
 {
         using namespace DirectX;
 
@@ -429,10 +428,10 @@ void CRenderSystem::DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, D
         m_Context->DrawIndexed(mesh->m_IndexCount, 0, 0);
 }
 
-void CRenderSystem::DrawOpaqueSkeletalMesh(SkeletalMesh*               mesh,
-                                           Material*                   material,
-                                           DirectX::XMMATRIX*          mtx,
-                                           const Animation::FSkeleton* skel)
+void RenderSystem::DrawOpaqueSkeletalMesh(SkeletalMesh*               mesh,
+                                          Material*                   material,
+                                          DirectX::XMMATRIX*          mtx,
+                                          const Animation::FSkeleton* skel)
 {
         using namespace DirectX;
 
@@ -474,16 +473,29 @@ void CRenderSystem::DrawOpaqueSkeletalMesh(SkeletalMesh*               mesh,
         m_Context->DrawIndexed(mesh->m_IndexCount, 0, 0);
 }
 
-void CRenderSystem::DrawTransparentStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
+void RenderSystem::DrawTransparentStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
 {}
 
-void CRenderSystem::DrawTransparentSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
+void RenderSystem::DrawTransparentSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
 {}
 
-void CRenderSystem::OnPreUpdate(float deltaTime)
+void RenderSystem::RefreshMainCameraSettings()
+{
+        using namespace DirectX;
+
+        CameraComponent* camera   = static_cast<CameraComponent*>(m_ComponentManager->GetComponent(m_MainCameraHandle));
+        auto&            settings = camera->m_Settings;
+        settings.m_AspectRatio    = GetWindowAspectRatio();
+        float verticalFOV         = XMConvertToRadians(settings.m_HorizontalFOV / settings.m_AspectRatio);
+
+        m_CachedMainProjectionMatrix =
+            DirectX::XMMatrixPerspectiveFovLH(verticalFOV, settings.m_AspectRatio, settings.m_NearClip, settings.m_FarClip);
+}
+
+void RenderSystem::OnPreUpdate(float deltaTime)
 {}
 
-void CRenderSystem::OnUpdate(float deltaTime)
+void RenderSystem::OnUpdate(float deltaTime)
 {
         // Cache transforms. Update dirty transforms
 
@@ -492,7 +504,7 @@ void CRenderSystem::OnUpdate(float deltaTime)
         // Perform culling
 }
 
-void CRenderSystem::OnPostUpdate(float deltaTime)
+void RenderSystem::OnPostUpdate(float deltaTime)
 {
         using namespace DirectX;
 
@@ -516,13 +528,14 @@ void CRenderSystem::OnPostUpdate(float deltaTime)
         viewport.MinDepth = 0.0f;
         viewport.TopLeftX = 0;
         viewport.TopLeftY = 0;
+		return;
+        CameraComponent*    mainCamera = static_cast<CameraComponent*>(m_ComponentManager->GetComponent(m_MainCameraHandle));
+        TransformComponent* mainTransform =
+            static_cast<TransformComponent*>(m_ComponentManager->GetComponent(m_MainTransformHandle));
 
+        XMMATRIX view = (XMMatrixInverse(nullptr, mainTransform->transform.CreateMatrix()));
 
-        XMMATRIX view = (XMMatrixInverse(nullptr, PlayerMovement::transformComponent.transform.CreateMatrix()));
-        XMMATRIX proj =
-            XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), m_BackBufferWidth / m_BackBufferHeight, 0.01f, 1500.0f);
-
-        m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(view * proj);
+        m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(view * m_CachedMainProjectionMatrix);
 
         m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
         m_Context->RSSetViewports(1, &viewport);
@@ -535,14 +548,12 @@ void CRenderSystem::OnPostUpdate(float deltaTime)
         m_Context->VSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
         m_Context->PSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
 
-        XMStoreFloat3(&m_ConstantBuffer_SCENE.eyePosition, PlayerMovement::transformComponent.transform.translation);
+        XMStoreFloat3(&m_ConstantBuffer_SCENE.eyePosition, mainTransform->transform.translation);
         m_ConstantBuffer_SCENE.time = (float)GEngine::Get()->GetTotalTime();
         UpdateConstantBuffer(m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE],
                              &m_ConstantBuffer_SCENE,
                              sizeof(m_ConstantBuffer_SCENE));
 
-
-        
 
         /** Render all opaque static meshes **/
         {
@@ -602,7 +613,7 @@ void CRenderSystem::OnPostUpdate(float deltaTime)
         m_Swapchain->Present1(1, 0, &parameters);
 }
 
-void CRenderSystem::OnInitialize()
+void RenderSystem::OnInitialize()
 {
         assert(m_WindowHandle);
 
@@ -629,7 +640,7 @@ void CRenderSystem::OnInitialize()
         m_Context->PSSetShaderResources(0, 7, srvs);
 }
 
-void CRenderSystem::OnShutdown()
+void RenderSystem::OnShutdown()
 {
         SetFullscreen(false);
 
@@ -679,18 +690,29 @@ void CRenderSystem::OnShutdown()
         m_Device->Release();
 }
 
-void CRenderSystem::OnResume()
+void RenderSystem::OnResume()
 {}
 
-void CRenderSystem::OnSuspend()
+void RenderSystem::OnSuspend()
 {}
 
-void CRenderSystem::SetWindowHandle(native_handle_type handle)
+void RenderSystem::SetWindowHandle(native_handle_type handle)
 {
         m_WindowHandle = handle;
 }
 
-void CRenderSystem::OnWindowResize(WPARAM wParam, LPARAM lParam)
+void RenderSystem::SetMainCameraComponent(ComponentHandle cameraHandle)
+{
+        m_MainCameraHandle            = cameraHandle;
+        CameraComponent* camera       = static_cast<CameraComponent*>(m_ComponentManager->GetComponent(m_MainCameraHandle));
+        auto             entityHandle = camera->GetOwner();
+        auto             entity       = m_EntityManager->GetEntity(entityHandle);
+        //m_MainTransformHandle         = entity->GetComponentHandle<TransformComponent>();
+
+        RefreshMainCameraSettings();
+}
+
+void RenderSystem::OnWindowResize(WPARAM wParam, LPARAM lParam)
 {
         if (m_Swapchain)
         {
@@ -698,7 +720,7 @@ void CRenderSystem::OnWindowResize(WPARAM wParam, LPARAM lParam)
         }
 }
 
-void CRenderSystem::SetFullscreen(bool val)
+void RenderSystem::SetFullscreen(bool val)
 {
         if (val)
         {
@@ -718,7 +740,7 @@ void CRenderSystem::SetFullscreen(bool val)
         }
 }
 
-bool CRenderSystem::GetFullscreen()
+bool RenderSystem::GetFullscreen()
 {
         BOOL val;
         m_Swapchain->GetFullscreenState(&val, nullptr);

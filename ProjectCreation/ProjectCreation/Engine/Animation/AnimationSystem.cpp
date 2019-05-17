@@ -1,7 +1,7 @@
 #include "AnimationSystem.h"
 #include "AnimationComponent.h"
 
-#include "../../Rendering/SkeletalMeshComponent.h"
+#include "../../Rendering/Components/SkeletalMeshComponent.h"
 
 #include "../GEngine.h"
 
