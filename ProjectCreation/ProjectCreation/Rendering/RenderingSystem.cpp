@@ -483,10 +483,11 @@ void RenderSystem::RefreshMainCameraSettings()
 {
         using namespace DirectX;
 
-        CameraComponent* camera   = static_cast<CameraComponent*>(m_ComponentManager->GetComponent(m_MainCameraHandle));
-        auto&            settings = camera->m_Settings;
-        settings.m_AspectRatio    = GetWindowAspectRatio();
-        float verticalFOV         = XMConvertToRadians(settings.m_HorizontalFOV / settings.m_AspectRatio);
+        CameraComponent* camera =
+            static_cast<CameraComponent*>(m_ComponentManager->GetComponent<CameraComponent>(m_MainCameraHandle));
+        auto& settings         = camera->m_Settings;
+        settings.m_AspectRatio = GetWindowAspectRatio();
+        float verticalFOV      = XMConvertToRadians(settings.m_HorizontalFOV / settings.m_AspectRatio);
 
         m_CachedMainProjectionMatrix =
             DirectX::XMMatrixPerspectiveFovLH(verticalFOV, settings.m_AspectRatio, settings.m_NearClip, settings.m_FarClip);
@@ -528,10 +529,9 @@ void RenderSystem::OnPostUpdate(float deltaTime)
         viewport.MinDepth = 0.0f;
         viewport.TopLeftX = 0;
         viewport.TopLeftY = 0;
-		return;
-        CameraComponent*    mainCamera = static_cast<CameraComponent*>(m_ComponentManager->GetComponent(m_MainCameraHandle));
-        TransformComponent* mainTransform =
-            static_cast<TransformComponent*>(m_ComponentManager->GetComponent(m_MainTransformHandle));
+        return;
+        CameraComponent*    mainCamera    = m_ComponentManager->GetComponent<CameraComponent>(m_MainCameraHandle);
+        TransformComponent* mainTransform = m_ComponentManager->GetComponent<TransformComponent>(m_MainTransformHandle);
 
         XMMATRIX view = (XMMatrixInverse(nullptr, mainTransform->transform.CreateMatrix()));
 
@@ -561,18 +561,18 @@ void RenderSystem::OnPostUpdate(float deltaTime)
                 Material mat;
                 mat.m_VertexShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED];
                 mat.m_PixelShaderHandle  = m_CommonVertexShaderHandles[E_PIXEL_SHADERS::DEFAULT];
-                while (sMeshComp != m_ComponentManager->end<StaticMeshComponent>())
-                {
-                        StaticMesh*  staticMesh   = m_ResourceManager->GetResource<StaticMesh>(sMeshComp->m_StaticMeshHandle);
-                        EntityHandle entityHandle = sMeshComp->GetOwner();
-                        TransformComponent* tcomp =
-                            m_EntityManager->GetEntity(entityHandle)->GetComponent<TransformComponent>();
+                //while (sMeshComp != m_ComponentManager->end<StaticMeshComponent>())
+                //{
+                //        StaticMesh*  staticMesh   = m_ResourceManager->GetResource<StaticMesh>(sMeshComp->m_StaticMeshHandle);
+                //        EntityHandle entityHandle = sMeshComp->GetOwner();
+                //        TransformComponent* tcomp =
+                //            m_EntityManager->GetEntity(entityHandle)->GetComponent<TransformComponent>();
 
-                        XMMATRIX world = tcomp->transform.CreateMatrix();
+                //        XMMATRIX world = tcomp->transform.CreateMatrix();
 
-                        DrawOpaqueStaticMesh(staticMesh, &mat, &world);
-                        sMeshComp++;
-                }
+                //        DrawOpaqueStaticMesh(staticMesh, &mat, &world);
+                //        sMeshComp++;
+                //}
         }
 
         /** Render all opaque skeletal meshes **/
@@ -581,18 +581,18 @@ void RenderSystem::OnPostUpdate(float deltaTime)
                 Material mat;
                 mat.m_VertexShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED];
                 mat.m_PixelShaderHandle  = m_CommonVertexShaderHandles[E_PIXEL_SHADERS::DEFAULT];
-                while (skelComp != m_ComponentManager->end<SkeletalMeshComponent>())
-                {
-                        SkeletalMesh* skelMesh = m_ResourceManager->GetResource<SkeletalMesh>(skelComp->m_SkeletalMeshHandle);
-                        EntityHandle  entityHandle = skelComp->GetOwner();
-                        TransformComponent* tcomp =
-                            m_EntityManager->GetEntity(entityHandle)->GetComponent<TransformComponent>();
+                //while (skelComp != m_ComponentManager->end<SkeletalMeshComponent>())
+                //{
+                //        SkeletalMesh* skelMesh = m_ResourceManager->GetResource<SkeletalMesh>(skelComp->m_SkeletalMeshHandle);
+                //        EntityHandle  entityHandle = skelComp->GetOwner();
+                //        TransformComponent* tcomp =
+                //            m_EntityManager->GetEntity(entityHandle)->GetComponent<TransformComponent>();
 
-                        XMMATRIX world = tcomp->transform.CreateMatrix();
+                //        XMMATRIX world = tcomp->transform.CreateMatrix();
 
-                        DrawOpaqueSkeletalMesh(skelMesh, &mat, &world, &skelMesh->m_BindPoseSkeleton);
-                        skelComp++;
-                }
+                //        DrawOpaqueSkeletalMesh(skelMesh, &mat, &world, &skelMesh->m_BindPoseSkeleton);
+                //        skelComp++;
+                //}
         }
 
 
@@ -704,10 +704,10 @@ void RenderSystem::SetWindowHandle(native_handle_type handle)
 void RenderSystem::SetMainCameraComponent(ComponentHandle cameraHandle)
 {
         m_MainCameraHandle            = cameraHandle;
-        CameraComponent* camera       = static_cast<CameraComponent*>(m_ComponentManager->GetComponent(m_MainCameraHandle));
+        CameraComponent* camera       = m_ComponentManager->GetComponent<CameraComponent>(m_MainCameraHandle);
         auto             entityHandle = camera->GetOwner();
         auto             entity       = m_EntityManager->GetEntity(entityHandle);
-        //m_MainTransformHandle         = entity->GetComponentHandle<TransformComponent>();
+        // m_MainTransformHandle         = entity->GetComponentHandle<TransformComponent>();
 
         RefreshMainCameraSettings();
 }

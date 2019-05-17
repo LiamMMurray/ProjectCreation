@@ -30,6 +30,8 @@ class ComponentManager
         ComponentHandle AddComponent(const EntityHandle entityHandle);
         template <class T>
         T* GetComponent(const EntityHandle entityHandle);
+        template <class T>
+        T* GetComponent(const ComponentHandle componentHandle);
         template <typename T>
         HandleManager<IComponent>& GetActiveComponents();
         void                       ActivateComponent(ComponentHandle componentHandle);
@@ -84,6 +86,13 @@ inline T* ComponentManager::GetComponent(const EntityHandle entityHandle)
                 return nullptr;
         else
                 return (T*)m_TypeAssociativeHandleManagers[componentTypeId.m_Data].GetObject(componentHandle);
+}
+
+template <class T>
+inline T* ComponentManager::GetComponent(const ComponentHandle componentHandle)
+{
+        ComponentTypeId componentTypeId = T::GetTypeId();
+        return (T*)m_TypeAssociativeHandleManagers[componentTypeId.m_Data].GetObject(componentHandle);
 }
 
 template <typename T>

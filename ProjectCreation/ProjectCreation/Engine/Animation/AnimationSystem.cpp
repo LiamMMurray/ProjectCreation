@@ -89,7 +89,7 @@ void AnimationSystem::OnPreUpdate(float deltaTime)
 
 void AnimationSystem::OnUpdate(float deltaTime)
 {
-        auto it = m_ComponentManager->GetActiveComponents<AnimationComponent>();
+        //auto it = m_ComponentManager->GetActiveComponents<AnimationComponent>();
         //while (it != m_ComponentManager->end<AnimationComponent>())
         //{
         //        EntityHandle           ownerHandle = it->GetOwner();
