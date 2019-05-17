@@ -7,11 +7,23 @@
 #include "../../Utility/ForwardDeclarations/WinProcTypes.h"
 
 #include "AnimationComponent.h"
+#include "AnimationContainers.h"
+
+class ResourceManager;
 
 class AnimationSystem : public ISystem
 {
         friend class ResourceManager;
 
+        ComponentManager* m_ComponentManager;
+        EntityManager*    m_EntityManager;
+        ResourceManager*  m_ResourceManager;
+
+        void calcTransforms(Animation::FJoint*          sumVec,
+                            int                         jointCount,
+                            double                      time,
+                            const Animation::FAnimClip& animClip,
+                            float                       weight);
 
     protected:
         virtual void OnPreUpdate(float deltaTime) override;

@@ -1,15 +1,9 @@
 #pragma once
 
 // Includes
-#include <string>
-#include <vector>
-
 #include <Interface/G_Audio/GAudio.h>
-#include "cAudioComponent.h"
-#include "cMusicComponent.h"
-#include "cSFXComponent.h"
-
-// Defines
+#include <string>
+#include <unordered_map>
 
 //! Macro used to determine if a function succeeded.
 /*!
@@ -31,32 +25,26 @@
 
 class AudioManager
 {
-    public:
-        void PlaySounds();
-
-		static void Initialize();
-        static void Shutdown();
-        static AudioManager* Get();
-
     private:
-		static AudioManager* instance;
+        GW::AUDIO::GAudio*                                  m_SoundEngine = nullptr;
+        std::unordered_map<std::string, GW::AUDIO::GMusic*> m_LoadedMusic;
+        float                                               m_MasterVolume     = 1.0f;
+        float                                               m_PrevMasterVolume = 1.0f;
+        static AudioManager*                                instance;
 
-        void PlaySFX();
-        void PlayMusic();
-        //void AddMusic(std::string mAssetPath, float mVolume);
-        //void AddSFX(std::string mAssetPath, float mVolume);
+    public:
+        GW::AUDIO::GSound* CreateSFX(const char*);
+        GW::AUDIO::GMusic* LoadMusic(const char*);
+        void               SetMasterVolume(float val);
+        void               ActivateMusicAndPause(GW::AUDIO::GMusic*, bool looping = false);
 
+            inline void GetMasterVolume(float val)
+        {
+                m_MasterVolume;
+        }
 
-        GW::AUDIO::GAudio* fSoundEngine = nullptr;
-        GW::AUDIO::GMusic* fMusic       = nullptr;
-        GW::AUDIO::GSound* fSFX         = nullptr;
-
-        const std::string music       = "Assets\Music\extreme.wav";
-        const float       musicVolume = 0.65f;
-
-        const std::string sfx1      = "..\\Assets\\SFX\\boop.wav";
-        const float       sfxVolume = 1.0f;
-
-
-        std::vector<cAudioComponent*> fSounds;
+    public:
+        static void          Initialize();
+        static void          Shutdown();
+        static AudioManager* Get();
 };

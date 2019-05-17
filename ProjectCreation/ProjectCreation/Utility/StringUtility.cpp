@@ -1,5 +1,5 @@
 #include "StringUtility.h"
-
+#define NOMINMAX
 #include <Windows.h>
 
 using namespace std;

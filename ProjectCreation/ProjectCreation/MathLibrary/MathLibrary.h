@@ -1,6 +1,9 @@
 #pragma once
 #include <math.h>
 #include <stdint.h>
+#undef max
+#undef min
+
 #include <algorithm>
 #include "../Rendering/Vertex.h"
 #include "Transform.h"
@@ -39,11 +42,10 @@ class MathLibrary
         {
                 return fma(t, v1, fma(-t, v0, v0));
         }
-
-
+		
         template <typename T>
         static T clamp(const T& n, const T& lower, const T& upper)
         {
-                return max(lower, min(n, upper));
+                return std::max(lower, std::min(n, upper));
         }
 };
