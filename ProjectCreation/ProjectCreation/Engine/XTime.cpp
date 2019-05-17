@@ -1,11 +1,12 @@
 #include "XTime.h"
 #include <math.h>
+#include <algorithm>
 
 XTime::XTime(unsigned char samples, double smoothFactor)
 {
         // clear the structure and init basic values
         ZeroMemory(&localStack, sizeof(THREAD_DATA));
-        localStack.numSamples  = max(1, samples); // one sample is minimum
+        localStack.numSamples  = std::max(1, (int)samples); // one sample is minimum
         localStack.blendWeight = smoothFactor;
         localStack.threadID    = GetCurrentThreadId();
         // Thread & frame rate measurements (used for throttling)
@@ -45,7 +46,7 @@ void XTime::Signal()
                   sizeof(LARGE_INTEGER) * localStack.numSamples);
         // append to the front of signals and up the count (no more than the last index tho)
         QueryPerformanceCounter(localStack.signals);
-        localStack.signalCount = min(localStack.signalCount + 1, 255);
+        localStack.signalCount = std::min(localStack.signalCount + 1, 255);
         // with our signal buffer updated, we can now compute our timing values
         localStack.totalTime =
             double((*localStack.signals).QuadPart - localStack.start.QuadPart) / double(localStack.frequency.QuadPart);
@@ -55,7 +56,7 @@ void XTime::Signal()
         double   totalWeight = 0, runningWeight = 1;
         LONGLONG totalValue = 0, sampleDelta;
         // loop up to num samples or as many as we have available
-        for (unsigned char i = 0; i < min(localStack.numSamples, localStack.signalCount - 1); ++i)
+        for (unsigned char i = 0; i < std::min((int)localStack.numSamples, (int)localStack.signalCount - 1); ++i)
         {
                 // determine each delta as we go
                 sampleDelta = localStack.signals[i].QuadPart - localStack.signals[i + 1].QuadPart;

@@ -15,7 +15,6 @@
 using namespace DirectX;
 
 
-
 void PlayerMovement::GatherInput()
 {
         PastDirection = requestedDirection;
@@ -83,7 +82,7 @@ void PlayerMovement::ApplyInput()
 
         float dist = MathLibrary::CalulateDistance(m_CurrentVelocity, desiredVelocity);
 
-        float delta = min(accel * deltaTime, dist);
+        float delta = std::min(accel * deltaTime, dist);
 
         XMVECTOR deltaVec = XMVector3Normalize(desiredVelocity - m_CurrentVelocity);
 
@@ -114,20 +113,20 @@ void PlayerMovement::ApplyInput()
                 verticalRot = XMQuaternionIdentity();
 
         XMVECTOR offset = XMVector3Rotate(m_CurrentVelocity * deltaTime, transformComponent.transform.rotation.rotation);
-        // offset          = XMVectorSetY(offset, 0.0f);
+        offset          = XMVector3Normalize(XMVectorSetY(offset, 0.0f)) * XMVectorGetX(XMVector3Length(offset));
 
         CollisionComponent::FSphere fSphereStart;
         fSphereStart.center = transformComponent.transform.translation;
-        fSphereStart.radius = 0.1f;
+        fSphereStart.radius = 0.2f;
         CollisionComponent::FSphere fSphereEnd;
         fSphereEnd.center = transformComponent.transform.translation + offset;
-        fSphereEnd.radius = 0.1f;
+        fSphereEnd.radius = 0.2f;
         CollisionComponent::FSphere fSphereCheck;
         fSphereCheck.center = XMVectorSet(0.0f, 0.0f, 0.f, 1.0f);
-        fSphereCheck.radius = 0.1f;
+        fSphereCheck.radius = 0.2f;
 
-        CollisionComponent::FCollideResult result =
-            CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck);
+        CollisionComponent::FSweepCollision result =
+            CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 1.0f);
 
         if (result.collisionType != CollisionComponent::ECollisionType::EOveralap &&
             result.collisionType != CollisionComponent::ECollisionType::ECollide)
@@ -136,7 +135,7 @@ void PlayerMovement::ApplyInput()
         }
 		else
 		{
-                //m_CurrentVelocity = m_CurrentVelocity - deltaVec * delta;
+                // m_CurrentVelocity = m_CurrentVelocity - deltaVec * delta;
 		}
         transformComponent.transform.rotation = transformComponent.transform.rotation * verticalRot * horizontalRot;
         // std::cout << accel << std::endl;
@@ -155,7 +154,7 @@ PlayerMovement::PlayerMovement()
         m_CurrentVelocity                        = DirectX::XMVectorZero();
         m_MouseXDelta                            = 0;
         m_MouseYDelta                            = 0;
-        transformComponent.transform.translation = XMVectorSet(0.0f, 0.0f, -2.0f, 1.0f);
+        transformComponent.transform.translation = XMVectorSet(0.0f, 0.3f, -2.0f, 1.0f);
 }
 
 PhysicsComponent   PlayerMovement::physicsComponent;

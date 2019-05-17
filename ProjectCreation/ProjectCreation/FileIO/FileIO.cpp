@@ -13,7 +13,7 @@ EResult FileIO::LoadStaticMeshDataFromFile(const char* fileName, FStaticMeshData
         output.m_Flags = ERESULT_FLAG::INVALID;
 
         std::ostringstream filePathStream;
-        filePathStream << "../Models/" << fileName << ".mesh";
+        filePathStream << "../Assets/Models/" << fileName << ".mesh";
 
         ifstream myfile;
         myfile.open(filePathStream.str(), ios::in | ios::binary);
@@ -50,7 +50,7 @@ EResult FileIO::LoadSkeletalMeshDataFromFile(const char* fileName, FSkeletalMesh
         output.m_Flags = ERESULT_FLAG::INVALID;
 
         std::ostringstream filePathStream;
-        filePathStream << "../Models/" << fileName << ".skel";
+        filePathStream << "../Assets/Models/" << fileName << ".skel";
 
         ifstream myfile;
         myfile.open(filePathStream.str(), ios::in | ios::binary);
@@ -96,7 +96,7 @@ EResult FileIO::LoadMaterialDataFromFile(const char* fileName, FMaterialData* ma
         output.m_Flags = ERESULT_FLAG::INVALID;
 
         std::ostringstream filePathStream;
-        filePathStream << "../Materials/" << fileName << ".material";
+        filePathStream << "../Assets/Materials/" << fileName << ".material";
 
         ifstream myfile;
         myfile.open(filePathStream.str(), ios::in | ios::binary);
@@ -134,7 +134,7 @@ EResult FileIO::LoadShaderDataFromFile(const char* fileName, const char* suffix,
         output.m_Flags = ERESULT_FLAG::INVALID;
 
         std::ostringstream filePathStream;
-        filePathStream << "../Shaders/" << fileName << suffix << ".cso";
+        filePathStream << "../Assets/Shaders/" << fileName << suffix << ".cso";
 
         std::basic_ifstream<char> stream(filePathStream.str(), std::ios::binary);
 
@@ -164,12 +164,12 @@ EResult FileIO::ImportAnimClipData(const char* fileName, Animation::FAnimClip& a
         output.m_Flags = ERESULT_FLAG::INVALID;
 
         std::ostringstream filePathStream;
-        filePathStream << "../Animations/" << fileName << ".anim";
+        filePathStream << "../Assets/Animations/" << fileName << ".anim";
 
         std::ifstream myfile;
         myfile.open(filePathStream.str(), std::ios::in | std::ios::binary);
 
-        int jointCount = skeleton.jointTransforms.size();
+        int jointCount = (int)skeleton.jointTransforms.size();
 
         if (myfile.is_open())
         {
@@ -178,7 +178,7 @@ EResult FileIO::ImportAnimClipData(const char* fileName, Animation::FAnimClip& a
                 myfile.read((char*)&frameCount, sizeof(uint32_t));
                 animClip.frames.resize(frameCount);
 
-                for (int i = 0; i < frameCount; ++i)
+                for (int i = 0; i < (int)frameCount; ++i)
                 {
                         animClip.frames[i].joints.resize(jointCount);
                         myfile.read((char*)&animClip.frames[i].time, sizeof(animClip.frames[i].time));

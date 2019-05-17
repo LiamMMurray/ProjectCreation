@@ -1,5 +1,6 @@
 #pragma once
 #include "../Controller/PlayerMovement.h"
+#define NOMINMAX
 #include <Windows.h>
 
 class ConsoleWindow
