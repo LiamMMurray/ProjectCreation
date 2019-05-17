@@ -21,74 +21,6 @@ class ComponentManager
         TypeAssociativeHandleManagers m_TypeAssociativeHandleManagers;
         EntityComponentIdMap          m_EntityComponentIdMap;
 
-    public:
-        // CRITICAL_TODO optimize this class
-        //////////////////////////////////////////////////////
-        // pools seperated based on type ?
-        // class id_type(true_type / false_type) with static member value pattern to store static id?
-        //		(already researched all examples use hacky code to do this)
-        // sorted pools based on m_active ?
-        //////////////////////////////////////////////////////
-        template <typename T>
-        class ComponentIterator
-        {
-                // TODO make friend class relationship
-            public:
-                uint32_t          m_CurrentIndex;
-                ComponentManager* m_ComponentManager;
-
-            public:
-                ComponentIterator(uint32_t index) :
-                    m_CurrentIndex(index){
-
-                    };
-
-
-                T* operator->()
-                {
-                        if (m_CurrentIndex >= m_ComponentManager->GetSize())
-                                return nullptr;
-                        return (T*)m_ComponentManager->m_HandleManager.m_HandleSpace[m_CurrentIndex].second;
-                }
-
-                T& operator*() const
-                {
-                        return *(m_ComponentManager->m_HandleManager.m_HandleSpace[m_CurrentIndex].second);
-                }
-
-                ComponentIterator operator++(int)
-                {
-                        ComponentIterator temp = *this;
-                        m_CurrentIndex++;
-                        if (m_CurrentIndex >= m_ComponentManager->GetSize())
-                        {
-                                return temp;
-                        }
-                        IComponent* _c = m_ComponentManager->m_HandleManager.m_HandleSpace[m_CurrentIndex].second;
-
-                        ///////////////////////////////////////////////
-                        // TODO USE ::value possibly pattern to circumvent this call to temporary var creation
-                        // WARNING getting ths to work would be complicated and hacky
-                        ///////////////////////////////////////////////
-                        auto _tempDesiredComponentInstance = T();
-                        auto _desiredTypeId                = _tempDesiredComponentInstance.GetStaticTypeId();
-                        ///////////////////////////////////////////////
-                        if (_c->GetStaticTypeId() != _desiredTypeId)
-                                return this->operator++(0);
-
-                        return temp;
-                }
-
-                bool operator!=(const ComponentIterator other) const
-                {
-                        return this->m_CurrentIndex != other.m_CurrentIndex;
-                }
-
-                bool operator==(const ComponentIterator other) const
-                {
-                        return this->m_CurrentIndex == other.m_CurrentIndex;
-                }
-        };
 
     public:
         ComponentManager()
@@ -102,8 +34,6 @@ class ComponentManager
         void                       ActivateComponent(ComponentHandle componentHandle);
         void                       DeactivateComponent(ComponentHandle componentHandle);
         ComponentHandle            GetComponentHandle(EntityHandle entityHandle, ComponentTypeId componentTypeId);
-        template <typename T>
-        ComponentIterator<T> end();
 
         size_t GetSize();
         template <typename T>
@@ -160,10 +90,4 @@ inline HandleManager<IComponent>& ComponentManager::GetActiveComponents()
         ComponentTypeId componentTypeId = T::GetTypeId();
         assert(componentTypeId.m_Data < m_TypeAssociativeHandleManagers.size());
         return m_TypeAssociativeHandleManagers[componentTypeId.m_Data];
-}
-
-template <typename T>
-inline ComponentManager::ComponentIterator<T> ComponentManager::end()
-{
-        return ComponentManager::ComponentIterator<T>(GetSize());
 }

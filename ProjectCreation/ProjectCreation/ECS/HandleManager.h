@@ -3,6 +3,63 @@
 #include <vector>
 #include "Handle.h"
 
+// public:
+// uint32_t          m_CurrentIndex;
+// ComponentManager* m_ComponentManager;
+//
+// public:
+// ComponentIterator(uint32_t index) :
+//    m_CurrentIndex(index){
+//
+//    };
+//
+//
+// T* operator->()
+//{
+//        if (m_CurrentIndex >= m_ComponentManager->GetSize())
+//                return nullptr;
+//        return (T*)m_ComponentManager->m_HandleManager.m_HandleSpace[m_CurrentIndex].second;
+//}
+//
+// T& operator*() const
+//{
+//        return *(m_ComponentManager->m_HandleManager.m_HandleSpace[m_CurrentIndex].second);
+//}
+//
+// ComponentIterator operator++(int)
+//{
+//        ComponentIterator temp = *this;
+//        m_CurrentIndex++;
+//        if (m_CurrentIndex >= m_ComponentManager->GetSize())
+//        {
+//                return temp;
+//        }
+//        IComponent* _c = m_ComponentManager->m_HandleManager.m_HandleSpace[m_CurrentIndex].second;
+//
+//        ///////////////////////////////////////////////
+//        // TODO USE ::value possibly pattern to circumvent this call to temporary var creation
+//        // WARNING getting ths to work would be complicated and hacky
+//        ///////////////////////////////////////////////
+//        auto _tempDesiredComponentInstance = T();
+//        auto _desiredTypeId                = _tempDesiredComponentInstance.GetStaticTypeId();
+//        ///////////////////////////////////////////////
+//        if (_c->GetStaticTypeId() != _desiredTypeId)
+//                return this->operator++(0);
+//
+//        return temp;
+//}
+//
+// bool operator!=(const ComponentIterator other) const
+//{
+//        return this->m_CurrentIndex != other.m_CurrentIndex;
+//}
+//
+// bool operator==(const ComponentIterator other) const
+//{
+//        return this->m_CurrentIndex == other.m_CurrentIndex;
+//}
+
+
 template <typename T>
 class HandleManager
 {
@@ -68,14 +125,32 @@ class HandleManager
         T& operator[](uint32_t idx)
         {
                 return *m_ObjectData[idx];
-		}
+        }
 };
 
 template <typename T>
 class HandleManager<T>::iterator
 {
+    private:
+        uint32_t m_CurrentIndex;
+
+    public:
+        HandleManager<T>::iterator();
         iterator operator++(int);
 };
+
+template <typename T>
+HandleManager<T>::iterator::iterator() :
+    m_CurrentIndex(0U){
+
+    };
+
+template <typename T>
+typename HandleManager<T>::iterator HandleManager<T>::iterator::operator++(int)
+{
+        m_CurrentIndex++;
+};
+
 
 class IHandleContainer
 {};
