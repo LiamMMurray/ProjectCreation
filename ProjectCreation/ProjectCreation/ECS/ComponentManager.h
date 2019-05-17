@@ -1,4 +1,5 @@
 #pragma once
+#include <assert.h>
 #include <unordered_map>
 #include <vector>
 #include "../ErrorHandling/ErrorTypes.h"
@@ -95,13 +96,12 @@ class ComponentManager
         template <typename T>
         ComponentHandle AddComponent(const EntityHandle entityHandle);
         template <class T>
-        T*              GetComponent(const EntityHandle entityHandle);
-        void            ActivateComponent(ComponentHandle componentHandle);
-        void            DeactivateComponent(ComponentHandle componentHandle);
-        ComponentHandle GetComponentHandle(EntityHandle entityHandle, ComponentTypeId componentTypeId);
-        //IComponent*     GetComponent(ComponentHandle componentHandle);
+        T* GetComponent(const EntityHandle entityHandle);
         template <typename T>
-        ComponentIterator<T> GetActiveComponents();
+        HandleManager<IComponent>& GetActiveComponents();
+        void                       ActivateComponent(ComponentHandle componentHandle);
+        void                       DeactivateComponent(ComponentHandle componentHandle);
+        ComponentHandle            GetComponentHandle(EntityHandle entityHandle, ComponentTypeId componentTypeId);
         template <typename T>
         ComponentIterator<T> end();
 
@@ -112,10 +112,11 @@ class ComponentManager
         //////////////////////////////////////
         //////////////////////////////////////
         //////////////////////////////////////
-        EResult CreateComponent(ComponentHandle componentHandle);
-        void    DestroyComponent(ComponentHandle componentHandle);
-        size_t  GetCapacity();
-        size_t  GetActiveComponentCount();
+        // EResult CreateComponent(ComponentHandle componentHandle);
+        void DestroyComponent(ComponentHandle componentHandle);
+        // IComponent*     GetComponent(ComponentHandle componentHandle);
+        size_t GetCapacity();
+        size_t GetActiveComponentCount();
         //////////////////////////////////////
         //////////////////////////////////////
         //////////////////////////////////////
@@ -126,7 +127,7 @@ inline ComponentHandle ComponentManager::AddComponent(const EntityHandle entityH
 {
         static_assert(std::is_base_of<Component<T>, T>::value,
                       "Addcomponent can only accept CRTP classes that inherit from Component<T>");
-        T* pComponent = new T();
+        T* pComponent                   = new T();
         pComponent->m_Owner             = entityHandle;
         ComponentTypeId componentTypeId = pComponent->GetTypeId();
 
@@ -154,13 +155,11 @@ inline T* ComponentManager::GetComponent(const EntityHandle entityHandle)
 }
 
 template <typename T>
-inline ComponentManager::ComponentIterator<T> ComponentManager::GetActiveComponents()
+inline HandleManager<IComponent>& ComponentManager::GetActiveComponents()
 {
-        auto _itr                       = ComponentIterator<T>(0);
-        _itr.m_ComponentManager         = this;
         ComponentTypeId componentTypeId = T::GetTypeId();
-        auto            test            = _itr->GetTypeId();
-        return _itr;
+        assert(componentTypeId.m_Data < m_TypeAssociativeHandleManagers.size());
+        return *m_TypeAssociativeHandleManagers[componentTypeId.m_Data];
 }
 
 template <typename T>

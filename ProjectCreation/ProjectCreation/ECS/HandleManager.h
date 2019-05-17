@@ -73,7 +73,9 @@ class HandleManager
 
 template <typename T>
 class HandleManager<T>::iterator
-{};
+{
+        iterator operator++(int);
+};
 
 class IHandleContainer
 {};

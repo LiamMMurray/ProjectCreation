@@ -17,8 +17,8 @@ ComponentHandle ComponentManager::GetComponentHandle(EntityHandle entityHandle, 
 //        return m_HandleManager.GetObject(componentHandle);
 //}
 
-void ComponentManager::DestroyComponent(ComponentHandle componentHandle)
-{}
+//void ComponentManager::DestroyComponent(ComponentHandle componentHandle)
+//{}
 
 void ComponentManager::ActivateComponent(ComponentHandle componentHandle)
 {
