@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../../MathLibrary/MathLibrary.h"
+#include "../MathLibrary/MathLibrary.h"
 
 #include <vector>
 

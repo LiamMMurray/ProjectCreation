@@ -6,7 +6,7 @@
 
 #include <DirectXMath.h>
 #include "../../ECS/ECS.h"
-#include "../../ResourceManager/IResource.h"
+#include "../../Engine/ResourceManager/IResource.h"
 
 struct FCameraSettings
 {

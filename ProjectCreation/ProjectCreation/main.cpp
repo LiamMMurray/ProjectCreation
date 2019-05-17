@@ -11,19 +11,16 @@
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
 
-#include "CollisionLibary/CollisionComponent.h"
-#include "CollisionLibary/CollisionLibary.h"
-#include "CoreInput/CoreInput.h"
-#include "Engine/Animation/AnimationSystem.h"
-#include "Engine/GEngine.h"
-#include "Rendering/RenderingSystem.h"
-#include "Engine/Animation/AnimationSystem.h"
-#include "ConsoleWindow/ConsoleWindow.h"
+#include "Engine/CollisionLibary/CollisionComponent.h"
+#include "Engine/CollisionLibary/CollisionLibary.h"
 
-#include "Entities/BaseEntities.h"
+#include "Engine/CoreInput/CoreInput.h"
 
-#include "Audio/AudioManager.h"
-#include "System/PhysicsSystem.h"
+#include "Engine/ConsoleWindow/ConsoleWindow.h"
+
+#include "Engine/Entities/BaseEntities.h"
+#include "Engine/EngineInitShutdownHelpers.h"
+
 #pragma comment(lib, "dbghelp")
 
 using namespace DirectX;
@@ -179,37 +176,13 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         //        int y = 0;
         //}
         //////////
-
-        GEngine::Initialize();
-
+        
+		/** Main init engine **/
+        EngineHelpers::InitEngineSystemManagers(handle);
         SystemManager*    systemManager    = GEngine::Get()->GetSystemManager();
         EntityManager*    entityManager    = GEngine::Get()->GetEntityManager();
         ComponentManager* componentManager = GEngine::Get()->GetComponentManager();
 
-        // Create Render System
-        RenderSystem* renderSystem;
-        systemManager->CreateSystem<RenderSystem>(&renderSystem);
-        FSystemInitProperties sysInitProps;
-        renderSystem->SetWindowHandle(handle);
-        systemManager->RegisterSystem(&sysInitProps, renderSystem);
-
-        // Create Physics System
-        PhysicsSystem* physicsSystem;
-        systemManager->CreateSystem<PhysicsSystem>(&physicsSystem);
-        sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::VERY_HIGH;
-        sysInitProps.m_UpdateRate = 0.0125f;
-        systemManager->RegisterSystem(&sysInitProps, physicsSystem);
-
-		// Create Animation System
-        AnimationSystem* animSystem;
-        systemManager->CreateSystem<AnimationSystem>(&animSystem);
-        sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
-        sysInitProps.m_UpdateRate = 0.0f;
-        systemManager->RegisterSystem(&sysInitProps, animSystem);
-
-        GCoreInput::InitializeInput(handle);
-
-        AudioManager::Initialize();
         // message loop
         ShowWindow(handle, SW_SHOW);
         g_Running = true;
@@ -263,9 +236,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
         }
 
-        AudioManager::Shutdown();
-
-        GEngine::Shutdown();
+        EngineHelpers::ShutdownEngineSystemManagers();
 
         return 0;
 }

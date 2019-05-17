@@ -2,7 +2,7 @@
 
 #include "../../ECS/ECS.h"
 
-#include "../../ResourceManager/AnimationClip.h"
+#include "../../Engine/ResourceManager/AnimationClip.h"
 
 struct AnimationComponent : Component<AnimationComponent>
 {

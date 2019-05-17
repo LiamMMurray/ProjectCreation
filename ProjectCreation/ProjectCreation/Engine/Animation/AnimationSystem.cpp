@@ -5,11 +5,11 @@
 
 #include "../GEngine.h"
 
-#include "../../ResourceManager/AnimationClip.h"
-#include "../../ResourceManager/ResourceManager.h"
-#include "../../ResourceManager/SkeletalMesh.h"
+#include "../ResourceManager/AnimationClip.h"
+#include "../ResourceManager/ResourceManager.h"
+#include "../ResourceManager/SkeletalMesh.h"
 
-#include "../../MathLibrary/MathLibrary.h"
+#include "../MathLibrary/MathLibrary.h"
 
 using namespace DirectX;
 

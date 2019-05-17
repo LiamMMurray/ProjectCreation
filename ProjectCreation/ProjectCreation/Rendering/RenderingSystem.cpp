@@ -1,8 +1,7 @@
 #include "RenderingSystem.h"
-#include "../CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
 
-#include "../MathLibrary/MathLibrary.h"
+#include "../Engine/MathLibrary/MathLibrary.h"
 
 #include "../FileIO/FileIO.h"
 
@@ -19,15 +18,15 @@
 #include <wrl/client.h>
 #include "../Utility/Macros/DirectXMacros.h"
 
-#include "../ResourceManager/AnimationClip.h"
-#include "../ResourceManager/Material.h"
-#include "../ResourceManager/PixelShader.h"
-#include "../ResourceManager/SkeletalMesh.h"
-#include "../ResourceManager/StaticMesh.h"
-#include "../ResourceManager/Texture2D.h"
-#include "../ResourceManager/VertexShader.h"
+#include "../Engine/ResourceManager/AnimationClip.h"
+#include "../Engine/ResourceManager/Material.h"
+#include "../Engine/ResourceManager/PixelShader.h"
+#include "../Engine/ResourceManager/SkeletalMesh.h"
+#include "../Engine/ResourceManager/StaticMesh.h"
+#include "../Engine/ResourceManager/Texture2D.h"
+#include "../Engine/ResourceManager/VertexShader.h"
 
-#include "../Components/TransformComponent.h"
+#include "../Engine/GenericComponents/TransformComponent.h"
 #include "Vertex.h"
 
 #include "Components/CameraComponent.h"

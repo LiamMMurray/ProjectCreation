@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ECS/ECS.h"
-#include "../ResourceManager/ResourceManager.h"
+#include "ResourceManager/ResourceManager.h"
 
 #include "XTime.h"
 class GEngine

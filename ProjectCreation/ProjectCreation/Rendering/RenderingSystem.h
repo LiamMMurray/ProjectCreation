@@ -6,7 +6,7 @@
 #include "../Utility/ForwardDeclarations/D3DNativeTypes.h"
 #include "../Utility/ForwardDeclarations/WinProcTypes.h"
 
-#include "../ResourceManager/IResource.h"
+#include "../Engine/ResourceManager/IResource.h"
 
 #include "ConstantBuffers.h"
 
@@ -187,9 +187,6 @@ class RenderSystem : public ISystem
 {
         friend class ResourceManager;
 
-        using native_handle_type = void*;
-        native_handle_type m_WindowHandle;
-
         IDXGISwapChain1*      m_Swapchain;
         ID3D11Device1*        m_Device;
         ID3D11DeviceContext1* m_Context;
@@ -250,6 +247,9 @@ class RenderSystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
+        using native_handle_type = void*;
+        native_handle_type m_WindowHandle;
+
         void         SetWindowHandle(native_handle_type handle);
         void         SetMainCameraComponent(ComponentHandle cameraHandle);
         void         RefreshMainCameraSettings();
