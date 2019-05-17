@@ -86,6 +86,10 @@ CollisionComponent::FSweepCollision CollisionLibary::SweepSphereToSphere(Collisi
                 output.collisionType = CollisionComponent::ECollisionType::ECollide;
                 output.collideSurfaces.push_back(CollidePoint(checkB.center, cloestPoint, capsule.radius));
                 output.collideSurfaces.push_back(CollidePoint(cloestPoint, checkB.center, checkB.radius));
+                CollisionComponent::FCotactPoint temp;
+                temp                 = CollidePoint(checkB.center, cloestPoint, capsule.radius);
+                XMVECTOR tempPos     = temp.position + (direction * checkB.radius) + (direction * capsule.radius);
+                output.finalPoaition = tempPos;
         }
         else if (distance < totalRadius)
         {
@@ -93,9 +97,9 @@ CollisionComponent::FSweepCollision CollisionLibary::SweepSphereToSphere(Collisi
                 output.collideSurfaces.push_back(CollidePoint(checkB.center, cloestPoint, capsule.radius));
                 output.collideSurfaces.push_back(CollidePoint(cloestPoint, checkB.center, checkB.radius));
                 CollisionComponent::FCotactPoint temp;
-                temp = CollidePoint(checkB.center, cloestPoint, capsule.radius);
-                XMVECTOR tempPos = temp.position;
-                output.finalPoaition ;
+                temp             = CollidePoint(checkB.center, cloestPoint, capsule.radius);
+                XMVECTOR tempPos = temp.position + (direction * checkB.radius) + (direction * capsule.radius) ;
+                output.finalPoaition = tempPos;
         }
         else if (distance > totalRadius)
         {
@@ -141,7 +145,7 @@ CollisionComponent::FSweepCollision CollisionLibary::MovingSphereToMovingSphere(
                 output.collisionType = CollisionComponent::ENoCollision;
         }
 
-		time = (-DotValue - sqrtf(d)) / velocityDotValue;
+        time = (-DotValue - sqrtf(d)) / velocityDotValue;
         return output;
 }
 

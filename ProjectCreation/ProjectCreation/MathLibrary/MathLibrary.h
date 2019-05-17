@@ -27,8 +27,14 @@ class MathLibrary
         static float             CalulateDistanceSq(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateVectorLength(DirectX::XMVECTOR vector);
         static float             VectorDotProduct(DirectX::XMVECTOR m, DirectX::XMVECTOR n);
+        static FQuaternion       AverageQuaternion(DirectX::XMVECTOR& cumulative,
+                                                   FQuaternion        newRotation,
+                                                   FQuaternion        firstRotation,
+                                                   int                addAmount);
 
-		template <typename T>
+        static FQuaternion		QuaternionNormalize(FQuaternion quaternion);
+        static DirectX::XMVECTOR AveragePositionFromVector(DirectX::XMVECTOR vector);
+        template <typename T>
         static T lerp(T v0, T v1, T t)
         {
                 return fma(t, v1, fma(-t, v0, v0));
@@ -40,5 +46,4 @@ class MathLibrary
         {
                 return max(lower, min(n, upper));
         }
-
 };

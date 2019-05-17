@@ -26,4 +26,5 @@ class CollisionLibary
         static CollisionComponent::FCollideResult  AabbToAabb(CollisionComponent::FAabb& a,
                                                               CollisionComponent::FAabb& b,
                                                               float                      offset);
+        static CollisionComponent CollisionQuery(CollisionComponent::FSphere startA, CollisionComponent::FSphere endA);
 };
