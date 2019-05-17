@@ -72,8 +72,9 @@ ResourceHandle ResourceManager::LoadTexture2D(const char* name)
         Texture2D* resource = container->GetResource(outputHandle);
 
         ID3D11Resource* texture;
-        std::wstring    str = L"../Textures/" + StringUtility::utf8_decode(name) + L".dds";
-        DirectX::CreateDDSTextureFromFile(renderSystem->m_Device, str.c_str(), &texture, &resource->m_SRV);
+        std::wstring    str = L"../Assets/Textures/" + StringUtility::utf8_decode(name) + L".dds";
+        HRESULT hr = DirectX::CreateDDSTextureFromFile(renderSystem->m_Device, str.c_str(), &texture, &resource->m_SRV);
+        assert(SUCCEEDED(hr));
         texture->Release();
 
         return outputHandle;

@@ -12,6 +12,7 @@
 #pragma comment(lib, "d3d11.lib")
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
+#define NOMINMAX
 #include <Windows.h>
 #include <windowsx.h>
 
@@ -438,7 +439,7 @@ void CRenderSystem::DrawOpaqueSkeletalMesh(SkeletalMesh*               mesh,
         const UINT strides[] = {sizeof(FSkinnedVertex)};
         const UINT offsets[] = {0};
 
-        int jointCount = skel->jointTransforms.size();
+        int jointCount = (int)skel->jointTransforms.size();
 
         for (int i = 0; i < jointCount; ++i)
         {
@@ -541,215 +542,185 @@ void CRenderSystem::OnPostUpdate(float deltaTime)
                              sizeof(m_ConstantBuffer_SCENE));
 
 
+        
+
+        /** Render all opaque static meshes **/
         {
-                static ResourceHandle skelMeshHandle = rm->LoadSkeletalMesh("Run");
-                auto&                 skel = m_ResourceManager->GetResource<SkeletalMesh>(skelMeshHandle)->m_BindPoseSkeleton;
-                static ResourceHandle animClipHandle = rm->LoadAnimationClip("Run", &skel);
-                AnimationClip*        animClip       = m_ResourceManager->GetResource<AnimationClip>(animClipHandle);
-
-
+                auto     sMeshComp = m_ComponentManager->GetActiveComponents<StaticMeshComponent>();
+                Material mat;
+                mat.m_VertexShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED];
+                mat.m_PixelShaderHandle  = m_CommonVertexShaderHandles[E_PIXEL_SHADERS::DEFAULT];
+                while (sMeshComp != m_ComponentManager->end<StaticMeshComponent>())
                 {
-                        static float animTime = 0;
-                        float        change   = 0;
+                        StaticMesh*  staticMesh   = m_ResourceManager->GetResource<StaticMesh>(sMeshComp->m_StaticMeshHandle);
+                        EntityHandle entityHandle = sMeshComp->GetOwner();
+                        TransformComponent* tcomp =
+                            m_EntityManager->GetEntity(entityHandle)->GetComponent<TransformComponent>();
 
+                        XMMATRIX world = tcomp->transform.CreateMatrix();
 
-                        if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Down)
-                                change += deltaTime;
-
-
-                        int   prevFrame  = 0;
-                        int   nextFrame  = 0;
-                        float ratio      = 0.0f;
-                        int   frameCount = animClip->m_AnimClip.frames.size();
-                        for (prevFrame = 0; prevFrame < frameCount - 1; prevFrame++)
-                        {
-                                if (animTime >= animClip->m_AnimClip.frames[prevFrame].time &&
-                                    animTime <= animClip->m_AnimClip.frames[prevFrame + 1].time)
-                                {
-                                        break;
-                                }
-
-                                nextFrame = prevFrame;
-                        }
-
-                        nextFrame     = prevFrame + 1;
-                        auto prevTime = animClip->m_AnimClip.frames[prevFrame].time;
-                        auto nextTime = animClip->m_AnimClip.frames[nextFrame].time;
-
-                        ratio = (animTime - prevTime) / (nextTime - prevTime);
-
-                        animTime = MathLibrary::Warprange(animTime + change, 0.0f, (float)animClip->m_AnimClip.duration);
-
-                        static Animation::FSkeleton skel2 = skel;
-                        ratio                             = MathLibrary::clamp(ratio, 0.0f, 1.0f);
-                        for (int i = 0; i < skel2.jointTransforms.size(); ++i)
-                        {
-                                auto& prevTransform = animClip->m_AnimClip.frames[prevFrame].joints[i];
-                                auto& nextTransform = animClip->m_AnimClip.frames[nextFrame].joints[i];
-
-                                // skeletalMesh.joints[i].transform = Transform::Lerp(skeletalMesh.joints[i].transform,
-                                // nextTransform, ratio);
-                                skel2.jointTransforms[i].transform = FTransform::Lerp(prevTransform, nextTransform, ratio);
-                        }
+                        DrawOpaqueStaticMesh(staticMesh, &mat, &world);
+                        sMeshComp++;
                 }
-
-                /** Render all opaque skeletal meshes **/
-                {
-                        auto     it = m_ComponentManager->GetActiveComponents<SkeletalMeshComponent>();
-                        Material mat;
-                        mat.m_VertexShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED];
-                        mat.m_PixelShaderHandle  = m_CommonVertexShaderHandles[E_PIXEL_SHADERS::DEFAULT];
-                        while (it != m_ComponentManager->end<SkeletalMeshComponent>())
-                        {
-                                const SkeletalMeshComponent& skelComp = *it;
-                                SkeletalMesh*                skelMesh =
-                                    m_ResourceManager->GetResource<SkeletalMesh>(skelComp.m_SkeletalMeshHandle);
-
-
-                                DrawOpaqueSkeletalMesh(skelMesh, &mat, &world, &skel2);
-                                it++;
-                        }
-                }
-
-                // Set the backbuffer as render target
-                m_Context->OMSetRenderTargets(1, &m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER], nullptr);
-
-
-                /** Move from base pass to backbuffer. Should be replaced by post processing **/
-                ID3D11Resource* dest;
-                ID3D11Resource* src;
-                m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER]->GetResource(&dest);
-                m_DefaultRenderTargets[E_RENDER_TARGET::BASE_PASS]->GetResource(&src);
-                m_Context->CopyResource(dest, src);
-                dest->Release();
-                src->Release();
-
-                DXGI_PRESENT_PARAMETERS parameters = {0};
-                m_Swapchain->Present1(1, 0, &parameters);
         }
 
-        void CRenderSystem::OnInitialize()
+        /** Render all opaque skeletal meshes **/
         {
-                assert(m_WindowHandle);
+                auto     skelComp = m_ComponentManager->GetActiveComponents<SkeletalMeshComponent>();
+                Material mat;
+                mat.m_VertexShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED];
+                mat.m_PixelShaderHandle  = m_CommonVertexShaderHandles[E_PIXEL_SHADERS::DEFAULT];
+                while (skelComp != m_ComponentManager->end<SkeletalMeshComponent>())
+                {
+                        SkeletalMesh* skelMesh = m_ResourceManager->GetResource<SkeletalMesh>(skelComp->m_SkeletalMeshHandle);
+                        EntityHandle  entityHandle = skelComp->GetOwner();
+                        TransformComponent* tcomp =
+                            m_EntityManager->GetEntity(entityHandle)->GetComponent<TransformComponent>();
 
-                m_ResourceManager  = GEngine::Get()->GetResourceManager();
-                m_EntityManager    = GEngine::Get()->GetEntityManager();
-                m_ComponentManager = GEngine::Get()->GetComponentManager();
+                        XMMATRIX world = tcomp->transform.CreateMatrix();
 
-                CreateDeviceAndSwapChain();
+                        DrawOpaqueSkeletalMesh(skelMesh, &mat, &world, &skelMesh->m_BindPoseSkeleton);
+                        skelComp++;
+                }
+        }
+
+
+        // Set the backbuffer as render target
+        m_Context->OMSetRenderTargets(1, &m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER], nullptr);
+
+
+        /** Move from base pass to backbuffer. Should be replaced by post processing **/
+        ID3D11Resource* dest;
+        ID3D11Resource* src;
+        m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER]->GetResource(&dest);
+        m_DefaultRenderTargets[E_RENDER_TARGET::BASE_PASS]->GetResource(&src);
+        m_Context->CopyResource(dest, src);
+        dest->Release();
+        src->Release();
+
+        DXGI_PRESENT_PARAMETERS parameters = {0};
+        m_Swapchain->Present1(1, 0, &parameters);
+}
+
+void CRenderSystem::OnInitialize()
+{
+        assert(m_WindowHandle);
+
+        m_ResourceManager  = GEngine::Get()->GetResourceManager();
+        m_EntityManager    = GEngine::Get()->GetEntityManager();
+        m_ComponentManager = GEngine::Get()->GetComponentManager();
+
+        CreateDeviceAndSwapChain();
+        CreateDefaultRenderTargets();
+        CreateRasterizerStates();
+        CreateCommonShaders();
+        CreateInputLayouts();
+        CreateCommonConstantBuffers();
+        CreateSamplerStates();
+
+        ID3D11ShaderResourceView* srvs[7] = {0};
+        srvs[0] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("PPG_3D_Player_D"))->m_SRV;
+        srvs[1] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("PPG_3D_Player_N"))->m_SRV;
+        srvs[2] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("PPG_3D_Player_spec"))->m_SRV;
+        srvs[4] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("IBLTestDiffuseHDR"))->m_SRV;
+        srvs[5] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("IBLTestSpecularHDR"))->m_SRV;
+        srvs[6] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("IBLTestBrdf"))->m_SRV;
+
+        m_Context->PSSetShaderResources(0, 7, srvs);
+}
+
+void CRenderSystem::OnShutdown()
+{
+        SetFullscreen(false);
+
+        for (int i = 0; i < E_RENDER_TARGET::COUNT; ++i)
+        {
+                SAFE_RELEASE(m_DefaultRenderTargets[i]);
+        }
+
+        for (int i = 0; i < E_POSTPROCESS_PIXEL_SRV::COUNT; ++i)
+        {
+
+                SAFE_RELEASE(m_PostProcessSRVs[i]);
+        }
+
+        for (int i = 0; i < E_DEPTH_STENCIL::COUNT; ++i)
+        {
+
+                SAFE_RELEASE(m_DefaultDepthStencil[i]);
+        }
+
+        for (int i = 0; i < E_INPUT_LAYOUT::COUNT; ++i)
+        {
+
+                SAFE_RELEASE(m_DefaultInputLayouts[i]);
+        }
+
+        for (int i = 0; i < E_RASTERIZER_STATE::COUNT; ++i)
+        {
+
+                SAFE_RELEASE(m_DefaultRasterizerStates[i]);
+        }
+
+        for (int i = 0; i < E_CONSTANT_BUFFER_BASE_PASS::COUNT; ++i)
+        {
+
+                SAFE_RELEASE(m_BasePassConstantBuffers[i]);
+        }
+
+        for (int i = 0; i < E_SAMPLER_STATE::COUNT; ++i)
+        {
+
+                SAFE_RELEASE(m_DefaultSamplerStates[i]);
+        }
+
+        m_Swapchain->Release();
+        m_Context->Release();
+        m_Device->Release();
+}
+
+void CRenderSystem::OnResume()
+{}
+
+void CRenderSystem::OnSuspend()
+{}
+
+void CRenderSystem::SetWindowHandle(native_handle_type handle)
+{
+        m_WindowHandle = handle;
+}
+
+void CRenderSystem::OnWindowResize(WPARAM wParam, LPARAM lParam)
+{
+        if (m_Swapchain)
+        {
                 CreateDefaultRenderTargets();
-                CreateRasterizerStates();
-                CreateCommonShaders();
-                CreateInputLayouts();
-                CreateCommonConstantBuffers();
-                CreateSamplerStates();
-
-                ID3D11ShaderResourceView* srvs[7] = {0};
-                srvs[0] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("PPG_3D_Player_D"))->m_SRV;
-                srvs[1] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("PPG_3D_Player_N"))->m_SRV;
-                srvs[2] =
-                    m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("PPG_3D_Player_spec"))->m_SRV;
-                srvs[4] =
-                    m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("IBLTestDiffuseHDR"))->m_SRV;
-                srvs[5] =
-                    m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("IBLTestSpecularHDR"))->m_SRV;
-                srvs[6] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("IBLTestBrdf"))->m_SRV;
-
-                m_Context->PSSetShaderResources(0, 7, srvs);
         }
+}
 
-        void CRenderSystem::OnShutdown()
+void CRenderSystem::SetFullscreen(bool val)
+{
+        if (val)
         {
-                SetFullscreen(false);
+                DXGI_MODE_DESC desc{};
+                desc.Format  = DXGI_FORMAT_B8G8R8A8_UNORM;
+                desc.Height  = 1920;
+                desc.Width   = 1080;
+                desc.Scaling = DXGI_MODE_SCALING_STRETCHED;
 
-                for (int i = 0; i < E_RENDER_TARGET::COUNT; ++i)
-                {
-                        SAFE_RELEASE(m_DefaultRenderTargets[i]);
-                }
-
-                for (int i = 0; i < E_POSTPROCESS_PIXEL_SRV::COUNT; ++i)
-                {
-
-                        SAFE_RELEASE(m_PostProcessSRVs[i]);
-                }
-
-                for (int i = 0; i < E_DEPTH_STENCIL::COUNT; ++i)
-                {
-
-                        SAFE_RELEASE(m_DefaultDepthStencil[i]);
-                }
-
-                for (int i = 0; i < E_INPUT_LAYOUT::COUNT; ++i)
-                {
-
-                        SAFE_RELEASE(m_DefaultInputLayouts[i]);
-                }
-
-                for (int i = 0; i < E_RASTERIZER_STATE::COUNT; ++i)
-                {
-
-                        SAFE_RELEASE(m_DefaultRasterizerStates[i]);
-                }
-
-                for (int i = 0; i < E_CONSTANT_BUFFER_BASE_PASS::COUNT; ++i)
-                {
-
-                        SAFE_RELEASE(m_BasePassConstantBuffers[i]);
-                }
-
-                for (int i = 0; i < E_SAMPLER_STATE::COUNT; ++i)
-                {
-
-                        SAFE_RELEASE(m_DefaultSamplerStates[i]);
-                }
-
-                m_Swapchain->Release();
-                m_Context->Release();
-                m_Device->Release();
+                IDXGIOutput* target = nullptr;
+                m_Swapchain->SetFullscreenState(true, target);
+                m_Swapchain->ResizeTarget(&desc);
         }
-
-        void CRenderSystem::OnResume()
-        {}
-
-        void CRenderSystem::OnSuspend()
-        {}
-
-        void CRenderSystem::SetWindowHandle(native_handle_type handle)
+        else
         {
-                m_WindowHandle = handle;
+                m_Swapchain->SetFullscreenState(false, nullptr);
         }
+}
 
-        void CRenderSystem::OnWindowResize(WPARAM wParam, LPARAM lParam)
-        {
-                if (m_Swapchain)
-                {
-                        CreateDefaultRenderTargets();
-                }
-        }
-
-        void CRenderSystem::SetFullscreen(bool val)
-        {
-                if (val)
-                {
-                        DXGI_MODE_DESC desc{};
-                        desc.Format  = DXGI_FORMAT_B8G8R8A8_UNORM;
-                        desc.Height  = 1920;
-                        desc.Width   = 1080;
-                        desc.Scaling = DXGI_MODE_SCALING_STRETCHED;
-
-                        IDXGIOutput* target = nullptr;
-                        m_Swapchain->SetFullscreenState(true, target);
-                        m_Swapchain->ResizeTarget(&desc);
-                }
-                else
-                {
-                        m_Swapchain->SetFullscreenState(false, nullptr);
-                }
-        }
-
-        bool CRenderSystem::GetFullscreen()
-        {
-                BOOL val;
-                m_Swapchain->GetFullscreenState(&val, nullptr);
-                return val;
-        }
+bool CRenderSystem::GetFullscreen()
+{
+        BOOL val;
+        m_Swapchain->GetFullscreenState(&val, nullptr);
+        return val;
+}

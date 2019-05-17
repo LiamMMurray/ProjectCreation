@@ -20,9 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio\AudioManager.h" />
-    <ClInclude Include="Audio\cAudioComponent.h" />
-    <ClInclude Include="Audio\cMusicComponent.h" />
-    <ClInclude Include="Audio\cSFXComponent.h" />
+    <ClInclude Include="Audio\SFXComponent.h" />
     <ClInclude Include="CollisionLibary\CollisionComponent.h" />
     <ClInclude Include="CollisionLibary\CollisionLibary.h" />
     <ClInclude Include="Components\PhysicsComponent.h" />
@@ -101,9 +99,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Audio\AudioManager.cpp" />
-    <ClCompile Include="Audio\cAudioComponent.cpp" />
-    <ClCompile Include="Audio\cMusicComponent.cpp" />
-    <ClCompile Include="Audio\cSFXComponent.cpp" />
     <ClCompile Include="CollisionLibary\CollisionComponent.cpp" />
     <ClCompile Include="CollisionLibary\CollisionLibary.cpp" />
     <ClCompile Include="Components\PhysicsComponent.cpp" />
@@ -156,10 +151,6 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.1</ShaderModel>
@@ -170,10 +161,6 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <ClInclude Include="Shaders\DefaultVertexIn.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -263,7 +250,7 @@
       <AdditionalDependencies>GAudio_DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <ObjectFileOutput>$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -278,7 +265,7 @@
       <AdditionalDependencies>GAudio_DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <ObjectFileOutput>$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -300,7 +287,7 @@
       <AdditionalDependencies>GAudio_DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <ObjectFileOutput>$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -323,7 +310,7 @@
       <AdditionalDependencies>GAudio_DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <ObjectFileOutput>$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

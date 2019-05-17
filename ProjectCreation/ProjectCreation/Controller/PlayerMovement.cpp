@@ -82,7 +82,7 @@ void PlayerMovement::ApplyInput()
 
         float dist = MathLibrary::CalulateDistance(m_CurrentVelocity, desiredVelocity);
 
-        float delta = min(accel * deltaTime, dist);
+        float delta = std::min(accel * deltaTime, dist);
 
         XMVECTOR deltaVec = XMVector3Normalize(desiredVelocity - m_CurrentVelocity);
 
