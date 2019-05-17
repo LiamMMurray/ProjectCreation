@@ -44,8 +44,4 @@ size_t ComponentManager::GetSize()
         return 0;
 }
 
-size_t ComponentManager::GetActiveComponentCount()
-{
-        /*    return m_HandleManager.GetSize();*/
-        return 0;
-}
+

@@ -31,10 +31,12 @@ class ComponentManager
         template <class T>
         T* GetComponent(const EntityHandle entityHandle);
         template <typename T>
-        HandleManager<IComponent>* GetActiveComponents();
-        void                       ActivateComponent(ComponentHandle componentHandle);
-        void                       DeactivateComponent(ComponentHandle componentHandle);
-        ComponentHandle            GetComponentHandle(EntityHandle entityHandle, ComponentTypeId componentTypeId);
+        HandleManager<IComponent>& GetActiveComponents();
+        template <typename T>
+        bool            ComponentsExist();
+        void            ActivateComponent(ComponentHandle componentHandle);
+        void            DeactivateComponent(ComponentHandle componentHandle);
+        ComponentHandle GetComponentHandle(EntityHandle entityHandle, ComponentTypeId componentTypeId);
 
         size_t GetSize();
 
@@ -47,7 +49,7 @@ class ComponentManager
         void DestroyComponent(ComponentHandle componentHandle);
         // IComponent*     GetComponent(ComponentHandle componentHandle);
         size_t GetCapacity();
-        size_t GetActiveComponentCount();
+        // size_t GetActiveComponentCount();
         //////////////////////////////////////
         //////////////////////////////////////
         //////////////////////////////////////
@@ -87,10 +89,18 @@ inline T* ComponentManager::GetComponent(const EntityHandle entityHandle)
 }
 
 template <typename T>
-inline HandleManager<IComponent>* ComponentManager::GetActiveComponents()
+inline HandleManager<IComponent>& ComponentManager::GetActiveComponents()
+{
+        ComponentTypeId componentTypeId = T::GetTypeId();
+        //assert(componentTypeId.m_Data < m_TypeAssociativeHandleManagers.size());
+        return m_TypeAssociativeHandleManagers[componentTypeId.m_Data];
+}
+
+template <typename T>
+bool ComponentManager::ComponentsExist()
 {
         ComponentTypeId componentTypeId = T::GetTypeId();
         if (componentTypeId.m_Data < m_TypeAssociativeHandleManagers.size())
-                return nullptr;
-        return &(m_TypeAssociativeHandleManagers[componentTypeId.m_Data]);
+                return false;
+        return true;
 }
