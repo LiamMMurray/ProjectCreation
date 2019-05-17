@@ -31,7 +31,7 @@ class ComponentManager
         template <class T>
         T* GetComponent(const EntityHandle entityHandle);
         template <typename T>
-        HandleManager<IComponent>& GetActiveComponents();
+        HandleManager<IComponent>* GetActiveComponents();
         void                       ActivateComponent(ComponentHandle componentHandle);
         void                       DeactivateComponent(ComponentHandle componentHandle);
         ComponentHandle            GetComponentHandle(EntityHandle entityHandle, ComponentTypeId componentTypeId);
@@ -87,9 +87,10 @@ inline T* ComponentManager::GetComponent(const EntityHandle entityHandle)
 }
 
 template <typename T>
-inline HandleManager<IComponent>& ComponentManager::GetActiveComponents()
+inline HandleManager<IComponent>* ComponentManager::GetActiveComponents()
 {
         ComponentTypeId componentTypeId = T::GetTypeId();
-        assert(componentTypeId.m_Data < m_TypeAssociativeHandleManagers.size());
-        return m_TypeAssociativeHandleManagers[componentTypeId.m_Data];
+        if (componentTypeId.m_Data < m_TypeAssociativeHandleManagers.size())
+                return nullptr;
+        return &(m_TypeAssociativeHandleManagers[componentTypeId.m_Data]);
 }
