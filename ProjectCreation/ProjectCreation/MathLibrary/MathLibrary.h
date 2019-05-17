@@ -19,15 +19,25 @@ class MathLibrary
         }
         // Matrix Function
         static void              OrthoNormalize(DirectX::XMVECTOR normal, DirectX::XMVECTOR& tangent);
-        DirectX::XMMATRIX LookAt(DirectX::XMVECTOR vPos, DirectX::XMVECTOR tPos, DirectX::XMVECTOR up);
-        void              TurnTo(DirectX::XMMATRIX& matrix, DirectX::XMVECTOR targetPosition, float speed);
+        static DirectX::XMMATRIX LookAt(DirectX::XMVECTOR vPos, DirectX::XMVECTOR tPos, DirectX::XMVECTOR up);
+        static void              TurnTo(DirectX::XMMATRIX& matrix, DirectX::XMVECTOR targetPosition, float speed);
 
-		//Vector Function
-        static DirectX::XMVECTOR GetClosestPointFromLine(DirectX::XMVECTOR startPoint, DirectX::XMVECTOR endPoint, DirectX::XMVECTOR point);
+        // Vector Function
+        static DirectX::XMVECTOR GetClosestPointFromLine(DirectX::XMVECTOR startPoint,
+                                                         DirectX::XMVECTOR endPoint,
+                                                         DirectX::XMVECTOR point);
         static float             CalulateDistance(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateDistanceSq(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
+        static float             CalulateVectorLength(DirectX::XMVECTOR vector);
+        static float             VectorDotProduct(DirectX::XMVECTOR m, DirectX::XMVECTOR n);
+        static FQuaternion       AverageQuaternion(DirectX::XMVECTOR& cumulative,
+                                                   FQuaternion        newRotation,
+                                                   FQuaternion        firstRotation,
+                                                   int                addAmount);
 
-		template <typename T>
+        static FQuaternion		QuaternionNormalize(FQuaternion quaternion);
+        static DirectX::XMVECTOR AveragePositionFromVector(DirectX::XMVECTOR vector);
+        template <typename T>
         static T lerp(T v0, T v1, T t)
         {
                 return fma(t, v1, fma(-t, v0, v0));

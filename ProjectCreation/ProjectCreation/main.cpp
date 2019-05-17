@@ -166,8 +166,9 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         sphereObj.center = XMVectorSet(3.0f, 10.0f, 0.0f, 1.0f);
         sphereObj.radius = 3;
 
-        CollisionComponent::FCollideResult result;
-        // result = CollisionLibary::SweepSphereToSphere(sphere1, sphere2, sphereObj);
+        CollisionComponent::FSweepCollision result;
+        result = CollisionLibary::SweepSphereToSphere(sphere1, sphere2, sphereObj, 1.0f);
+
 
         // if (result.collisionType == CollisionComponent::ECollide || result.collisionType == CollisionComponent::EOveralap)
         //{

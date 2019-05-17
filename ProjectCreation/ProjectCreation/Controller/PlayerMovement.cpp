@@ -125,8 +125,8 @@ void PlayerMovement::ApplyInput()
         fSphereCheck.center = XMVectorSet(0.0f, 0.0f, 0.f, 1.0f);
         fSphereCheck.radius = 0.2f;
 
-        CollisionComponent::FCollideResult result =
-            CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck);
+        CollisionComponent::FSweepCollision result =
+            CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 1.0f);
 
         if (result.collisionType != CollisionComponent::ECollisionType::EOveralap &&
             result.collisionType != CollisionComponent::ECollisionType::ECollide)
