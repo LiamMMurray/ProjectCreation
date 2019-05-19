@@ -35,4 +35,8 @@ class AnimationSystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
+        void AddAnimClipsToComponent(ComponentHandle targetComp,
+                                     int             animCount,
+                                     ResourceHandle* animClipHandles,
+                                     float*          weights);
 };

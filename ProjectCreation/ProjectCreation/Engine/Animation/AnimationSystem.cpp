@@ -135,3 +135,11 @@ void AnimationSystem::OnResume()
 
 void AnimationSystem::OnSuspend()
 {}
+
+void AnimationSystem::AddAnimClipsToComponent(ComponentHandle targetComp,
+                                              int             animCount,
+                                              ResourceHandle* animClipHandles,
+                                              float*          weights)
+{
+	//AnimationComponent* animComp = m_ComponentManager->GetComponent<
+}
