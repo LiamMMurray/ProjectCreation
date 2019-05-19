@@ -89,28 +89,33 @@ void AnimationSystem::OnPreUpdate(float deltaTime)
 
 void AnimationSystem::OnUpdate(float deltaTime)
 {
-        auto it = m_ComponentManager->GetActiveComponents<AnimationComponent>();
-        while (it != m_ComponentManager->end<AnimationComponent>())
-        {
-                EntityHandle           ownerHandle = it->GetOwner();
-                IEntity*               owner       = m_EntityManager->GetEntity(ownerHandle);
-                SkeletalMeshComponent* skelComp    = owner->GetComponent<SkeletalMeshComponent>();
-                Animation::FSkeleton&  skel        = skelComp->m_Skeleton;
+		// ITR_TODO
+        if (m_ComponentManager->ComponentsExist<AnimationComponent>())
+                return;
+		//auto animComp =  m_ComponentManager->GetActiveComponents<AnimationComponent>();
+		// for (auto itr = animComp.begin(); itr != animComp.end(); itr++) { /*itr.data();*/ /*itr.data()->GetHandle()*/}
+        //auto it = m_ComponentManager->GetActiveComponents<AnimationComponent>();
+        //while (it != m_ComponentManager->end<AnimationComponent>())
+        //{
+        //        EntityHandle           ownerHandle = it->GetOwner();
+        //        IEntity*               owner       = m_EntityManager->GetEntity(ownerHandle);
+        //        SkeletalMeshComponent* skelComp    = owner->GetComponent<SkeletalMeshComponent>();
+        //        Animation::FSkeleton&  skel        = skelComp->m_Skeleton;
 
-                it->m_Time += deltaTime;
+        //        it->m_Time += deltaTime;
 
-                int clipCount = (int)it->m_Clips.size();
+        //        int clipCount = (int)it->m_Clips.size();
 
-                for (int currTrack = 0; currTrack < clipCount; ++currTrack)
-                {
-                        auto clip       = m_ResourceManager->GetResource<AnimationClip>(it->m_Clips[currTrack]);
-                        int  jointCount = (int)clip->m_AnimClip.frames[0].joints.size();
-                        calcTransforms(
-                            skel.jointTransforms.data(), jointCount, it->m_Time, clip->m_AnimClip, it->m_Weights[currTrack]);
-                }
+        //        for (int currTrack = 0; currTrack < clipCount; ++currTrack)
+        //        {
+        //                auto clip       = m_ResourceManager->GetResource<AnimationClip>(it->m_Clips[currTrack]);
+        //                int  jointCount = (int)clip->m_AnimClip.frames[0].joints.size();
+        //                calcTransforms(
+        //                    skel.jointTransforms.data(), jointCount, it->m_Time, clip->m_AnimClip, it->m_Weights[currTrack]);
+        //        }
 
-                it++;
-        }
+        //        it++;
+        //}
 }
 
 void AnimationSystem::OnPostUpdate(float deltaTime)

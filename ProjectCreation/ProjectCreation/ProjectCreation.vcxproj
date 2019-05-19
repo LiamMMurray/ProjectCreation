@@ -25,7 +25,6 @@
     <ClInclude Include="Engine\CoreInput\CoreInput.h" />
     <ClInclude Include="ECS\Component.h" />
     <ClInclude Include="ECS\ComponentManager.h" />
-    <ClInclude Include="ECS\Containers.h" />
     <ClInclude Include="ECS\ECS.h" />
     <ClInclude Include="ECS\ECSTypes.h" />
     <ClInclude Include="ECS\Entity.h" />

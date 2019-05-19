@@ -482,10 +482,11 @@ void RenderSystem::RefreshMainCameraSettings()
 {
         using namespace DirectX;
 
-        CameraComponent* camera   = static_cast<CameraComponent*>(m_ComponentManager->GetComponent(m_MainCameraHandle));
-        auto&            settings = camera->m_Settings;
-        settings.m_AspectRatio    = GetWindowAspectRatio();
-        float verticalFOV         = XMConvertToRadians(settings.m_HorizontalFOV / settings.m_AspectRatio);
+        CameraComponent* camera =
+            static_cast<CameraComponent*>(m_ComponentManager->GetComponent<CameraComponent>(m_MainCameraHandle));
+        auto& settings         = camera->m_Settings;
+        settings.m_AspectRatio = GetWindowAspectRatio();
+        float verticalFOV      = XMConvertToRadians(settings.m_HorizontalFOV / settings.m_AspectRatio);
 
         m_CachedMainProjectionMatrix =
             DirectX::XMMatrixPerspectiveFovLH(verticalFOV, settings.m_AspectRatio, settings.m_NearClip, settings.m_FarClip);
@@ -557,6 +558,9 @@ void RenderSystem::OnPostUpdate(float deltaTime)
         /** Render all opaque static meshes **/
         if (false)
         {
+                if (!m_ComponentManager->ComponentsExist<StaticMeshComponent>())
+                        return;
+
                 auto     sMeshComp = m_ComponentManager->GetActiveComponents<StaticMeshComponent>();
                 Material mat;
                 mat.m_VertexShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED];
@@ -567,15 +571,25 @@ void RenderSystem::OnPostUpdate(float deltaTime)
                         EntityHandle entityHandle = sMeshComp->GetOwner();
                         TransformComponent* tcomp = m_ComponentManager->GetComponent<TransformComponent>(entityHandle);
 
-                        XMMATRIX world = tcomp->transform.CreateMatrix();
+                // while (sMeshComp != m_ComponentManager->end<StaticMeshComponent>())
+                //{
+                //        StaticMesh*  staticMesh   = m_ResourceManager->GetResource<StaticMesh>(sMeshComp->m_StaticMeshHandle);
+                //        EntityHandle entityHandle = sMeshComp->GetOwner();
+                //        TransformComponent* tcomp =
+                //            m_EntityManager->GetEntity(entityHandle)->GetComponent<TransformComponent>();
 
-                        DrawOpaqueStaticMesh(staticMesh, &mat, &world);
-                        sMeshComp++;
-                }
+                //        XMMATRIX world = tcomp->transform.CreateMatrix();
+
+                //        DrawOpaqueStaticMesh(staticMesh, &mat, &world);
+                //        sMeshComp++;
+                //}
         }
 
         /** Render all opaque skeletal meshes **/
         {
+                if (!m_ComponentManager->ComponentsExist<SkeletalMeshComponent>())
+                        return;
+
                 auto     skelComp = m_ComponentManager->GetActiveComponents<SkeletalMeshComponent>();
                 Material mat;
                 mat.m_VertexShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED];
@@ -587,11 +601,21 @@ void RenderSystem::OnPostUpdate(float deltaTime)
                         EntityHandle  entityHandle = skelComp->GetOwner();
                         TransformComponent* tcomp  = m_ComponentManager->GetComponent<TransformComponent>(entityHandle);
 
-                        XMMATRIX world = tcomp->transform.CreateMatrix();
+                // for (auto itr = skelComp.begin(); itr != skelComp.end(); itr++) {}
 
-                        DrawOpaqueSkeletalMesh(skelMesh, &mat, &world, &skelMesh->m_BindPoseSkeleton);
-                        skelComp++;
-                }
+
+                // while (skelComp != m_ComponentManager->end<SkeletalMeshComponent>())
+                //{
+                //        SkeletalMesh* skelMesh = m_ResourceManager->GetResource<SkeletalMesh>(skelComp->m_SkeletalMeshHandle);
+                //        EntityHandle  entityHandle = skelComp->GetOwner();
+                //        TransformComponent* tcomp =
+                //            m_EntityManager->GetEntity(entityHandle)->GetComponent<TransformComponent>();
+
+                //        XMMATRIX world = tcomp->transform.CreateMatrix();
+
+                //        DrawOpaqueSkeletalMesh(skelMesh, &mat, &world, &skelMesh->m_BindPoseSkeleton);
+                //        skelComp++;
+                //}
         }
 
 

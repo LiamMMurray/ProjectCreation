@@ -1,8 +1,8 @@
 #include "FileIO.h"
 #include <assert.h>
-#include <sstream>
-
+#include <string.h>
 #include <fstream>
+#include <sstream>
 
 EResult FileIO::LoadStaticMeshDataFromFile(const char* fileName, FStaticMeshData* staticMeshOutput)
 {
@@ -147,6 +147,11 @@ EResult FileIO::LoadShaderDataFromFile(const char* fileName, const char* suffix,
 
                 output.m_Flags = ERESULT_FLAG::SUCCESS;
         }
+
+		#if defined(_CRT_SECURE_NO_WARNINGS) && defined(_DEBUG)
+		//  stores this value for debugging purposes if the following assertion fails
+        std::string error_message = std::strerror(errno);
+		#endif
 
         assert(output.m_Flags != ERESULT_FLAG::INVALID);
 

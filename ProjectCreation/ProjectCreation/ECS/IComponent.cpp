@@ -22,7 +22,7 @@ void IComponent::SetActive(bool state)
 {
         m_Enabled = state;
 }
-bool IComponent::isEnabled()
+bool IComponent::IsEnabled()
 {
         return m_Enabled;
 }

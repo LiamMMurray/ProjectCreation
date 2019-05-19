@@ -2,6 +2,7 @@
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #define NOMINMAX
 #include <Windows.h>
+
 #include <stdio.h>
 #include <time.h>
 #include <windowsx.h>
@@ -170,7 +171,6 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
         CollisionComponent::FSweepCollision result;
         result = CollisionLibary::SweepSphereToSphere(sphere1, sphere2, sphereObj, 1.0f);
-
 
         // if (result.collisionType == CollisionComponent::ECollide || result.collisionType == CollisionComponent::EOveralap)
         //{
