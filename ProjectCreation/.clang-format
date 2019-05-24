@@ -1,0 +1,64 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+Language                                  : Cpp
+BasedOnStyle                              : Google 
+Standard                                  : Auto
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+AccessModifierOffset                      : -4
+AlignTrailingComments                     : true
+AllowAllParametersOfDeclarationOnNextLine : false
+AllowShortBlocksOnASingleLine             : true
+AllowShortFunctionsOnASingleLine          : true
+AllowShortIfStatementsOnASingleLine       : false
+AllowShortLoopsOnASingleLine              : false
+BinPackParameters                         : false
+BreakBeforeBraces                         : Allman
+BreakBeforeTernaryOperators               : false
+BreakConstructorInitializersBeforeComma   : true
+ColumnLimit                               : 120 
+Cpp11BracedListStyle                      : true
+DerivePointerAlignment                    : true
+DerivePointerBinding                      : false
+IndentWidth                               : 4
+KeepEmptyLinesAtTheStartOfBlocks          : true
+MaxEmptyLinesToKeep                       : 2
+NamespaceIndentation                      : All 
+PointerBindsToType                        : true
+SpacesBeforeTrailingComments              : 1
+SpacesInAngles                            : false
+SpacesInSquareBrackets                    : false
+TabWidth                                  : 4
+UseTab                                    : ForIndentation
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignAfterOpenBracket: true
+AlignTrailingComments: true
+BinPackArguments: false
+UseTab: Never
+ColumnLimit: 128
+IndentWidth: 8
+AllowShortFunctionsOnASingleLine: false
+BinPackParameters: false
+PointerAlignment: Left
+
+BreakBeforeBinaryOperators: None 
+IndentCaseLabels: true
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterEnum: true
+  AfterStruct: true
+  AfterFunction: true
+  AfterControlStatement: true
+  AfterNamespace: true
+  AfterObjCDeclaration: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+
+BreakConstructorInitializers: AfterColon

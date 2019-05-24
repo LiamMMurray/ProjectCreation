@@ -1,0 +1,306 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Engine\Audio\AudioManager.h" />
+    <ClInclude Include="Engine\Audio\SFXComponent.h" />
+    <ClInclude Include="Engine\CollisionLibary\BVH.h" />
+    <ClInclude Include="Engine\CollisionLibary\CollisionComponent.h" />
+    <ClInclude Include="Engine\CollisionLibary\CollisionLibary.h" />
+    <ClInclude Include="Engine\Controller\ControllerManager.h" />
+    <ClInclude Include="Engine\Controller\DebugCameraController.h" />
+    <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
+    <ClInclude Include="Engine\EngineInitShutdownHelpers.h" />
+    <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
+    <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
+    <ClInclude Include="Engine\GenericComponents\TestComponents.h" />
+    <ClInclude Include="Engine\GenericComponents\TransformComponent.h" />
+    <ClInclude Include="Engine\ConsoleWindow\ConsoleWindow.h" />
+    <ClInclude Include="Engine\Controller\IController.h" />
+    <ClInclude Include="Engine\Controller\PlayerMovement.h" />
+    <ClInclude Include="Engine\CoreInput\CoreInput.h" />
+    <ClInclude Include="ECS\Component.h" />
+    <ClInclude Include="ECS\ComponentManager.h" />
+    <ClInclude Include="ECS\ECS.h" />
+    <ClInclude Include="ECS\ECSTypes.h" />
+    <ClInclude Include="ECS\Entity.h" />
+    <ClInclude Include="ECS\EntityContainer.h" />
+    <ClInclude Include="ECS\EntityManager.h" />
+    <ClInclude Include="ECS\HandleManager.h" />
+    <ClInclude Include="Engine\Animation\AnimationComponent.h" />
+    <ClInclude Include="Engine\Animation\AnimationContainers.h" />
+    <ClInclude Include="Engine\Animation\AnimationSystem.h" />
+    <ClInclude Include="Engine\GEngine.h" />
+    <ClInclude Include="ECS\Handle.h" />
+    <ClInclude Include="ECS\IComponent.h" />
+    <ClInclude Include="ECS\IEntity.h" />
+    <ClInclude Include="ECS\ISystem.h" />
+    <ClInclude Include="ECS\SystemManager.h" />
+    <ClInclude Include="ECS\Util.h" />
+    <ClInclude Include="Engine\XTime.h" />
+    <ClInclude Include="Engine\Entities\TestEntities.h" />
+    <ClInclude Include="Engine\Entities\BaseEntities.h" />
+    <ClInclude Include="ErrorHandling\ErrorTypes.h" />
+    <ClInclude Include="FileIO\BasicIOTypes.h" />
+    <ClInclude Include="FileIO\FileIO.h" />
+    <ClInclude Include="FileIO\Material.h" />
+    <ClInclude Include="FileIO\Shader.h" />
+    <ClInclude Include="FileIO\SkeletalMesh.h" />
+    <ClInclude Include="FileIO\StaticMesh.h" />
+    <ClInclude Include="Engine\MathLibrary\MathConstants.h" />
+    <ClInclude Include="Engine\MathLibrary\MathLibrary.h" />
+    <ClInclude Include="Engine\MathLibrary\Quaternion.h" />
+    <ClInclude Include="Engine\MathLibrary\Transform.h" />
+    <ClInclude Include="Engine\MathLibrary\Vector.h" />
+    <ClInclude Include="Rendering\Components\CameraComponent.h" />
+    <ClInclude Include="Rendering\Components\DirectionalLightComponent.h" />
+    <ClInclude Include="Rendering\Components\PointLightComponent.h" />
+    <ClInclude Include="Rendering\ConstantBuffers.h" />
+    <ClInclude Include="Rendering\Components\SkeletalMeshComponent.h" />
+    <ClInclude Include="Rendering\Components\StaticMeshComponent.h" />
+    <ClInclude Include="Rendering\DebugRender\debug_renderer.h" />
+    <ClInclude Include="Rendering\LightBuffers.h" />
+    <ClInclude Include="Rendering\PostProcess\Bloom.h" />
+    <ClInclude Include="Rendering\PostProcess\PostProcessEffectBase.h" />
+    <ClInclude Include="Rendering\RenderingSystem.h" />
+    <ClInclude Include="Rendering\Vertex.h" />
+    <ClInclude Include="Engine\ResourceManager\AnimationClip.h" />
+    <ClInclude Include="Engine\ResourceManager\Material.h" />
+    <ClInclude Include="Engine\ResourceManager\PixelShader.h" />
+    <ClInclude Include="Engine\ResourceManager\Resource.h" />
+    <ClInclude Include="Engine\ResourceManager\IResource.h" />
+    <ClInclude Include="Engine\ResourceManager\ResourceInfoTypes.h" />
+    <ClInclude Include="Engine\ResourceManager\ResourceManager.h" />
+    <ClInclude Include="Engine\ResourceManager\SkeletalMesh.h" />
+    <ClInclude Include="Engine\ResourceManager\StaticMesh.h" />
+    <ClInclude Include="Engine\ResourceManager\Texture2D.h" />
+    <ClInclude Include="Engine\ResourceManager\VertexShader.h" />
+    <FxCompile Include="Shaders\BloomCombine_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shaders\BloomDownscale_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shaders\BloomMask_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shaders\BloomUpscale_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shaders\Debug_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shaders\Debug_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shaders\DefaultSkinned_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.1</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.1</ShaderModel>
+    </FxCompile>
+    <ClInclude Include="System\PhysicsSystem.h" />
+    <ClInclude Include="UI\SpriteComponent.h" />
+    <ClInclude Include="UI\UIManager.h" />
+    <ClInclude Include="Engine\Physics\PhysicsSystem.h" />
+    <ClInclude Include="Shaders\BasePassTextureMaps.hlsl" />
+    <ClInclude Include="Shaders\BloomInclude.hlsl" />
+    <ClInclude Include="Shaders\Constants.hlsl" />
+    <ClInclude Include="Shaders\Math.hlsl" />
+    <ClInclude Include="Shaders\Samplers.hlsl" />
+    <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
+    <ClInclude Include="Utility\ForwardDeclarations\STLTypes.h" />
+    <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
+    <ClInclude Include="Utility\Macros\DirectXMacros.h" />
+    <ClInclude Include="Utility\MemoryDefines.h" />
+    <ClInclude Include="Utility\RenderUtility.h" />
+    <ClInclude Include="Utility\StringUtility.h" />
+    <FxCompile Include="Shaders\ScreenQuad_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.1</ShaderModel>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Engine\Animation\AnimationComponent.cpp" />
+    <ClCompile Include="Engine\Audio\AudioManager.cpp" />
+    <ClCompile Include="Engine\CollisionLibary\BVH.cpp" />
+    <ClCompile Include="Engine\CollisionLibary\CollisionLibary.cpp" />
+    <ClCompile Include="Engine\CollisionLibary\Shapes.cpp" />
+    <ClCompile Include="Engine\Controller\ControllerManager.cpp" />
+    <ClCompile Include="Engine\Controller\DebugCameraController.cpp" />
+    <ClCompile Include="Engine\EngineInitShutdownHelpers.cpp" />
+    <ClCompile Include="Engine\Physics\PhysicsComponent.cpp" />
+    <ClCompile Include="Engine\Controller\IController.cpp" />
+    <ClCompile Include="Engine\Controller\PlayerMovement.cpp" />
+    <ClCompile Include="Engine\CoreInput\CoreInput.cpp" />
+    <ClCompile Include="ECS\ComponentManager.cpp" />
+    <ClCompile Include="ECS\EntityManager.cpp" />
+    <ClCompile Include="Engine\Animation\AnimationSystem.cpp" />
+    <ClCompile Include="Engine\GEngine.cpp" />
+    <ClCompile Include="ECS\IComponent.cpp" />
+    <ClCompile Include="ECS\IEntity.cpp" />
+    <ClCompile Include="ECS\ISystem.cpp" />
+    <ClCompile Include="ECS\SystemManager.cpp" />
+    <ClCompile Include="Engine\XTime.cpp" />
+    <ClCompile Include="Engine\Entities\TestEntities.cpp" />
+    <ClCompile Include="FileIO\FileIO.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Engine\MathLibrary\MathLibrary.cpp" />
+    <ClCompile Include="Engine\MathLibrary\Quaternion.cpp" />
+    <ClCompile Include="Engine\MathLibrary\Transform.cpp" />
+    <ClCompile Include="Engine\MathLibrary\Vector.cpp" />
+    <ClCompile Include="Rendering\DebugRender\debug_renderer.cpp" />
+    <ClCompile Include="Rendering\PostProcess\Bloom.cpp" />
+    <ClCompile Include="Rendering\RenderingSystem.cpp" />
+    <ClCompile Include="Rendering\Components\SkeletalMeshComponent.cpp" />
+    <ClCompile Include="Rendering\Components\StaticMeshComponent.cpp" />
+    <ClCompile Include="Rendering\Vertex.cpp" />
+    <ClCompile Include="Engine\ResourceManager\AnimationClip.cpp" />
+    <ClCompile Include="Engine\ResourceManager\IResource.cpp" />
+    <ClCompile Include="Engine\ResourceManager\Material.cpp" />
+    <ClCompile Include="Engine\ResourceManager\PixelShader.cpp" />
+    <ClCompile Include="Engine\ResourceManager\ResourceManager.cpp" />
+    <ClCompile Include="Engine\ResourceManager\SkeletalMesh.cpp" />
+    <ClCompile Include="Engine\ResourceManager\StaticMesh.cpp" />
+    <ClCompile Include="Engine\ResourceManager\Texture2D.cpp" />
+    <ClCompile Include="Engine\ResourceManager\VertexShader.cpp" />
+    <ClCompile Include="Utility\RenderUtility.cpp" />
+    <ClCompile Include="UI\UIManager.cpp" />
+    <ClCompile Include="UI\SpriteComponent.cpp" />
+    <ClCompile Include="Utility\StringUtility.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Shaders\DefaultPixelIn.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </ClInclude>
+    <FxCompile Include="Shaders\Default_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.1</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\Default_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <ClInclude Include="Shaders\DefaultVertexIn.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClCompile Include="Engine\Physics\PhysicsSystem.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{6AEBDD0C-4209-440C-8736-1B5346BDA655}</ProjectGuid>
+    <RootNamespace>ProjectCreation</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>../../gateware/;$(IncludePath)</IncludePath>
+    <LibraryPath>../../gateware/Archive/Win32/Gateware_amd64/Debug;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>../../gateware/;$(IncludePath)</IncludePath>
+    <LibraryPath>../../gateware/Archive/Win32/Gateware_amd64/Release;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>GAudio_DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <FxCompile>
+      <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <OmitFramePointers>false</OmitFramePointers>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(SolutionDir)DirectXTK-apr2019\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
+      <AdditionalDependencies>GAudio_DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <FxCompile>
+      <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\directxtk_desktop_2015.2019.4.26.1\build\native\directxtk_desktop_2015.targets" Condition="Exists('..\packages\directxtk_desktop_2015.2019.4.26.1\build\native\directxtk_desktop_2015.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\directxtk_desktop_2015.2019.4.26.1\build\native\directxtk_desktop_2015.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk_desktop_2015.2019.4.26.1\build\native\directxtk_desktop_2015.targets'))" />
+  </Target>
+</Project>

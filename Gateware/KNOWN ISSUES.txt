@@ -1,0 +1,82 @@
+The known issues:
+
+1. In Linux version, there is no 32-bit. It is in proccess.
+
+2. In Linux, GWindow fullscreen is not covering the whole screen. On certain distros.
+
+3. On Mac, OpenGLSurface windows do not have a title bar.
+
+4. On Mac, you must minimize then maximize after resizing a window. (This may already be fixed...)
+
+Fixed in update 4a:
+
+5. *FALSE ALARM* On Windows, The GDirectX11Surface cannot be attatched to a closed window.
+
+6. *FIXED* On Windows, The GDirectX11Surface must not be accessed after a DESTROY window event is processed.
+
+7. *FIXED* On Windows, The GDirectX11Surface leaks memory if you resize the screen or request Z Buffer support.
+
+Fixed in update 4b:
+
+8. *FIXED* On Windows, GInput caused crashes when calling DecrementCount because it tries to delete an un-intilized and unused internal linux thread.
+
+Fixed in update 4c:
+
+9. *FIXED* GInput had a memory leak in its init function.
+
+Fixed in update 4d:
+
+10. *FIXED* Bug that prevented the user from using the graphic's debugger when using DIRECT2D_SUPPORT.
+
+Fixed in update 4e:
+
+11. *Fixed* GAudio bugs:
+a: user not being able to setVolume
+b: No updated documentation on SetChannelVolumn()s
+c: user needing to link xaudio2 if using windows & visual studios 2012 and higher
+d: application stalling if user calls pause then stop on a musicStream.
+e: musicstream audio caused popping noises because it was reading the header of the file as .wav data. 
+
+Fixed in update 4f:
+
+12.
+a. Linux GAudio bugs fixed where pause, setVolume, setVolumeChannels, resume weren't working property.
+b. Removed popping noise when you play a sound.
+c. GFile bugs fixed, where the delimiter wasn't being set propertly and size cap wasn't being accounted propertly.
+d.ALL MEMORY LEAKS ON ALL PLATFORMS ARE CLEANED UP.
+e. Fixed mistake where _WIN32 #ifdef's didn't have the '_' in-front of _WIN32.
+f. GInput & GBufferedInput UnitTests are back and All platforms pass all the test cases.4
+
+Fixed in update 6.3.A:
+a. Gcontroller is now fully relaesed on all platforms
+b. Fixed possible deadlock in GController on Windows
+
+Fixed in update 6.3.B
+a. GAudio no longer corrupts the stack when reading a WAVE file with a stange format.
+
+Bugs in update 5A:
+13.
+a.Linux hangs are reduced to one hang
+b.*Bug* Linux has some issues with the LastEvent feature. Has a heavy delay before it gets the correct event.
+c.*Bug* Mac's case where you destroy the window will not get picked up by LastEvent.
+
+Known Issues in update 5B:
+14.
+a. Linux LastEvent doesn't work
+b. Linux Eventloop may exit if there isn't any events queued
+c. mac LastEvent in maximize cases doesn't work
+d.*FIXED* Linux has no more hangs
+e.*FIXED* LastEvent works for Windows and most of Mac
+
+Known Issues in update 6A:
+15.
+a. *FIXED* Only released on Windows due to Mac and Linux dropping 32-bit support.
+
+Known Issues in update 6.2.A:
+16.
+a. Mac Release is incomplete
+
+Known Issues in update 6.3.B
+a. Some HP laptop's intergrated keyboards while send both an arrow key event and a shift event when using the non-numpad arrow keys. 
+   To fix this go to the ease of access center, go to "make keyboard easier to use", go to "set up Sticky Keys", turn off
+   "Lock modifer keys when pressed twice in a row".
