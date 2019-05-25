@@ -29,11 +29,11 @@
 #include "../Engine/GenericComponents/TransformComponent.h"
 #include "Vertex.h"
 
+#include "../UI/UIManager.h"
 #include "Components/CameraComponent.h"
 #include "Components/DirectionalLightComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "../UI/UIManager.h"
 
 #include "../Engine/MathLibrary/ColorConstants.h"
 #include "DebugRender/debug_renderer.h"
@@ -154,7 +154,7 @@ void RenderSystem::CreateDeviceAndSwapChain()
         ID3D11Debug* debug = nullptr;
         hr                 = m_Device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&debug));
         assert(SUCCEEDED(hr));
-        //debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+        // debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
         debug->Release();
 #endif
 
@@ -171,6 +171,11 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
         for (int i = 0; i < E_RENDER_TARGET::COUNT; ++i)
         {
                 SAFE_RELEASE(m_DefaultRenderTargets[i]);
+        }
+
+        for (int i = 0; i < E_DEPTH_STENCIL::COUNT; ++i)
+        {
+                SAFE_RELEASE(m_DefaultDepthStencil[i]);
         }
 
 
@@ -236,6 +241,12 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
         descDSV.Texture2D.MipSlice = 0;
         hr = m_Device->CreateDepthStencilView(texture, &descDSV, &m_DefaultDepthStencil[E_DEPTH_STENCIL::BASE_PASS]);
         texture->Release();
+
+        D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc{};
+        viewDesc.Format              = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+        viewDesc.ViewDimension       = D3D11_SRV_DIMENSION_TEXTURE2D;
+        viewDesc.Texture2D.MipLevels = 1;
+        m_Device->CreateShaderResourceView(texture, &viewDesc, &m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::BASE_DEPTH]);
 
         assert(SUCCEEDED(hr));
 }
@@ -317,22 +328,27 @@ void RenderSystem::CreateCommonShaders()
 
 void RenderSystem::CreateCommonConstantBuffers()
 {
-        HRESULT           hr;
+        HRESULT           hr{};
         D3D11_BUFFER_DESC bd{};
         bd.Usage          = D3D11_USAGE_DYNAMIC;
         bd.ByteWidth      = sizeof(CTransformBuffer);
         bd.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
         bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-        hr                = m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP]);
+        hr |= m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP]);
 
         bd.ByteWidth = sizeof(CSceneInfoBuffer);
-        hr           = m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE]);
+        hr |= m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE]);
 
         bd.ByteWidth = sizeof(FSurfaceProperties);
-        hr           = m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE]);
+        hr |= m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE]);
 
         bd.ByteWidth = sizeof(CAnimationBuffer);
-        hr           = m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::ANIM]);
+        hr |= m_Device->CreateBuffer(&bd, nullptr, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::ANIM]);
+
+        bd.ByteWidth = sizeof(CScreenSpaceBuffer);
+        hr |= m_Device->CreateBuffer(&bd, nullptr, &m_PostProcessConstantBuffers[E_CONSTANT_BUFFER_POST_PROCESS::SCREENSPACE]);
+
+        assert(SUCCEEDED(hr));
 }
 
 void RenderSystem::CreateSamplerStates()
@@ -433,6 +449,19 @@ void RenderSystem::CreateDepthStencilStates()
         m_Device->CreateDepthStencilState(&desc, &m_DepthStencilStates[E_DEPTH_STENCIL_STATE::BASE_PASS]);
 }
 
+void RenderSystem::CreatePostProcessEffects(D3D11_TEXTURE2D_DESC* desc)
+{
+        for (auto& pp : m_PostProcessChain)
+        {
+                pp->Shutdown();
+                delete pp;
+        }
+        m_PostProcessChain.clear();
+
+        m_PostProcessChain.push_back(new Bloom);
+        m_PostProcessChain.front()->Initialize(m_Device, m_Context, desc);
+}
+
 void RenderSystem::CreateDebugBuffers()
 {
         D3D11_BUFFER_DESC desc{};
@@ -471,7 +500,6 @@ void RenderSystem::DrawDebug()
             E_CONSTANT_BUFFER_BASE_PASS::MVP, 1, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP]);
         m_Context->PSSetShader(ps, 0, 0);
         m_Context->Draw((UINT)debug_renderer::get_line_vert_count(), 0);
-
 }
 
 void RenderSystem::UpdateConstantBuffer(ID3D11Buffer* gpuBuffer, void* cpuBuffer, size_t size)
@@ -591,6 +619,7 @@ void RenderSystem::RefreshMainCameraSettings()
 
         m_CachedMainProjectionMatrix =
             DirectX::XMMatrixPerspectiveFovLH(verticalFOV, settings.m_AspectRatio, settings.m_NearClip, settings.m_FarClip);
+        m_CachedMainInvProjectionMatrix = XMMatrixInverse(nullptr, m_CachedMainProjectionMatrix);
 }
 
 void RenderSystem::OnPreUpdate(float deltaTime)
@@ -632,7 +661,8 @@ void RenderSystem::OnUpdate(float deltaTime)
         EntityHandle        mainCameraEntity = mainCamera->GetOwner();
         TransformComponent* mainTransform    = m_ComponentManager->GetComponent<TransformComponent>(mainCameraEntity);
 
-        XMMATRIX view = (XMMatrixInverse(nullptr, mainTransform->transform.CreateMatrix()));
+        XMMATRIX view             = (XMMatrixInverse(nullptr, mainTransform->transform.CreateMatrix()));
+        m_CachedMainInvViewMatrix = XMMatrixInverse(nullptr, view);
 
         m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(view * m_CachedMainProjectionMatrix);
 
@@ -740,11 +770,26 @@ void RenderSystem::OnUpdate(float deltaTime)
         m_Context->CopyResource(dest, src);
         dest->Release();
         src->Release();*/
-        bloom->Render(&m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::BASE_PASS],
-                      &m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER]);
+        m_Context->PSSetShaderResources(0, E_POSTPROCESS_PIXEL_SRV::COUNT, m_PostProcessSRVs);
+        m_Context->PSSetConstantBuffers(0, E_CONSTANT_BUFFER_POST_PROCESS::COUNT, m_PostProcessConstantBuffers);
+        m_ContstantBuffer_SCREENSPACE.invProj        = XMMatrixTranspose(m_CachedMainInvProjectionMatrix);
+        m_ContstantBuffer_SCREENSPACE.invView        = XMMatrixTranspose(m_CachedMainInvViewMatrix);
+        m_ContstantBuffer_SCREENSPACE.time           = m_ConstantBuffer_SCENE.time;
+        m_ContstantBuffer_SCREENSPACE.playerPosition = m_ConstantBuffer_SCENE.eyePosition;
+
+        UpdateConstantBuffer(m_PostProcessConstantBuffers[E_CONSTANT_BUFFER_POST_PROCESS::SCREENSPACE],
+                             &m_ContstantBuffer_SCREENSPACE,
+                             sizeof(m_ContstantBuffer_SCREENSPACE));
+
+        ID3D11ShaderResourceView* inSRV  = m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::BASE_PASS];
+        ID3D11RenderTargetView*   outRTV = m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER];
+        for (auto& pp : m_PostProcessChain)
+        {
+                pp->Render(&inSRV, &outRTV);
+        }
 
         /** Draw Debug Renderer **/
-        Shapes::FAabb               aabb;
+        Shapes::FAabb   aabb;
         Shapes::FSphere sphere;
 
         aabb.center  = XMVectorSet(0.0f, 0.5f, 0.0f, 1.0f);
@@ -757,11 +802,11 @@ void RenderSystem::OnUpdate(float deltaTime)
         debug_renderer::AddSphere(sphere, 32, XMMatrixIdentity());
         debug_renderer::AddMatrix(XMMatrixTranslationFromVector(sphere.center), 0.05f);
 
-		if (GEngine::Get()->IsDebugMode())
-            DrawDebug();
+        if (GEngine::Get()->IsDebugMode())
+                DrawDebug();
         debug_renderer::clear_lines();
 
-		//UI Manager Update
+        // UI Manager Update
         UIManager::Update();
 
         DXGI_PRESENT_PARAMETERS parameters = {0};
@@ -793,10 +838,9 @@ void RenderSystem::OnInitialize()
         CreateCommonConstantBuffers();
         CreateSamplerStates();
         CreateDebugBuffers();
+        CreatePostProcessEffects(&desc);
 
-        bloom = new Bloom;
-        bloom->Initialize(m_Device, m_Context, &desc);
-		//UI Manager Initialize
+        // UI Manager Initialize
         UIManager::Initialize();
 }
 
@@ -845,13 +889,13 @@ void RenderSystem::OnShutdown()
                 SAFE_RELEASE(m_DefaultSamplerStates[i]);
         }
 
-		for (int i = 0; i < E_BLEND_STATE::COUNT; ++i)
+        for (int i = 0; i < E_BLEND_STATE::COUNT; ++i)
         {
 
                 SAFE_RELEASE(m_BlendStates[i]);
         }
 
-		for (int i = 0; i < E_DEPTH_STENCIL_STATE::COUNT; ++i)
+        for (int i = 0; i < E_DEPTH_STENCIL_STATE::COUNT; ++i)
         {
 
                 SAFE_RELEASE(m_DepthStencilStates[i]);
@@ -863,9 +907,18 @@ void RenderSystem::OnShutdown()
         SAFE_RELEASE(m_Context);
         SAFE_RELEASE(m_Device);
 
-        bloom->Shutdown();
-        delete bloom;
-		//UI Manager Shutdown
+        for (int i = 0; i < E_CONSTANT_BUFFER_POST_PROCESS::COUNT; ++i)
+        {
+
+                SAFE_RELEASE(m_PostProcessConstantBuffers[i]);
+        }
+
+        for (auto& pp : m_PostProcessChain)
+        {
+                pp->Shutdown();
+                delete pp;
+        }
+        // UI Manager Shutdown
         UIManager::Shutdown();
 }
 
@@ -891,7 +944,9 @@ void RenderSystem::OnWindowResize(WPARAM wParam, LPARAM lParam)
 {
         if (m_Swapchain)
         {
-                CreateDefaultRenderTargets();
+                D3D11_TEXTURE2D_DESC desc;
+                CreateDefaultRenderTargets(&desc);
+                CreatePostProcessEffects(&desc);
         }
 }
 

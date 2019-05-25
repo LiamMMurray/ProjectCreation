@@ -21,3 +21,11 @@ struct CAnimationBuffer
 {
         DirectX::XMMATRIX jointTransforms[64];
 };
+
+struct CScreenSpaceBuffer
+{
+        DirectX::XMMATRIX invProj;
+        DirectX::XMMATRIX invView;
+        DirectX::XMFLOAT3 playerPosition;
+        float             time;
+};

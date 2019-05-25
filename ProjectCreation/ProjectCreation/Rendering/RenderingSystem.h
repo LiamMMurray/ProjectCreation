@@ -52,6 +52,15 @@ struct E_CONSTANT_BUFFER_BASE_PASS
         };
 };
 
+struct E_CONSTANT_BUFFER_POST_PROCESS
+{
+        enum
+        {
+                SCREENSPACE = 0,
+                COUNT
+        };
+};
+
 struct E_VERTEX_SHADER_RESOURCE_VIEW
 {
         enum
@@ -216,7 +225,7 @@ class RenderSystem : public ISystem
         ID3D11Device1*        m_Device;
         ID3D11DeviceContext1* m_Context;
 
-        PostProcessEffectBase* bloom;
+        std::vector<PostProcessEffectBase*> m_PostProcessChain;
 
         void CreateDeviceAndSwapChain();
         void CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDesc = nullptr);
@@ -227,6 +236,7 @@ class RenderSystem : public ISystem
         void CreateSamplerStates();
         void CreateBlendStates();
         void CreateDepthStencilStates();
+        void CreatePostProcessEffects(D3D11_TEXTURE2D_DESC* desc);
 
         /** Debug Renderer **/
         ID3D11Buffer* m_DebugVertexBuffer;
@@ -240,16 +250,20 @@ class RenderSystem : public ISystem
         ID3D11RasterizerState*    m_DefaultRasterizerStates[E_RASTERIZER_STATE::COUNT]{};
         ID3D11SamplerState*       m_DefaultSamplerStates[E_SAMPLER_STATE::COUNT]{};
         ID3D11BlendState*         m_BlendStates[E_BLEND_STATE::COUNT]{};
-        ID3D11DepthStencilState*         m_DepthStencilStates[E_DEPTH_STENCIL_STATE::COUNT]{};
+        ID3D11DepthStencilState*  m_DepthStencilStates[E_DEPTH_STENCIL_STATE::COUNT]{};
 
         ResourceHandle m_CommonVertexShaderHandles[E_VERTEX_SHADERS::COUNT];
         ResourceHandle m_CommonPixelShaderHandles[E_PIXEL_SHADERS::COUNT];
 
-        ID3D11Buffer* m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::COUNT];
-
+		/** Base pass constant buffers **/
+        ID3D11Buffer*    m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::COUNT] = {};
         CTransformBuffer m_ConstantBuffer_MVP;
         CSceneInfoBuffer m_ConstantBuffer_SCENE;
         CAnimationBuffer m_ConstantBuffer_ANIM;
+
+		/** Post Process Constant Buffers **/
+        ID3D11Buffer*    m_PostProcessConstantBuffers[E_CONSTANT_BUFFER_POST_PROCESS::COUNT] = {};
+        CScreenSpaceBuffer m_ContstantBuffer_SCREENSPACE;
 
         float m_BackBufferWidth;
         float m_BackBufferHeight;
@@ -272,6 +286,8 @@ class RenderSystem : public ISystem
         EntityManager*    m_EntityManager;
 
         DirectX::XMMATRIX m_CachedMainProjectionMatrix;
+        DirectX::XMMATRIX m_CachedMainInvProjectionMatrix;
+        DirectX::XMMATRIX m_CachedMainInvViewMatrix;
 
     protected:
         virtual void OnPreUpdate(float deltaTime) override;

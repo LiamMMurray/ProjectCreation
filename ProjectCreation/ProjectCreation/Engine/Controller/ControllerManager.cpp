@@ -119,6 +119,6 @@ void ControllerManager::Shutdown()
         for (int i = 0; i < E_CONTROLLERS::COUNT; ++i)
         {
                 if (m_Controllers[i])
-                        delete m_Controllers;
+                        delete m_Controllers[i];
         }
 }

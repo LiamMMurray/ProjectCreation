@@ -11,7 +11,8 @@ struct E_BLOOM_PS_SRV
         enum
         {
                 BLOOM = 0,
-                SCREEN,
+				DEPTH = 1,
+                SCREEN = 2,
                 COUNT
         };
 };

@@ -1,4 +1,4 @@
-cbuffer BloomCB : register(b0)
+cbuffer BloomCB : register(b10)
 {
         float  _threshold;
         float  _brightness;

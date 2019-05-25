@@ -13,6 +13,8 @@
 
 #include "../..//Engine/MathLibrary/ColorConstants.h"
 
+#include "../RenderingSystem.h"
+
 void Bloom::Initialize(ID3D11Device1* device, ID3D11DeviceContext1* context, D3D11_TEXTURE2D_DESC* _desc)
 {
         HRESULT hr;
@@ -118,7 +120,7 @@ void Bloom::Render(ID3D11ShaderResourceView** inSRV, ID3D11RenderTargetView** ou
         m_Context->IASetInputLayout(nullptr);
         m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
         m_Context->VSSetShader(screenQuadVS->m_VertexShader, nullptr, 0);
-        m_Context->PSSetConstantBuffers(0, 1, &m_BloomCB_GPU);
+        m_Context->PSSetConstantBuffers(10, 1, &m_BloomCB_GPU);
 
         m_Context->OMSetRenderTargets(1, &m_BlurRTVs[Bloom::E_PASSES::MASK], nullptr);
         m_Context->PSSetShaderResources(0, 1, inSRV);
