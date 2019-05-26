@@ -48,21 +48,22 @@ void AnimationSystem::calcTransforms(Animation::FJoint*          joints,
                                      float                       currweight)
 {
         int   prevFrame  = 0;
-        int   nextFrame  = 0;
+        int   nextFrame  = 1;
         float ratio      = 0.0f;
         int   frameCount = (int)animClip.frames.size();
         float animTime   = MathLibrary::Warprange(float(time), 0.0f, (float)animClip.duration);
-        for (prevFrame = 0; prevFrame < frameCount - 1; prevFrame++)
+
+        while (nextFrame < frameCount - 1)
         {
-                if (animTime >= animClip.frames[prevFrame].time && animTime < animClip.frames[prevFrame + 1].time)
+                if (animTime >= animClip.frames[prevFrame].time && animTime < animClip.frames[nextFrame].time)
                 {
                         break;
                 }
 
-                nextFrame = prevFrame;
-        }
+                prevFrame++;
+                nextFrame++;
+        } 
 
-        nextFrame     = prevFrame + 1;
         auto prevTime = animClip.frames[prevFrame].time;
         auto nextTime = animClip.frames[nextFrame].time;
 
