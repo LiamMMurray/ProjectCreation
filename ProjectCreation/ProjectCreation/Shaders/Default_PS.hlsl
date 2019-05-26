@@ -138,9 +138,8 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         surface.diffuseColor = _diffuseColor;
         surface.metallic     = _metallic;
 
-        surface.ambient       = _ambientIntensity;
-        surface.emissiveColor = _emissiveColor;
-        surface.emissiveColor *= emissiveMap.Sample(sampleTypeWrap, pIn.Tex).rgb;
+        surface.ambient = _ambientIntensity;
+
 
         float4 diffuse = diffuseMap.Sample(sampleTypeWrap, pIn.Tex);
 
@@ -162,22 +161,22 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         float3 reflectionVector = reflect(viewWS, surface.normal);
 
         float3 positionWS = pIn.PosWS;
-        float3 color      = surface.emissiveColor; // surface.ambient * lightInfo.ambientColor * surface.diffuseColor +
 
+        float3 color = 0; // surface.ambient * lightInfo.ambientColor * surface.diffuseColor +
         // Non metals use a constant for this value
         float3 specColor = _specular;
         // Lerp between diffuse color and constant based on metallic. Ideally metallic should be either 1 or 0
         specColor = lerp(specColor, surface.diffuseColor, surface.metallic);
 
-		// Directional Light
-		{
-                float3 radiance   = _DirectionalLightColor.xyz * _DirectionalLightColor.w;
+        // Directional Light
+        {
+                float3 radiance = _DirectionalLightColor.xyz * _DirectionalLightColor.w;
                 color += radiance * PBR(surface, -_DirectionalLightDirection, viewWS, specColor);
-		}
+        }
 
         // Environment mapping
         {
-                surface.ambient *= 0.5f;
+                surface.ambient *= 0.6f;
                 float3 N = surface.normal;
                 float3 V = -viewWS;
 
@@ -188,8 +187,35 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
                 color += IBL(surface, viewWS, specColor, diffuse, specular, integration) * surface.ambient;
         }
 
-        // Reinhard operator. Supposedly preserves HDR values better
-        // color = color / (color + 1.f);
-        // color = pow(color, 1.f / 2.2f);
+        float maskX =
+            saturate(Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 32.0f + _Time * 0.005f * float2(1.0f, 0.0f)).z * 5.0f);
+        float maskY =
+            saturate(Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 28.0f - _Time * 0.005f * float2(0.0f, 1.0f)).z * 5.0f);
+        float maskSample2 = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 16.0f + float3(maskX, 0, maskY)).x * 2.0f;
+
+        // return maskSample;
+
+        float3 dirVec = pIn.PosWS + float3(maskSample2, 0, maskSample2) - _EyePosition;
+        float  dist   = sqrt(dot(dirVec, dirVec));
+
+        float  mask     = saturate(dist / 0.5f - 4.0f);
+        float  inv_mask = 1.0f - mask;
+        float3 band     = inv_mask - floor(inv_mask) + mask - floor(mask);
+
+        color *= saturate(inv_mask + color - 1.0f);
+
+        band = saturate(band) * float3(0.85f, .8f, 0.4f);
+
+        surface.emissiveColor = _emissiveColor;
+        surface.emissiveColor *= emissiveMap.Sample(sampleTypeWrap, pIn.Tex).rgb;
+
+
+        float veinsMask = Mask1.Sample(sampleTypeWrap, pIn.Tex / 32.0f - float2(0, _Time * 0.002f)).b;
+        float veins =
+            Mask2.Sample(sampleTypeWrap, pIn.Tex * float2(0.5f, 0.25f) + float2(0, _Time * 0.2f) + veinsMask * 8.0f).r;
+        float3 veinsEmissive = veins * 5.0f * float3(1.0f, 0.05f, 0.05f) * mask ;
+
+        color += surface.emissiveColor + band + veinsEmissive;
+
         return float4(color, 1.0f);
 }

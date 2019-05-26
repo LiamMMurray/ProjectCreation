@@ -240,7 +240,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 auto dirComp = componentManager->GetComponent<DirectionalLightComponent>(dirLightEntityHandle);
                 dirComp->m_LightRotation =
                     XMQuaternionRotationRollPitchYaw(XMConvertToRadians(-45.0f), XMConvertToRadians(120.0f), 0.0f);
-                dirComp->m_LightColor = XMFLOAT4(0.0f, 0.5f, 1.0f, 10.0f);
+                dirComp->m_LightColor = XMFLOAT4(0.0f, 0.5f, 1.0f, 4.0f);
         }
 
         while (msg.message != WM_QUIT)

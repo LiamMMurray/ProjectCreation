@@ -178,6 +178,11 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
                 SAFE_RELEASE(m_DefaultDepthStencil[i]);
         }
 
+        for (int i = 0; i < E_POSTPROCESS_PIXEL_SRV::COUNT; ++i)
+        {
+                SAFE_RELEASE(m_PostProcessSRVs[i]);
+        }
+
 
         m_Context->OMSetRenderTargets(0, 0, 0);
 
@@ -426,12 +431,6 @@ void RenderSystem::CreateSamplerStates()
                                         0);
         hr = m_Device->CreateSamplerState(&SamDescShad, &m_DefaultSamplerStates[E_SAMPLER_STATE::SHADOWS]);
         assert(SUCCEEDED(hr));
-
-
-        m_Context->VSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
-        m_Context->PSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
-        m_Context->HSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
-        m_Context->DSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
 }
 
 void RenderSystem::CreateBlendStates()
@@ -597,7 +596,6 @@ void RenderSystem::DrawOpaqueSkeletalMesh(SkeletalMesh*               mesh,
                              &material->m_SurfaceProperties,
                              sizeof(FSurfaceProperties));
 
-
         m_Context->DrawIndexed(mesh->m_IndexCount, 0, 0);
 }
 
@@ -624,12 +622,16 @@ void RenderSystem::RefreshMainCameraSettings()
 
 void RenderSystem::OnPreUpdate(float deltaTime)
 {
-        ID3D11ShaderResourceView* srvs[3] = {0};
+        ID3D11ShaderResourceView* srvs[5] = {0};
         srvs[0] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("IBLTestDiffuseHDR"))->m_SRV;
         srvs[1] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("IBLTestSpecularHDR"))->m_SRV;
         srvs[2] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("IBLTestBrdf"))->m_SRV;
+        srvs[3] =
+            m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("Clouds_Fibers_BlurredNoise"))->m_SRV;
+        srvs[4] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("Veins_Caustics_Tiles"))->m_SRV;
 
-        m_Context->PSSetShaderResources(E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, 3, srvs);
+        m_Context->PSSetShaderResources(E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, 5, srvs);
+        m_Context->VSSetShaderResources(E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT + 3, 2, &srvs[3]);
 }
 
 void RenderSystem::OnUpdate(float deltaTime)
@@ -637,6 +639,11 @@ void RenderSystem::OnUpdate(float deltaTime)
         using namespace DirectX;
 
         ResourceManager* rm = GEngine::Get()->GetResourceManager();
+
+        m_Context->VSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
+        m_Context->PSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
+        m_Context->HSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
+        m_Context->DSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
 
         // Set base pass texture as render target
         m_Context->OMSetRenderTargets(

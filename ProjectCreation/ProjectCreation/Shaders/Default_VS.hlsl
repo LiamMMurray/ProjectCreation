@@ -7,6 +7,15 @@ cbuffer MVPBuffer : register(b0)
         matrix World;
 };
 
+cbuffer SceneInfoBuffer : register(b1)
+{
+        float3 _EyePosition;
+        float  _Time;
+        float3 _DirectionalLightDirection;
+        float  _Pad;
+        float4 _DirectionalLightColor;
+};
+
 INPUT_PIXEL main(INPUT_VERTEX vIn)
 {
         INPUT_PIXEL  output  = (INPUT_PIXEL)0;
@@ -27,6 +36,15 @@ INPUT_PIXEL main(INPUT_VERTEX vIn)
         output.NormalWS = normalize(output.NormalWS);
 
         output.linearDepth = output.Pos.w;
+
+		//float3 dirVec = pIn.PosWS - _EyePosition;
+        //float  dist   = sqrt(dot(dirVec, dirVec));
+		//
+        //float maskDetail = Mask1.Sample(sampleTypeWrap, pIn.Tex).x;
+        //float mask       = saturate(dist / 0.5f - 4.0f + pow(maskDetail, 2));
+        //float inv_mask   = 1.0f - mask;
+        //float band       = inv_mask - floor(inv_mask) + mask - floor(mask);
+
 
         return output;
 }

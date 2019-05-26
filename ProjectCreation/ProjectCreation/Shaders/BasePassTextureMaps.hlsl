@@ -5,3 +5,5 @@ Texture2D   emissiveMap : register(t3);
 TextureCube IBLDiffuse : register(t4);
 TextureCube IBLSpecular : register(t5);
 Texture2D   IBLIntegration : register(t6);
+Texture2D   Mask1 : register(t7);
+Texture2D   Mask2 : register(t8);

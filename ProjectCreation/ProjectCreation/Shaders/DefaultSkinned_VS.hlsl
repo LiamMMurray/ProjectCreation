@@ -1,5 +1,9 @@
 #include "DefaultPixelIn.hlsl"
 
+
+Texture2D Mask1 : register(t7);
+Texture2D Mask2 : register(t8);
+
 struct INPUT_VERTEX
 {
         float3 Pos : POSITION;
