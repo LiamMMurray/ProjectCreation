@@ -25,9 +25,13 @@ class ControllerManager
         ComponentManager* m_ComponentManager;
         EntityManager* m_EntityManager;
 
+
         E_CONTROLLERS m_CurrentController;
 
+
 		bool m_toggleDebug = false;
+
+		bool m_togglePauseInput = false;
 
         void DisplayConsoleMenu();
 

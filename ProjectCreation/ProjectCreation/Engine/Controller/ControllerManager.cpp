@@ -7,7 +7,10 @@
 #include "DebugCameraController.h"
 #include "PlayerMovement.h"
 
+#include "../../Rendering/DebugRender/debug_renderer.h"
 #include "../../Rendering/RenderingSystem.h"
+
+#include "../CollisionLibary/Shapes.h"
 
 using namespace std;
 
@@ -70,6 +73,11 @@ void ControllerManager::Initialize()
 
 void ControllerManager::Update(float delta)
 {
+        if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
+        {
+                m_togglePauseInput = !m_togglePauseInput;
+        }
+
         if (GCoreInput::GetKeyState(KeyCode::Tab) == KeyState::DownFirst)
         {
                 m_toggleDebug = !m_toggleDebug;
@@ -109,9 +117,19 @@ void ControllerManager::Update(float delta)
                     m_Controllers[E_CONTROLLERS::DEBUG]->GetControlledEntity());
 
                 m_SystemManager->GetSystem<RenderSystem>()->SetMainCameraComponent(comp->GetHandle());
+
+                m_Controllers[E_CONTROLLERS::PLAYER]->InactiveUpdate(delta);
         }
 
-        m_Controllers[m_CurrentController]->OnUpdate(delta);
+        if (m_togglePauseInput == false)
+        {
+                m_Controllers[m_CurrentController]->OnUpdate(delta);
+        }
+
+        else if (m_togglePauseInput == true)
+        {
+                m_Controllers[m_CurrentController]->PauseInput();
+		}
 }
 
 void ControllerManager::Shutdown()

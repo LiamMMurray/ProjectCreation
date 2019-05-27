@@ -10,6 +10,8 @@
 
 #include "../../Rendering/DebugRender/debug_renderer.h"
 
+#include "../CollisionLibary/Shapes.h"
+
 // v Testing only delete when done v
 #include <iostream>
 // ^ Testing only delete when done ^
@@ -76,10 +78,13 @@ void DebugCameraController::ProcessInput()
 
 void DebugCameraController::ApplyInput()
 {
+
         // Get the Transoform Component
         TransformComponent* transformComp =
             GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
 
+        //static XMVECTOR StartingPos = transformComp->transform.translation;
+		
         // Get Delta Time
         float deltaTime = cacheTime; // GEngine::Get()->GetDeltaTime();
 
@@ -169,14 +174,20 @@ void DebugCameraController::ApplyInput()
         FSphere fSphereStart;
         fSphereStart.center = transformComp->transform.translation;
         fSphereStart.radius = 0.5f;
+
         FSphere fSphereEnd;
         fSphereEnd.center = transformComp->transform.translation + offset;
         fSphereEnd.radius = 0.5f;
+
         FSphere fSphereCheck;
         fSphereCheck.center = XMVectorSet(0.0f, 0.3f, 0.0f, 1.0f);
-        fSphereCheck.radius = 0.8f;
-        
-		AddSphere(fSphereCheck, 36, XMMatrixIdentity());
+        fSphereCheck.radius = 0.3f;
+
+
+        AddSphere(fSphereCheck, 36, XMMatrixIdentity());
+
+
+
         // Calcualte the type of collision
         CollisionComponent::FSweepCollisionResult result =
             CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 0.0f);
@@ -200,6 +211,13 @@ void DebugCameraController::ApplyInput()
         // std::cout << "Current Forward < " << XMVectorGetX(nextFw) << ", " << XMVectorGetY(nextFw) << ", "
         //          << XMVectorGetZ(nextFw) << ", " << XMVectorGetW(nextFw) << " >" << std::endl;
 }
+
+void DebugCameraController::PauseInput()
+{}
+
+void DebugCameraController::InactiveUpdate(float deltaTime)
+{}
+
 
 DebugCameraController::DebugCameraController()
 {

@@ -37,6 +37,8 @@
 
 #include "Rendering/Components/DirectionalLightComponent.h"
 
+#include "Engine/GenericComponents/TransformComponent.h"
+
 #pragma comment(lib, "dbghelp")
 
 using namespace DirectX;
