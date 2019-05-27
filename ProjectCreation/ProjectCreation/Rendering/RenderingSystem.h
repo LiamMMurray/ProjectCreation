@@ -82,6 +82,8 @@ struct E_BASE_PASS_PIXEL_SRV
                 DIFFUSE_REFLECTION_MAP = PER_MAT_COUNT,
                 SPECULAR_REFLECTION_MAP,
                 INTEGRATION_MAP,
+				MASK1,
+				MASK2,
                 DIRECTIONAL_SHADOW_MAP,
                 POINT_SHADOW_MAP_1,
                 POINT_SHADOW_MAP_2,
