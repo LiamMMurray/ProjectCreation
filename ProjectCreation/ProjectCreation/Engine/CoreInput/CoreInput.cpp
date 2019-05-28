@@ -112,7 +112,7 @@ int32_t GCoreInput::GetMouseScreenPosX()
 
 int32_t GCoreInput::GetMouseScreenPosY()
 {
-        mouseScreenPosY;
+        return mouseScreenPosY;
 }
 
 KeyState GCoreInput::GetKeyState(KeyCode target)
