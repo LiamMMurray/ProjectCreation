@@ -10,8 +10,8 @@ struct E_BLOOM_PS_SRV
 {
         enum
         {
-                BLOOM = 0,
-				DEPTH = 1,
+                BLOOM  = 0,
+                DEPTH  = 1,
                 SCREEN = 2,
                 COUNT
         };
@@ -20,10 +20,10 @@ struct E_BLOOM_PS_SRV
 
 struct alignas(16) BloomCB
 {
-        float             threshold = 0.8f;
+        float             threshold  = 1.0f;
         float             brightness = 1.0f;
         float             blurRadius;
-        unsigned int      hOrV; //horizontal or vertical
+        unsigned int      hOrV; // horizontal or vertical
         DirectX::XMFLOAT2 inverseScreenDimensions;
 };
 
@@ -64,6 +64,7 @@ class Bloom : public PostProcessEffectBase
         ResourceHandle m_BloomUpscalePS;
         ResourceHandle m_BloomDownscalePS;
         ResourceHandle m_BloomDownscaleKarisPS;
+
     public:
         // Inherited via PostProcessEffectBase
         virtual void Initialize(ID3D11Device1* device, ID3D11DeviceContext1* context, D3D11_TEXTURE2D_DESC* desc) override;

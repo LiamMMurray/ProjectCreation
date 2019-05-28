@@ -26,7 +26,7 @@ EntityHandle EntityFactory::CreateStaticMeshEntity(const char*      staticMeshNa
 
         auto meshComp                = componentManager->GetComponent<StaticMeshComponent>(sMeshCompHandle);
         meshComp->m_MaterialHandle   = resourceManager->LoadMaterial(materialName);
-        meshComp->m_StaticMeshHandle = resourceManager->LoadSkeletalMesh(staticMeshName);
+        meshComp->m_StaticMeshHandle = resourceManager->LoadStaticMesh(staticMeshName);
 
         if (outTransformHandle)
                 *outTransformHandle = tCompHandle;

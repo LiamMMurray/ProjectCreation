@@ -23,9 +23,9 @@ cbuffer SceneInfoBuffer : register(b1)
         float3 _EyePosition;
         float  _Time;
         float3 _DirectionalLightDirection;
-        //float  pad;
+        // float  pad;
         float3 _DirectionalLightColor;
-		//float pad
+        // float pad
         float3 _AmbientColor;
 };
 
@@ -294,24 +294,23 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
                 color += IBL(surface, viewWS, specColor, diffuse, specular, integration);
         }
 
-        float maskX =
-            saturate(Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 32.0f + _Time * 0.005f * float2(1.0f, 0.0f)).z * 5.0f);
-        float maskY =
-            saturate(Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 28.0f - _Time * 0.005f * float2(0.0f, 1.0f)).z * 5.0f);
-        float maskSample2 = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 16.0f + float3(maskX, 0, maskY)).x * 2.0f;
+        float maskA     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 45.0f + _Time * 0.01f * float2(1.0f, 0.0f)).z;
+        float maskB     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 40.0f + _Time * 0.01f * float2(-1.0f, 0.0f)).z;
+        float areaMaskA = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 8.0f + maskA + maskB).z*2.0f - 1.0f;
+        //return areaMaskA;
 
-        // return maskSample;
-
-        float3 dirVec = pIn.PosWS + float3(maskSample2, 0, maskSample2) - _EyePosition;
+        float3 dirVec = pIn.PosWS + float3(areaMaskA, 0, areaMaskA) - _EyePosition;
         float  dist   = sqrt(dot(dirVec, dirVec));
 
-        float  mask     = saturate(dist / 0.5f - 4.0f);
-        float  inv_mask = 1.0f - mask;
-        float3 band     = inv_mask - floor(inv_mask) + mask - floor(mask);
+        float mask         = saturate(dist / 0.1f - 15.0f);
+        float bandA        = saturate(dist / 0.1f - 14.5f);
+        float bandB        = saturate(dist / 0.1f - 15.5f);
+        float bandCombined = saturate(5.0f*(bandA - bandB));
+        color *= (1 - mask);
 
-        color *= saturate(inv_mask + color - 1.0f);
+        float3 band = bandCombined * float3(0.85f, .8f, 0.4f) * 1.0f;
 
-        band = saturate(band) * float3(0.85f, .8f, 0.4f);
+        // return float4(band, 1.0f);
 
         surface.emissiveColor = _emissiveColor;
         surface.emissiveColor *= emissiveMap.Sample(sampleTypeWrap, pIn.Tex).rgb;
