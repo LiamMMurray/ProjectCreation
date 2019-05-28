@@ -6,8 +6,8 @@
 
 #include <algorithm>
 #include "../../Rendering/Vertex.h"
+#include"../CollisionLibary/Shapes.h"
 #include "Transform.h"
-#include"../CollisionLibary/CollisionComponent.h"
 class MathLibrary
 {
     public:
@@ -27,11 +27,40 @@ class MathLibrary
         static DirectX::XMVECTOR GetClosestPointFromLine(DirectX::XMVECTOR startPoint,
                                                          DirectX::XMVECTOR endPoint,
                                                          DirectX::XMVECTOR point);
+        static DirectX::XMVECTOR        GetMidPointFromTwoVector(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateDistance(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateDistanceSq(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateVectorLength(DirectX::XMVECTOR vector);
         static float             VectorDotProduct(DirectX::XMVECTOR m, DirectX::XMVECTOR n);
         static float             ManhattanDistance(Shapes::FAabb& a, Shapes::FAabb& b);
+		inline static bool              QuadraticFormula(const float a,
+                                                  const float  b,
+                                                  const float c,
+                                                  float&      r1, // first
+                                                  float&      r2  // and second roots
+		)
+		{
+                const float q = b * b - 4 * a * c;
+                if (q >= 0)
+
+                {
+
+
+                        const float  sq = sqrt(q);
+                        const float d   = 1 / (2 * a);
+                        r1              = (-b + sq) * d;
+                        r2              = (-b - sq) * d;
+                        return true; // real roots
+                }
+
+                else
+
+                {
+
+
+                        return false; // complex roots
+                }
+		}
         template <typename T>
         static T lerp(T v0, T v1, T t)
         {
