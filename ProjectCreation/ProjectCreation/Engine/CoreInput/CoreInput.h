@@ -119,38 +119,40 @@ enum KeyState
 class GCoreInput
 {
     public:
+        // Initializes the input singleton. Must be called before the main loop
+        static void InitializeInput(HWND hwnd);
 
-		// Initializes the input singleton. Must be called before the main loop
-        static void           InitializeInput(HWND hwnd);
+        // Called within the winProc function, on the WM_INPUT message. Don't call anywhere else
+        static void GatherInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-		// Called within the winProc function, on the WM_INPUT message. Don't call anywhere else
-        static void           GatherInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+        // Must be called once per frame, within the main loop. Allows us to know which input was consumed in
+        // a given frame, since GatherInput may be called more than once per frame.
+        static void UpdateInput();
 
-		// Must be called once per frame, within the main loop. Allows us to know which input was consumed in
-		// a given frame, since GatherInput may be called more than once per frame.
-        static void           UpdateInput();
-
-		// Returns how many pixels the mouse has moved horizontally(positive or negative) since last frame.
-		// When we implement a sensitivity value, this will become a float.
+        // Returns how many pixels the mouse has moved horizontally(positive or negative) since last frame.
+        // When we implement a sensitivity value, this will become a float.
         inline static int32_t GetMouseX()
         {
                 return mouseX;
         };
 
-		// Returns how many pixels the mouse has moved vertically(positive or negative) since last frame.
+        // Returns how many pixels the mouse has moved vertically(positive or negative) since last frame.
         // When we implement a sensitivity value, this will become a float.
         inline static int32_t GetMouseY()
         {
                 return mouseY;
         };
-
+        int32_t         GetMouseScreenPosX();
+        int32_t         GetMouseScreenPosY();
         static KeyState GetKeyState(KeyCode target);
         static KeyState GetMouseState(MouseCode target);
 
     private:
         static void    ResetAxes();
         static int32_t mouseX;
+        static int32_t mouseScreenPosX;
         static int32_t mouseY;
+        static int32_t mouseScreenPosY;
         static uint8_t keyStates[256];
         static uint8_t MouseStates[2];
 };

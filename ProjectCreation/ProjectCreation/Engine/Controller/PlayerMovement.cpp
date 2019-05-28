@@ -14,7 +14,7 @@
 // ^ Testing only delete when done ^
 using namespace DirectX;
 using namespace Shapes;
-using namespace CollisionComponent;
+using namespace Collision;
 using namespace debug_renderer;
 void PlayerController::GatherInput()
 {
@@ -147,7 +147,7 @@ void PlayerController::ApplyInput()
         prevFw            = XMVector3Normalize(prevFw);
 
 	// Calculate the new forward
-        XMVECTOR nextFw   = XMVector3Rotate(rot.GetForward(), verticalRot.rotation);
+        XMVECTOR nextFw   = XMVector3Rotate(rot.GetForward(), verticalRot.data);
 
 	// Calculate the angle between the old forward and new forward
         XMVECTOR angleVec = XMVector3AngleBetweenVectors(prevFw, nextFw);
@@ -163,7 +163,7 @@ void PlayerController::ApplyInput()
         }
 
 	// Calculate offset
-        XMVECTOR offset = XMVector3Rotate(m_CurrentVelocity * deltaTime, transformComp->transform.rotation.rotation);
+        XMVECTOR offset = XMVector3Rotate(m_CurrentVelocity * deltaTime, transformComp->transform.rotation.data);
         offset          = XMVector3Normalize(XMVectorSetY(offset, 0.0f)) * XMVectorGetX(XMVector3Length(offset));
 
         FSphere fSphereStart;
@@ -183,8 +183,8 @@ void PlayerController::ApplyInput()
 		FSweepCollisionResult result =
             CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 1.0f);
 
-        if (result.collisionType != CollisionComponent::ECollisionType::EOveralap &&
-            result.collisionType != CollisionComponent::ECollisionType::ECollide)
+        if (result.collisionType != Collision::ECollisionType::EOveralap &&
+            result.collisionType != Collision::ECollisionType::ECollide)
         {
                 transformComp->transform.translation += offset;
 			

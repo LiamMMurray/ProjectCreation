@@ -1,5 +1,7 @@
 #pragma once
-#include "CollisionComponent.h"
+#include <vector>
+#include "Shapes.h"
+
 namespace BVH // Bounding Volume Hierarchies
 {
         class BVHNode
@@ -8,9 +10,9 @@ namespace BVH // Bounding Volume Hierarchies
                 // TODO: This constructor is the only function for you to implement in this file.
                 // bvh_node_t(bvh_node_t* root, uint32_t left_index, uint32_t right_index);
 
-                BVHNode(const Shapes::FAabb& bounds, int index) : _aabb{bounds}, m_index(index){}
+                BVHNode(const Shapes::FAabb& bounds, int index);
 
-                BVHNode()             = default;
+                BVHNode()               = default;
                 BVHNode(const BVHNode&) = default;
 
                 // Root must be at [0], so parent index must be invalid
@@ -57,20 +59,21 @@ namespace BVH // Bounding Volume Hierarchies
                         return _parent;
                 }
 
-                void parent(BVHNode* ptr)
+                inline void parent(BVHNode* ptr)
                 {
                         _parent = ptr;
                 }
 
-                Shapes::FAabb& aabb()
+                inline Shapes::FAabb& aabb()
                 {
                         return _aabb;
                 }
 
-                const Shapes::FAabb& aabb() const
+                inline const Shapes::FAabb& aabb() const
                 {
                         return _aabb;
                 }
+
                 int m_index;
 
             private:
@@ -93,13 +96,13 @@ namespace BVH // Bounding Volume Hierarchies
                 Shapes::FAabb _aabb;
         };
 
-		class BVHTree // bvh tree is for static object; give every objects an aabb as a bounding box to add in to the bvh tree
-		{
+        class BVHTree // bvh tree is for static object; give every objects an aabb as a bounding box to add in to the bvh tree
+        {
                 void RecursiveCheckAABB(Shapes::FAabb& aabb, BVHNode* node, std::vector<int>& tris);
 
             public:
-                BVHNode*      root = nullptr;
+                BVHNode*         root = nullptr;
                 void             InsertAABB(Shapes::FAabb& aabb, int index);
                 std::vector<int> checkAABB(Shapes::FAabb& aabb);
-		};
+        };
 } // namespace BVH

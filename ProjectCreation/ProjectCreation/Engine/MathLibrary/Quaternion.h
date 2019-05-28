@@ -2,13 +2,13 @@
 #include "Vector.h"
 struct FQuaternion
 {
-        DirectX::XMVECTOR rotation;
+        DirectX::XMVECTOR data;
 
         FQuaternion();
         FQuaternion(DirectX::XMVECTOR vector);
         inline FQuaternion operator*(const FQuaternion& other) const
         {
-                return FQuaternion(DirectX::XMQuaternionMultiply(rotation, other.rotation));
+                return FQuaternion(DirectX::XMQuaternionMultiply(data, other.data));
         }
         DirectX::XMVECTOR  GetForward() const;
         DirectX::XMVECTOR  GetRight() const;
