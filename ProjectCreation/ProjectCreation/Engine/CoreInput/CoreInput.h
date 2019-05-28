@@ -143,8 +143,8 @@ class GCoreInput
         {
                 return mouseY;
         };
-        int32_t         GetMouseScreenPosX();
-        int32_t         GetMouseScreenPosY();
+        static int32_t         GetMouseScreenPosX();
+        static int32_t         GetMouseScreenPosY();
         static KeyState GetKeyState(KeyCode target);
         static KeyState GetMouseState(MouseCode target);
 
