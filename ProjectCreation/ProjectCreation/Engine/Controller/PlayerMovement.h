@@ -12,8 +12,14 @@ class PlayerController : public IController
         void ApplyInput() override;
 
         void PauseInput() override;
-
+		
 		DirectX::XMVECTOR m_CurrentPosition;
+
+		struct FDebugLine
+		{
+                DirectX::XMVECTOR start;
+                DirectX::XMVECTOR end;
+		};
 
     public:
         void InactiveUpdate(float deltaTime) override;

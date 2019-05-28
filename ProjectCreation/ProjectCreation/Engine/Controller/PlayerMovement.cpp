@@ -127,19 +127,34 @@ void PlayerController::ApplyInput()
         static float accumAngleY = 0.f;
         float        angleX      = XMConvertToRadians(m_MouseXDelta * 10.f);
         float        angleY      = XMConvertToRadians(m_MouseYDelta * 10.f);
+        float        angleZ      = XMConvertToRadians(m_MouseXDelta * 5.0f);
 
-        // Set the local X-Axis and Y-Axis
+        if (angleZ >= XMConvertToRadians(20.0f))
+        {
+                angleZ = XMConvertToRadians(20.0f);
+        }
+
+        if (angleZ <= XMConvertToRadians(-20.0f))
+        {
+                angleZ = XMConvertToRadians(-20.0f);
+        }
+
+        // Set the local X-Axis, Y-Axis and Z-Axis
         XMVECTOR YAxis = VectorConstants::Up;
         XMVECTOR XAxis = transformComp->transform.GetRight();
+        XMVECTOR ZAxis = transformComp->transform.GetForward();
 
         // Get the rotation of the transform component
         FQuaternion rot = transformComp->transform.rotation;
 
-        // Get horizontal rotation
+        // Get horizontal rotation (Rotate around the Y)
         FQuaternion horizontalRot = FQuaternion::RotateAxisAngle(YAxis, angleX);
 
-        // Get the vertical rotation
+        // Get the vertical rotation (Rotate around the X)
         FQuaternion verticalRot = FQuaternion::RotateAxisAngle(XAxis, angleY);
+
+        // Get the normal rotation (Rotate around the Z)
+        FQuaternion normalRot = FQuaternion::RotateAxisAngle(ZAxis, angleZ);
 
         // Get the old forward
         XMVECTOR prevFw = XMVectorSetY(rot.GetForward(), 0.0f);
@@ -177,8 +192,8 @@ void PlayerController::ApplyInput()
         fSphereCheck.center = XMVectorSet(0.0f, 0.0f, 0.f, 1.0f);
         fSphereCheck.radius = 0.2f;
 
-				
-        //AddSphere(fSphereStart, 36, XMMatrixIdentity());
+
+         AddSphere(fSphereStart, 36, XMMatrixIdentity());
         // AddSphere(fSphereEnd, 36, XMMatrixIdentity());
         // AddSphere(fSphereCheck, 36, XMMatrixIdentity());
 
@@ -194,9 +209,9 @@ void PlayerController::ApplyInput()
                 m_CurrentVelocity                    = m_CurrentVelocity - deltaVec * delta;
                 transformComp->transform.translation = result.finalPosition + m_CurrentVelocity;
         }
-        transformComp->transform.rotation = transformComp->transform.rotation * verticalRot * horizontalRot;
+        transformComp->transform.rotation = transformComp->transform.rotation * verticalRot * horizontalRot * normalRot;
 
-		m_CurrentPosition = transformComp->transform.translation;
+        m_CurrentPosition = transformComp->transform.translation;
 
         // Write out information to the console window
         //  std::cout << "Current Forward < " << XMVectorGetX(nextFw) << ", " << XMVectorGetY(nextFw) << ", "
@@ -205,6 +220,7 @@ void PlayerController::ApplyInput()
 
 void PlayerController::PauseInput()
 {}
+
 
 void PlayerController::InactiveUpdate(float deltaTime)
 {
