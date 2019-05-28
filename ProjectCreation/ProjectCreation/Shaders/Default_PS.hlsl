@@ -23,8 +23,10 @@ cbuffer SceneInfoBuffer : register(b1)
         float3 _EyePosition;
         float  _Time;
         float3 _DirectionalLightDirection;
-        float  _Pad;
-        float4 _DirectionalLightColor;
+        //float  pad;
+        float3 _DirectionalLightColor;
+		//float pad
+        float3 _AmbientColor;
 };
 
 struct SurfacePBR
@@ -37,6 +39,61 @@ struct SurfacePBR
         float3 normal;
         float  ambient;
 };
+
+// Check for texture flags
+inline int HasDiffuseTexture(int flags)
+{
+        return ((flags & 1) > 0 ? 1 : 0);
+}
+inline int HasSpecularTexture(int flags)
+{
+        return ((flags & 2) > 0 ? 1 : 0);
+}
+inline int HasMetallicTexture(int flags)
+{
+        return ((flags & 2) > 0 ? 1 : 0);
+}
+inline int HasGlossinessTexture(int flags)
+{
+        return ((flags & 4) > 0 ? 1 : 0);
+}
+inline int HasRoughnessTexture(int flags)
+{
+        return ((flags & 4) > 0 ? 1 : 0);
+}
+inline int HasNormalTexture(int flags)
+{
+        return ((flags & 8) > 0 ? 1 : 0);
+}
+inline int HasAOTexture(int flags)
+{
+        return ((flags & 16) > 0 ? 1 : 0);
+}
+inline int HasEmissiveMask(int flags)
+{
+        return ((flags & 32) > 0 ? 1 : 0);
+}
+
+inline int HasReflections(int flags)
+{
+        return ((flags & 64) > 0 ? 1 : 0);
+}
+
+inline int IsMasked(int flags)
+{
+        return ((flags & 128) > 0 ? 1 : 0);
+}
+
+inline int IsTransluscent(int flags)
+{
+        return ((flags & 256) > 0 ? 1 : 0);
+}
+
+inline int IsUnlit(int flags)
+{
+        return ((flags & 512) > 0 ? 1 : 0);
+}
+
 
 // using Schlick's approximation for calculating fresnel. K is a constant for non metallics
 float3 FresnelSchlick(float3 H, float3 V, float3 specColor)
@@ -101,7 +158,7 @@ float3 IBL(SurfacePBR surface, float3 viewWS, float3 specColor, float3 IBLDiffus
         float3 diffuse  = surface.diffuseColor * IBLDiffuse;
         float3 specular = IBLSpecular * (F * IBLIntegration.x + IBLIntegration.y);
 
-        return (kD * diffuse + specular) * surface.ambient;
+        return (kD * diffuse + specular) * surface.ambient * _AmbientColor;
 }
 
 float3 PBR(SurfacePBR surface, float3 lightDir, float3 viewWS, float3 specColor)
@@ -138,45 +195,95 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         surface.diffuseColor = _diffuseColor;
         surface.metallic     = _metallic;
 
-        surface.ambient = _ambientIntensity;
+        surface.ambient       = _ambientIntensity;
+        surface.emissiveColor = _emissiveColor;
 
+        float alpha = 1.f;
 
-        float4 diffuse = diffuseMap.Sample(sampleTypeWrap, pIn.Tex);
+        if (HasDiffuseTexture(_textureFlags))
+        {
+                float4 diffuse = diffuseMap.Sample(sampleTypeWrap, pIn.Tex);
 
-        surface.diffuseColor *= diffuse.xyz;
+                if (IsMasked(_textureFlags))
+                {
+                        clip(diffuse.a < 0.1f ? -1 : 1);
+                }
 
+                surface.diffuseColor *= diffuse.xyz;
+                if (IsTransluscent(_textureFlags))
+                {
+                        clip(diffuse.a < 0.01f ? -1 : 1);
+                        surface.diffuseColor *= diffuse.w;
+                        alpha = diffuse.w;
+                }
+        }
         surface.diffuseColor = saturate(surface.diffuseColor);
-        surface.metallic *= detailsMap.Sample(sampleTypeWrap, pIn.Tex).y;
-        surface.roughness = lerp(_roughnessMin, _roughnessMax, detailsMap.Sample(sampleTypeWrap, pIn.Tex).x);
+
+        if (HasSpecularTexture(_textureFlags))
+        {
+                surface.metallic *= detailsMap.Sample(sampleTypeWrap, pIn.Tex).y;
+        }
+
+        if (HasGlossinessTexture(_textureFlags))
+        {
+                surface.roughness = lerp(_roughnessMin, _roughnessMax, detailsMap.Sample(sampleTypeWrap, pIn.Tex).x);
+        }
+        else
+        {
+                surface.roughness = 0.5f * (_roughnessMin + _roughnessMax);
+        }
         // Remapping roughness to prevent errors on normal distribution
-        surface.roughness = remap(surface.roughness, 0.0f, 1.0f, 0.08f, 1.0f);
+        surface.roughness = max(surface.roughness, 0.08f);
 
-        normalSample   = normalMap.Sample(sampleTypeWrap, pIn.Tex).xyz * 2.f - 1.f;
-        normalSample.z = sqrt(1 - normalSample.x * normalSample.x - normalSample.y * normalSample.y);
-        surface.normal = _normalIntensity * pIn.TangentWS * normalSample.x +
-                         _normalIntensity * pIn.BinormalWS * normalSample.y + pIn.NormalWS * normalSample.z;
+        if (HasAOTexture(_textureFlags))
+        {
+                surface.ambient *= detailsMap.Sample(sampleTypeWrap, pIn.Tex).z;
+        }
 
+        if (HasEmissiveMask(_textureFlags))
+        {
+                surface.emissiveColor *= emissiveMap.Sample(sampleTypeWrap, pIn.Tex).xyz;
+        }
+
+        if (HasNormalTexture(_textureFlags))
+        {
+                normalSample   = normalMap.Sample(sampleTypeWrap, pIn.Tex).xyz * 2.f - 1.f;
+                normalSample.z = sqrt(1 - normalSample.x * normalSample.x - normalSample.y * normalSample.y);
+                surface.normal = _normalIntensity * pIn.TangentWS * normalSample.x +
+                                 _normalIntensity * pIn.BinormalWS * normalSample.y + pIn.NormalWS * normalSample.z;
+        }
+        else
+        {
+                surface.normal = pIn.NormalWS;
+        }
         surface.normal = normalize(surface.normal);
 
         float3 reflectionVector = reflect(viewWS, surface.normal);
 
-        float3 positionWS = pIn.PosWS;
 
-        float3 color = 0; // surface.ambient * lightInfo.ambientColor * surface.diffuseColor +
+        float3 positionWS = pIn.PosWS;
+        float3 color      = surface.emissiveColor; // surface.ambient * lightInfo.ambientColor * surface.diffuseColor +
+
+        if (IsUnlit(_textureFlags))
+        {
+                return (color + surface.diffuseColor, alpha);
+        }
+
         // Non metals use a constant for this value
-        float3 specColor = _specular;
+        float3 specColor = 0.04f;
         // Lerp between diffuse color and constant based on metallic. Ideally metallic should be either 1 or 0
         specColor = lerp(specColor, surface.diffuseColor, surface.metallic);
 
+
         // Directional Light
         {
-                float3 radiance = _DirectionalLightColor.xyz * _DirectionalLightColor.w;
+                float3 radiance = _DirectionalLightColor.xyz;
                 color += radiance * PBR(surface, -_DirectionalLightDirection, viewWS, specColor);
         }
 
         // Environment mapping
         {
-                surface.ambient *= 0.6f;
+                surface.ambient *= 1.0f;
                 float3 N = surface.normal;
                 float3 V = -viewWS;
 
@@ -184,7 +291,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
                 float3 diffuse     = IBLDiffuse.Sample(sampleTypeWrap, N).rgb;
                 float3 specular    = IBLSpecular.SampleLevel(sampleTypeWrap, reflectionVector, surface.roughness * 10.f).rgb;
                 float2 integration = IBLIntegration.Sample(sampleTypeNearest, float2(NdotV, 1.f - surface.roughness)).rg;
-                color += IBL(surface, viewWS, specColor, diffuse, specular, integration) * surface.ambient;
+                color += IBL(surface, viewWS, specColor, diffuse, specular, integration);
         }
 
         float maskX =
@@ -213,7 +320,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         float veinsMask = Mask1.Sample(sampleTypeWrap, pIn.Tex / 32.0f - float2(0, _Time * 0.002f)).b;
         float veins =
             Mask2.Sample(sampleTypeWrap, pIn.Tex * float2(0.5f, 0.25f) + float2(0, _Time * 0.2f) + veinsMask * 8.0f).r;
-        float3 veinsEmissive = veins * 5.0f * float3(1.0f, 0.05f, 0.05f) * mask ;
+        float3 veinsEmissive = veins * 5.0f * float3(1.0f, 0.05f, 0.05f) * mask;
 
         color += surface.emissiveColor + band + veinsEmissive;
 
