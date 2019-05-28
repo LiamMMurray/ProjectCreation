@@ -40,6 +40,38 @@ namespace debug_renderer
                 line_vert_count += 2;
         }
 
+        void AddGrid(DirectX::XMVECTOR center, float width, int segments, DirectX::XMFLOAT4 color)
+        {
+                using namespace DirectX;
+                XMFLOAT3 _center;
+
+                XMStoreFloat3(&_center, center);
+                // vertical lines
+
+                for (int i = 0; i < segments; i++)
+                {
+                        XMFLOAT3 a = _center;
+                        a.x += -width / 2 + i * (width / (segments - 1));
+                        a.z += -width / 2;
+                        XMFLOAT3 b = _center;
+                        b.x += -width / 2 + i * (width / (segments - 1));
+                        b.z += width / 2;
+                        add_line(XMLoadFloat3(&a), XMLoadFloat3(&b), color);
+                }
+
+                // horizontal lines
+                for (int i = 0; i < segments; i++)
+                {
+                        XMFLOAT3 a = _center;
+                        a.z += -width / 2 + i * (width / (segments - 1));
+                        a.x += -width / 2;
+                        XMFLOAT3 b = _center;
+                        b.z += -width / 2 + i * (width / (segments - 1));
+                        b.x += width / 2;
+                        add_line(XMLoadFloat3(&a), XMLoadFloat3(&b), color);
+                }
+        }
+
         void AddBoneHierarchy(const Animation::FSkeleton& skel,
                               const DirectX::XMMATRIX*    globaltransforms,
                               const DirectX::XMMATRIX&    parent,
@@ -151,9 +183,9 @@ namespace debug_renderer
         }
 
         void AddSphereColored(const Shapes::FSphere&   sphere,
-                              int                                segments,
-                              DirectX::XMMATRIX                  parent,
-                              const DirectX::XMFLOAT4&           color)
+                              int                      segments,
+                              DirectX::XMMATRIX        parent,
+                              const DirectX::XMFLOAT4& color)
         {
                 using namespace DirectX;
 

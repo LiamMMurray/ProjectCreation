@@ -21,6 +21,7 @@
 
 #include "Engine/EngineInitShutdownHelpers.h"
 #include "Engine/Entities/BaseEntities.h"
+#include "Engine/Entities/EntityFactory.h"
 
 #include "Rendering/Components/CameraComponent.h"
 #include "Rendering/Components/SkeletalMeshComponent.h"
@@ -208,28 +209,12 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
         // Test skeletal mesh setup
         {
-                auto tCompHandle       = componentManager->AddComponent<TransformComponent>(testMeshHandle);
-                auto tComp             = componentManager->GetComponent<TransformComponent>(tCompHandle);
-                tComp->transform.scale = XMVectorSet(0.1f, 0.1f, 0.1f, 0.0f);
+                std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
+                ComponentHandle          transformHandle;
+                EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
 
-                componentManager->AddComponent<SkeletalMeshComponent>(testMeshHandle);
-                auto animCompHandle = componentManager->AddComponent<AnimationComponent>(testMeshHandle);
-
-                auto skelComp                  = componentManager->GetComponent<SkeletalMeshComponent>(testMeshHandle);
-                skelComp->m_MaterialHandle     = resourceManager->LoadMaterial("blinn1");
-                skelComp->m_SkeletalMeshHandle = resourceManager->LoadSkeletalMesh("Walk");
-                skelComp->m_Skeleton =
-                    resourceManager->GetResource<SkeletalMesh>(skelComp->m_SkeletalMeshHandle)->m_BindPoseSkeleton;
-
-                std::vector<ResourceHandle> anims;
-                anims.reserve(2);
-                anims.push_back(resourceManager->LoadAnimationClip("Idle", &skelComp->m_Skeleton));
-                anims.push_back(resourceManager->LoadAnimationClip("Walk", &skelComp->m_Skeleton));
-                anims.push_back(resourceManager->LoadAnimationClip("Run", &skelComp->m_Skeleton));
-                float weights[] = {0.5, 0.0, 0.5};
-                MathLibrary::NormalizeArray(ARRAYSIZE(weights), weights);
-                systemManager->GetSystem<AnimationSystem>()->AddAnimClipsToComponent(
-                    animCompHandle, ARRAYSIZE(weights), anims.data(), weights);
+				TransformComponent* transformComp = componentManager->GetComponent<TransformComponent>(transformHandle);
+                transformComp->transform.SetScale(0.1f);
         }
 
         // Directional Light setup
@@ -243,6 +228,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 dirComp->m_LightRotation =
                     XMQuaternionRotationRollPitchYaw(XMConvertToRadians(-45.0f), XMConvertToRadians(120.0f), 0.0f);
                 dirComp->m_LightColor = XMFLOAT4(0.0f, 0.5f, 1.0f, 4.0f);
+                dirComp->m_AmbientColor = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
         }
 
         while (msg.message != WM_QUIT)
@@ -322,6 +308,8 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 bvhtree.InsertAABB(aabb1, 0);
                 
                 ////////////testing -vic
+
+				debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
 
                 controllerManager.Update(GEngine::Get()->GetDeltaTime());
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());

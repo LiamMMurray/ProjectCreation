@@ -123,9 +123,9 @@ void Bloom::Render(ID3D11ShaderResourceView** inSRV, ID3D11RenderTargetView** ou
 
 
         int   s           = std::max(m_Width / 2, m_Height / 2);
-        float logs        = log2f(s) + std::min(7.0f, 10.0f) - 10.0f;
+        float logs        = log2f((float)s) + std::min(7.0f, 10.0f) - 10.0f;
         float logs_i      = floorf(logs);
-        int   iterations  = MathLibrary::clamp(logs_i, 1.0f, (float)MaxIterations);
+        int   iterations  = (int)MathLibrary::clamp(logs_i, 1.0f, (float)MaxIterations);
         float sampleScale = 0.5f + logs - logs_i;
 
         m_Context->IASetInputLayout(nullptr);

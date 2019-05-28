@@ -22,6 +22,7 @@
     <ClInclude Include="Engine\Controller\DebugCameraController.h" />
     <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
     <ClInclude Include="Engine\EngineInitShutdownHelpers.h" />
+    <ClInclude Include="Engine\Entities\EntityFactory.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
     <ClInclude Include="Engine\GenericComponents\TestComponents.h" />
@@ -116,7 +117,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-    <FxCompile Include="Shaders\DefaultSkinned_VS.hlsl">
+    <FxCompile Include="Shaders\Default_Skinned_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.1</ShaderModel>
@@ -159,6 +160,7 @@
     <ClCompile Include="Engine\Controller\ControllerManager.cpp" />
     <ClCompile Include="Engine\Controller\DebugCameraController.cpp" />
     <ClCompile Include="Engine\EngineInitShutdownHelpers.cpp" />
+    <ClCompile Include="Engine\Entities\EntityFactory.cpp" />
     <ClCompile Include="Engine\Physics\PhysicsComponent.cpp" />
     <ClCompile Include="Engine\Controller\IController.cpp" />
     <ClCompile Include="Engine\Controller\PlayerMovement.cpp" />

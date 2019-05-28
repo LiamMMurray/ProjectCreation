@@ -5,7 +5,6 @@
 #include "../ECS/ECS.h"
 #include "../Utility/ForwardDeclarations/D3DNativeTypes.h"
 #include "../Utility/ForwardDeclarations/WinProcTypes.h"
-
 #include "PostProcess/PostProcessEffectBase.h"
 
 #include "../Engine/ResourceManager/IResource.h"
@@ -82,8 +81,8 @@ struct E_BASE_PASS_PIXEL_SRV
                 DIFFUSE_REFLECTION_MAP = PER_MAT_COUNT,
                 SPECULAR_REFLECTION_MAP,
                 INTEGRATION_MAP,
-				MASK1,
-				MASK2,
+                MASK1,
+                MASK2,
                 DIRECTIONAL_SHADOW_MAP,
                 POINT_SHADOW_MAP_1,
                 POINT_SHADOW_MAP_2,
@@ -194,6 +193,7 @@ struct E_BLEND_STATE
         enum
         {
                 Opaque = 0,
+				Transluscent,
                 COUNT
         };
 };
@@ -216,14 +216,29 @@ struct E_DEPTH_STENCIL_STATE
         };
 };
 
-/** Class Declarations **/
+struct FDraw
+{
+        enum class EDrawType
+        {
+			Static = 0,
+			Skeletal
+		} meshType;
+
+        ResourceHandle mesh;
+        ResourceHandle materialHandle;
+        ComponentHandle meshHandle;
+        DirectX::XMMATRIX mtx;
+};
 
 class RenderSystem : public ISystem
 {
         friend class ResourceManager;
         friend class UIManager;
 
-        IDXGISwapChain1*      m_Swapchain;
+        std::vector<FDraw> m_OpaqueDraws;
+        std::vector<FDraw> m_TransluscentDraws;
+
+            IDXGISwapChain1*  m_Swapchain;
         ID3D11Device1*        m_Device;
         ID3D11DeviceContext1* m_Context;
 
@@ -257,14 +272,14 @@ class RenderSystem : public ISystem
         ResourceHandle m_CommonVertexShaderHandles[E_VERTEX_SHADERS::COUNT];
         ResourceHandle m_CommonPixelShaderHandles[E_PIXEL_SHADERS::COUNT];
 
-		/** Base pass constant buffers **/
+        /** Base pass constant buffers **/
         ID3D11Buffer*    m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::COUNT] = {};
         CTransformBuffer m_ConstantBuffer_MVP;
         CSceneInfoBuffer m_ConstantBuffer_SCENE;
         CAnimationBuffer m_ConstantBuffer_ANIM;
 
-		/** Post Process Constant Buffers **/
-        ID3D11Buffer*    m_PostProcessConstantBuffers[E_CONSTANT_BUFFER_POST_PROCESS::COUNT] = {};
+        /** Post Process Constant Buffers **/
+        ID3D11Buffer*      m_PostProcessConstantBuffers[E_CONSTANT_BUFFER_POST_PROCESS::COUNT] = {};
         CScreenSpaceBuffer m_ContstantBuffer_SCREENSPACE;
 
         float m_BackBufferWidth;
@@ -272,13 +287,14 @@ class RenderSystem : public ISystem
 
         void UpdateConstantBuffer(ID3D11Buffer* gpuBuffer, void* cpuBuffer, size_t size);
 
-        void DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
-        void DrawOpaqueSkeletalMesh(SkeletalMesh*               mesh,
-                                    Material*                   material,
-                                    DirectX::XMMATRIX*          mtx,
-                                    const Animation::FSkeleton* skel);
-        void DrawTransparentStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
-        void DrawTransparentSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        void DrawMesh(ID3D11Buffer*      vertexBuffer,
+                      ID3D11Buffer*      indexBuffer,
+                      uint32_t           indexCount,
+                      uint32_t           vertexSize,
+                      Material*          material,
+                      DirectX::XMMATRIX* mtx);
+        void DrawStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
+        void DrawSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx, const Animation::FSkeleton* skel);
 
 
         ComponentHandle   m_MainCameraHandle;
@@ -288,6 +304,7 @@ class RenderSystem : public ISystem
         EntityManager*    m_EntityManager;
 
         DirectX::XMMATRIX m_CachedMainProjectionMatrix;
+        DirectX::XMMATRIX m_CachedMainViewProjectionMatrix;
         DirectX::XMMATRIX m_CachedMainInvProjectionMatrix;
         DirectX::XMMATRIX m_CachedMainInvViewMatrix;
 

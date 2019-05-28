@@ -171,14 +171,3 @@ void AnimationSystem::OnResume()
 void AnimationSystem::OnSuspend()
 {}
 
-void AnimationSystem::AddAnimClipsToComponent(ComponentHandle targetComp,
-                                              int             animCount,
-                                              ResourceHandle* animClipHandles,
-                                              float*          weights)
-{
-        AnimationComponent* animComp = m_ComponentManager->GetComponent<AnimationComponent>(targetComp);
-        animComp->m_Clips.insert(animComp->m_Clips.begin(), animClipHandles, animClipHandles + animCount);
-        animComp->m_Weights.insert(animComp->m_Weights.begin(), weights, weights + animCount);
-
-        MathLibrary::NormalizeArray(animComp->m_Weights.size(), animComp->m_Weights.data());
-}

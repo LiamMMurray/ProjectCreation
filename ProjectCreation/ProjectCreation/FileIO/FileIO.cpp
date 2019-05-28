@@ -105,7 +105,9 @@ EResult FileIO::LoadMaterialDataFromFile(const char* fileName, FMaterialData* ma
         {
                 FMaterialData inMat;
                 myfile.read((char*)&inMat.surfaceProperties, sizeof(inMat.surfaceProperties));
-                myfile.read((char*)&inMat.surfaceType, sizeof(inMat.surfaceType));
+
+                myfile.read((char*)&inMat.vertexShader, inMat.vertexShader.size());
+                myfile.read((char*)&inMat.pixelShader, inMat.vertexShader.size());
 
                 uint32_t descCount;
                 myfile.read((char*)&descCount, sizeof(uint32_t));

@@ -41,9 +41,9 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
 		float mask = saturate(1 - dist / 2.0f);*/
         //return mask;
 
-        color = color / (color + 1.f);
         color += bloom;
-        color *= 1.5f;
+        color = color / (color + 1.f);
+        //color *= 1.5f;
         color = pow(color, 1.f / 2.2f);
 
         return float4(color, 1.f);
