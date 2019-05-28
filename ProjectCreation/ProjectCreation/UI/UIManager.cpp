@@ -142,7 +142,7 @@ void UIManager::Initialize()
 
 void UIManager::Update()
 {
-        if (GCoreInput::GetKeyState(KeyCode::Control) == KeyState::DownFirst)
+        if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
         {
                 // Change input from Control to Escape whenever implimented
                 // Disable or enable all Sprites based off of input
