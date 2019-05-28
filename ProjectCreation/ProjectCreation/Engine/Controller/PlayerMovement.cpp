@@ -15,7 +15,7 @@
 // ^ Testing only delete when done ^
 using namespace DirectX;
 using namespace Shapes;
-using namespace CollisionComponent;
+using namespace Collision;
 using namespace debug_renderer;
 void PlayerController::GatherInput()
 {
@@ -162,7 +162,6 @@ void PlayerController::ApplyInput()
         // Get the old forward
         XMVECTOR prevFw = XMVectorSetY(rot.GetForward(), 0.0f);
 
-        // Normalize the old forward
         prevFw = XMVector3Normalize(prevFw);
 
         // Calculate the new forward
@@ -181,8 +180,8 @@ void PlayerController::ApplyInput()
                 verticalRot = XMQuaternionIdentity();
         }
 
-        // Calculate offset
-        XMVECTOR offset = XMVector3Rotate(m_CurrentVelocity * deltaTime, transformComp->transform.rotation.rotation);
+	// Calculate offset
+        XMVECTOR offset = XMVector3Rotate(m_CurrentVelocity * deltaTime, transformComp->transform.rotation.data);
         offset          = XMVector3Normalize(XMVectorSetY(offset, 0.0f)) * XMVectorGetX(XMVector3Length(offset));
 
         FSphere fSphereStart;

@@ -152,7 +152,7 @@ void DebugCameraController::ApplyInput()
         prevFw = XMVector3Normalize(prevFw);
 
         // Calculate the new forward
-        XMVECTOR nextFw = XMVector3Rotate(rot.GetForward(), verticalRot.rotation);
+        XMVECTOR nextFw = XMVector3Rotate(rot.GetForward(), verticalRot.data);
 
         // Calculate the angle between the old forward and new forward
         XMVECTOR angleVec = XMVector3AngleBetweenVectors(prevFw, nextFw);
@@ -168,7 +168,7 @@ void DebugCameraController::ApplyInput()
         }
 
         // Calculate offset
-        XMVECTOR offset = XMVector3Rotate(m_CurrentVelocity * deltaTime, transformComp->transform.rotation.rotation);
+        XMVECTOR offset = XMVector3Rotate(m_CurrentVelocity * deltaTime, transformComp->transform.rotation.data);
         offset          = XMVector3Normalize(XMVectorSetY(offset, 0.0f)) * XMVectorGetX(XMVector3Length(offset));
 
         FSphere fSphereStart;
@@ -189,11 +189,11 @@ void DebugCameraController::ApplyInput()
 
 
         // Calcualte the type of collision
-        CollisionComponent::FSweepCollisionResult result =
+        Collision::FSweepCollisionResult result =
             CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 0.0f);
 
-        if (result.collisionType != CollisionComponent::ECollisionType::EOveralap &&
-            result.collisionType != CollisionComponent::ECollisionType::ECollide)
+        if (result.collisionType != Collision::ECollisionType::EOveralap &&
+            result.collisionType != Collision::ECollisionType::ECollide)
         {
                 transformComp->transform.translation += offset;
         }

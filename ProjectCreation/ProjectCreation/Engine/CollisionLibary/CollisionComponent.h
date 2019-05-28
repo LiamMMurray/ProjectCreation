@@ -1,8 +1,10 @@
 #pragma once
 #include <DirectXMath.h>
 #include <vector>
-#include"Shapes.h"
-namespace CollisionComponent
+#include "Shapes.h"
+#include"BVH.h"
+
+namespace Collision
 {
 
         enum ECollisionType
@@ -12,7 +14,7 @@ namespace CollisionComponent
                 ECollide
         };
 
-        struct FCotactPoint
+        struct FContactPoint
         {
                 DirectX::XMVECTOR position;
                 DirectX::XMVECTOR normal;
@@ -20,22 +22,32 @@ namespace CollisionComponent
         struct FCollideResult
         {
                 ECollisionType            collisionType;
-                std::vector<FCotactPoint> collideSurfaces;
+                std::vector<FContactPoint> collideSurfaces;
+                DirectX::XMVECTOR         finalPosition;
         };
 
         struct FSweepCollisionResult
         {
                 ECollisionType            collisionType;
-                std::vector<FCotactPoint> collideSurfaces;
+                std::vector<FContactPoint> collideSurfaces;
                 DirectX::XMVECTOR         finalPosition;
+                DirectX::XMVECTOR         finalDirection;
         };
-        
+
         struct FCollisionObjects
         {
                 std::vector<Shapes::FSphere> spheres;
-                std::vector<Shapes::FAabb>     aabbs;
-                std::vector<Shapes::FPlane>    planes;
-                
+                std::vector<Shapes::FAabb>   aabbs;
+                std::vector<Shapes::FPlane>  planes;
         };
 
-};
+        struct FCollisionObjectTypes
+        {
+                Shapes::FSphere  spheres;
+                Shapes::FAabb    aabbs;
+                Shapes::FPlane   planes;
+                Shapes::FCapsule capsule;
+        };
+
+		extern BVH::BVHTree bvhTree;
+}; // namespace Collision

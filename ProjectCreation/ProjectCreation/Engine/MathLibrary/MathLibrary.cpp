@@ -78,6 +78,16 @@ DirectX::XMVECTOR MathLibrary::GetClosestPointFromLine(DirectX::XMVECTOR startPo
         return output;
 }
 
+DirectX::XMVECTOR MathLibrary::GetMidPointFromTwoVector(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
+{
+        float    x = (XMVectorGetX(a) + XMVectorGetX(b))/2;
+        float    y = (XMVectorGetY(a) + XMVectorGetY(b))/2;
+        float    z = (XMVectorGetZ(a) + XMVectorGetZ(b))/2;
+       
+        XMVECTOR output = XMVectorSet(x,y,z,0.0f);
+        return output;
+}
+
 float MathLibrary::CalulateDistance(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
 {
 
