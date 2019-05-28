@@ -129,6 +129,7 @@ void PlayerController::ApplyInput()
         float        angleY      = XMConvertToRadians(m_MouseYDelta * 10.f);
         float        angleZ      = XMConvertToRadians(m_MouseXDelta * 5.0f);
 
+
         if (angleZ >= XMConvertToRadians(20.0f))
         {
                 angleZ = XMConvertToRadians(20.0f);
@@ -138,6 +139,8 @@ void PlayerController::ApplyInput()
         {
                 angleZ = XMConvertToRadians(-20.0f);
         }
+
+		angleZ = MathLibrary::lerp(angleZ, XMConvertToRadians(0.0f), delta);
 
         // Set the local X-Axis, Y-Axis and Z-Axis
         XMVECTOR YAxis = VectorConstants::Up;
@@ -209,7 +212,7 @@ void PlayerController::ApplyInput()
                 m_CurrentVelocity                    = m_CurrentVelocity - deltaVec * delta;
                 transformComp->transform.translation = result.finalPosition + m_CurrentVelocity;
         }
-        transformComp->transform.rotation = transformComp->transform.rotation * verticalRot * horizontalRot * normalRot;
+        transformComp->transform.rotation = transformComp->transform.rotation * verticalRot * horizontalRot + normalRot;
 
         m_CurrentPosition = transformComp->transform.translation;
 
