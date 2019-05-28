@@ -2,21 +2,20 @@
 
 #include <d3d11.h>
 #include "SimpleMath.h"
-#include "SpriteBatch.h"
 #include "SpriteFont.h"
-
-struct Font
-{
-        //long thing;
-};
 
 class SpriteComponent
 {
     public:
-        DirectX::SimpleMath::Vector2          m_screenPos;
-        DirectX::SimpleMath::Vector2          m_origin;
-        ID3D11ShaderResourceView*             m_texture;
+        DirectX::SimpleMath::Vector2          mScreenPos;
+        DirectX::SimpleMath::Vector2          mOrigin;
+        ID3D11ShaderResourceView*             mTexture;
+        DirectX::SimpleMath::Rectangle        mRectangle;
+        bool                                  enabled;
 
-		void ScaleSprite();
-		void RotateSprite();
+		void Initialize();
+        void SetPosition(float x, float y);
+        void TransformPosition(float x, float y);
+		void ScaleSprite(float scale);
+		void RotateSprite(float degree);
 };

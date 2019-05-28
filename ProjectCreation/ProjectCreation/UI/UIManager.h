@@ -8,6 +8,18 @@
 
 #include "SpriteComponent.h"
 #include "CommonStates.h"
+#include "SpriteFont.h"
+#include <vector>
+#include <string>
+
+
+struct FontComponent
+{
+        std::unique_ptr<DirectX::SpriteFont> mSpriteFont;
+        std::string                          mTextDisplay;
+        DirectX::SimpleMath::Vector2         mScreenPos;
+        bool                                 enabled;
+};
 
 class UIManager
 {
@@ -20,10 +32,16 @@ class UIManager
                           ID3D11Device*             device,
                           ID3D11DeviceContext*      deviceContext);
 
+		void CreateText(SpriteComponent& baseSprite, ID3D11Device* device, ID3D11DeviceContext* deviceContext);
+
         
-        SpriteComponent                       m_Sprite;
-        std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
-        std::unique_ptr<DirectX::CommonStates> m_states;
     private:
         static UIManager* instance;
+
+        std::unique_ptr<DirectX::SpriteBatch>	mSpriteBatch;
+        std::unique_ptr<DirectX::CommonStates>  mStates;
+        LPPOINT                                 mCursor;
+
+        std::vector<SpriteComponent> mSprites;
+        std::vector<FontComponent*>   mSpriteFonts;
 };
