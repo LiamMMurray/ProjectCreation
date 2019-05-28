@@ -78,13 +78,13 @@ void AnimationSystem::calcTransforms(Animation::FJoint*          joints,
                 // skeletalMesh.joints[i].transform = Transform::Lerp(skeletalMesh.joints[i].transform,
                 // nextTransform, ratio);
                 XMVECTOR outVec   = XMVectorLerp(prevTransform.translation, nextTransform.translation, ratio);
-                XMVECTOR outQuat  = XMQuaternionSlerp(prevTransform.rotation.rotation, nextTransform.rotation.rotation, ratio);
+                XMVECTOR outQuat  = XMQuaternionSlerp(prevTransform.rotation.data, nextTransform.rotation.data, ratio);
                 XMVECTOR outScale = XMVectorLerp(prevTransform.scale, nextTransform.scale, ratio);
 
                 float c = currweight, p = accumWeight;
                 MathLibrary::NormalizeValues(c, p);
 
-                joints[i].transform.rotation.rotation = XMQuaternionSlerp(joints[i].transform.rotation.rotation, outQuat, c);
+                joints[i].transform.rotation.data = XMQuaternionSlerp(joints[i].transform.rotation.data, outQuat, c);
                 joints[i].transform.translation       = XMVectorLerp(joints[i].transform.translation, outVec, c);
                 joints[i].transform.scale             = XMVectorLerp(joints[i].transform.scale, outScale, c);
         }

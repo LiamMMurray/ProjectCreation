@@ -15,7 +15,9 @@
     <ClInclude Include="Engine\Audio\SFXComponent.h" />
     <ClInclude Include="Engine\CollisionLibary\BVH.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionComponent.h" />
+    <ClInclude Include="Engine\CollisionLibary\CollisionGrid.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionLibary.h" />
+    <ClInclude Include="Engine\CollisionLibary\Unit.h" />
     <ClInclude Include="Engine\Controller\ControllerManager.h" />
     <ClInclude Include="Engine\Controller\DebugCameraController.h" />
     <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
@@ -146,6 +148,8 @@
     <ClCompile Include="Engine\Animation\AnimationComponent.cpp" />
     <ClCompile Include="Engine\Audio\AudioManager.cpp" />
     <ClCompile Include="Engine\CollisionLibary\BVH.cpp" />
+    <ClCompile Include="Engine\CollisionLibary\CollisionComponent.cpp" />
+    <ClCompile Include="Engine\CollisionLibary\CollisionGrid.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionLibary.cpp" />
     <ClCompile Include="Engine\CollisionLibary\Shapes.cpp" />
     <ClCompile Include="Engine\Controller\ControllerManager.cpp" />
