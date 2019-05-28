@@ -10,8 +10,9 @@ class SpriteComponent
         DirectX::SimpleMath::Vector2          mScreenPos;
         DirectX::SimpleMath::Vector2          mOrigin;
         ID3D11ShaderResourceView*             mTexture;
-        DirectX::SimpleMath::Rectangle        mRectangle;
+        RECT							      mRectangle;
         bool                                  enabled;
+        unsigned int                          id;
 
 		void Initialize();
         void SetPosition(float x, float y);
