@@ -125,62 +125,15 @@ void PlayerController::ApplyInput()
 
         // Convert the angle of change on the X-Axis and the Y-Axis to radians
         static float accumAngleY = 0.f;
-        float        angleX      = XMConvertToRadians(m_MouseXDelta * 10.f);
-        float        angleY      = XMConvertToRadians(m_MouseYDelta * 10.f);
-        float        angleZ      = XMConvertToRadians(m_MouseXDelta * 5.0f);
+        m_Yaw += m_MouseXDelta * 5.f * deltaTime;
+        m_Pitch += m_MouseYDelta * 5.f * deltaTime;
+        m_Pitch = MathLibrary::clamp(m_Pitch, -90.f, 90.f);
+        m_Roll += m_MouseXDelta * 4.0f * deltaTime;
+        m_Roll = MathLibrary::clamp(m_Roll, -20.f, 20.f);
 
+        m_Roll = MathLibrary::lerp(m_Roll, 0.0f, MathLibrary::clamp(deltaTime * 20.0f, 0.0f, 1.0f));
 
-        if (angleZ >= XMConvertToRadians(20.0f))
-        {
-                angleZ = XMConvertToRadians(20.0f);
-        }
-
-        if (angleZ <= XMConvertToRadians(-20.0f))
-        {
-                angleZ = XMConvertToRadians(-20.0f);
-        }
-
-		angleZ = MathLibrary::lerp(angleZ, XMConvertToRadians(0.0f), delta);
-
-        // Set the local X-Axis, Y-Axis and Z-Axis
-        XMVECTOR YAxis = VectorConstants::Up;
-        XMVECTOR XAxis = transformComp->transform.GetRight();
-        XMVECTOR ZAxis = transformComp->transform.GetForward();
-
-        // Get the rotation of the transform component
-        FQuaternion rot = transformComp->transform.rotation;
-
-        // Get horizontal rotation (Rotate around the Y)
-        FQuaternion horizontalRot = FQuaternion::RotateAxisAngle(YAxis, angleX);
-
-        // Get the vertical rotation (Rotate around the X)
-        FQuaternion verticalRot = FQuaternion::RotateAxisAngle(XAxis, angleY);
-
-        // Get the normal rotation (Rotate around the Z)
-        FQuaternion normalRot = FQuaternion::RotateAxisAngle(ZAxis, angleZ);
-
-        // Get the old forward
-        XMVECTOR prevFw = XMVectorSetY(rot.GetForward(), 0.0f);
-
-        prevFw = XMVector3Normalize(prevFw);
-
-        // Calculate the new forward
-        XMVECTOR nextFw = XMVector3Rotate(rot.GetForward(), verticalRot.rotation);
-
-        // Calculate the angle between the old forward and new forward
-        XMVECTOR angleVec = XMVector3AngleBetweenVectors(prevFw, nextFw);
-
-        // Convert the angle between the old forward and the new forward to degrees
-        float angle = XMConvertToDegrees(XMVectorGetX(angleVec));
-
-        // Check if the converted angle between forwards is greather that 90 degrees
-        if (angle > 90.f)
-        {
-                // Set vertical rotation to the identity
-                verticalRot = XMQuaternionIdentity();
-        }
-
-	// Calculate offset
+        // Calculate offset
         XMVECTOR offset = XMVector3Rotate(m_CurrentVelocity * deltaTime, transformComp->transform.rotation.data);
         offset          = XMVector3Normalize(XMVectorSetY(offset, 0.0f)) * XMVectorGetX(XMVector3Length(offset));
 
@@ -195,14 +148,14 @@ void PlayerController::ApplyInput()
         fSphereCheck.radius = 0.2f;
 
 
-         AddSphere(fSphereStart, 36, XMMatrixIdentity());
+        AddSphere(fSphereStart, 36, XMMatrixIdentity());
         // AddSphere(fSphereEnd, 36, XMMatrixIdentity());
         // AddSphere(fSphereCheck, 36, XMMatrixIdentity());
 
         FSweepCollisionResult result = CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 1.0f);
 
-        if (result.collisionType != CollisionComponent::ECollisionType::EOveralap &&
-            result.collisionType != CollisionComponent::ECollisionType::ECollide)
+        if (result.collisionType != Collision::ECollisionType::EOveralap &&
+            result.collisionType != Collision::ECollisionType::ECollide)
         {
                 transformComp->transform.translation += offset;
         }
@@ -211,7 +164,8 @@ void PlayerController::ApplyInput()
                 m_CurrentVelocity                    = m_CurrentVelocity - deltaVec * delta;
                 transformComp->transform.translation = result.finalPosition + m_CurrentVelocity;
         }
-        transformComp->transform.rotation = transformComp->transform.rotation * verticalRot * horizontalRot + normalRot;
+        transformComp->transform.rotation = XMQuaternionRotationRollPitchYaw(
+            XMConvertToRadians(m_Pitch), XMConvertToRadians(m_Yaw), XMConvertToRadians(m_Roll));
 
         m_CurrentPosition = transformComp->transform.translation;
 
