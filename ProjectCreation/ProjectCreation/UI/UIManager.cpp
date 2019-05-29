@@ -47,14 +47,14 @@ void       UIManager::AddSprite(ID3D11Device*        device,
         cSprite.enabled = false;
 
         // Sprite Screen Position
-        cSprite.SetPosition(TextureDesc.Width * 0.5, 0);
+        cSprite.SetPosition(cSprite.mOrigin.x, 0);
 
 
         // Rectangle
-        cSprite.mRectangle.top  = cSprite.mOrigin.y;
+        cSprite.mRectangle.top  = 0;
         cSprite.mRectangle.left = cSprite.mOrigin.x;
 
-        cSprite.mRectangle.bottom = cSprite.mOrigin.y + TextureDesc.Height;
+        cSprite.mRectangle.bottom = 0 + TextureDesc.Height;
         cSprite.mRectangle.right  = cSprite.mOrigin.x + TextureDesc.Width;
 
         instance->mSprites.push_back(cSprite);
@@ -132,6 +132,9 @@ void UIManager::Initialize()
                             L"../Assets/2d/Sprite/GuyMoon.dds",
                             0.0f,
                             0.0f);
+
+        instance->AddSprite(renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/cat.dds", 0.0f, 0.0f);
+
         instance->AddText(renderSystem->m_Device,
                           renderSystem->m_Context,
                           L"../Assets/2d/Text/myfile.spritefont",
@@ -183,15 +186,14 @@ void UIManager::Update()
                                 // Setup mouse cursor input here
                                 // No current way to get mouse position
 
-                                instance->mCursor.x = GCoreInput::GetMouseX();
-                                instance->mCursor.y = GCoreInput::GetMouseY();
+                                instance->mCursor.x = GCoreInput::GetMouseWindowPosX();
+                                instance->mCursor.y = GCoreInput::GetMouseWindowPosY();
 
-                                if (PtInRect(&instance->mSprites[i].mRectangle, instance->mCursor))
+                                if (PtInRect(&instance->mSprites[i].mRectangle,
+                                             {GCoreInput::GetMouseWindowPosX(), GCoreInput::GetMouseWindowPosY()}))
                                 {
                                        //Button Was Pressed
-
-
-                                        instance->mSpriteFonts[0]->enabled = false;
+                                        instance->mSprites[i].enabled = false;
                                         // exit(1);
                                 }
                         }
