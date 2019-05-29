@@ -798,6 +798,7 @@ void RenderSystem::OnUpdate(float deltaTime)
                 }
         }
         m_ConstantBuffer_SCENE.time = (float)GEngine::Get()->GetTotalTime();
+        m_ConstantBuffer_SCENE.playerRadius = (float)GEngine::Get()->m_PlayerRadius;
         UpdateConstantBuffer(m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE],
                              &m_ConstantBuffer_SCENE,
                              sizeof(m_ConstantBuffer_SCENE));

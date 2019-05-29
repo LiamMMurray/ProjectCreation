@@ -12,8 +12,10 @@ cbuffer SceneInfoBuffer : register(b1)
         float3 _EyePosition;
         float  _Time;
         float3 _DirectionalLightDirection;
-        float  _Pad;
-        float4 _DirectionalLightColor;
+        float  _playerRadius;
+        float3 _DirectionalLightColor;
+        // float pad
+        float3 _AmbientColor;
 };
 
 INPUT_PIXEL main(INPUT_VERTEX vIn)

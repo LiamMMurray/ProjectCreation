@@ -12,8 +12,8 @@ struct alignas(16) CSceneInfoBuffer
 {
         DirectX::XMFLOAT3 eyePosition;
         float             time;
-        DirectX::XMFLOAT3A directionalLightDirection;
-		//pad
+        DirectX::XMFLOAT3 directionalLightDirection;
+        float              playerRadius;
         DirectX::XMFLOAT3A directionalLightColor;
 		//pad
         DirectX::XMFLOAT3A ambientColor;
