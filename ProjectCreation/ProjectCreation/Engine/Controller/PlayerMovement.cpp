@@ -125,21 +125,15 @@ void PlayerController::ApplyInput()
 
         XMVECTOR preBoostVelocity = XMVectorZero();
 
-        if (GCoreInput::GetKeyState(KeyCode::K) == KeyState::DownFirst)
-        {
-                preBoostVelocity = m_CurrentVelocity;
-                m_CurrentVelocity += 10.0f * XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-        }
-
         m_CurrentVelocity =
-            XMVectorLerp(m_CurrentVelocity, preBoostVelocity, MathLibrary::clamp(deltaTime * 0.5f, 0.0f, 1.0f));
+            XMVectorLerp(m_CurrentVelocity, preBoostVelocity, MathLibrary::clamp(deltaTime * 0.25f, 0.0f, 1.0f));
 
         // Convert the angle of change on the X-Axis and the Y-Axis to radians
         static float accumAngleY = 0.0f;
-        m_Yaw += m_MouseXDelta * 5.0f * deltaTime;
-        m_Pitch += m_MouseYDelta * 5.0f * deltaTime;
+        m_Yaw += m_MouseXDelta * 2.0f * deltaTime;
+        m_Pitch += m_MouseYDelta * 2.0f * deltaTime;
         m_Pitch = MathLibrary::clamp(m_Pitch, -90.0f, 90.0f);
-        m_Roll += m_MouseXDelta * 4.0f * deltaTime;
+        m_Roll += m_MouseXDelta * 2.0f * deltaTime;
         m_Roll = MathLibrary::clamp(m_Roll, -20.0f, 20.0f);
 
         m_Roll = MathLibrary::lerp(m_Roll, 0.0f, MathLibrary::clamp(deltaTime * 20.0f, 0.0f, 1.0f));
@@ -199,52 +193,7 @@ void PlayerController::InactiveUpdate(float deltaTime)
         debug_renderer::AddSphere(
             fSpherePlayer, 36, XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslationFromVector(m_CurrentPosition)));
 
-        //ApplyInput();
-
-        // Get the Transoform Component
-        TransformComponent* transformComp =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
-
-
-        // Get Delta Time
-        float DeltaTime = cacheTime; // GEngine::Get()->GetDeltaTime();
-
-        // Get the Speed from the gathered input
-        float currSpeed = XMVectorGetX(XMVector3Length(m_CurrentInput));
-
-        // Get the Forward from the gathered input
-        float currForward = XMVectorGetZ(m_CurrentInput);
-
-        // Normalize the gathered input to determine the desired direction
-        XMVECTOR desiredDir = XMVector3Normalize(m_CurrentInput);
-
-        // Determine the max speed the object can move
-        float maxSpeed = MathLibrary::lerp(minMaxSpeed, maxMaxSpeed, currForward - minMaxSpeed);
-
-        // Check if the currSpeed is faster than the maxSpeed
-        if (fabs(currSpeed) > fabs(maxSpeed))
-        {
-                // Clamp the currSpeed to the maxSpeed
-                currSpeed = MathLibrary::clamp(currSpeed, -maxSpeed, maxSpeed);
-        }
-
-        // Calculate desiredVelocity by multiplying the currSpeed by the direction we want to go
-        XMVECTOR desiredVelocity = currSpeed * desiredDir;
-
-        // Determine if we should speed up or slow down
-        float accel = deacceleration;
-
-        // Calculate distance from our current velocity to our desired velocity
-        float dist = MathLibrary::CalulateDistance(m_CurrentVelocity, desiredVelocity);
-
-        // Calculate change based on the type of acceleration, the change in time, and the calculated distance
-        float delta = std::min(accel * DeltaTime, dist);
-
-        // Normalize the difference of the desired velocity and the current velocity
-        XMVECTOR deltaVec = XMVector3Normalize(desiredVelocity - m_CurrentVelocity);
-
-        // Calculate current velocity based on itself, the deltaVector, and delta
-        m_CurrentVelocity = m_CurrentVelocity + deltaVec * delta;
+        ApplyInput();
 }
 
 PlayerController::PlayerController()
@@ -253,4 +202,10 @@ PlayerController::PlayerController()
         m_CurrentPosition = DirectX::XMVectorZero();
         m_MouseXDelta     = 0;
         m_MouseYDelta     = 0;
+}
+
+void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)
+{
+        preBoostVelocity = m_CurrentVelocity;
+        m_CurrentVelocity += 1.0f * XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 }

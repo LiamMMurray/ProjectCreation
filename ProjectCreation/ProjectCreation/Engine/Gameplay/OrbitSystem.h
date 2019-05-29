@@ -1,22 +1,19 @@
 #pragma once
 
 #include "../../ECS/ECS.h"
+#include "..//MathLibrary/MathLibrary.h"
 
 class TransformComponent;
 
-class SpeedBoostSystem : public ISystem
+class OrbitSystem : public ISystem
 {
     private:
         ComponentManager* m_ComponentManager;
         EntityManager*    m_EntityManager;
 
-        static constexpr uint32_t m_MaxSpeedBoosts = 20;
-        ComponentHandle           m_BoostTransformHandles[m_MaxSpeedBoosts];
-
-
-        void RandomMoveBoost(TransformComponent* boostTC, TransformComponent* playerTC);
-
-        float m_TargetRadius = 0.0f;
+		ComponentHandle m_PlanetOutlines[3];
+		ComponentHandle m_PlanetGoals[3];
+        ComponentHandle* m_TargetTransforms[3];
 
     protected:
         // Inherited via ISystem
@@ -27,8 +24,4 @@ class SpeedBoostSystem : public ISystem
         virtual void OnShutdown() override;
         virtual void OnResume() override;
         virtual void OnSuspend() override;
-
-    public:
-        static constexpr float m_MaxBoostDistance = 7.0f;
-        static constexpr float m_BoostRadius      = 0.03f;
 };

@@ -6,6 +6,8 @@
 
 namespace EntityFactory
 {
+        EntityHandle CreateDummyTransformEntity(ComponentHandle* outTransformHandle);
+
         EntityHandle CreateStaticMeshEntity(const char*      staticMeshName,
                                             const char*      materialName,
                                             ComponentHandle* outTransformHandle  = nullptr,
