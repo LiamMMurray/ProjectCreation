@@ -20,19 +20,7 @@ void SpriteComponent::TransformPosition(float x, float y)
 
 }
 
-void SpriteComponent::ScaleSprite(float scale)
-{
-        //float time = float(m_timer.GetTotalSeconds());
-        
-        //m_spriteBatch->Begin();
-        
-        //m_spriteBatch->Draw(m_texture.Get(), m_screenPos, nullptr, Colors::White, 0.f,
-        //m_origin, cosf(time) + 2.f);
-        
-        //m_spriteBatch->End();
-}
-
-void SpriteComponent::RotateSprite(float degree)
+void SpriteComponent::RotateSprite(float deltaTime)
 {
         //float time = float(m_timer.GetTotalSeconds
         

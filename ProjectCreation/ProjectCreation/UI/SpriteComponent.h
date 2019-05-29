@@ -42,7 +42,6 @@ class SpriteComponent : public Component<SpriteComponent>
 
         void SetPosition(float x, float y);
         void TransformPosition(float x, float y);
-        void ScaleSprite(float scale);
         void RotateSprite(float degree);
 
         UIMouseEventManager OnMouseDown;

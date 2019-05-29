@@ -16,7 +16,7 @@ class UIManager
 {
     public:
         static void Initialize();
-        static void Update();
+        static void Update(float deltaTime);
         static void Shutdown();
 
         void AddSprite(ID3D11Device*        device,
@@ -33,7 +33,7 @@ class UIManager
                      float                PositionX,
                      float                PositionY);
         void RemoveText(int id);
-
+        void ScaleSprite(float deltaTime, SpriteComponent sprite);
 
         static UIManager* instance;
     private:

@@ -68,6 +68,16 @@ void UIManager::AddSprite(ID3D11Device*        device,
 void UIManager::RemoveSprite(int id)
 {}
 
+
+void UIManager::ScaleSprite(float deltaTime, SpriteComponent sprite)
+{
+	instance->mSpriteBatch->Begin();
+	
+	instance->mSpriteBatch->Draw(sprite.mTexture, sprite.mScreenPos, nullptr, DirectX::Colors::White, 0.f, sprite.mOrigin, cosf(deltaTime) + 2.f);
+	
+	instance->mSpriteBatch->End();
+}
+
 // Adds a sprite to the vector of text
 // Currently PositionX and PositionY are not used
 void UIManager::AddText(ID3D11Device*        device,
@@ -105,6 +115,7 @@ void UIManager::AddText(ID3D11Device*        device,
 
 void UIManager::RemoveText(int id)
 {}
+
 
 void UIManager::Initialize()
 {
@@ -175,7 +186,7 @@ void UIManager::Initialize()
         });
 }
 
-void UIManager::Update()
+void UIManager::Update(float deltaTime)
 {
         if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
         {
@@ -222,25 +233,14 @@ void UIManager::Update()
                                 {
                                         // Button Was Pressed
                                         UIMouseEvent e;
-										
+
                                         e.mouseX = GCoreInput::GetMouseWindowPosX();
                                         e.mouseY = GCoreInput::GetMouseWindowPosY();
                                         e.sprite = &instance->mSprites[0];
                                         instance->mSprites[i].OnMouseDown.Invoke(&e);
-                                        
-
-                                        //if (instance->mSprites[i].mId == 2)
-                                        //{
-                                        //        instance->mSpriteFonts[0]->mEnabled = false;
-                                        //}
-                                        //else
-                                        //{
-                                        //        instance->mSpriteFonts[0]->mEnabled = true;
-										//}
-
-                                        // exit(1);
                                 }
                         }
+                        
                         instance->mSpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
                                                       instance->mStates->NonPremultiplied());
 
@@ -249,6 +249,7 @@ void UIManager::Update()
                             DirectX::XMVECTOR{instance->mSprites[i].mScreenPos.x, instance->mSprites[i].mScreenPos.y});
 
                         instance->mSpriteBatch->End();
+                        
                 }
         }
         // Text Display
