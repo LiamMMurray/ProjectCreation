@@ -1,6 +1,7 @@
 #pragma once
 #include "../ECS/ECSTypes.h"
 class IEventDelegate;
+class IEvent;
 typedef ECSTypeId<IEventDelegate> EventDelegateTypeId;
 class IEventDelegate
 {

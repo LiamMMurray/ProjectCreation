@@ -1,5 +1,7 @@
 #pragma once
 #include "IEventDelegate.h"
+#include "../../ECS/Util.h"
+class IEvent;
 template <typename T, typename EventType>
 class EventDelegate : public IEventDelegate
 {

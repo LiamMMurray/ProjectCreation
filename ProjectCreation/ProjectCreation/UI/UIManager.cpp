@@ -1,13 +1,13 @@
 #include "UIManager.h"
+#include <iostream>
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
 #include "../Rendering/RenderingSystem.h"
-
 UIManager* UIManager::instance;
 
-//Adds a sprite to the vector of sprites
-//Currently PositionX and PositionY are not used
-void       UIManager::AddSprite(ID3D11Device*        device,
+// Adds a sprite to the vector of sprites
+// Currently PositionX and PositionY are not used
+void UIManager::AddSprite(ID3D11Device*        device,
                           ID3D11DeviceContext* deviceContext,
                           const wchar_t*       FileName,
                           float                PositionX,
@@ -35,10 +35,10 @@ void       UIManager::AddSprite(ID3D11Device*        device,
         cSprite.mOrigin.y = float(TextureDesc.Height * 0.5);
 
         // Set the Id of the Sprite for the Main Menu
-        if (instance->mSprites.size() <= 0) 
-		{
+        if (instance->mSprites.size() <= 0)
+        {
                 cSprite.id = 1;
-		}
+        }
         else
         {
                 cSprite.id = instance->mSprites[instance->mSprites.size() - 1].id + 1;
@@ -78,21 +78,21 @@ void UIManager::AddText(ID3D11Device*        device,
 {
         FontComponent* createText = new FontComponent();
 
-        createText->mSpriteFont = std::make_unique<DirectX::SpriteFont>(device, FileName);
-		createText->mTextDisplay = TextDisplay;
+        createText->mSpriteFont  = std::make_unique<DirectX::SpriteFont>(device, FileName);
+        createText->mTextDisplay = TextDisplay;
 
-		
-			//Microsoft::WRL::ComPtr<ID3D11Resource> resource;
-			//HRESULT hr = DirectX::CreateDDSTextureFromFile(device, FileName, resource.GetAddressOf(), &createText->mTexture);
-			//if (FAILED(hr))
-			//{
-			//        exit(-1);
-			//}
-			//Microsoft::WRL::ComPtr<ID3D11Texture2D> Texture;
-			//resource.As(&Texture);
-			//
-			//CD3D11_TEXTURE2D_DESC TextureDesc;
-			//Texture->GetDesc(&TextureDesc);
+
+        // Microsoft::WRL::ComPtr<ID3D11Resource> resource;
+        // HRESULT hr = DirectX::CreateDDSTextureFromFile(device, FileName, resource.GetAddressOf(), &createText->mTexture);
+        // if (FAILED(hr))
+        //{
+        //        exit(-1);
+        //}
+        // Microsoft::WRL::ComPtr<ID3D11Texture2D> Texture;
+        // resource.As(&Texture);
+        //
+        // CD3D11_TEXTURE2D_DESC TextureDesc;
+        // Texture->GetDesc(&TextureDesc);
 
         // Set the Main Menu text to enabled
         createText->enabled = false;
@@ -101,18 +101,18 @@ void UIManager::AddText(ID3D11Device*        device,
         createText->mScreenPos.x = instance->mSprites[0].mOrigin.x;
         createText->mScreenPos.y = 0;
 
-			////Rectangle
-			//createText->mRectangle.top  = createText->mScreenPos.y;
-			//createText->mRectangle.left = createText->mScreenPos.x;
-			//
-			//createText->mRectangle.bottom = createText->mScreenPos.y + TextureDesc.Height;
-			//createText->mRectangle.right  = createText->mScreenPos.x + TextureDesc.Width;
+        ////Rectangle
+        // createText->mRectangle.top  = createText->mScreenPos.y;
+        // createText->mRectangle.left = createText->mScreenPos.x;
+        //
+        // createText->mRectangle.bottom = createText->mScreenPos.y + TextureDesc.Height;
+        // createText->mRectangle.right  = createText->mScreenPos.x + TextureDesc.Width;
 
 
-			// Error C2280
+        // Error C2280
         // attempting to reference a deleted function
         // C:\Program Files(x86)\Microsoft Visual Studio\2019\Preview\VC\Tools\MSVC\14.20.27508\include\xmemory0 819
-			// FIXED
+        // FIXED
         // Making the vector array an array of pointers fixed this issue
         instance->mSpriteFonts.push_back(createText);
 }
@@ -127,20 +127,26 @@ void UIManager::Initialize()
 
         auto renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 
-        instance->AddSprite(renderSystem->m_Device,
-                            renderSystem->m_Context,
-                            L"../Assets/2d/Sprite/GuyMoon.dds",
-                            0.0f,
-                            0.0f);
+        instance->AddSprite(renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/GuyMoon.dds", 0.0f, 0.0f);
+
+        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                std::cout << "OnPress Event" << std::endl;
+                std::cout << "Sprite id: " << e->sprite->id << std::endl;
+                std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
+                std::cout << std::endl;
+        });
+
+		        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                std::cout << "OnPress Event2" << std::endl;
+                std::cout << "Sprite id: " << e->sprite->id << std::endl;
+                std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
+                std::cout << std::endl;
+        });
 
         instance->AddSprite(renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/cat.dds", 0.0f, 0.0f);
 
-        instance->AddText(renderSystem->m_Device,
-                          renderSystem->m_Context,
-                          L"../Assets/2d/Text/myfile.spritefont",
-                          "New Game",
-                            0.0f,
-                            0.0f);
+        instance->AddText(
+            renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Text/myfile.spritefont", "New Game", 0.0f, 0.0f);
 }
 
 void UIManager::Update()
@@ -192,8 +198,17 @@ void UIManager::Update()
                                 if (PtInRect(&instance->mSprites[i].mRectangle,
                                              {GCoreInput::GetMouseWindowPosX(), GCoreInput::GetMouseWindowPosY()}))
                                 {
-                                       //Button Was Pressed
-                                        instance->mSprites[i].enabled = false;
+                                        // Button Was Pressed
+                                        /*                            instance->mSprites[i].enabled = false;
+                                         */
+                                        UIMouseEvent e;
+										
+                                        e.mouseX = GCoreInput::GetMouseWindowPosX();
+                                        e.mouseY = GCoreInput::GetMouseWindowPosY();
+                                        e.sprite = &instance->mSprites[0];
+                                        instance->mSprites[i].OnMouseDown.Invoke(&e);
+                                        
+
                                         // exit(1);
                                 }
                         }
