@@ -16,6 +16,9 @@
 
 using namespace std;
 
+
+ControllerManager* ControllerManager::instance;
+
 void ControllerManager::DisplayConsoleMenu()
 {
         if (m_CurrentController == E_CONTROLLERS::DEBUG)
@@ -30,6 +33,12 @@ void ControllerManager::DisplayConsoleMenu()
 }
 
 void ControllerManager::Initialize()
+{
+        instance = new ControllerManager;
+        instance->init();
+}
+
+void ControllerManager::init()
 {
         m_SystemManager    = GEngine::Get()->GetSystemManager();
         m_ComponentManager = GEngine::Get()->GetComponentManager();
@@ -73,7 +82,7 @@ void ControllerManager::Initialize()
         m_CurrentController = E_CONTROLLERS::PLAYER;
 }
 
-void ControllerManager::Update(float delta)
+void ControllerManager::update(float delta)
 {
         if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
         {
@@ -134,7 +143,23 @@ void ControllerManager::Update(float delta)
 		}
 }
 
+ControllerManager* ControllerManager::Get()
+{
+        return instance;
+}
+
 void ControllerManager::Shutdown()
+{
+        instance->shutdown();
+        delete instance;
+}
+
+void ControllerManager::Update(float deltaTime)
+{
+        instance->update(deltaTime);
+}
+
+void ControllerManager::shutdown()
 {
         for (int i = 0; i < E_CONTROLLERS::COUNT; ++i)
         {

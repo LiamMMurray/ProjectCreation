@@ -193,7 +193,7 @@ struct E_BLEND_STATE
         enum
         {
                 Opaque = 0,
-				Transluscent,
+                Transluscent,
                 COUNT
         };
 };
@@ -220,13 +220,13 @@ struct FDraw
 {
         enum class EDrawType
         {
-			Static = 0,
-			Skeletal
-		} meshType;
+                Static = 0,
+                Skeletal
+        } meshType;
 
-        ResourceHandle mesh;
-        ResourceHandle materialHandle;
-        ComponentHandle meshHandle;
+        ResourceHandle    meshResource;
+        ResourceHandle    materialHandle;
+        ComponentHandle   componentHandle;
         DirectX::XMMATRIX mtx;
 };
 
@@ -238,7 +238,7 @@ class RenderSystem : public ISystem
         std::vector<FDraw> m_OpaqueDraws;
         std::vector<FDraw> m_TransluscentDraws;
 
-            IDXGISwapChain1*  m_Swapchain;
+        IDXGISwapChain1*      m_Swapchain;
         ID3D11Device1*        m_Device;
         ID3D11DeviceContext1* m_Context;
 

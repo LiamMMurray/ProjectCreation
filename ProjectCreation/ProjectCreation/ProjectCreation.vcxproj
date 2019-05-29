@@ -23,6 +23,7 @@
     <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
     <ClInclude Include="Engine\EngineInitShutdownHelpers.h" />
     <ClInclude Include="Engine\Entities\EntityFactory.h" />
+    <ClInclude Include="Engine\Gameplay\SpeedBoostSystem.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
     <ClInclude Include="Engine\GenericComponents\TestComponents.h" />
@@ -165,6 +166,7 @@
     <ClCompile Include="Engine\Controller\DebugCameraController.cpp" />
     <ClCompile Include="Engine\EngineInitShutdownHelpers.cpp" />
     <ClCompile Include="Engine\Entities\EntityFactory.cpp" />
+    <ClCompile Include="Engine\Gameplay\SpeedBoostSystem.cpp" />
     <ClCompile Include="Engine\Physics\PhysicsComponent.cpp" />
     <ClCompile Include="Engine\Controller\IController.cpp" />
     <ClCompile Include="Engine\Controller\PlayerMovement.cpp" />

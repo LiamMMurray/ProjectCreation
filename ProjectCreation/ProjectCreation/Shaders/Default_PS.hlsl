@@ -318,7 +318,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
 
         float veinsMask = Mask1.Sample(sampleTypeWrap, pIn.Tex / 32.0f - float2(0, _Time * 0.002f)).b;
         float veins =
-            Mask2.Sample(sampleTypeWrap, pIn.Tex * float2(0.5f, 0.25f) + float2(0, _Time * 0.2f) + veinsMask * 8.0f).r;
+            Mask2.Sample(sampleTypeWrap, pIn.Tex * float2(0.5f, 0.25f) + float2(0, _Time * 0.2f) + veinsMask * 2.0f).r;
         float3 veinsEmissive = veins * 5.0f * float3(1.0f, 0.05f, 0.05f) * mask;
 
         color += surface.emissiveColor + band + veinsEmissive;

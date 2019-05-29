@@ -1,7 +1,5 @@
 #include "GEngine.h"
 
-
-
 GEngine* GEngine::instance;
 
 void GEngine::Initialize()
