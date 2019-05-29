@@ -91,7 +91,7 @@ FCollideResult CollisionLibary::OverlapSphereToSphere(FSphere& a, FSphere& b, fl
                     contactPoint.normal   = tempDirA;*/
                 output.collideSurfaces.push_back(CalculateSphereToSphereContactPoint(b.center, a.center, a.radius));
         }
-
+		
 
         return output;
 }
@@ -260,7 +260,7 @@ FAdvancedviCollisionResult CollisionLibary::MovingSphereToMovingSphere(FSphere& 
 }
 
 
-FCollideResult CollisionLibary::SphereToAabb(FSphere& sphere, FAabb& aabb, float offset)
+FCollideResult CollisionLibary::OverlapSphereToAabb(FSphere& sphere, FAabb& aabb, float offset)
 {
         FCollideResult output;
         XMVECTOR       aabbMin           = aabb.center - aabb.extents;
@@ -328,6 +328,11 @@ FCollideResult CollisionLibary::OverlapAabbToAabb(FAabb& a, FAabb& b, float offs
 
         output.collisionType = EOveralap;
         return output;
+}
+
+Collision::FCollideResult CollisionLibary::CapsuleToAabbCollision(Shapes::FCapsule& capsule, Shapes::FAabb& aabb)
+{
+        return Collision::FCollideResult();
 }
 
 FCollisionObjects CollisionLibary::CollisionQuery(FSphere& startA, FSphere& endA)

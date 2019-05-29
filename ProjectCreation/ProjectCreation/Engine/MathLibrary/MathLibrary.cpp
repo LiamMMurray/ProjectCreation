@@ -80,11 +80,11 @@ DirectX::XMVECTOR MathLibrary::GetClosestPointFromLine(DirectX::XMVECTOR startPo
 
 DirectX::XMVECTOR MathLibrary::GetMidPointFromTwoVector(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
 {
-        float    x = (XMVectorGetX(a) + XMVectorGetX(b))/2;
-        float    y = (XMVectorGetY(a) + XMVectorGetY(b))/2;
-        float    z = (XMVectorGetZ(a) + XMVectorGetZ(b))/2;
-       
-        XMVECTOR output = XMVectorSet(x,y,z,0.0f);
+        float x = (XMVectorGetX(a) + XMVectorGetX(b)) / 2;
+        float y = (XMVectorGetY(a) + XMVectorGetY(b)) / 2;
+        float z = (XMVectorGetZ(a) + XMVectorGetZ(b)) / 2;
+
+        XMVECTOR output = XMVectorSet(x, y, z, 0.0f);
         return output;
 }
 
@@ -127,4 +127,48 @@ float MathLibrary::ManhattanDistance(Shapes::FAabb& a, Shapes::FAabb& b)
         output        = abs(xDis) + abs(yDis) + abs(zDis);
 
         return output;
+}
+
+float MathLibrary::GetRandomFloat()
+{
+        return RANDOMFLOAT;
+}
+
+float MathLibrary::GetRandomFloatInRange(float min, float max)
+{
+        float output = (rand() / (float)RAND_MAX * (max - min)) + min;
+        return output;
+}
+
+double MathLibrary::GetRandomDouble()
+{
+        return RANDOMDOUBLE;
+}
+
+double MathLibrary::GetRandomDoubleInRange(double min, double max)
+{
+        double r      = (double)rand() / RAND_MAX;
+        double output = min + r * (max - min);
+        return output;
+}
+
+DirectX::XMVECTOR MathLibrary::GetRandomVector()
+{
+        return XMVectorSet(RANDOMFLOAT, RANDOMFLOAT, RANDOMFLOAT, 0.0f);
+}
+
+DirectX::XMVECTOR MathLibrary::GetRandomVectorInRange(float min, float max)
+{
+        float value = GetRandomFloatInRange(min, max);
+        return XMVectorSet(value, value, value, 0.0f);
+}
+
+DirectX::XMVECTOR MathLibrary::GetRandomUnitVector()
+{
+        XMVECTOR output  = GetRandomVector();
+        XMVECTOR unitVec = output / MathLibrary::VectorDotProduct(output, output);
+        if (MathLibrary::CalulateVectorLength(unitVec) == 1)
+        {
+                return unitVec;
+        }
 }
