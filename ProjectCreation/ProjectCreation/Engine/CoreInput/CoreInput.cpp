@@ -7,8 +7,8 @@
 
 int32_t GCoreInput::mouseX = 0;
 int32_t GCoreInput::mouseY = 0;
-int32_t GCoreInput::mouseScreenPosX = 0;
-int32_t GCoreInput::mouseScreenPosY = 0;
+int32_t GCoreInput::mouseWindowPosX = 0;
+int32_t GCoreInput::mouseWindowPosY = 0;
 uint8_t GCoreInput::keyStates[256]{};
 uint8_t GCoreInput::MouseStates[2]{};
 
@@ -83,8 +83,9 @@ void GCoreInput::GatherInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
 		POINT cursorPos;
         GetCursorPos(&cursorPos);
-        mouseScreenPosX = cursorPos.x;
-        mouseScreenPosY = cursorPos.y;
+        ScreenToClient(hWnd, &cursorPos);
+        mouseWindowPosX = cursorPos.x;
+        mouseWindowPosY = cursorPos.y;
 }
 
 void GCoreInput::UpdateInput()
@@ -105,14 +106,14 @@ void GCoreInput::UpdateInput()
         ResetAxes();
 }
 
-int32_t GCoreInput::GetMouseScreenPosX()
+int32_t GCoreInput::GetMouseWindowPosX()
 {
-        return mouseScreenPosX;
+        return mouseWindowPosX;
 }
 
-int32_t GCoreInput::GetMouseScreenPosY()
+int32_t GCoreInput::GetMouseWindowPosY()
 {
-        return mouseScreenPosY;
+        return mouseWindowPosY;
 }
 
 KeyState GCoreInput::GetKeyState(KeyCode target)
