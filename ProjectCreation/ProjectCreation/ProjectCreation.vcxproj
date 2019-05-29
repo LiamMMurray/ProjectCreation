@@ -15,12 +15,19 @@
     <ClInclude Include="Engine\Audio\SFXComponent.h" />
     <ClInclude Include="Engine\CollisionLibary\BVH.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionComponent.h" />
+    <ClInclude Include="Engine\CollisionLibary\CollisionGrid.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionLibary.h" />
+    <ClInclude Include="Engine\CollisionLibary\Unit.h" />
     <ClInclude Include="Engine\Controller\ControllerManager.h" />
     <ClInclude Include="Engine\Controller\DebugCameraController.h" />
     <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
     <ClInclude Include="Engine\EngineInitShutdownHelpers.h" />
     <ClInclude Include="Engine\Entities\EntityFactory.h" />
+    <ClInclude Include="Engine\Events\Event.h" />
+    <ClInclude Include="Engine\Events\EventDelegate.h" />
+    <ClInclude Include="Engine\Events\EventManager.h" />
+    <ClInclude Include="Engine\Events\IEvent.h" />
+    <ClInclude Include="Engine\Events\IEventDelegate.h" />
     <ClInclude Include="Engine\Gameplay\SpeedBoostSystem.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
@@ -63,6 +70,7 @@
     <ClInclude Include="Engine\MathLibrary\Quaternion.h" />
     <ClInclude Include="Engine\MathLibrary\Transform.h" />
     <ClInclude Include="Engine\MathLibrary\Vector.h" />
+    <ClInclude Include="UI\FontComponent.h" />
     <ClInclude Include="Rendering\Components\CameraComponent.h" />
     <ClInclude Include="Rendering\Components\DirectionalLightComponent.h" />
     <ClInclude Include="Rendering\Components\PointLightComponent.h" />
@@ -156,6 +164,8 @@
     <ClCompile Include="Engine\Animation\AnimationComponent.cpp" />
     <ClCompile Include="Engine\Audio\AudioManager.cpp" />
     <ClCompile Include="Engine\CollisionLibary\BVH.cpp" />
+    <ClCompile Include="Engine\CollisionLibary\CollisionComponent.cpp" />
+    <ClCompile Include="Engine\CollisionLibary\CollisionGrid.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionLibary.cpp" />
     <ClCompile Include="Engine\CollisionLibary\Shapes.cpp" />
     <ClCompile Include="Engine\Controller\ControllerManager.cpp" />
@@ -178,6 +188,7 @@
     <ClCompile Include="Engine\XTime.cpp" />
     <ClCompile Include="Engine\Entities\TestEntities.cpp" />
     <ClCompile Include="FileIO\FileIO.cpp" />
+    <ClCompile Include="UI\FontComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\MathLibrary\MathLibrary.cpp" />
     <ClCompile Include="Engine\MathLibrary\Quaternion.cpp" />

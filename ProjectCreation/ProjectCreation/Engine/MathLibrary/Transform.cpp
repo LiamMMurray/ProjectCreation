@@ -2,20 +2,27 @@
 using namespace DirectX;
 FTransform::FTransform()
 {
-        translation = XMVectorSet(0.0f, 0.0f, 0.0f,1.0f);
+        translation = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
         rotation    = FQuaternion();
         scale       = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
+FTransform::FTransform(DirectX::XMVECTOR translationVec, DirectX::XMVECTOR scaleVec, FQuaternion Fquaternion)
+{
+        translation = translationVec;
+        scale       = scaleVec;
+        rotation    = Fquaternion;
+}
+
 DirectX::XMMATRIX FTransform::CreateMatrix() const
 {
-        return XMMatrixScalingFromVector(scale) * XMMatrixRotationQuaternion(rotation.rotation) *
+        return XMMatrixScalingFromVector(scale) * XMMatrixRotationQuaternion(rotation.data) *
                XMMatrixTranslationFromVector(translation);
 }
 
 void FTransform::SetMatrix(const DirectX::XMMATRIX& matrix)
 {
-        XMMatrixDecompose(&scale, &rotation.rotation, &translation, matrix);
+        XMMatrixDecompose(&scale, &rotation.data, &translation, matrix);
 }
 
 DirectX::XMVECTOR FTransform::GetForward()

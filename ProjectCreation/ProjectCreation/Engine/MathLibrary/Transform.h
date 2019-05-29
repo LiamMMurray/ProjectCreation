@@ -8,6 +8,7 @@ struct FTransform
         FQuaternion       rotation;
 
         FTransform();
+        FTransform(DirectX::XMVECTOR translation, DirectX::XMVECTOR scale, FQuaternion quaternion);
         DirectX::XMMATRIX CreateMatrix() const;
         void              SetMatrix(const DirectX::XMMATRIX& matrix);
         DirectX::XMVECTOR GetForward();

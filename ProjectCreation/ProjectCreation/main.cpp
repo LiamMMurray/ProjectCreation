@@ -39,12 +39,14 @@
 #include "Rendering/Components/DirectionalLightComponent.h"
 #include "Engine/Gameplay/SpeedBoostSystem.h"
 
+#include "Engine/GenericComponents/TransformComponent.h"
+
 #pragma comment(lib, "dbghelp")
 
 using namespace DirectX;
 ////testing -vic
 using namespace Shapes;
-using namespace CollisionComponent;
+using namespace Collision;
 using namespace debug_renderer;
 using namespace BVH;
 ////testing -vic
@@ -319,7 +321,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 // result = CollisionLibary::SweepSphereToSphere(sphere1, sphere2, sphereObj, 1.0f);
                 result = CollisionLibary::MovingSphereToMovingSphere(sphere1, sphere2, v1, v2, temptime, 0.1f, 0.01f);
 
-                if (result.collisionType == CollisionComponent::ECollide)
+                if (result.collisionType == Collision::ECollide)
                 {
                         int x = 0;
                 }

@@ -1,6 +1,26 @@
 #include "SpriteComponent.h"
 
-void SpriteComponent::ScaleSprite()
+void SpriteComponent::MakeRectangle()
+{
+        mRectangle.top  = 0;
+        mRectangle.left = mOrigin.x;
+
+        mRectangle.bottom = 0 + mHeight;
+        mRectangle.right  = mOrigin.x + mWidth;
+}
+
+void SpriteComponent::SetPosition(float x, float y)
+{
+        mScreenPos.x = x;
+        mScreenPos.y = y;
+}
+
+void SpriteComponent::TransformPosition(float x, float y)
+{
+
+}
+
+void SpriteComponent::ScaleSprite(float scale)
 {
         //float time = float(m_timer.GetTotalSeconds());
         
@@ -12,7 +32,7 @@ void SpriteComponent::ScaleSprite()
         //m_spriteBatch->End();
 }
 
-void SpriteComponent::RotateSprite()
+void SpriteComponent::RotateSprite(float degree)
 {
         //float time = float(m_timer.GetTotalSeconds
         

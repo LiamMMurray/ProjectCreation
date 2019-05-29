@@ -2,7 +2,6 @@
 #include "../../ECS/ECSTypes.h"
 #include "IController.h"
 
-#include "../GenericComponents/TransformComponent.h"
 #include "../Physics/PhysicsComponent.h"
 
 class PlayerController : public IController
@@ -12,9 +11,18 @@ class PlayerController : public IController
         void ProcessInput() override;
         void ApplyInput() override;
 
+        void PauseInput() override;
+		
+		DirectX::XMVECTOR m_CurrentPosition;
 
+		struct FDebugLine
+		{
+                DirectX::XMVECTOR start;
+                DirectX::XMVECTOR end;
+		};
 
     public:
+        void InactiveUpdate(float deltaTime) override;
         PlayerController();
 
         enum MoveDirections
@@ -57,6 +65,10 @@ class PlayerController : public IController
         // PastDirection is used for debugging, delete when done
         MoveDirections PastDirection;
 
+		float m_Pitch = 0.0f;
+		float m_Yaw = 0.0f;
+		float m_Roll = 0.0f;
+
 		float minMaxSpeed = 1.0f;
         float maxMaxSpeed = 3.0f;
 
@@ -69,4 +81,5 @@ class PlayerController : public IController
 		DirectX::XMVECTOR m_CurrentInput;
 
         DirectX::XMVECTOR m_CurrentVelocity;
+
 };
