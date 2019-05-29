@@ -208,5 +208,5 @@ PlayerController::PlayerController()
 void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)
 {
         preBoostVelocity = m_CurrentVelocity;
-        m_CurrentVelocity += 6.0f * XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+        m_CurrentVelocity += 1.0f * XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 }

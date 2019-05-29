@@ -67,7 +67,7 @@ class PlayerController : public IController
         // PastDirection is used for debugging, delete when done
         MoveDirections PastDirection;
 
-		float m_Pitch = 0.0f;
+		float m_Pitch = -90.0f;
 		float m_Yaw = 0.0f;
 		float m_Roll = 0.0f;
 
