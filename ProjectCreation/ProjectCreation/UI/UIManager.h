@@ -10,19 +10,7 @@
 #include <vector>
 #include "CommonStates.h"
 #include "SpriteComponent.h"
-#include "SpriteFont.h"
-
-
-struct FontComponent
-{
-        std::unique_ptr<DirectX::SpriteFont> mSpriteFont;
-        std::string                          mTextDisplay;
-        DirectX::SimpleMath::Vector2         mScreenPos;
-        ID3D11ShaderResourceView*            mTexture;
-        RECT                                 mRectangle;
-        bool                                 enabled;
-        int                                  id;
-};
+#include "FontComponent.h"
 
 class UIManager
 {
@@ -47,8 +35,8 @@ class UIManager
         void RemoveText(int id);
 
 
-    private:
         static UIManager* instance;
+    private:
 
         std::unique_ptr<DirectX::SpriteBatch>  mSpriteBatch;
         std::unique_ptr<DirectX::CommonStates> mStates;
