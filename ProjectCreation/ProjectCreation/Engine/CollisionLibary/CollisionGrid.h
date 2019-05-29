@@ -9,7 +9,9 @@ class CollisionGrid
         static const int CellSize = 20;
         static void      AddUnit(Unit* unit);
         static void      HandleMelee();
-        static void      handleCell(Unit* unit);
+        static void      HandleCell(Unit* unit);
+        static void      Move(Unit* unit, double x, double y);
+
     private:
          static Unit* cells[NumCell][NumCell];
 };

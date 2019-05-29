@@ -37,12 +37,12 @@ void CollisionGrid::HandleMelee()
         {
                 for (int y = 0; y < NumCell; y++)
                 {
-                        handleCell(cells[x][y]);
+                        HandleCell(cells[x][y]);
                 }
         }
 }
 
-void CollisionGrid::handleCell(Unit* unit)
+void CollisionGrid::HandleCell(Unit* unit)
 {
         while (unit != nullptr)
         {
@@ -58,4 +58,42 @@ void CollisionGrid::handleCell(Unit* unit)
 
                 unit = unit->next;
         }
+}
+
+void CollisionGrid::Move(Unit* unit, double x, double y)
+{
+        // See which cell it was in.
+        int oldCellX = (int)(unit->RowX / CollisionGrid::CellSize);
+        int oldCellY = (int)(unit->ColY / CollisionGrid::CellSize);
+
+        // See which cell it's moving to.
+        int cellX = (int)(x / CollisionGrid::CellSize);
+        int cellY = (int)(y / CollisionGrid::CellSize);
+
+        unit->RowX = x;
+        unit->ColY = y;
+
+        // If it didn't change cells, we're done.
+        if (oldCellX == cellX && oldCellY == cellY)
+                return;
+
+        // Unlink it from the list of its old cell.
+        if (unit->prev != nullptr)
+        {
+                unit->prev->next = unit->next;
+        }
+
+        if (unit->next != nullptr)
+        {
+                unit->next->prev = unit->prev;
+        }
+
+        // If it's the head of a list, remove it.
+        if (cells[oldCellX][oldCellY] == unit)
+        {
+                cells[oldCellX][oldCellY] = unit->next;
+        }
+
+        // Add it back to the grid at its new cell.
+        AddUnit(unit);
 }

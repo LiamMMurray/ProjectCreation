@@ -17,6 +17,7 @@
     <ClInclude Include="Engine\CollisionLibary\CollisionComponent.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionGrid.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionLibary.h" />
+    <ClInclude Include="Engine\CollisionLibary\CollisionSystem.h" />
     <ClInclude Include="Engine\CollisionLibary\Unit.h" />
     <ClInclude Include="Engine\Controller\ControllerManager.h" />
     <ClInclude Include="Engine\Controller\DebugCameraController.h" />
@@ -167,7 +168,9 @@
     <ClCompile Include="Engine\CollisionLibary\CollisionComponent.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionGrid.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionLibary.cpp" />
+    <ClCompile Include="Engine\CollisionLibary\CollisionSystem.cpp" />
     <ClCompile Include="Engine\CollisionLibary\Shapes.cpp" />
+    <ClCompile Include="Engine\CollisionLibary\Unit.cpp" />
     <ClCompile Include="Engine\Controller\ControllerManager.cpp" />
     <ClCompile Include="Engine\Controller\DebugCameraController.cpp" />
     <ClCompile Include="Engine\EngineInitShutdownHelpers.cpp" />

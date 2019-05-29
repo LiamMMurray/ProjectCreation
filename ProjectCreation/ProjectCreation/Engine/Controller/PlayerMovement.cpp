@@ -159,13 +159,12 @@ void PlayerController::ApplyInput()
         fSphereCheck.radius = 0.2f;
 
 
-        // AddSphere(fSphereStart, 36, XMMatrixIdentity());
-        // AddSphere(fSphereEnd, 36, XMMatrixIdentity());
-        // AddSphere(fSphereCheck, 36, XMMatrixIdentity());
-
-        // Check Collision and If collided stop moving
-
-        FSweepCollisionResult result = CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 1.0f);
+		//AddSphere(fSphereStart,36,XMMatrixIdentity());
+       // AddSphere(fSphereEnd, 36, XMMatrixIdentity());
+       // AddSphere(fSphereCheck, 36, XMMatrixIdentity());
+		
+		FAdvancedviCollisionResult result =
+            CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 1.0f);
 
         if (result.collisionType != Collision::ECollisionType::EOveralap &&
             result.collisionType != Collision::ECollisionType::ECollide)
