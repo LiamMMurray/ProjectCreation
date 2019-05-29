@@ -25,6 +25,8 @@ class PlayerController : public IController
         void InactiveUpdate(float deltaTime) override;
         PlayerController();
 
+		void SpeedBoost(DirectX::XMVECTOR preBoostVelocity);
+
         enum MoveDirections
         {
                 NO_DIRECTION = 0,

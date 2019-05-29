@@ -11,6 +11,7 @@
 #include <string>
 #include "..//CoreInput/CoreInput.h"
 #include "..//MathLibrary/MathLibrary.h"
+#include "../Controller/PlayerMovement.h"
 
 using namespace DirectX;
 
@@ -50,6 +51,10 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 if (distanceSq < m_BoostRadius * 2.0f)
                 {
                         RandomMoveBoost(tc, playerTransform);
+
+                        static_cast<PlayerController*>(
+                            ControllerManager::Get()->m_Controllers[ControllerManager::E_CONTROLLERS::PLAYER])
+                            ->SpeedBoost(XMVectorZero());
                 }
         }
 }
