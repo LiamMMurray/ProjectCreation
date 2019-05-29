@@ -8,6 +8,12 @@
 
 class ControllerManager
 {
+        static ControllerManager* instance;
+
+        void init();
+        void shutdown();
+
+        void update(float delta);
     public:
         // bool m_toggleDebugCamera = false;
 
@@ -21,19 +27,20 @@ class ControllerManager
 
         IController* m_Controllers[E_CONTROLLERS::COUNT] = {};
 
-        SystemManager* m_SystemManager;
+        SystemManager*    m_SystemManager;
         ComponentManager* m_ComponentManager;
-        EntityManager* m_EntityManager;
+        EntityManager*    m_EntityManager;
 
         E_CONTROLLERS m_CurrentController;
 
-		bool m_toggleDebug = false;
+        bool m_toggleDebug = false;
 
         void DisplayConsoleMenu();
 
-        void Initialize();
+        static void Initialize();
 
-        void Update(float delta);
 
-        void Shutdown();
+        static ControllerManager* Get();
+        static void               Shutdown();
+        static void               Update(float deltaTime);
 };

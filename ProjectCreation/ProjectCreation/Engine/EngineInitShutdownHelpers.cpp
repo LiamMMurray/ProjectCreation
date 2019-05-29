@@ -1,7 +1,7 @@
 #include "EngineInitShutdownHelpers.h"
 
-#include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/Animation/AnimationSystem.h"
+#include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/Physics/PhysicsSystem.h"
 
 void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type handle)

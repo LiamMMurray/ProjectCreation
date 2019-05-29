@@ -37,6 +37,7 @@
 #include "Engine/Controller/ControllerManager.h"
 
 #include "Rendering/Components/DirectionalLightComponent.h"
+#include "Engine/Gameplay/SpeedBoostSystem.h"
 
 #pragma comment(lib, "dbghelp")
 
@@ -197,10 +198,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         auto testMeshHandle = entityManager->CreateEntity<BaseEntity>();
         // auto entity  = entityManager->GetEntity(eHandle);
 
-        ControllerManager controllerManager;
-
-        controllerManager.Initialize();
-
+        ControllerManager::Initialize();
 
         // Debug camera entity setup
 
@@ -232,10 +230,10 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                     ring2Transform->transform.translation = ring3Transform->transform.translation =
                         XMVectorSet(0.0f, 1000.0f, 0.0f, 1.0f);
 
-                sunTransform->transform.SetScale(200.0f);
-                ring1Transform->transform.SetScale(200.0f);
-                ring2Transform->transform.SetScale(200.0f);
-                ring3Transform->transform.SetScale(200.0f);
+                sunTransform->transform.SetScale(150.0f);
+                ring1Transform->transform.SetScale(150.0f);
+                ring2Transform->transform.SetScale(150.0f);
+                ring3Transform->transform.SetScale(150.0f);
         }
 
         // Directional Light setup
@@ -251,6 +249,14 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.8f, 1.0f, 1.0f);
                 dirComp->m_AmbientColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
         }
+
+        // Create speedboost system
+        FSystemInitProperties sysInitProps;
+        SpeedBoostSystem* speedBoostSystem;
+        systemManager->CreateSystem<SpeedBoostSystem>(&speedBoostSystem);
+        sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
+        sysInitProps.m_UpdateRate = 0.0f;
+        systemManager->RegisterSystem(&sysInitProps, speedBoostSystem);
 
         while (msg.message != WM_QUIT)
         {
@@ -332,10 +338,11 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
                 debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
 
-                controllerManager.Update(GEngine::Get()->GetDeltaTime());
+                ControllerManager::Update(GEngine::Get()->GetDeltaTime());
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
         }
 
+        ControllerManager::Shutdown();
         EngineHelpers::ShutdownEngineSystemManagers();
 
         return 0;
