@@ -114,21 +114,6 @@ void UIManager::Initialize()
         auto renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 
         instance->AddSprite(renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/Grey Box Test.dds", 0.0f, 0.0f);
-
-        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                std::cout << "OnPress Event" << std::endl;
-                std::cout << "Sprite id: " << e->sprite->mId << std::endl;
-                std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
-                std::cout << std::endl;
-        });
-
-		        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                std::cout << "OnPress Event2" << std::endl;
-                std::cout << "Sprite id: " << e->sprite->mId << std::endl;
-                std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
-                std::cout << std::endl;
-        });
-
         instance->AddSprite(renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/cat.dds", 0.0f, 0.0f);
 
         instance->AddText(renderSystem->m_Device,
@@ -137,6 +122,57 @@ void UIManager::Initialize()
                           "New Game",
                           instance->mSprites[0].mOrigin.x,
                           15.0f);
+        instance->AddText(renderSystem->m_Device,
+                          renderSystem->m_Context,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Load Game",
+                          instance->mSprites[0].mOrigin.x,
+                          65.0f);
+        instance->AddText(renderSystem->m_Device,
+                          renderSystem->m_Context,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Options",
+                          instance->mSprites[0].mOrigin.x,
+                          115.0f);
+        instance->AddText(renderSystem->m_Device,
+                          renderSystem->m_Context,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Exit",
+                          instance->mSprites[0].mOrigin.x,
+                          165.0f);
+
+		//Events
+        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                std::cout << "OnPress Event" << std::endl;
+                std::cout << "Sprite id: " << e->sprite->mId << std::endl;
+                std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
+                std::cout << std::endl;
+        });
+        
+		        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                std::cout << "OnPress Event2" << std::endl;
+                std::cout << "Sprite id: " << e->sprite->mId << std::endl;
+                std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
+                std::cout << std::endl;
+        });
+
+		instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) { 
+			for (int i = 0; i < instance->mSpriteFonts.size(); i++)
+                {
+                    if (instance->mSpriteFonts[i]->mEnabled == false)
+                    {
+                            instance->mSpriteFonts[i]->mEnabled = true;
+                    }
+					else
+                    {
+                            instance->mSpriteFonts[i]->mEnabled = false;
+					}
+                }
+			});
+
+		instance->mSprites[1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                exit(1);
+        });
 }
 
 void UIManager::Update()
@@ -159,17 +195,17 @@ void UIManager::Update()
                 }
                 // Text
 
-                // for (int i = 0; i < instance->mSpriteFonts.size(); i++)
-                //{
-                //        if (instance->mSpriteFonts[i]->enabled == true)
-                //        {
-                //                instance->mSpriteFonts[i]->enabled = false;
-                //        }
-                //        else
-                //        {
-                //                instance->mSpriteFonts[i]->enabled = true;
-                //        }
-                //}
+                 for (int i = 0; i < instance->mSpriteFonts.size(); i++)
+                {
+                        if (instance->mSpriteFonts[i]->mEnabled == true)
+                        {
+                                instance->mSpriteFonts[i]->mEnabled = false;
+                        }
+                        else
+                        {
+                                instance->mSpriteFonts[i]->mEnabled = true;
+                        }
+                }
 
                 // Pause Game Afterwards
         }
@@ -181,18 +217,10 @@ void UIManager::Update()
                 {
                         if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Release)
                         {
-                                // Setup mouse cursor input here
-                                // No current way to get mouse position
-
-                                instance->mCursor.x = GCoreInput::GetMouseWindowPosX();
-                                instance->mCursor.y = GCoreInput::GetMouseWindowPosY();
-
                                 if (PtInRect(&instance->mSprites[i].mRectangle,
                                              {GCoreInput::GetMouseWindowPosX(), GCoreInput::GetMouseWindowPosY()}))
                                 {
                                         // Button Was Pressed
-                                        /*                            instance->mSprites[i].enabled = false;
-                                         */
                                         UIMouseEvent e;
 										
                                         e.mouseX = GCoreInput::GetMouseWindowPosX();
@@ -201,14 +229,15 @@ void UIManager::Update()
                                         instance->mSprites[i].OnMouseDown.Invoke(&e);
                                         
 
-                                        if (instance->mSprites[i].mId == 1)
-                                        {
-                                                instance->mSpriteFonts[0]->mEnabled = false;
-                                        }
-                                        else
-                                        {
-                                                instance->mSpriteFonts[0]->mEnabled = true;
-										}
+                                        //if (instance->mSprites[i].mId == 2)
+                                        //{
+                                        //        instance->mSpriteFonts[0]->mEnabled = false;
+                                        //}
+                                        //else
+                                        //{
+                                        //        instance->mSpriteFonts[0]->mEnabled = true;
+										//}
+
                                         // exit(1);
                                 }
                         }
