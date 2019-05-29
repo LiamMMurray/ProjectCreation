@@ -123,13 +123,24 @@ void PlayerController::ApplyInput()
         // Calculate current velocity based on itself, the deltaVector, and delta
         m_CurrentVelocity = m_CurrentVelocity + deltaVec * delta;
 
+        XMVECTOR preBoostVelocity = XMVectorZero();
+
+        if (GCoreInput::GetKeyState(KeyCode::K) == KeyState::DownFirst)
+        {
+                preBoostVelocity = m_CurrentVelocity;
+                m_CurrentVelocity += 10.0f * XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+        }
+
+        m_CurrentVelocity =
+            XMVectorLerp(m_CurrentVelocity, preBoostVelocity, MathLibrary::clamp(deltaTime * 0.5f, 0.0f, 1.0f));
+
         // Convert the angle of change on the X-Axis and the Y-Axis to radians
-        static float accumAngleY = 0.f;
-        m_Yaw += m_MouseXDelta * 5.f * deltaTime;
-        m_Pitch += m_MouseYDelta * 5.f * deltaTime;
-        m_Pitch = MathLibrary::clamp(m_Pitch, -90.f, 90.f);
+        static float accumAngleY = 0.0f;
+        m_Yaw += m_MouseXDelta * 5.0f * deltaTime;
+        m_Pitch += m_MouseYDelta * 5.0f * deltaTime;
+        m_Pitch = MathLibrary::clamp(m_Pitch, -90.0f, 90.0f);
         m_Roll += m_MouseXDelta * 4.0f * deltaTime;
-        m_Roll = MathLibrary::clamp(m_Roll, -20.f, 20.f);
+        m_Roll = MathLibrary::clamp(m_Roll, -20.0f, 20.0f);
 
         m_Roll = MathLibrary::lerp(m_Roll, 0.0f, MathLibrary::clamp(deltaTime * 20.0f, 0.0f, 1.0f));
 
@@ -144,13 +155,15 @@ void PlayerController::ApplyInput()
         fSphereEnd.center = transformComp->transform.translation + offset;
         fSphereEnd.radius = 0.2f;
         FSphere fSphereCheck;
-        fSphereCheck.center = XMVectorSet(0.0f, 0.0f, 0.f, 1.0f);
+        fSphereCheck.center = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
         fSphereCheck.radius = 0.2f;
 
 
-        AddSphere(fSphereStart, 36, XMMatrixIdentity());
+        // AddSphere(fSphereStart, 36, XMMatrixIdentity());
         // AddSphere(fSphereEnd, 36, XMMatrixIdentity());
         // AddSphere(fSphereCheck, 36, XMMatrixIdentity());
+
+        // Check Collision and If collided stop moving
 
         FSweepCollisionResult result = CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 1.0f);
 
@@ -187,7 +200,52 @@ void PlayerController::InactiveUpdate(float deltaTime)
         debug_renderer::AddSphere(
             fSpherePlayer, 36, XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslationFromVector(m_CurrentPosition)));
 
-        ApplyInput();
+        //ApplyInput();
+
+        // Get the Transoform Component
+        TransformComponent* transformComp =
+            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+
+
+        // Get Delta Time
+        float DeltaTime = cacheTime; // GEngine::Get()->GetDeltaTime();
+
+        // Get the Speed from the gathered input
+        float currSpeed = XMVectorGetX(XMVector3Length(m_CurrentInput));
+
+        // Get the Forward from the gathered input
+        float currForward = XMVectorGetZ(m_CurrentInput);
+
+        // Normalize the gathered input to determine the desired direction
+        XMVECTOR desiredDir = XMVector3Normalize(m_CurrentInput);
+
+        // Determine the max speed the object can move
+        float maxSpeed = MathLibrary::lerp(minMaxSpeed, maxMaxSpeed, currForward - minMaxSpeed);
+
+        // Check if the currSpeed is faster than the maxSpeed
+        if (fabs(currSpeed) > fabs(maxSpeed))
+        {
+                // Clamp the currSpeed to the maxSpeed
+                currSpeed = MathLibrary::clamp(currSpeed, -maxSpeed, maxSpeed);
+        }
+
+        // Calculate desiredVelocity by multiplying the currSpeed by the direction we want to go
+        XMVECTOR desiredVelocity = currSpeed * desiredDir;
+
+        // Determine if we should speed up or slow down
+        float accel = deacceleration;
+
+        // Calculate distance from our current velocity to our desired velocity
+        float dist = MathLibrary::CalulateDistance(m_CurrentVelocity, desiredVelocity);
+
+        // Calculate change based on the type of acceleration, the change in time, and the calculated distance
+        float delta = std::min(accel * DeltaTime, dist);
+
+        // Normalize the difference of the desired velocity and the current velocity
+        XMVECTOR deltaVec = XMVector3Normalize(desiredVelocity - m_CurrentVelocity);
+
+        // Calculate current velocity based on itself, the deltaVector, and delta
+        m_CurrentVelocity = m_CurrentVelocity + deltaVec * delta;
 }
 
 PlayerController::PlayerController()
