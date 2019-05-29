@@ -4,6 +4,8 @@
 #include "../Engine/Events/Event.h"
 #include "../Engine/Events/EventDelegate.h"
 #include "../Engine/Events/EventManager.h"
+#include "../ECS/Component.h"
+
 #include "SimpleMath.h"
 #include "SpriteFont.h"
 class SpriteComponent;
@@ -24,17 +26,20 @@ class UIMouseEventDelegate : public EventDelegate<UIMouseEventDelegate, UIMouseE
 class UIMouseEventManager : public EventManager<UIMouseEventDelegate, UIMouseEvent>
 {};
 
-class SpriteComponent
+class SpriteComponent : public Component<SpriteComponent>
 {
     public:
-        DirectX::SimpleMath::Vector2 mScreenPos;
-        DirectX::SimpleMath::Vector2 mOrigin;
-        ID3D11ShaderResourceView*    mTexture;
-        RECT                         mRectangle;
-        bool                         enabled;
-        unsigned int                 id;
+        DirectX::SimpleMath::Vector2          mScreenPos;
+        DirectX::SimpleMath::Vector2          mOrigin;
+        unsigned int                          mHeight;
+        unsigned int                          mWidth;
+        ID3D11ShaderResourceView*             mTexture;
+        RECT							      mRectangle;
+        bool                                  mEnabled;
+        unsigned int                          mId;
 
-        void Initialize();
+        void MakeRectangle();
+
         void SetPosition(float x, float y);
         void TransformPosition(float x, float y);
         void ScaleSprite(float scale);

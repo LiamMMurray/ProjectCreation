@@ -31,35 +31,36 @@ void UIManager::AddSprite(ID3D11Device*        device,
         CD3D11_TEXTURE2D_DESC TextureDesc;
         Texture->GetDesc(&TextureDesc);
 
+        // Add the origin to the sprite
         cSprite.mOrigin.x = float(TextureDesc.Width * 0.5);
         cSprite.mOrigin.y = float(TextureDesc.Height * 0.5);
+
+        // Add the width and height to the sprite
+        cSprite.mWidth  = TextureDesc.Width;
+        cSprite.mHeight = TextureDesc.Height;
 
         // Set the Id of the Sprite for the Main Menu
         if (instance->mSprites.size() <= 0)
         {
-                cSprite.id = 1;
+                cSprite.mId = 1;
         }
         else
         {
-                cSprite.id = instance->mSprites[instance->mSprites.size() - 1].id + 1;
+                cSprite.mId = instance->mSprites[instance->mSprites.size() - 1].mId + 1;
         }
         // Set the Sprite to enabled
-        cSprite.enabled = false;
+        cSprite.mEnabled = false;
 
         // Sprite Screen Position
         cSprite.SetPosition(cSprite.mOrigin.x, 0);
 
-
         // Rectangle
-        cSprite.mRectangle.top  = 0;
-        cSprite.mRectangle.left = cSprite.mOrigin.x;
+        cSprite.MakeRectangle();
 
-        cSprite.mRectangle.bottom = 0 + TextureDesc.Height;
-        cSprite.mRectangle.right  = cSprite.mOrigin.x + TextureDesc.Width;
-
+        // Push back to the vector
         instance->mSprites.push_back(cSprite);
 
-
+        // Reset everything that needs to be
         Texture.Reset();
         resource.Reset();
 }
@@ -81,33 +82,18 @@ void UIManager::AddText(ID3D11Device*        device,
         createText->mSpriteFont  = std::make_unique<DirectX::SpriteFont>(device, FileName);
         createText->mTextDisplay = TextDisplay;
 
+        //Set the Main Menu text to enabled
+        createText->mEnabled = false;
 
-        // Microsoft::WRL::ComPtr<ID3D11Resource> resource;
-        // HRESULT hr = DirectX::CreateDDSTextureFromFile(device, FileName, resource.GetAddressOf(), &createText->mTexture);
-        // if (FAILED(hr))
-        //{
-        //        exit(-1);
-        //}
-        // Microsoft::WRL::ComPtr<ID3D11Texture2D> Texture;
-        // resource.As(&Texture);
-        //
-        // CD3D11_TEXTURE2D_DESC TextureDesc;
-        // Texture->GetDesc(&TextureDesc);
-
-        // Set the Main Menu text to enabled
-        createText->enabled = false;
-
-        // Text Screen Position
+        //Text Screen Position
         createText->mScreenPos.x = instance->mSprites[0].mOrigin.x;
         createText->mScreenPos.y = 0;
 
-        ////Rectangle
-        // createText->mRectangle.top  = createText->mScreenPos.y;
-        // createText->mRectangle.left = createText->mScreenPos.x;
-        //
-        // createText->mRectangle.bottom = createText->mScreenPos.y + TextureDesc.Height;
-        // createText->mRectangle.right  = createText->mScreenPos.x + TextureDesc.Width;
+		//Create Dimensions
+		const char* tempText = createText->mTextDisplay.c_str();
+        DirectX::XMVECTOR tDimensions = createText->mSpriteFont->MeasureString(tempText);
 
+		createText->MakeRectangle();
 
         // Error C2280
         // attempting to reference a deleted function
@@ -131,14 +117,14 @@ void UIManager::Initialize()
 
         instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 std::cout << "OnPress Event" << std::endl;
-                std::cout << "Sprite id: " << e->sprite->id << std::endl;
+                std::cout << "Sprite id: " << e->sprite->mId << std::endl;
                 std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
                 std::cout << std::endl;
         });
 
 		        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 std::cout << "OnPress Event2" << std::endl;
-                std::cout << "Sprite id: " << e->sprite->id << std::endl;
+                std::cout << "Sprite id: " << e->sprite->mId << std::endl;
                 std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
                 std::cout << std::endl;
         });
@@ -158,34 +144,36 @@ void UIManager::Update()
                 // Sprites
                 for (int i = 0; i < instance->mSprites.size(); i++)
                 {
-                        if (instance->mSprites[i].enabled == true)
+                        if (instance->mSprites[i].mEnabled == true)
                         {
-                                instance->mSprites[i].enabled = false;
+                                instance->mSprites[i].mEnabled = false;
                         }
                         else
                         {
-                                instance->mSprites[i].enabled = true;
+                                instance->mSprites[i].mEnabled = true;
                         }
                 }
                 // Text
-                for (int i = 0; i < instance->mSpriteFonts.size(); i++)
-                {
-                        if (instance->mSpriteFonts[i]->enabled == true)
-                        {
-                                instance->mSpriteFonts[i]->enabled = false;
-                        }
-                        else
-                        {
-                                instance->mSpriteFonts[i]->enabled = true;
-                        }
-                }
+
+                // for (int i = 0; i < instance->mSpriteFonts.size(); i++)
+                //{
+                //        if (instance->mSpriteFonts[i]->enabled == true)
+                //        {
+                //                instance->mSpriteFonts[i]->enabled = false;
+                //        }
+                //        else
+                //        {
+                //                instance->mSpriteFonts[i]->enabled = true;
+                //        }
+                //}
+
                 // Pause Game Afterwards
         }
 
         // Sprite Display
         for (int i = 0; i < instance->mSprites.size(); i++)
         {
-                if (instance->mSprites[i].enabled == true)
+                if (instance->mSprites[i].mEnabled == true)
                 {
                         if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Release)
                         {
@@ -209,6 +197,14 @@ void UIManager::Update()
                                         instance->mSprites[i].OnMouseDown.Invoke(&e);
                                         
 
+                                        if (instance->mSprites[i].mId == 1)
+                                        {
+                                                instance->mSpriteFonts[0]->mEnabled = false;
+                                        }
+                                        else
+                                        {
+                                                instance->mSpriteFonts[0]->mEnabled = true;
+										}
                                         // exit(1);
                                 }
                         }
@@ -225,7 +221,7 @@ void UIManager::Update()
         // Text Display
         for (int i = 0; i < instance->mSpriteFonts.size(); i++)
         {
-                if (instance->mSpriteFonts[i]->enabled == true)
+                if (instance->mSpriteFonts[i]->mEnabled == true)
                 {
                         instance->mSpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
                                                       instance->mStates->NonPremultiplied());

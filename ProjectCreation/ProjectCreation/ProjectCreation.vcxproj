@@ -69,6 +69,7 @@
     <ClInclude Include="Engine\MathLibrary\Quaternion.h" />
     <ClInclude Include="Engine\MathLibrary\Transform.h" />
     <ClInclude Include="Engine\MathLibrary\Vector.h" />
+    <ClInclude Include="UI\FontComponent.h" />
     <ClInclude Include="Rendering\Components\CameraComponent.h" />
     <ClInclude Include="Rendering\Components\DirectionalLightComponent.h" />
     <ClInclude Include="Rendering\Components\PointLightComponent.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="Engine\XTime.cpp" />
     <ClCompile Include="Engine\Entities\TestEntities.cpp" />
     <ClCompile Include="FileIO\FileIO.cpp" />
+    <ClCompile Include="UI\FontComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\MathLibrary\MathLibrary.cpp" />
     <ClCompile Include="Engine\MathLibrary\Quaternion.cpp" />
