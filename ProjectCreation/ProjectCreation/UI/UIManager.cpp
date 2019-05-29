@@ -52,7 +52,7 @@ void UIManager::AddSprite(ID3D11Device*        device,
         cSprite.mEnabled = false;
 
         // Sprite Screen Position
-        cSprite.SetPosition(cSprite.mOrigin.x, 0);
+        cSprite.SetPosition(cSprite.mOrigin.x, PositionY);
 
         // Rectangle
         cSprite.MakeRectangle();
@@ -86,8 +86,8 @@ void UIManager::AddText(ID3D11Device*        device,
         createText->mEnabled = false;
 
         //Text Screen Position
-        createText->mScreenPos.x = instance->mSprites[0].mOrigin.x;
-        createText->mScreenPos.y = 0;
+        createText->mScreenPos.x = PositionX;
+        createText->mScreenPos.y = PositionY;
 
 		//Create Dimensions
 		const char* tempText = createText->mTextDisplay.c_str();
@@ -113,7 +113,7 @@ void UIManager::Initialize()
 
         auto renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 
-        instance->AddSprite(renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/GuyMoon.dds", 0.0f, 0.0f);
+        instance->AddSprite(renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/Grey Box Test.dds", 0.0f, 0.0f);
 
         instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 std::cout << "OnPress Event" << std::endl;
@@ -131,8 +131,12 @@ void UIManager::Initialize()
 
         instance->AddSprite(renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/cat.dds", 0.0f, 0.0f);
 
-        instance->AddText(
-            renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Text/myfile.spritefont", "New Game", 0.0f, 0.0f);
+        instance->AddText(renderSystem->m_Device,
+                          renderSystem->m_Context,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "New Game",
+                          instance->mSprites[0].mOrigin.x,
+                          15.0f);
 }
 
 void UIManager::Update()
