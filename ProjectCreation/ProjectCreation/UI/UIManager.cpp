@@ -142,21 +142,21 @@ void UIManager::Initialize()
                           165.0f);
 
 		//Events
-        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                std::cout << "OnPress Event" << std::endl;
+        instance->mSprites[0].OnMouseUp.AddEventListener([](UIMouseEvent* e) {
+                std::cout << "Mouse Up Event" << std::endl;
                 std::cout << "Sprite id: " << e->sprite->mId << std::endl;
                 std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
                 std::cout << std::endl;
         });
         
-		        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+		        instance->mSprites[0].OnMouseUp.AddEventListener([](UIMouseEvent* e) {
                 std::cout << "OnPress Event2" << std::endl;
                 std::cout << "Sprite id: " << e->sprite->mId << std::endl;
                 std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
                 std::cout << std::endl;
         });
 
-		instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) { 
+		instance->mSprites[0].OnMouseUp.AddEventListener([](UIMouseEvent* e) { 
 			for (int i = 0; i < instance->mSpriteFonts.size(); i++)
                 {
                     if (instance->mSpriteFonts[i]->mEnabled == false)
@@ -170,7 +170,7 @@ void UIManager::Initialize()
                 }
 			});
 
-		instance->mSprites[1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+		instance->mSprites[1].OnMouseUp.AddEventListener([](UIMouseEvent* e) {
                 exit(1);
         });
 }
@@ -225,20 +225,8 @@ void UIManager::Update()
 										
                                         e.mouseX = GCoreInput::GetMouseWindowPosX();
                                         e.mouseY = GCoreInput::GetMouseWindowPosY();
-                                        e.sprite = &instance->mSprites[0];
-                                        instance->mSprites[i].OnMouseDown.Invoke(&e);
-                                        
-
-                                        //if (instance->mSprites[i].mId == 2)
-                                        //{
-                                        //        instance->mSpriteFonts[0]->mEnabled = false;
-                                        //}
-                                        //else
-                                        //{
-                                        //        instance->mSpriteFonts[0]->mEnabled = true;
-										//}
-
-                                        // exit(1);
+                                        e.sprite = &instance->mSprites[i];
+                                        instance->mSprites[i].OnMouseUp.Invoke(&e);
                                 }
                         }
                         instance->mSpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
