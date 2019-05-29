@@ -12,19 +12,19 @@ class CollisionLibary
     public:
         static void CreateFrustum(Shapes::Frustum& frustum, DirectX::XMMATRIX view, DirectX::XMMATRIX projection);
         static Collision::FCollideResult OverlapSphereToSphere(Shapes::FSphere& a, Shapes::FSphere& b, float offset);
-        static Collision::FSweepCollisionResult SweepSphereToSphere(Shapes::FSphere& startA,
+        static Collision::FAdvancedviCollisionResult SweepSphereToSphere(Shapes::FSphere& startA,
                                                                              Shapes::FSphere& endA,
                                                                              Shapes::FSphere& checkB,
                                                                              float            offset);
 
-        static Collision::FSweepCollisionResult SphereSphereSweep(const Shapes::FSphere&  sphere1,
+        static Collision::FAdvancedviCollisionResult SphereSphereSweep(const Shapes::FSphere&  sphere1,
                                                                            const DirectX::XMVECTOR S1CurrPosition,
                                                                            const Shapes::FSphere&  sphere2,
                                                                            const DirectX::XMVECTOR S2CurrPosition,
                                                                            float& u0, // normalized time of first collision
                                                                            float& u1  // normalized time of second collision
         );
-        static Collision::FSweepCollisionResult MovingSphereToMovingSphere(Shapes::FSphere&  a,
+        static Collision::FAdvancedviCollisionResult MovingSphereToMovingSphere(Shapes::FSphere&  a,
                                                                                     Shapes::FSphere&  b,
                                                                                     DirectX::XMVECTOR velocityA,
                                                                                     DirectX::XMVECTOR velocityB,
@@ -37,6 +37,9 @@ class CollisionLibary
 
         static Collision::FCollisionObjects SweepAndPruneCollision(Shapes::FSphere& sphere, Shapes::FAabb& aabbSpace);
 
+		static Collision::FAdvancedviCollisionResult RayToSphereCollision(DirectX::XMVECTOR& startPoint,
+                                                                          DirectX::XMVECTOR& direction,
+                                                                          Shapes::FSphere&   sphere);
         static Shapes::FAabb AddAABB(const Shapes::FAabb& a, const Shapes::FAabb& b);
 
         static Shapes::FAabb CreateBoundingBoxFromShpere(const Shapes::FSphere sphere);

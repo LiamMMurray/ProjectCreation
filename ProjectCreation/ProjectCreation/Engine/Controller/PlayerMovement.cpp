@@ -180,7 +180,7 @@ void PlayerController::ApplyInput()
        // AddSphere(fSphereEnd, 36, XMMatrixIdentity());
        // AddSphere(fSphereCheck, 36, XMMatrixIdentity());
 		
-		FSweepCollisionResult result =
+		FAdvancedviCollisionResult result =
             CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 1.0f);
 
         if (result.collisionType != Collision::ECollisionType::EOveralap &&
