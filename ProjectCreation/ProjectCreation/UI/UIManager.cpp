@@ -159,15 +159,19 @@ void UIManager::Initialize()
 		instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) { 
 			for (int i = 0; i < instance->mSpriteFonts.size(); i++)
                 {
-                        instance->mSpriteFonts[i]->mEnabled = true;
+                    if (instance->mSpriteFonts[i]->mEnabled == false)
+                    {
+                            instance->mSpriteFonts[i]->mEnabled = true;
+                    }
+					else
+                    {
+                            instance->mSpriteFonts[i]->mEnabled = false;
+					}
                 }
 			});
 
 		instance->mSprites[1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                for (int i = 0; i < instance->mSpriteFonts.size(); i++)
-                {
-                        instance->mSpriteFonts[i]->mEnabled = false;
-                }
+                exit(1);
         });
 }
 
@@ -213,18 +217,10 @@ void UIManager::Update()
                 {
                         if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Release)
                         {
-                                // Setup mouse cursor input here
-                                // No current way to get mouse position
-
-                                instance->mCursor.x = GCoreInput::GetMouseWindowPosX();
-                                instance->mCursor.y = GCoreInput::GetMouseWindowPosY();
-
                                 if (PtInRect(&instance->mSprites[i].mRectangle,
                                              {GCoreInput::GetMouseWindowPosX(), GCoreInput::GetMouseWindowPosY()}))
                                 {
                                         // Button Was Pressed
-                                        /*                            instance->mSprites[i].enabled = false;
-                                         */
                                         UIMouseEvent e;
 										
                                         e.mouseX = GCoreInput::GetMouseWindowPosX();
@@ -241,6 +237,7 @@ void UIManager::Update()
                                         //{
                                         //        instance->mSpriteFonts[0]->mEnabled = true;
 										//}
+
                                         // exit(1);
                                 }
                         }
