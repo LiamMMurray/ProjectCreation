@@ -38,6 +38,7 @@
 
 #include "Rendering/Components/DirectionalLightComponent.h"
 #include "Engine/Gameplay/SpeedBoostSystem.h"
+#include "Engine/Gameplay/OrbitSystem.h"
 
 #include "Engine/GenericComponents/TransformComponent.h"
 
@@ -206,36 +207,17 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
         // Test skeletal mesh setup
         {
-                std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
-                ComponentHandle          transformHandle;
-                EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
-
-                TransformComponent* transformComp = componentManager->GetComponent<TransformComponent>(transformHandle);
-                transformComp->transform.SetScale(0.1f);
+                //std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
+                //ComponentHandle          transformHandle;
+                //EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
+				//
+                //TransformComponent* transformComp = componentManager->GetComponent<TransformComponent>(transformHandle);
+                //transformComp->transform.SetScale(0.1f);
         }
 
         // Ground Plane
         {
                 EntityFactory::CreateStaticMeshEntity("GroundPlane01", "GroundMaterial01");
-                ComponentHandle sunHandle, ring1Handle, ring2Handle, ring3Handle;
-                EntityFactory::CreateStaticMeshEntity("Sphere01", "GlowMatSun", &sunHandle);
-                EntityFactory::CreateStaticMeshEntity("Ring01", "GlowMatRing", &ring1Handle);
-                EntityFactory::CreateStaticMeshEntity("Ring02", "GlowMatRing", &ring2Handle);
-                EntityFactory::CreateStaticMeshEntity("Ring03", "GlowMatRing", &ring3Handle);
-
-                auto sunTransform   = componentManager->GetComponent<TransformComponent>(sunHandle);
-                auto ring1Transform = componentManager->GetComponent<TransformComponent>(ring1Handle);
-                auto ring2Transform = componentManager->GetComponent<TransformComponent>(ring2Handle);
-                auto ring3Transform = componentManager->GetComponent<TransformComponent>(ring3Handle);
-
-                sunTransform->transform.translation       = ring1Transform->transform.translation =
-                    ring2Transform->transform.translation = ring3Transform->transform.translation =
-                        XMVectorSet(0.0f, 1000.0f, 0.0f, 1.0f);
-
-                sunTransform->transform.SetScale(150.0f);
-                ring1Transform->transform.SetScale(150.0f);
-                ring2Transform->transform.SetScale(150.0f);
-                ring3Transform->transform.SetScale(150.0f);
         }
 
         // Directional Light setup
@@ -249,7 +231,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 dirComp->m_LightRotation =
                     XMQuaternionRotationRollPitchYaw(XMConvertToRadians(45.0f), XMConvertToRadians(120.0f), 0.0f);
                 dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.8f, 1.0f, 1.0f);
-                dirComp->m_AmbientColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+                dirComp->m_AmbientColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f);
         }
 
         // Create speedboost system
@@ -259,6 +241,10 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
         sysInitProps.m_UpdateRate = 0.0f;
         systemManager->RegisterSystem(&sysInitProps, speedBoostSystem);
+
+		OrbitSystem* orbitSystem;
+        systemManager->CreateSystem<OrbitSystem>(&orbitSystem);
+        systemManager->RegisterSystem(&sysInitProps, orbitSystem);
 
         while (msg.message != WM_QUIT)
         {

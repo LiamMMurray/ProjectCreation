@@ -8,6 +8,22 @@
 
 #include "../ResourceManager/SkeletalMesh.h"
 
+EntityHandle EntityFactory::CreateDummyTransformEntity(ComponentHandle* outTransformHandle)
+{
+        auto componentManager = GEngine::Get()->GetComponentManager();
+        auto entityManager    = GEngine::Get()->GetEntityManager();
+        auto resourceManager  = GEngine::Get()->GetResourceManager();
+
+        auto outEntityHandle = entityManager->CreateEntity<BaseEntity>();
+
+        auto tCompHandle = componentManager->AddComponent<TransformComponent>(outEntityHandle);
+
+        if (outTransformHandle)
+                *outTransformHandle = tCompHandle;
+
+        return outEntityHandle;
+}
+
 EntityHandle EntityFactory::CreateStaticMeshEntity(const char*      staticMeshName,
                                                    const char*      materialName,
                                                    ComponentHandle* outTransformHandle,
@@ -49,7 +65,7 @@ EntityHandle EntityFactory::CreateSkeletalMeshEntity(const char*              sk
         auto entityManager    = GEngine::Get()->GetEntityManager();
         auto resourceManager  = GEngine::Get()->GetResourceManager();
 
-		int animCount = animNames.size();
+        int animCount = animNames.size();
 
         auto outEntityHandle = entityManager->CreateEntity<BaseEntity>();
 
