@@ -545,7 +545,7 @@ void RenderSystem::DrawMesh(ID3D11Buffer*      vertexBuffer,
 
         m_Context->PSSetShaderResources(0, E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, srvs);
 
-        m_ConstantBuffer_MVP.World = *mtx;
+        m_ConstantBuffer_MVP.World = XMMatrixTranspose(*mtx);
 
         UpdateConstantBuffer(
             m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP], &m_ConstantBuffer_MVP, sizeof(m_ConstantBuffer_MVP));
@@ -657,8 +657,8 @@ void RenderSystem::OnPreUpdate(float deltaTime)
                 for (auto itr = staticMeshCompItr.begin(); itr != staticMeshCompItr.end(); itr++)
                 {
                         FDraw drawcall;
-                        drawcall.meshType   = FDraw::EDrawType::Static;
-                        drawcall.meshHandle = itr.data()->GetHandle();
+                        drawcall.meshType        = FDraw::EDrawType::Static;
+                        drawcall.componentHandle = itr.data()->GetHandle();
 
                         auto        staticMeshComp = static_cast<StaticMeshComponent*>(itr.data());
                         StaticMesh* staticMesh = m_ResourceManager->GetResource<StaticMesh>(staticMeshComp->m_StaticMeshHandle);
@@ -666,6 +666,7 @@ void RenderSystem::OnPreUpdate(float deltaTime)
                         TransformComponent* tcomp        = m_ComponentManager->GetComponent<TransformComponent>(entityHandle);
                         Material*           mat = m_ResourceManager->GetResource<Material>(staticMeshComp->m_MaterialHandle);
 
+                        drawcall.meshResource   = staticMeshComp->m_StaticMeshHandle;
                         drawcall.materialHandle = staticMeshComp->m_MaterialHandle;
                         drawcall.mtx            = tcomp->transform.CreateMatrix();
 
@@ -689,8 +690,8 @@ void RenderSystem::OnPreUpdate(float deltaTime)
                 for (auto itr = skelCompItr.begin(); itr != skelCompItr.end(); itr++)
                 {
                         FDraw drawcall;
-                        drawcall.meshType   = FDraw::EDrawType::Skeletal;
-                        drawcall.meshHandle = itr.data()->GetHandle();
+                        drawcall.meshType        = FDraw::EDrawType::Skeletal;
+                        drawcall.componentHandle = itr.data()->GetHandle();
 
                         auto          skelMeshComp = static_cast<SkeletalMeshComponent*>(itr.data());
                         SkeletalMesh* skelMesh =
@@ -699,6 +700,7 @@ void RenderSystem::OnPreUpdate(float deltaTime)
                         TransformComponent* tcomp        = m_ComponentManager->GetComponent<TransformComponent>(entityHandle);
                         Material*           mat = m_ResourceManager->GetResource<Material>(skelMeshComp->m_MaterialHandle);
 
+                        drawcall.meshResource   = skelMeshComp->m_SkeletalMeshHandle;
                         drawcall.materialHandle = skelMeshComp->m_MaterialHandle;
                         drawcall.mtx            = tcomp->transform.CreateMatrix();
 
@@ -809,16 +811,16 @@ void RenderSystem::OnUpdate(float deltaTime)
         {
                 if (m_OpaqueDraws[i].meshType == FDraw::EDrawType::Static)
                 {
-                        StaticMesh* mesh = m_ResourceManager->GetResource<StaticMesh>(m_OpaqueDraws[i].mesh);
+                        StaticMesh* mesh = m_ResourceManager->GetResource<StaticMesh>(m_OpaqueDraws[i].meshResource);
                         Material*   mat  = m_ResourceManager->GetResource<Material>(m_OpaqueDraws[i].materialHandle);
                         DrawStaticMesh(mesh, mat, &m_OpaqueDraws[i].mtx);
                 }
                 else
                 {
-                        SkeletalMesh*          mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_OpaqueDraws[i].mesh);
+                        SkeletalMesh*          mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_OpaqueDraws[i].meshResource);
                         Material*              mat  = m_ResourceManager->GetResource<Material>(m_OpaqueDraws[i].materialHandle);
                         SkeletalMeshComponent* meshComp =
-                            m_ComponentManager->GetComponent<SkeletalMeshComponent>(m_OpaqueDraws[i].meshHandle);
+                            m_ComponentManager->GetComponent<SkeletalMeshComponent>(m_OpaqueDraws[i].componentHandle);
                         DrawSkeletalMesh(mesh, mat, &m_OpaqueDraws[i].mtx, &meshComp->m_Skeleton);
                 }
         }
@@ -829,16 +831,16 @@ void RenderSystem::OnUpdate(float deltaTime)
         {
                 if (m_TransluscentDraws[i].meshType == FDraw::EDrawType::Static)
                 {
-                        StaticMesh* mesh = m_ResourceManager->GetResource<StaticMesh>(m_TransluscentDraws[i].mesh);
+                        StaticMesh* mesh = m_ResourceManager->GetResource<StaticMesh>(m_TransluscentDraws[i].meshResource);
                         Material*   mat  = m_ResourceManager->GetResource<Material>(m_TransluscentDraws[i].materialHandle);
                         DrawStaticMesh(mesh, mat, &m_TransluscentDraws[i].mtx);
                 }
                 else
                 {
-                        SkeletalMesh* mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_TransluscentDraws[i].mesh);
+                        SkeletalMesh* mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_TransluscentDraws[i].meshResource);
                         Material*     mat  = m_ResourceManager->GetResource<Material>(m_TransluscentDraws[i].materialHandle);
                         SkeletalMeshComponent* meshComp =
-                            m_ComponentManager->GetComponent<SkeletalMeshComponent>(m_TransluscentDraws[i].meshHandle);
+                            m_ComponentManager->GetComponent<SkeletalMeshComponent>(m_TransluscentDraws[i].componentHandle);
                         DrawSkeletalMesh(mesh, mat, &m_TransluscentDraws[i].mtx, &meshComp->m_Skeleton);
                 }
         }

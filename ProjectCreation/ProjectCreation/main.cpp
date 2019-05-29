@@ -214,10 +214,29 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 transformComp->transform.SetScale(0.1f);
         }
 
-		// Ground Plane
+        // Ground Plane
         {
                 EntityFactory::CreateStaticMeshEntity("GroundPlane01", "GroundMaterial01");
-		}
+                ComponentHandle sunHandle, ring1Handle, ring2Handle, ring3Handle;
+                EntityFactory::CreateStaticMeshEntity("Sphere01", "GlowMatSun", &sunHandle);
+                EntityFactory::CreateStaticMeshEntity("Ring01", "GlowMatRing", &ring1Handle);
+                EntityFactory::CreateStaticMeshEntity("Ring02", "GlowMatRing", &ring2Handle);
+                EntityFactory::CreateStaticMeshEntity("Ring03", "GlowMatRing", &ring3Handle);
+
+                auto sunTransform   = componentManager->GetComponent<TransformComponent>(sunHandle);
+                auto ring1Transform = componentManager->GetComponent<TransformComponent>(ring1Handle);
+                auto ring2Transform = componentManager->GetComponent<TransformComponent>(ring2Handle);
+                auto ring3Transform = componentManager->GetComponent<TransformComponent>(ring3Handle);
+
+                sunTransform->transform.translation       = ring1Transform->transform.translation =
+                    ring2Transform->transform.translation = ring3Transform->transform.translation =
+                        XMVectorSet(0.0f, 1000.0f, 0.0f, 1.0f);
+
+                sunTransform->transform.SetScale(200.0f);
+                ring1Transform->transform.SetScale(200.0f);
+                ring2Transform->transform.SetScale(200.0f);
+                ring3Transform->transform.SetScale(200.0f);
+        }
 
         // Directional Light setup
         {
