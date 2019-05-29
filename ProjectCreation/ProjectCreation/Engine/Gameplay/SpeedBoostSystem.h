@@ -18,6 +18,7 @@ class SpeedBoostSystem : public ISystem
 
         void RandomMoveBoost(TransformComponent* boostTC, TransformComponent* playerTC);
 
+		float m_TargetRadius = 0.0f;
     protected:
         // Inherited via ISystem
         virtual void OnPreUpdate(float deltaTime) override;

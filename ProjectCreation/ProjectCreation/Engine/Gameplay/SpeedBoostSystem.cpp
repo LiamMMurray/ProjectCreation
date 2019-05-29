@@ -36,6 +36,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
         TransformComponent* playerTransform = m_ComponentManager->GetComponent<TransformComponent>(
             ControllerManager::Get()->m_Controllers[ControllerManager::E_CONTROLLERS::PLAYER]->GetControlledEntity());
 
+		GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_TargetRadius, deltaTime);
+
         for (int i = 0; i < m_MaxSpeedBoosts; ++i)
         {
                 TransformComponent* tc = m_ComponentManager->GetComponent<TransformComponent>(m_BoostTransformHandles[i]);
@@ -50,6 +52,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 if (distanceSq < m_BoostRadius * 2.0f)
                 {
                         RandomMoveBoost(tc, playerTransform);
+                        m_TargetRadius += 3.0f;
                 }
         }
 }
