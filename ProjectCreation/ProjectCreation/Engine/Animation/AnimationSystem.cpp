@@ -48,21 +48,22 @@ void AnimationSystem::calcTransforms(Animation::FJoint*          joints,
                                      float                       currweight)
 {
         int   prevFrame  = 0;
-        int   nextFrame  = 0;
+        int   nextFrame  = 1;
         float ratio      = 0.0f;
         int   frameCount = (int)animClip.frames.size();
         float animTime   = MathLibrary::Warprange(float(time), 0.0f, (float)animClip.duration);
-        for (prevFrame = 0; prevFrame < frameCount - 1; prevFrame++)
+
+        while (nextFrame < frameCount - 1)
         {
-                if (animTime >= animClip.frames[prevFrame].time && animTime < animClip.frames[prevFrame + 1].time)
+                if (animTime >= animClip.frames[prevFrame].time && animTime < animClip.frames[nextFrame].time)
                 {
                         break;
                 }
 
-                nextFrame = prevFrame;
-        }
+                prevFrame++;
+                nextFrame++;
+        } 
 
-        nextFrame     = prevFrame + 1;
         auto prevTime = animClip.frames[prevFrame].time;
         auto nextTime = animClip.frames[nextFrame].time;
 
@@ -170,14 +171,3 @@ void AnimationSystem::OnResume()
 void AnimationSystem::OnSuspend()
 {}
 
-void AnimationSystem::AddAnimClipsToComponent(ComponentHandle targetComp,
-                                              int             animCount,
-                                              ResourceHandle* animClipHandles,
-                                              float*          weights)
-{
-        AnimationComponent* animComp = m_ComponentManager->GetComponent<AnimationComponent>(targetComp);
-        animComp->m_Clips.insert(animComp->m_Clips.begin(), animClipHandles, animClipHandles + animCount);
-        animComp->m_Weights.insert(animComp->m_Weights.begin(), weights, weights + animCount);
-
-        MathLibrary::NormalizeArray(animComp->m_Weights.size(), animComp->m_Weights.data());
-}

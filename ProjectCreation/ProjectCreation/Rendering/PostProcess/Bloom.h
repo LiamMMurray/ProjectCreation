@@ -10,8 +10,8 @@ struct E_BLOOM_PS_SRV
 {
         enum
         {
-                BLOOM = 0,
-				DEPTH = 1,
+                BLOOM  = 0,
+                DEPTH  = 1,
                 SCREEN = 2,
                 COUNT
         };
@@ -20,10 +20,10 @@ struct E_BLOOM_PS_SRV
 
 struct alignas(16) BloomCB
 {
-        float             threshold = 0.8f;
+        float             threshold  = 1.0f;
         float             brightness = 1.0f;
-        float             blurStrength;
         float             blurRadius;
+        unsigned int      hOrV; // horizontal or vertical
         DirectX::XMFLOAT2 inverseScreenDimensions;
 };
 
@@ -31,20 +31,17 @@ class ResourceManager;
 
 class Bloom : public PostProcessEffectBase
 {
-        static constexpr uint8_t BloomPasses = 6;
+        static constexpr uint8_t MaxIterations = 16;
 
         struct E_PASSES
         {
                 enum
                 {
-                        MASK = Bloom::BloomPasses,
+                        MASK = Bloom::MaxIterations,
                         COUNT
                 };
         };
         static constexpr uint8_t TotalPasses = E_PASSES::COUNT;
-
-        static constexpr float m_Strengths[5] = {0.8f, 1.0f, 0.9f, 0.6f, 0.6f};
-        static constexpr float m_Radiuses[5]  = {2.0f, 2.0f, 2.0f, 2.0f, 4.0f};
 
         BloomCB       m_BloomCB_CPU;
         ID3D11Buffer* m_BloomCB_GPU;
@@ -66,6 +63,7 @@ class Bloom : public PostProcessEffectBase
         ResourceHandle m_BloomCombinePS;
         ResourceHandle m_BloomUpscalePS;
         ResourceHandle m_BloomDownscalePS;
+        ResourceHandle m_BloomDownscaleKarisPS;
 
     public:
         // Inherited via PostProcessEffectBase

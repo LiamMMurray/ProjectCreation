@@ -5,6 +5,8 @@
 #include "../GenericComponents/TransformComponent.h"
 #include "../Physics/PhysicsComponent.h"
 
+#include "../CollisionLibary/Shapes.h"
+
 class DebugCameraController : public IController
 {
     private:
@@ -12,7 +14,11 @@ class DebugCameraController : public IController
         void ProcessInput() override;
         void ApplyInput() override;
 
+		void PauseInput() override;
+					   
     public:
+        void InactiveUpdate(float deltaTime) override;
+
 
 		DebugCameraController();
 
@@ -60,7 +66,7 @@ class DebugCameraController : public IController
         float maxMaxSpeed = 3.0f;
 
         float acceleration   = 1.0;
-        float deacceleration = 1.5f;
+        float deacceleration = 100.0f;
 
         int32_t m_MouseXDelta;
         int32_t m_MouseYDelta;

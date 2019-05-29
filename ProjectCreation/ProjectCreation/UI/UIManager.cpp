@@ -1,8 +1,8 @@
 #include "UIManager.h"
+#include <iostream>
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
 #include "../Rendering/RenderingSystem.h"
-
 UIManager* UIManager::instance;
 
 // Adds a sprite to the vector of sprites
@@ -115,6 +115,20 @@ void UIManager::Initialize()
 
         instance->AddSprite(renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/Grey Box Test.dds", 0.0f, 0.0f);
 
+        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                std::cout << "OnPress Event" << std::endl;
+                std::cout << "Sprite id: " << e->sprite->mId << std::endl;
+                std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
+                std::cout << std::endl;
+        });
+
+		        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                std::cout << "OnPress Event2" << std::endl;
+                std::cout << "Sprite id: " << e->sprite->mId << std::endl;
+                std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
+                std::cout << std::endl;
+        });
+
         instance->AddSprite(renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/cat.dds", 0.0f, 0.0f);
 
         instance->AddText(renderSystem->m_Device,
@@ -127,7 +141,7 @@ void UIManager::Initialize()
 
 void UIManager::Update()
 {
-        if (GCoreInput::GetKeyState(KeyCode::Control) == KeyState::DownFirst)
+        if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
         {
                 // Change input from Control to Escape whenever implimented
                 // Disable or enable all Sprites based off of input
@@ -177,6 +191,16 @@ void UIManager::Update()
                                              {GCoreInput::GetMouseWindowPosX(), GCoreInput::GetMouseWindowPosY()}))
                                 {
                                         // Button Was Pressed
+                                        /*                            instance->mSprites[i].enabled = false;
+                                         */
+                                        UIMouseEvent e;
+										
+                                        e.mouseX = GCoreInput::GetMouseWindowPosX();
+                                        e.mouseY = GCoreInput::GetMouseWindowPosY();
+                                        e.sprite = &instance->mSprites[0];
+                                        instance->mSprites[i].OnMouseDown.Invoke(&e);
+                                        
+
                                         if (instance->mSprites[i].mId == 1)
                                         {
                                                 instance->mSpriteFonts[0]->mEnabled = false;

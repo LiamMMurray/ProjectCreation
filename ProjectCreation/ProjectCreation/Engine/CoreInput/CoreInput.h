@@ -47,6 +47,7 @@ enum class KeyCode
         Space   = 0x20,
         Control = 0x11,
         Tab     = 0x09,
+        Esc     = 0x1B,
         A       = 0x41,
         B,
         C,
