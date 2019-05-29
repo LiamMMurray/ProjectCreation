@@ -23,6 +23,12 @@
     <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
     <ClInclude Include="Engine\EngineInitShutdownHelpers.h" />
     <ClInclude Include="Engine\Entities\EntityFactory.h" />
+    <ClInclude Include="Engine\Events\Event.h" />
+    <ClInclude Include="Engine\Events\EventDelegate.h" />
+    <ClInclude Include="Engine\Events\EventManager.h" />
+    <ClInclude Include="Engine\Events\IEvent.h" />
+    <ClInclude Include="Engine\Events\IEventDelegate.h" />
+    <ClInclude Include="Engine\Gameplay\OrbitSystem.h" />
     <ClInclude Include="Engine\Gameplay\SpeedBoostSystem.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
@@ -65,6 +71,7 @@
     <ClInclude Include="Engine\MathLibrary\Quaternion.h" />
     <ClInclude Include="Engine\MathLibrary\Transform.h" />
     <ClInclude Include="Engine\MathLibrary\Vector.h" />
+    <ClInclude Include="UI\FontComponent.h" />
     <ClInclude Include="Rendering\Components\CameraComponent.h" />
     <ClInclude Include="Rendering\Components\DirectionalLightComponent.h" />
     <ClInclude Include="Rendering\Components\PointLightComponent.h" />
@@ -166,6 +173,7 @@
     <ClCompile Include="Engine\Controller\DebugCameraController.cpp" />
     <ClCompile Include="Engine\EngineInitShutdownHelpers.cpp" />
     <ClCompile Include="Engine\Entities\EntityFactory.cpp" />
+    <ClCompile Include="Engine\Gameplay\OrbitSystem.cpp" />
     <ClCompile Include="Engine\Gameplay\SpeedBoostSystem.cpp" />
     <ClCompile Include="Engine\Physics\PhysicsComponent.cpp" />
     <ClCompile Include="Engine\Controller\IController.cpp" />
@@ -182,6 +190,7 @@
     <ClCompile Include="Engine\XTime.cpp" />
     <ClCompile Include="Engine\Entities\TestEntities.cpp" />
     <ClCompile Include="FileIO\FileIO.cpp" />
+    <ClCompile Include="UI\FontComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\MathLibrary\MathLibrary.cpp" />
     <ClCompile Include="Engine\MathLibrary\Quaternion.cpp" />

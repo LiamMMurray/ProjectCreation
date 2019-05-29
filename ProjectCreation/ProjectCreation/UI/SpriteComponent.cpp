@@ -1,8 +1,12 @@
 #include "SpriteComponent.h"
 
-void SpriteComponent::Initialize()
+void SpriteComponent::MakeRectangle()
 {
+        mRectangle.top  = 0;
+        mRectangle.left = mOrigin.x;
 
+        mRectangle.bottom = 0 + mHeight;
+        mRectangle.right  = mOrigin.x + mWidth;
 }
 
 void SpriteComponent::SetPosition(float x, float y)
