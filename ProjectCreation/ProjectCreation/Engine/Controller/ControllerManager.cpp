@@ -12,6 +12,8 @@
 
 #include "../CollisionLibary/Shapes.h"
 
+#include "../../UI/UIManager.h"
+
 using namespace std;
 
 void ControllerManager::DisplayConsoleMenu()
