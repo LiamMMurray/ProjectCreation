@@ -31,10 +31,9 @@ class CollisionLibary
                                                                                 float&            time,
                                                                                 float             offset,
                                                                                 float             epsilon);
-        static Collision::FCollideResult    OverlapSphereToAabb(Shapes::FSphere& sphere, Shapes::FAabb& aabb, float offset);
-        static Collision::FCollideResult    OverlapAabbToAabb(Shapes::FAabb& a, Shapes::FAabb& b, float offset);
-        static Collision::FCollideResult    CapsuleToAabbCollision(Shapes::FCapsule& capsule, Shapes::FAabb& aabb);
-        static Collision::FCollisionObjects CollisionQuery(Shapes::FSphere& startA, Shapes::FSphere& endA);
+        static Collision::FCollideResult OverlapSphereToAabb(Shapes::FSphere& sphere, Shapes::FAabb& aabb, float offset);
+        static Collision::FCollideResult OverlapAabbToAabb(Shapes::FAabb& a, Shapes::FAabb& b, float offset);
+      static Collision::FCollisionObjects CollisionQuery(Shapes::FSphere& startA, Shapes::FSphere& endA);
 
         static Collision::FCollisionObjects SweepAndPruneCollision(Shapes::FSphere& sphere, Shapes::FAabb& aabbSpace);
 
@@ -48,4 +47,5 @@ class CollisionLibary
         static Shapes::FAabb CreateBoundingBoxFromCapsule(const Shapes::FCapsule capsule);
         // gjk  narrow phase collision
         // bvh  broad phrase collision
+		
 };

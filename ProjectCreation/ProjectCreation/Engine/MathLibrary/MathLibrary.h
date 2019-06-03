@@ -43,12 +43,12 @@ class MathLibrary
         static DirectX::XMVECTOR GetRandomVector();
         static DirectX::XMVECTOR GetRandomVectorInRange(float min, float max);
         static DirectX::XMVECTOR GetRandomUnitVector();
-        inline static bool QuadraticFormula(const float a,
-                                            const float b,
-                                            const float c,
-                                            float&      r1, // first
-                                            float&      r2  // and second roots
-        )
+        inline static bool       QuadraticFormula(const float a,
+                                                  const float b,
+                                                  const float c,
+                                                  float&      r1, // first
+                                                  float&      r2  // and second roots
+              )
         {
                 const float q = b * b - 4 * a * c;
                 if (q >= 0)
@@ -108,4 +108,13 @@ class MathLibrary
                 a /= sum;
                 b /= sum;
         }
+
+        template <typename T>
+		static void AddNumberToVector(DirectX::XMVECTOR& vector, T number)
+		{
+                float x = DirectX::XMVectorGetX(vector) + number;
+                float y = DirectX::XMVectorGetY(vector) + number;
+                float z = DirectX::XMVectorGetZ(vector) + number;
+                vector  = DirectX::XMVectorSet(x, y, z, DirectX::XMVectorGetW(vector));
+		}
 };

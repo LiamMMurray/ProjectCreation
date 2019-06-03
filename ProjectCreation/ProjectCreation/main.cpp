@@ -48,7 +48,6 @@ using namespace BVH;
 ////testing -vic
 bool g_Running = false;
 
-
 LONG WINAPI errorFunc(_EXCEPTION_POINTERS* pExceptionInfo)
 {
         /*
@@ -61,7 +60,6 @@ LONG WINAPI errorFunc(_EXCEPTION_POINTERS* pExceptionInfo)
             AND this lib:
             dbghelp.lib
         */
-
         struct tm newTime;
         time_t    ltime;
         wchar_t   buff[100] = {0};
