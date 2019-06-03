@@ -14,6 +14,6 @@ class Unit
     public:
         Unit(CollisionGrid* grid, double x, double y) : grid_(grid), RowX(x), ColY(y), prev(nullptr), next(nullptr)
         {
-                //Unit::grid_->AddUnit(this);
+                Unit::grid_->AddUnit(this);
         }
 };

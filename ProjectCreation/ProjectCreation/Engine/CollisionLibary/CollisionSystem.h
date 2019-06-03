@@ -8,11 +8,11 @@ class CollisionSystem : public ISystem
         static struct CollisionID
         {
                 DirectX::XMVECTOR position;
-                int               idex;
+                int               index;
         };
 
     private:
-        std::unordered_map<CollisionID, std::vector<std::pair<int, ComponentHandle>>> collisionMap;
+        //std::unordered_map<CollisionID, std::vector<std::pair<int, ComponentHandle>>> collisionMap;
     public:
         bool                     Moved(Collision::ECollisionObjectTypes shapes);
         std::vector<CollisionID> GetIDs(Collision::ECollisionObjectTypes shapes);

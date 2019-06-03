@@ -31,6 +31,7 @@
 /////testing -vic
 #include"Rendering/DebugRender/debug_renderer.h"
 #include"Engine/CollisionLibary/BVH.h"
+#include"Engine/CollisionLibary/CollisionSystem.h"
 ////testing -vic
 
 #include "Engine/Controller/ControllerManager.h"
