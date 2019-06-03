@@ -4,6 +4,7 @@
 #include "..//GEngine.h"
 #include "../Controller/ControllerManager.h"
 #include "../GenericComponents/TransformComponent.h"
+#include "GoalComponent.h"
 
 using namespace DirectX;
 
@@ -89,9 +90,13 @@ void OrbitSystem::OnInitialize()
         planet2->transform.SetScale(50.0f);
         planet3->transform.SetScale(50.0f);
 
-        EntityFactory::CreateStaticMeshEntity("Sphere01", "GlowMatSun", &m_PlanetGoals[0]);
-        EntityFactory::CreateStaticMeshEntity("Sphere01", "GlowMatSun", &m_PlanetGoals[1]);
-        EntityFactory::CreateStaticMeshEntity("Sphere01", "GlowMatSun", &m_PlanetGoals[2]);
+        for (int i = 0; i < 3; ++i)
+        {
+
+                auto entityH = EntityFactory::CreateStaticMeshEntity("Sphere01", "GlowMatSun", &m_PlanetGoals[i]);
+                m_ComponentManager->AddComponent<GoalComponent>(entityH);
+        }
+
 
         TransformComponent* goal1 = m_ComponentManager->GetComponent<TransformComponent>(m_PlanetGoals[0]);
         TransformComponent* goal2 = m_ComponentManager->GetComponent<TransformComponent>(m_PlanetGoals[1]);

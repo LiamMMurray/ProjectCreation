@@ -28,7 +28,9 @@
     <ClInclude Include="Engine\Events\EventManager.h" />
     <ClInclude Include="Engine\Events\IEvent.h" />
     <ClInclude Include="Engine\Events\IEventDelegate.h" />
+    <ClInclude Include="Engine\Gameplay\GoalComponent.h" />
     <ClInclude Include="Engine\Gameplay\OrbitSystem.h" />
+    <ClInclude Include="Engine\Gameplay\SpeedboostComponent.h" />
     <ClInclude Include="Engine\Gameplay\SpeedBoostSystem.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
