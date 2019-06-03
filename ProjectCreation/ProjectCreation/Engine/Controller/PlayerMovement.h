@@ -77,6 +77,8 @@ class PlayerController : public IController
 		float acceleration = 1.0;
         float deacceleration = 1.5f;
 
+		float m_TotalTime = 0.0f;
+
 		int32_t m_MouseXDelta;
         int32_t m_MouseYDelta;
 

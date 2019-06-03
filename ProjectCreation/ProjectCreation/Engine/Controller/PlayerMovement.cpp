@@ -19,56 +19,62 @@ using namespace Collision;
 using namespace debug_renderer;
 void PlayerController::GatherInput()
 {
-        PastDirection = requestedDirection;
+        m_TotalTime += cacheTime;
 
-        // requestedDirection = MoveDirections::NO_DIRECTION;
-        XMFLOAT4 tempDir = {0.0f, 0.0f, 0.0f, 0.0f};
+        if (m_TotalTime >= 7.0f)
+        {
 
-        // Check Forward speed
-        if (GCoreInput::GetKeyState(KeyCode::W) == KeyState::Down)
-        {
-                tempDir.z += 1.0f;
-        }
+                PastDirection = requestedDirection;
 
-        if (GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Down)
-        {
-                tempDir.z += 1.0f;
-        }
+                // requestedDirection = MoveDirections::NO_DIRECTION;
+                XMFLOAT4 tempDir = {0.0f, 0.0f, 0.0f, 0.0f};
 
-        if (GCoreInput::GetKeyState(KeyCode::E) == KeyState::Down)
-        {
-                tempDir.z += 1.0f;
-        }
-        // Backward
-        if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
-        {
-                tempDir.z -= 1.0f;
-        }
-        // Left
-        if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
-        {
-                tempDir.x -= 1.0f;
-        }
-        // Right
-        if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
-        {
-                tempDir.x += 1.0f;
-        }
-        // Rise
-        if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Down)
-        {
-                tempDir.y += 1.0f;
-        }
-        // Fall
-        if (GCoreInput::GetKeyState(KeyCode::Control) == KeyState::Down)
-        {
-                tempDir.y -= 1.0f;
-        }
+                // Check Forward speed
+                if (GCoreInput::GetKeyState(KeyCode::W) == KeyState::Down)
+                {
+                        tempDir.z += 1.0f;
+                }
 
-        m_MouseXDelta = GCoreInput::GetMouseX();
-        m_MouseYDelta = GCoreInput::GetMouseY();
+                if (GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Down)
+                {
+                        tempDir.z += 1.0f;
+                }
 
-        m_CurrentInput = XMLoadFloat4(&tempDir);
+                if (GCoreInput::GetKeyState(KeyCode::E) == KeyState::Down)
+                {
+                        tempDir.z += 1.0f;
+                }
+                // Backward
+                if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
+                {
+                        tempDir.z -= 1.0f;
+                }
+                // Left
+                if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
+                {
+                        tempDir.x -= 1.0f;
+                }
+                // Right
+                if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
+                {
+                        tempDir.x += 1.0f;
+                }
+                // Rise
+                if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Down)
+                {
+                        tempDir.y += 1.0f;
+                }
+                // Fall
+                if (GCoreInput::GetKeyState(KeyCode::Control) == KeyState::Down)
+                {
+                        tempDir.y -= 1.0f;
+                }
+
+                m_MouseXDelta = GCoreInput::GetMouseX();
+                m_MouseYDelta = GCoreInput::GetMouseY();
+
+                m_CurrentInput = XMLoadFloat4(&tempDir);
+        }
 }
 
 void PlayerController::ProcessInput()
@@ -80,9 +86,10 @@ void PlayerController::ApplyInput()
         TransformComponent* transformComp =
             GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
 
-
         // Get Delta Time
         float deltaTime = cacheTime; // GEngine::Get()->GetDeltaTime();
+
+        //m_TotalTime += deltaTime;
 
         // Get the Speed from the gathered input
         float currSpeed = XMVectorGetX(XMVector3Length(m_CurrentInput));
@@ -129,6 +136,11 @@ void PlayerController::ApplyInput()
             XMVectorLerp(m_CurrentVelocity, preBoostVelocity, MathLibrary::clamp(deltaTime * 0.25f, 0.0f, 1.0f));
 
         // Convert the angle of change on the X-Axis and the Y-Axis to radians
+        if (m_TotalTime >= 2.0f && m_TotalTime <= 5.0f)
+        {
+                m_Pitch = MathLibrary::lerp(m_Pitch, 0.0f, MathLibrary::clamp(deltaTime * 0.5f, 0.0f, 1.0f));
+        }
+		
         static float accumAngleY = 0.0f;
         m_Yaw += m_MouseXDelta * 2.0f * deltaTime;
         m_Pitch += m_MouseYDelta * 2.0f * deltaTime;
@@ -138,11 +150,7 @@ void PlayerController::ApplyInput()
 
         m_Roll = MathLibrary::lerp(m_Roll, 0.0f, MathLibrary::clamp(deltaTime * 20.0f, 0.0f, 1.0f));
 
-        if (GCoreInput::GetKeyState(KeyCode::K) == Down)
-        {
-                m_Pitch = MathLibrary::lerp(m_Pitch, 0.0f, MathLibrary::clamp(deltaTime * 0.5f, 0.0f, 1.0f));
-        }
-		
+
         // Calculate offset
         XMVECTOR offset = XMVector3Rotate(m_CurrentVelocity * deltaTime, transformComp->transform.rotation.data);
         offset          = XMVector3Normalize(XMVectorSetY(offset, 0.0f)) * XMVectorGetX(XMVector3Length(offset));
