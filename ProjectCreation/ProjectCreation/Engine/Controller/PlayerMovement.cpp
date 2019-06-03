@@ -138,6 +138,11 @@ void PlayerController::ApplyInput()
 
         m_Roll = MathLibrary::lerp(m_Roll, 0.0f, MathLibrary::clamp(deltaTime * 20.0f, 0.0f, 1.0f));
 
+        if (GCoreInput::GetKeyState(KeyCode::K) == Down)
+        {
+                m_Pitch = MathLibrary::lerp(m_Pitch, 0.0f, MathLibrary::clamp(deltaTime * 0.5f, 0.0f, 1.0f));
+        }
+		
         // Calculate offset
         XMVECTOR offset = XMVector3Rotate(m_CurrentVelocity * deltaTime, transformComp->transform.rotation.data);
         offset          = XMVector3Normalize(XMVectorSetY(offset, 0.0f)) * XMVectorGetX(XMVector3Length(offset));
@@ -175,6 +180,7 @@ void PlayerController::ApplyInput()
             XMConvertToRadians(m_Pitch), XMConvertToRadians(m_Yaw), XMConvertToRadians(m_Roll));
 
         m_CurrentPosition = transformComp->transform.translation;
+
 
         // Write out information to the console window
         //  std::cout << "Current Forward < " << XMVectorGetX(nextFw) << ", " << XMVectorGetY(nextFw) << ", "
