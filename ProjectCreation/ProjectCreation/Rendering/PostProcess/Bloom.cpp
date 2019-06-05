@@ -181,6 +181,7 @@ void Bloom::Render(ID3D11ShaderResourceView** inSRV, ID3D11RenderTargetView** ou
         UINT  sampleMask     = 0xffffffff;
         m_Context->OMSetBlendState(m_BlendState, blendFactor, sampleMask);
 
+        float _storedBrightness  = m_BloomCB_CPU.brightness;
         m_BloomCB_CPU.blurRadius = sampleScale;
         m_BloomCB_CPU.hOrV       = 1;
         for (int i = iterations - 2; i >= 0; --i)
@@ -189,7 +190,9 @@ void Bloom::Render(ID3D11ShaderResourceView** inSRV, ID3D11RenderTargetView** ou
                 viewport.Width                        = FLOAT(m_Width / div);
                 viewport.Height                       = FLOAT(m_Height / div);
                 m_BloomCB_CPU.inverseScreenDimensions = DirectX::XMFLOAT2(1 / viewport.Width, 1 / viewport.Height);
+
                 RenderUtility::UpdateConstantBuffer(m_Context, m_BloomCB_GPU, &m_BloomCB_CPU, sizeof(m_BloomCB_CPU));
+
 
                 m_Context->RSSetViewports(1, &viewport);
                 m_Context->OMSetRenderTargets(1, &m_BlurRTVs[i], nullptr);
@@ -197,7 +200,9 @@ void Bloom::Render(ID3D11ShaderResourceView** inSRV, ID3D11RenderTargetView** ou
                 m_Context->OMSetRenderTargets(0, nullptr, nullptr);
                 m_Context->PSSetShaderResources(E_BLOOM_PS_SRV::BLOOM, 1, &m_BlurSRVs[i]);
         }
+        m_BloomCB_CPU.brightness = _storedBrightness;
 
+        RenderUtility::UpdateConstantBuffer(m_Context, m_BloomCB_GPU, &m_BloomCB_CPU, sizeof(m_BloomCB_CPU));
         m_Context->OMSetBlendState(m_DefaultBlendState, blendFactor, sampleMask);
 
         m_Context->OMSetRenderTargets(1, outRTV, nullptr);

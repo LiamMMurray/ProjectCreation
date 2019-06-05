@@ -299,7 +299,7 @@ void RenderSystem::CreateInputLayouts()
             {"JOINTINDICES", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
             {"WEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}};
 
-        er = FileIO::LoadShaderDataFromFile("DefaultSkinned", "_VS", &shaderData);
+        er = FileIO::LoadShaderDataFromFile("Default_Skinned", "_VS", &shaderData);
 
         assert(er.m_Flags == ERESULT_FLAG::SUCCESS);
 
@@ -329,7 +329,7 @@ void RenderSystem::CreateInputLayouts()
 void RenderSystem::CreateCommonShaders()
 {
         m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT] = m_ResourceManager->LoadVertexShader("Default");
-        m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED] = m_ResourceManager->LoadVertexShader("DefaultSkinned");
+        m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED] = m_ResourceManager->LoadVertexShader("Default_Skinned");
         m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEBUG]   = m_ResourceManager->LoadVertexShader("Debug");
         m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEFAULT]   = m_ResourceManager->LoadPixelShader("Default");
         m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEBUG]     = m_ResourceManager->LoadPixelShader("Debug");
