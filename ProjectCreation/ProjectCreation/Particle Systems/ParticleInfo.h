@@ -32,7 +32,7 @@ namespace ParticleInfo
                 std::vector<FEmitter> emitters;
                 int                   particleCount;
                 int                   maxParticles;
-
         };
+
 
 } // namespace ParticleInfo
