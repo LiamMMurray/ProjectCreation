@@ -7,7 +7,9 @@ CollisionGrid CollisionSystem::GetCollisionGrid()
 }
 
 void CollisionSystem::OnPreUpdate(float deltaTime)
-{}
+{
+	
+}
 
 void CollisionSystem::OnUpdate(float deltaTime)
 {}
