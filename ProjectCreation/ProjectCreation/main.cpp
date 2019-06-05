@@ -36,9 +36,9 @@
 
 #include "Engine/Controller/ControllerManager.h"
 
-#include "Rendering/Components/DirectionalLightComponent.h"
-#include "Engine/Gameplay/SpeedBoostSystem.h"
 #include "Engine/Gameplay/OrbitSystem.h"
+#include "Engine/Gameplay/SpeedBoostSystem.h"
+#include "Rendering/Components/DirectionalLightComponent.h"
 
 #include "Engine/GenericComponents/TransformComponent.h"
 
@@ -207,12 +207,12 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
         // Test skeletal mesh setup
         {
-                //std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
-                //ComponentHandle          transformHandle;
-                //EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
-				//
-                //TransformComponent* transformComp = componentManager->GetComponent<TransformComponent>(transformHandle);
-                //transformComp->transform.SetScale(0.1f);
+            // std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
+            // ComponentHandle          transformHandle;
+            // EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
+            //
+            // TransformComponent* transformComp = componentManager->GetComponent<TransformComponent>(transformHandle);
+            // transformComp->transform.SetScale(0.1f);
         }
 
         // Ground Plane
@@ -236,13 +236,13 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
         // Create speedboost system
         FSystemInitProperties sysInitProps;
-        SpeedBoostSystem* speedBoostSystem;
+        SpeedBoostSystem*     speedBoostSystem;
         systemManager->CreateSystem<SpeedBoostSystem>(&speedBoostSystem);
         sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
         sysInitProps.m_UpdateRate = 0.0f;
         systemManager->RegisterSystem(&sysInitProps, speedBoostSystem);
 
-		OrbitSystem* orbitSystem;
+        OrbitSystem* orbitSystem;
         systemManager->CreateSystem<OrbitSystem>(&orbitSystem);
         systemManager->RegisterSystem(&sysInitProps, orbitSystem);
 

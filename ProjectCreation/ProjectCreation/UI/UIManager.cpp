@@ -3,6 +3,10 @@
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
 #include "../Rendering/RenderingSystem.h"
+#define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
+#define NOMINMAX
+#include <Windows.h>
+
 UIManager* UIManager::instance;
 
 // Adds a sprite to the vector of sprites
@@ -82,18 +86,18 @@ void UIManager::AddText(ID3D11Device*        device,
         createText->mSpriteFont  = std::make_unique<DirectX::SpriteFont>(device, FileName);
         createText->mTextDisplay = TextDisplay;
 
-        //Set the Main Menu text to enabled
+        // Set the Main Menu text to enabled
         createText->mEnabled = false;
 
-        //Text Screen Position
+        // Text Screen Position
         createText->mScreenPos.x = PositionX;
         createText->mScreenPos.y = PositionY;
 
-		//Create Dimensions
-		const char* tempText = createText->mTextDisplay.c_str();
+        // Create Dimensions
+        const char*       tempText    = createText->mTextDisplay.c_str();
         DirectX::XMVECTOR tDimensions = createText->mSpriteFont->MeasureString(tempText);
 
-		createText->MakeRectangle();
+        createText->MakeRectangle();
 
         // Error C2280
         // attempting to reference a deleted function
@@ -106,14 +110,54 @@ void UIManager::AddText(ID3D11Device*        device,
 void UIManager::RemoveText(int id)
 {}
 
-void UIManager::Initialize()
+void UIManager::UIClipCursor()
+{
+        RECT rect;
+        GetClientRect((HWND)m_WindowHandle, &rect);
+
+        POINT ul;
+        ul.x = rect.left;
+        ul.y = rect.top;
+
+        POINT lr;
+        lr.x = rect.right;
+        lr.y = rect.bottom;
+
+        MapWindowPoints((HWND)m_WindowHandle, nullptr, &ul, 1);
+        MapWindowPoints((HWND)m_WindowHandle, nullptr, &lr, 1);
+
+        rect.left = ul.x;
+        rect.top  = ul.y;
+
+        rect.right  = lr.x;
+        rect.bottom = lr.y;
+
+        ClipCursor(&rect);
+}
+
+void UIManager::Initialize(native_handle_type hwnd)
 {
         assert(!instance);
+
         instance = new UIManager;
 
         auto renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 
-        instance->AddSprite(renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/Grey Box Test.dds", 0.0f, 0.0f);
+        if (instance->m_InMenu)
+        {
+                ShowCursor(TRUE);
+                ClipCursor(nullptr);
+        }
+        else
+        {
+                instance->UIClipCursor();
+                while (ShowCursor(FALSE) >= 0)
+                        ;
+        }
+
+        instance->m_WindowHandle = hwnd;
+        instance->AddSprite(
+            renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/Grey Box Test.dds", 0.0f, 0.0f);
         instance->AddSprite(renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/cat.dds", 0.0f, 0.0f);
 
         instance->AddText(renderSystem->m_Device,
@@ -141,44 +185,56 @@ void UIManager::Initialize()
                           instance->mSprites[0].mOrigin.x,
                           165.0f);
 
-		//Events
+        // Events
         instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 std::cout << "OnPress Event" << std::endl;
                 std::cout << "Sprite id: " << e->sprite->mId << std::endl;
                 std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
                 std::cout << std::endl;
         });
-        
-		        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+
+        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 std::cout << "OnPress Event2" << std::endl;
                 std::cout << "Sprite id: " << e->sprite->mId << std::endl;
                 std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
                 std::cout << std::endl;
         });
 
-		instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) { 
-			for (int i = 0; i < instance->mSpriteFonts.size(); i++)
+        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                for (int i = 0; i < instance->mSpriteFonts.size(); i++)
                 {
-                    if (instance->mSpriteFonts[i]->mEnabled == false)
-                    {
-                            instance->mSpriteFonts[i]->mEnabled = true;
-                    }
-					else
-                    {
-                            instance->mSpriteFonts[i]->mEnabled = false;
-					}
+                        if (instance->mSpriteFonts[i]->mEnabled == false)
+                        {
+                                instance->mSpriteFonts[i]->mEnabled = true;
+                        }
+                        else
+                        {
+                                instance->mSpriteFonts[i]->mEnabled = false;
+                        }
                 }
-			});
-
-		instance->mSprites[1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                exit(1);
         });
+
+        instance->mSprites[1].OnMouseDown.AddEventListener([](UIMouseEvent* e) { exit(1); });
 }
 
 void UIManager::Update()
 {
         if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
         {
+                instance->m_InMenu = !instance->m_InMenu;
+
+                if (instance->m_InMenu)
+                {
+                        while (ShowCursor(TRUE) < 0)
+                                ;
+                        ClipCursor(nullptr);
+                }
+                else
+                {
+                        instance->UIClipCursor();
+                        while (ShowCursor(FALSE) >= 0)
+                                ;
+                }
                 // Change input from Control to Escape whenever implimented
                 // Disable or enable all Sprites based off of input
                 // Sprites
@@ -195,7 +251,7 @@ void UIManager::Update()
                 }
                 // Text
 
-                 for (int i = 0; i < instance->mSpriteFonts.size(); i++)
+                for (int i = 0; i < instance->mSpriteFonts.size(); i++)
                 {
                         if (instance->mSpriteFonts[i]->mEnabled == true)
                         {
@@ -210,6 +266,7 @@ void UIManager::Update()
                 // Pause Game Afterwards
         }
 
+
         // Sprite Display
         for (int i = 0; i < instance->mSprites.size(); i++)
         {
@@ -222,21 +279,21 @@ void UIManager::Update()
                                 {
                                         // Button Was Pressed
                                         UIMouseEvent e;
-										
+
                                         e.mouseX = GCoreInput::GetMouseWindowPosX();
                                         e.mouseY = GCoreInput::GetMouseWindowPosY();
                                         e.sprite = &instance->mSprites[0];
                                         instance->mSprites[i].OnMouseDown.Invoke(&e);
-                                        
 
-                                        //if (instance->mSprites[i].mId == 2)
+
+                                        // if (instance->mSprites[i].mId == 2)
                                         //{
                                         //        instance->mSpriteFonts[0]->mEnabled = false;
                                         //}
-                                        //else
+                                        // else
                                         //{
                                         //        instance->mSpriteFonts[0]->mEnabled = true;
-										//}
+                                        //}
 
                                         // exit(1);
                                 }

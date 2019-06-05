@@ -33,6 +33,7 @@ class MathLibrary
         static float             CalulateVectorLength(DirectX::XMVECTOR vector);
         static float             VectorDotProduct(DirectX::XMVECTOR m, DirectX::XMVECTOR n);
         static float             ManhattanDistance(Shapes::FAabb& a, Shapes::FAabb& b);
+        static float                    MoveTowards(const float a, const float b, const float speed);
 		inline static bool              QuadraticFormula(const float a,
                                                   const float  b,
                                                   const float c,

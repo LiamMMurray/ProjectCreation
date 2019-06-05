@@ -80,11 +80,11 @@ DirectX::XMVECTOR MathLibrary::GetClosestPointFromLine(DirectX::XMVECTOR startPo
 
 DirectX::XMVECTOR MathLibrary::GetMidPointFromTwoVector(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
 {
-        float    x = (XMVectorGetX(a) + XMVectorGetX(b))/2;
-        float    y = (XMVectorGetY(a) + XMVectorGetY(b))/2;
-        float    z = (XMVectorGetZ(a) + XMVectorGetZ(b))/2;
-       
-        XMVECTOR output = XMVectorSet(x,y,z,0.0f);
+        float x = (XMVectorGetX(a) + XMVectorGetX(b)) / 2;
+        float y = (XMVectorGetY(a) + XMVectorGetY(b)) / 2;
+        float z = (XMVectorGetZ(a) + XMVectorGetZ(b)) / 2;
+
+        XMVECTOR output = XMVectorSet(x, y, z, 0.0f);
         return output;
 }
 
@@ -126,5 +126,13 @@ float MathLibrary::ManhattanDistance(Shapes::FAabb& a, Shapes::FAabb& b)
         float    zDis = XMVectorGetZ(dis);
         output        = abs(xDis) + abs(yDis) + abs(zDis);
 
+        return output;
+}
+
+float MathLibrary::MoveTowards(const float a, const float b, const float speed)
+{
+        float output;
+        float dist = b - a;
+        output     = a + std::copysignf(std::min(speed, fabsf(dist)), dist);
         return output;
 }

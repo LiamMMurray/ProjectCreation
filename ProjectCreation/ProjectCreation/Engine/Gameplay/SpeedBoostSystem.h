@@ -3,6 +3,7 @@
 #include "../../ECS/ECS.h"
 
 class TransformComponent;
+class SpeedboostComponent;
 
 class SpeedBoostSystem : public ISystem
 {
@@ -10,13 +11,20 @@ class SpeedBoostSystem : public ISystem
         ComponentManager* m_ComponentManager;
         EntityManager*    m_EntityManager;
 
-        static constexpr uint32_t m_MaxSpeedBoosts = 20;
-        ComponentHandle           m_BoostTransformHandles[m_MaxSpeedBoosts];
+        static constexpr uint32_t m_MaxSpeedBoosts = 10;
 
+        void RespawnSpeedBoost(TransformComponent*       boostTC,
+                             SpeedboostComponent*      boostSC,
+                             const TransformComponent* playerTC,
+                             const TransformComponent* targetTC);
 
-        void RandomMoveBoost(TransformComponent* boostTC, TransformComponent* playerTC);
+        void SpawnSpeedBoost(const TransformComponent* playerTC, const TransformComponent* targetTC);
 
-        float m_TargetRadius = 0.0f;
+        float m_PlayerEffectRadius = 0.0f;
+        float m_SpawnBoostTimer    = 0.0f;
+        float m_SpawnBoostCD       = 0.2f;
+        float m_BoostLifespan      = 8.0f;
+        float m_BoostShrinkSpeed   = m_BoostRadius;
 
     protected:
         // Inherited via ISystem
@@ -29,6 +37,6 @@ class SpeedBoostSystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
-        static constexpr float m_MaxBoostDistance = 7.0f;
+        static constexpr float m_MaxBoostDistance = 5.0f;
         static constexpr float m_BoostRadius      = 0.03f;
 };

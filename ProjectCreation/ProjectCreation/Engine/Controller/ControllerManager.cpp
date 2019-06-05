@@ -14,6 +14,8 @@
 
 #include "../../UI/UIManager.h"
 
+#include <WinUser.h>
+
 using namespace std;
 
 
@@ -131,15 +133,17 @@ void ControllerManager::update(float delta)
 
                 m_Controllers[E_CONTROLLERS::PLAYER]->InactiveUpdate(delta);
         }
-
+		
         if (m_togglePauseInput == false)
         {
                 m_Controllers[m_CurrentController]->OnUpdate(delta);
+                //ShowCursor(false);
         }
 
         else if (m_togglePauseInput == true)
         {
                 m_Controllers[m_CurrentController]->PauseInput();
+                //ShowCursor(true);
 		}
 }
 

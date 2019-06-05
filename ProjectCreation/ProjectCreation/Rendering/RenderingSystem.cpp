@@ -1,6 +1,6 @@
 #include "RenderingSystem.h"
+#include <iostream>
 #include "../Engine/GEngine.h"
-
 #include "../Engine/MathLibrary/MathLibrary.h"
 #include "../FileIO/FileIO.h"
 #include "PostProcess/Bloom.h"
@@ -186,6 +186,9 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
 
         m_Context->OMSetRenderTargets(0, 0, 0);
 
+		IDXGIOutput* pOutput;
+		m_Swapchain->GetContainingOutput(&pOutput);
+        //pOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, 0, &num, s)
         // Preserve the existing buffer count and format.
         // Automatically choose the width and height to match the client rect for HWNDs.
         hr = m_Swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
@@ -797,7 +800,7 @@ void RenderSystem::OnUpdate(float deltaTime)
                                       dirLightComp->m_AmbientColor.z * dirLightComp->m_AmbientColor.w);
                 }
         }
-        m_ConstantBuffer_SCENE.time = (float)GEngine::Get()->GetTotalTime();
+        m_ConstantBuffer_SCENE.time         = (float)GEngine::Get()->GetTotalTime();
         m_ConstantBuffer_SCENE.playerRadius = (float)GEngine::Get()->m_PlayerRadius;
         UpdateConstantBuffer(m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE],
                              &m_ConstantBuffer_SCENE,
@@ -818,8 +821,8 @@ void RenderSystem::OnUpdate(float deltaTime)
                 }
                 else
                 {
-                        SkeletalMesh*          mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_OpaqueDraws[i].meshResource);
-                        Material*              mat  = m_ResourceManager->GetResource<Material>(m_OpaqueDraws[i].materialHandle);
+                        SkeletalMesh* mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_OpaqueDraws[i].meshResource);
+                        Material*     mat  = m_ResourceManager->GetResource<Material>(m_OpaqueDraws[i].materialHandle);
                         SkeletalMeshComponent* meshComp =
                             m_ComponentManager->GetComponent<SkeletalMeshComponent>(m_OpaqueDraws[i].componentHandle);
                         DrawSkeletalMesh(mesh, mat, &m_OpaqueDraws[i].mtx, &meshComp->m_Skeleton);
@@ -931,7 +934,7 @@ void RenderSystem::OnInitialize()
         CreatePostProcessEffects(&desc);
 
         // UI Manager Initialize
-        UIManager::Initialize();
+        UIManager::Initialize(m_WindowHandle);
 }
 
 void RenderSystem::OnShutdown()
@@ -1037,6 +1040,9 @@ void RenderSystem::OnWindowResize(WPARAM wParam, LPARAM lParam)
                 D3D11_TEXTURE2D_DESC desc;
                 CreateDefaultRenderTargets(&desc);
                 CreatePostProcessEffects(&desc);
+                RefreshMainCameraSettings();
+
+                std::cout << m_BackBufferHeight << "   " << m_BackBufferWidth << std::endl;
         }
 }
 
