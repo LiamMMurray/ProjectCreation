@@ -11,12 +11,11 @@ void UIManager::AddSprite(ID3D11Device*        device,
                           ID3D11DeviceContext* deviceContext,
                           const wchar_t*       FileName,
                           float                PositionX,
-                          float                PositionY)
+                          float                PositionY,
+                          float                scaleX,
+                          float                scaleY) 
 {
         SpriteComponent cSprite;
-
-        instance->mSpriteBatch = std::make_unique<DirectX::SpriteBatch>(deviceContext);
-        instance->mStates      = std::make_unique<DirectX::CommonStates>(device);
 
         Microsoft::WRL::ComPtr<ID3D11Resource> resource;
         HRESULT hr = DirectX::CreateDDSTextureFromFile(device, FileName, resource.GetAddressOf(), &cSprite.mTexture);
@@ -31,14 +30,18 @@ void UIManager::AddSprite(ID3D11Device*        device,
         CD3D11_TEXTURE2D_DESC TextureDesc;
         Texture->GetDesc(&TextureDesc);
 
+
         // Add the origin to the sprite
-        cSprite.mOrigin.x = float(TextureDesc.Width * 0.5);
-        cSprite.mOrigin.y = float(TextureDesc.Height * 0.5);
+        cSprite.mOrigin.x = (float)(TextureDesc.Width * 0.5f);
+        cSprite.mOrigin.y = (float)(TextureDesc.Height * 0.5f);
 
         // Add the width and height to the sprite
         cSprite.mWidth  = TextureDesc.Width;
         cSprite.mHeight = TextureDesc.Height;
 
+        // Sprite Screen Position
+        cSprite.SetPosition(PositionX, PositionY);
+        
         // Set the Id of the Sprite for the Main Menu
         if (instance->mSprites.size() <= 0)
         {
@@ -50,12 +53,14 @@ void UIManager::AddSprite(ID3D11Device*        device,
         }
         // Set the Sprite to enabled
         cSprite.mEnabled = false;
-
-        // Sprite Screen Position
-        cSprite.SetPosition(cSprite.mOrigin.x, PositionY);
+		       
+        // Scale
+        cSprite.mScaleX = scaleX;
+        cSprite.mScaleY = scaleY;
 
         // Rectangle
         cSprite.MakeRectangle();
+		
 
         // Push back to the vector
         instance->mSprites.push_back(cSprite);
@@ -67,16 +72,6 @@ void UIManager::AddSprite(ID3D11Device*        device,
 
 void UIManager::RemoveSprite(int id)
 {}
-
-
-void UIManager::ScaleSprite(float deltaTime, SpriteComponent sprite)
-{
-	instance->mSpriteBatch->Begin();
-	
-	instance->mSpriteBatch->Draw(sprite.mTexture, sprite.mScreenPos, nullptr, DirectX::Colors::White, 0.f, sprite.mOrigin, cosf(deltaTime) + 2.f);
-	
-	instance->mSpriteBatch->End();
-}
 
 // Adds a sprite to the vector of text
 // Currently PositionX and PositionY are not used
@@ -92,18 +87,18 @@ void UIManager::AddText(ID3D11Device*        device,
         createText->mSpriteFont  = std::make_unique<DirectX::SpriteFont>(device, FileName);
         createText->mTextDisplay = TextDisplay;
 
-        //Set the Main Menu text to enabled
+        // Set the Main Menu text to enabled
         createText->mEnabled = false;
 
-        //Text Screen Position
+		//Create Dimensions
+        createText->mOrigin = DirectX::XMVECTOR{createText->mSpriteFont->MeasureString(TextDisplay.c_str()).m128_f32[0] * 0.5f,
+                                                createText->mSpriteFont->MeasureString(TextDisplay.c_str()).m128_f32[1] * 0.5f};
+
+        // Text Screen Position
         createText->mScreenPos.x = PositionX;
         createText->mScreenPos.y = PositionY;
 
-		//Create Dimensions
-		const char* tempText = createText->mTextDisplay.c_str();
-        DirectX::XMVECTOR tDimensions = createText->mSpriteFont->MeasureString(tempText);
-
-		createText->MakeRectangle();
+        createText->MakeRectangle();
 
         // Error C2280
         // attempting to reference a deleted function
@@ -111,6 +106,14 @@ void UIManager::AddText(ID3D11Device*        device,
         // FIXED
         // Making the vector array an array of pointers fixed this issue
         instance->mSpriteFonts.push_back(createText);
+
+        instance->AddSprite(device,
+                            deviceContext,
+                            L"../Assets/2d/Sprite/Grey Box Test.dds", 
+							PositionX,
+                            PositionY,
+                            0.4f,
+                            0.11f);
 }
 
 void UIManager::RemoveText(int id)
@@ -124,66 +127,90 @@ void UIManager::Initialize()
 
         auto renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 
-        instance->AddSprite(renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/Grey Box Test.dds", 0.0f, 0.0f);
-        instance->AddSprite(renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/cat.dds", 0.0f, 0.0f);
+        instance->mSpriteBatch = std::make_unique<DirectX::SpriteBatch>(renderSystem->m_Context);
+        instance->mStates      = std::make_unique<DirectX::CommonStates>(renderSystem->m_Device);
+
+        instance->AddSprite(
+            renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/Grey Box Test.dds", 650.0f, 300.0f, 0.8f, 1.2f);
+
 
         instance->AddText(renderSystem->m_Device,
                           renderSystem->m_Context,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "New Game",
-                          instance->mSprites[0].mOrigin.x,
-                          15.0f);
+                          "Resume",
+                          instance->mSprites[0].mScreenPos.x,
+                          instance->mSprites[0].mScreenPos.y - 80.0f);
+
         instance->AddText(renderSystem->m_Device,
                           renderSystem->m_Context,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "Load Game",
-                          instance->mSprites[0].mOrigin.x,
-                          65.0f);
+                          "Main Menu",
+                          instance->mSprites[0].mScreenPos.x,
+                          instance->mSprites[0].mScreenPos.y - 20.0f);
+
         instance->AddText(renderSystem->m_Device,
                           renderSystem->m_Context,
                           L"../Assets/2d/Text/myfile.spritefont",
                           "Options",
-                          instance->mSprites[0].mOrigin.x,
-                          115.0f);
+                          instance->mSprites[0].mScreenPos.x,
+                          instance->mSprites[0].mScreenPos.y + 40.0f);
+
         instance->AddText(renderSystem->m_Device,
                           renderSystem->m_Context,
                           L"../Assets/2d/Text/myfile.spritefont",
                           "Exit",
-                          instance->mSprites[0].mOrigin.x,
-                          165.0f);
+                          instance->mSprites[0].mScreenPos.x,
+                          instance->mSprites[0].mScreenPos.y + 100.0f);
 
-		//Events
+        // Events
         instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 std::cout << "OnPress Event" << std::endl;
                 std::cout << "Sprite id: " << e->sprite->mId << std::endl;
                 std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
                 std::cout << std::endl;
         });
-        
-		        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+
+        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 std::cout << "OnPress Event2" << std::endl;
                 std::cout << "Sprite id: " << e->sprite->mId << std::endl;
                 std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
                 std::cout << std::endl;
         });
 
-		instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) { 
-			for (int i = 0; i < instance->mSpriteFonts.size(); i++)
+        /*
+        instance->mSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                for (int i = 0; i < instance->mSpriteFonts.size(); i++)
                 {
-                    if (instance->mSpriteFonts[i]->mEnabled == false)
-                    {
-                            instance->mSpriteFonts[i]->mEnabled = true;
-                    }
-					else
-                    {
-                            instance->mSpriteFonts[i]->mEnabled = false;
-					}
+                        if (instance->mSpriteFonts[i]->mEnabled == false)
+                        {
+                                instance->mSpriteFonts[i]->mEnabled = true;
+                        }
+                        else
+                        {
+                                instance->mSpriteFonts[i]->mEnabled = false;
+                        }
                 }
-			});
-
-		instance->mSprites[1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                exit(1);
         });
+		*/
+
+        instance->mSprites[1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                // Change input from Control to Escape whenever implimented
+                // Disable or enable all Sprites based off of input
+                // Sprites
+                for (int i = 0; i < instance->mSprites.size(); i++)
+                {
+					instance->mSprites[i].mEnabled = false;
+                }
+                // Text
+
+                for (int i = 0; i < instance->mSpriteFonts.size(); i++)
+                {
+					instance->mSpriteFonts[i]->mEnabled = false;
+                        
+                }
+        });
+
+        instance->mSprites[4].OnMouseDown.AddEventListener([](UIMouseEvent* e) { exit(EXIT_SUCCESS); });
 }
 
 void UIManager::Update(float deltaTime)
@@ -206,7 +233,7 @@ void UIManager::Update(float deltaTime)
                 }
                 // Text
 
-                 for (int i = 0; i < instance->mSpriteFonts.size(); i++)
+                for (int i = 0; i < instance->mSpriteFonts.size(); i++)
                 {
                         if (instance->mSpriteFonts[i]->mEnabled == true)
                         {
@@ -240,16 +267,22 @@ void UIManager::Update(float deltaTime)
                                         instance->mSprites[i].OnMouseDown.Invoke(&e);
                                 }
                         }
-                        
+
                         instance->mSpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
                                                       instance->mStates->NonPremultiplied());
 
+						
                         instance->mSpriteBatch->Draw(
                             instance->mSprites[i].mTexture,
-                            DirectX::XMVECTOR{instance->mSprites[i].mScreenPos.x, instance->mSprites[i].mScreenPos.y});
+                            DirectX::XMVECTOR{instance->mSprites[i].mScreenPos.x, instance->mSprites[i].mScreenPos.y},
+                            nullptr,
+                            DirectX::Colors::White,
+                            0.0f,
+                            instance->mSprites[i].mOrigin,
+                            DirectX::XMVECTOR{instance->mSprites[i].mScaleX, instance->mSprites[i].mScaleY});
+
 
                         instance->mSpriteBatch->End();
-                        
                 }
         }
         // Text Display
@@ -262,7 +295,10 @@ void UIManager::Update(float deltaTime)
 
                         instance->mSpriteFonts[i]->mSpriteFont->DrawString(instance->mSpriteBatch.get(),
                                                                            instance->mSpriteFonts[i]->mTextDisplay.c_str(),
-                                                                           instance->mSpriteFonts[i]->mScreenPos);
+                                                                           instance->mSpriteFonts[i]->mScreenPos,
+                                                                           DirectX::Colors::White,
+                                                                           0.0f,
+                                                                           instance->mSpriteFonts[i]->mOrigin);
 
                         instance->mSpriteBatch->End();
                 }

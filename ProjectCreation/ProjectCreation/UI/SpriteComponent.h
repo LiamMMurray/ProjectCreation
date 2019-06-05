@@ -33,13 +33,17 @@ class SpriteComponent : public Component<SpriteComponent>
         DirectX::SimpleMath::Vector2          mOrigin;
         unsigned int                          mHeight;
         unsigned int                          mWidth;
+        float                                 mScaleX;
+        float                                 mScaleY;
+
         ID3D11ShaderResourceView*             mTexture;
         RECT							      mRectangle;
+
         bool                                  mEnabled;
         unsigned int                          mId;
 
         void MakeRectangle();
-
+        void Scale();
         void SetPosition(float x, float y);
         void TransformPosition(float x, float y);
         void RotateSprite(float degree);

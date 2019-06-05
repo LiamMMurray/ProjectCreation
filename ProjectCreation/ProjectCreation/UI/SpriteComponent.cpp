@@ -2,11 +2,22 @@
 
 void SpriteComponent::MakeRectangle()
 {
-        mRectangle.top  = 0;
-        mRectangle.left = mOrigin.x;
+        mRectangle.top  = mScreenPos.y -( mOrigin.y * mScaleY);
+        mRectangle.left = mScreenPos.x -( mOrigin.x * mScaleX);
+									   
+        mRectangle.bottom = mScreenPos.y + (mOrigin.y * mScaleY);
+        mRectangle.right  = mScreenPos.x + (mOrigin.x * mScaleX);
+}
 
-        mRectangle.bottom = 0 + mHeight;
-        mRectangle.right  = mOrigin.x + mWidth;
+void SpriteComponent::Scale()
+{
+        mWidth = (float)mWidth * mScaleX;
+        mHeight = (float)mHeight* mScaleY;
+
+        mRectangle.top  = (mScreenPos.y - mOrigin.y) * mScaleY;
+        mRectangle.left = (mScreenPos.x - mOrigin.x) * mScaleX;
+        mRectangle.bottom = (mScreenPos.y + mOrigin.y) * mScaleY;
+        mRectangle.right  = (mScreenPos.x + mOrigin.x) * mScaleX;
 }
 
 void SpriteComponent::SetPosition(float x, float y)

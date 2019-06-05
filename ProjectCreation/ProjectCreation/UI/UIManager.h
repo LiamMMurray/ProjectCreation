@@ -23,7 +23,9 @@ class UIManager
                        ID3D11DeviceContext* deviceContext,
                        const wchar_t*       FileName,
                        float                PositionX,
-                       float                PositionY);
+                       float                PositionY,
+                       float                scaleX,
+                       float                scaleY);
         void RemoveSprite(int id);
 
         void AddText(ID3D11Device*        device,
@@ -33,14 +35,14 @@ class UIManager
                      float                PositionX,
                      float                PositionY);
         void RemoveText(int id);
-        void ScaleSprite(float deltaTime, SpriteComponent sprite);
+        void ScaleSprite(float scaleX, float scaleY, SpriteComponent sprite);
 
         static UIManager* instance;
     private:
 
         std::unique_ptr<DirectX::SpriteBatch>  mSpriteBatch;
         std::unique_ptr<DirectX::CommonStates> mStates;
-       POINT                                  mCursor;
+        POINT                                  mCursor;
 
         std::vector<SpriteComponent> mSprites;
         std::vector<FontComponent*>  mSpriteFonts;
