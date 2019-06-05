@@ -154,7 +154,7 @@ void RenderSystem::CreateDeviceAndSwapChain()
         ID3D11Debug* debug = nullptr;
         hr                 = m_Device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&debug));
         assert(SUCCEEDED(hr));
-        // debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+        debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
         debug->Release();
 #endif
 
@@ -192,6 +192,7 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
         // Preserve the existing buffer count and format.
         // Automatically choose the width and height to match the client rect for HWNDs.
         hr = m_Swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+        pOutput->Release();
 
         // Perform error handling here!
         assert(SUCCEEDED(hr));
@@ -248,13 +249,13 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
         descDSV.ViewDimension      = D3D11_DSV_DIMENSION_TEXTURE2D;
         descDSV.Texture2D.MipSlice = 0;
         hr = m_Device->CreateDepthStencilView(texture, &descDSV, &m_DefaultDepthStencil[E_DEPTH_STENCIL::BASE_PASS]);
-        texture->Release();
 
         D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc{};
         viewDesc.Format              = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
         viewDesc.ViewDimension       = D3D11_SRV_DIMENSION_TEXTURE2D;
         viewDesc.Texture2D.MipLevels = 1;
         m_Device->CreateShaderResourceView(texture, &viewDesc, &m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::BASE_DEPTH]);
+        texture->Release();
 
         assert(SUCCEEDED(hr));
 }

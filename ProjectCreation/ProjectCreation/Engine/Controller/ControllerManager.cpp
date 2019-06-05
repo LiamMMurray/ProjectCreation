@@ -34,6 +34,45 @@ void ControllerManager::DisplayConsoleMenu()
         }
 }
 
+int ControllerManager::GetOrbCount(E_LIGHT_ORBS color)
+{
+        if (color == E_LIGHT_ORBS::RED_LIGHTS)
+        {
+                return m_RedOrbCount;
+        }
+
+        if (color == E_LIGHT_ORBS::BLUE_LIGHTS)
+        {
+                return m_BlueOrbCount;
+        }
+
+        if (color == E_LIGHT_ORBS::GREEN_LIGHTS)
+        {
+                return m_GreenOrbCount;
+        }
+}
+
+void ControllerManager::SetOrbCount(E_LIGHT_ORBS color)
+{
+        if (color == E_LIGHT_ORBS::RED_LIGHTS)
+        {
+                m_RedOrbCount += 1;
+                std::cout << "Red Count: " << GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) << std::endl;
+        }
+
+        if (color == E_LIGHT_ORBS::BLUE_LIGHTS)
+        {
+                m_BlueOrbCount += 1;
+                std::cout << "Blue Count: " << GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) << std::endl;
+        }
+
+        if (color == E_LIGHT_ORBS::GREEN_LIGHTS)
+        {
+                m_GreenOrbCount += 1;
+                std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
+        }
+}
+
 void ControllerManager::Initialize()
 {
         instance = new ControllerManager;
@@ -91,6 +130,24 @@ void ControllerManager::update(float delta)
                 m_togglePauseInput = !m_togglePauseInput;
         }
 
+        if (GCoreInput::GetKeyState(KeyCode::R) == KeyState::DownFirst) 
+		{
+                SetOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
+                std::cout << "Red Count: " << GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) << std::endl;
+		}
+
+        if (GCoreInput::GetKeyState(KeyCode::B) == KeyState::DownFirst)
+		{
+                SetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
+                std::cout << "Blue Count: " << GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) << std::endl;
+		}
+
+        if (GCoreInput::GetKeyState(KeyCode::G) == KeyState::DownFirst)
+		{
+                SetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
+                std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
+		}
+
         if (GCoreInput::GetKeyState(KeyCode::Tab) == KeyState::DownFirst)
         {
                 m_toggleDebug = !m_toggleDebug;
@@ -133,18 +190,18 @@ void ControllerManager::update(float delta)
 
                 m_Controllers[E_CONTROLLERS::PLAYER]->InactiveUpdate(delta);
         }
-		
+
         if (m_togglePauseInput == false)
         {
                 m_Controllers[m_CurrentController]->OnUpdate(delta);
-                //ShowCursor(false);
+                // ShowCursor(false);
         }
 
         else if (m_togglePauseInput == true)
         {
                 m_Controllers[m_CurrentController]->PauseInput();
-                //ShowCursor(true);
-		}
+                // ShowCursor(true);
+        }
 }
 
 ControllerManager* ControllerManager::Get()

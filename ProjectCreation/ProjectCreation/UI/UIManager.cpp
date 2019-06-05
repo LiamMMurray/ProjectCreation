@@ -145,7 +145,8 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         if (instance->m_InMenu)
         {
-                ShowCursor(TRUE);
+                while (ShowCursor(TRUE) >= 0)
+                        ;
                 ClipCursor(nullptr);
         }
         else
@@ -219,22 +220,29 @@ void UIManager::Initialize(native_handle_type hwnd)
 
 void UIManager::Update()
 {
+        if (instance->m_InMenu)
+        {
+                ClipCursor(nullptr);
+        }
+        else
+        {
+                instance->UIClipCursor();
+        }
+
         if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
         {
                 instance->m_InMenu = !instance->m_InMenu;
-
                 if (instance->m_InMenu)
                 {
                         while (ShowCursor(TRUE) < 0)
                                 ;
-                        ClipCursor(nullptr);
                 }
                 else
                 {
-                        instance->UIClipCursor();
                         while (ShowCursor(FALSE) >= 0)
                                 ;
                 }
+
                 // Change input from Control to Escape whenever implimented
                 // Disable or enable all Sprites based off of input
                 // Sprites

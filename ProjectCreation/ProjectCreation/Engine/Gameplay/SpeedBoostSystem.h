@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../ECS/ECS.h"
-
+#include "LightOrbColors.h"
 class TransformComponent;
 class SpeedboostComponent;
 
@@ -11,14 +11,26 @@ class SpeedBoostSystem : public ISystem
         ComponentManager* m_ComponentManager;
         EntityManager*    m_EntityManager;
 
-        static constexpr uint32_t m_MaxSpeedBoosts = 10;
+        static constexpr uint32_t m_MaxSpeedBoosts = 30;
+
+		uint32_t m_MaxRedOrbs = 10;
+        uint32_t m_CurRedOrbs = 0;
+
+		uint32_t m_MaxBlueOrbs = 10;
+        uint32_t m_CurBlueOrbs = 0;
+
+		uint32_t m_MaxGreenOrbs = 10;
+        uint32_t m_CurGreenOrbs = 0;
+
 
         void RespawnSpeedBoost(TransformComponent*       boostTC,
-                             SpeedboostComponent*      boostSC,
-                             const TransformComponent* playerTC,
-                             const TransformComponent* targetTC);
+                               SpeedboostComponent*      boostSC,
+                               const TransformComponent* playerTC,
+                               const TransformComponent* targetTC);
 
-        void SpawnSpeedBoost(const TransformComponent* playerTC, const TransformComponent* targetTC);
+        const char* materialNames[3] = {"GlowSpeedboost01", "GlowSpeedboost02", "GlowSpeedboost03"};
+
+        void SpawnSpeedBoost(const TransformComponent* playerTC, const TransformComponent* targetTC, E_LIGHT_ORBS color);
 
         float m_PlayerEffectRadius = 0.0f;
         float m_SpawnBoostTimer    = 0.0f;
