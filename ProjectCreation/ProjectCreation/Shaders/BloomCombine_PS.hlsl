@@ -1,9 +1,8 @@
 #include "BloomInclude.hlsl"
 #include "PostProcessConstantBuffers.hlsl"
 
+#include "Math.hlsl"
 #include "Samplers.hlsl"
-
-
 
 
 float3 WorldPosFromDepth(float depth, float2 texCoord)
@@ -37,14 +36,16 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
 
         float3 dirVec = worldPos - _playerPosition;
         float  dist   = sqrt(dot(dirVec, dirVec));
-        
-		float mask = saturate(1 - dist / 2.0f);*/
-        //return mask;
+        
+        float mask = saturate(1 - dist / 2.0f);*/
+        // return mask;
+        float3 dither = InterleavedGradientNoise(pos.xy + _time);
 
         color += bloom;
         color = color / (color + 1.f);
-        //color *= 1.5f;
+        // color *= 1.5f;
         color = pow(color, 1.f / 2.2f);
+        color += dither/255;
 
         return float4(color, 1.f);
 }
