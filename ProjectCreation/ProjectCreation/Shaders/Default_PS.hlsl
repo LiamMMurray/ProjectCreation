@@ -308,7 +308,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         float bandCombined = saturate(5.0f * (bandA - bandB));
         color *= (1 - mask);
 
-        float3 band = bandCombined * float3(0.85f, .8f, 0.4f) * 1.0f;
+        float3 band = saturate(bandCombined) * float3(0.85f, .8f, 0.4f) * 1.0f;
 
         // return float4(band, 1.0f);
 

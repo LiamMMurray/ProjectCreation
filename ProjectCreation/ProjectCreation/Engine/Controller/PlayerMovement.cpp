@@ -21,7 +21,7 @@ void PlayerController::GatherInput()
 {
         m_TotalTime += cacheTime;
 
-        if (m_TotalTime >= 7.0f)
+        if (m_TotalTime >= 5.0f)
         {
 
                 PastDirection = requestedDirection;
@@ -215,6 +215,7 @@ PlayerController::PlayerController()
 {
         m_CurrentVelocity = DirectX::XMVectorZero();
         m_CurrentPosition = DirectX::XMVectorZero();
+        m_CurrentInput    = DirectX::XMVectorZero();
         m_MouseXDelta     = 0;
         m_MouseYDelta     = 0;
 }
@@ -222,5 +223,6 @@ PlayerController::PlayerController()
 void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)
 {
         preBoostVelocity = m_CurrentVelocity;
-        m_CurrentVelocity += 1.0f * XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+        m_CurrentVelocity += 2.0f * XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+        maxMaxSpeed += 1;
 }
