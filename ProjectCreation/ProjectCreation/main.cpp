@@ -12,7 +12,7 @@
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
 
-#include "Engine/CollisionLibary/CollisionComponent.h"
+#include "Engine/CollisionLibary/CollisionResult.h"
 #include "Engine/CollisionLibary/CollisionLibary.h"
 
 #include "Engine/CoreInput/CoreInput.h"
@@ -30,8 +30,9 @@
 #include "Engine/Animation/AnimationSystem.h"
 #include "Engine/ResourceManager/SkeletalMesh.h"
 /////testing -vic
-#include "Engine/CollisionLibary/BVH.h"
-#include "Rendering/DebugRender/debug_renderer.h"
+#include"Rendering/DebugRender/debug_renderer.h"
+#include"Engine/CollisionLibary/BVH.h"
+#include"Engine/CollisionLibary/CollisionSystem.h"
 ////testing -vic
 
 #include "Engine/Controller/ControllerManager.h"
@@ -53,7 +54,6 @@ using namespace BVH;
 ////testing -vic
 bool g_Running = false;
 
-
 LONG WINAPI errorFunc(_EXCEPTION_POINTERS* pExceptionInfo)
 {
         /*
@@ -66,7 +66,6 @@ LONG WINAPI errorFunc(_EXCEPTION_POINTERS* pExceptionInfo)
             AND this lib:
             dbghelp.lib
         */
-
         struct tm newTime;
         time_t    ltime;
         wchar_t   buff[100] = {0};
@@ -303,8 +302,8 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 XMVECTOR              v1       = XMVectorSet(7.0f, 0.0f, 0.0f, 0.0f);
                 XMVECTOR              v2       = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
                 float                 temptime = GEngine::Get()->GetDeltaTime();
-                FSweepCollisionResult result;
-                // result = CollisionLibary::SweepSphereToSphere(sphere1, sphere2, sphereObj, 1.0f);
+                FAdvancedCollisionResult result;
+               // result = CollisionLibary::SweepSphereToSphere(sphere1, sphere2, sphereObj, 1.0f);
                 result = CollisionLibary::MovingSphereToMovingSphere(sphere1, sphere2, v1, v2, temptime, 0.1f, 0.01f);
 
                 if (result.collisionType == Collision::ECollide)

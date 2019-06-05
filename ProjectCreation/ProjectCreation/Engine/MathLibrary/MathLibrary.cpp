@@ -129,6 +129,50 @@ float MathLibrary::ManhattanDistance(Shapes::FAabb& a, Shapes::FAabb& b)
         return output;
 }
 
+float MathLibrary::GetRandomFloat()
+{
+        return RANDOMFLOAT;
+}
+
+float MathLibrary::GetRandomFloatInRange(float min, float max)
+{
+        float output = (rand() / (float)RAND_MAX * (max - min)) + min;
+        return output;
+}
+
+double MathLibrary::GetRandomDouble()
+{
+        return RANDOMDOUBLE;
+}
+
+double MathLibrary::GetRandomDoubleInRange(double min, double max)
+{
+        double r      = (double)rand() / RAND_MAX;
+        double output = min + r * (max - min);
+        return output;
+}
+
+DirectX::XMVECTOR MathLibrary::GetRandomVector()
+{
+        return XMVectorSet(RANDOMFLOAT, RANDOMFLOAT, RANDOMFLOAT, 0.0f);
+}
+
+DirectX::XMVECTOR MathLibrary::GetRandomVectorInRange(float min, float max)
+{
+        float value = GetRandomFloatInRange(min, max);
+        return XMVectorSet(value, value, value, 0.0f);
+}
+
+DirectX::XMVECTOR MathLibrary::GetRandomUnitVector()
+{
+        XMVECTOR output  = GetRandomVector();
+        XMVECTOR unitVec = output / MathLibrary::VectorDotProduct(output, output);
+        if (MathLibrary::CalulateVectorLength(unitVec) == 1)
+        {
+                return unitVec;
+        }
+}
+
 float MathLibrary::MoveTowards(const float a, const float b, const float speed)
 {
         float output;
