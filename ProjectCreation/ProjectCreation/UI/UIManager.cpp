@@ -5,6 +5,33 @@
 #include "../Rendering/RenderingSystem.h"
 UIManager* UIManager::instance;
 
+/*
+	---List of UI Elements---
+	[0] -> [4] Pause Menu
+
+[0] = Pause Menu Background Element
+[1] = Pause Menu Resume Button
+[2] = Pause Menu Main Menu Button
+[3] = Pause Menu Options Button
+[4] = Pause Menu Exit Button
+
+[5] -> [8] Options Menu
+
+
+
+	---List of UI Text---
+	[0] -> [4] Pause Menu
+
+[0] = Pause Menu Resume Button
+[1] = Pause Menu Main Menu Button
+[2] = Pause Menu Options Button
+[3] = Pause Menu Exit Button
+
+
+	[4] -> [7] Options Menu
+
+*/
+
 // Adds a sprite to the vector of sprites
 // Currently PositionX and PositionY are not used
 void UIManager::AddSprite(ID3D11Device*        device,
@@ -130,9 +157,13 @@ void UIManager::Initialize()
         instance->mSpriteBatch = std::make_unique<DirectX::SpriteBatch>(renderSystem->m_Context);
         instance->mStates      = std::make_unique<DirectX::CommonStates>(renderSystem->m_Device);
 
-        instance->AddSprite(
-            renderSystem->m_Device, renderSystem->m_Context, L"../Assets/2d/Sprite/Grey Box Test.dds", 650.0f, 300.0f, 0.8f, 1.2f);
-
+        instance->AddSprite(renderSystem->m_Device,
+                            renderSystem->m_Context,
+                            L"../Assets/2d/Sprite/Grey Box Test.dds",
+                            650.0f,
+                            300.0f,
+                            0.8f,
+                            1.2f);
 
         instance->AddText(renderSystem->m_Device,
                           renderSystem->m_Context,
@@ -210,6 +241,36 @@ void UIManager::Initialize()
                 }
         });
 
+        instance->mSprites[3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+			//Sprites
+                for (int i = 0; i < instance->mSprites.size(); i++)
+                {
+                        if (instance->mSprites[i].mEnabled == true && i != 0)
+                        {
+                                instance->mSprites[i].mEnabled = false;
+                        }
+                        else
+                        {
+							instance->mSprites[i].mEnabled = true;
+                        }
+                }
+			//Fonts
+                for (int i = 0; i < instance->mSpriteFonts.size(); i++)
+                {
+                        if (instance->mSpriteFonts[i]->mEnabled == false)
+                        {
+                                instance->mSpriteFonts[i]->mEnabled = true;
+                        }
+                        else
+                        {
+							instance->mSpriteFonts[i]->mEnabled = false;
+                        }
+                }
+
+			//Joe's code for unpausing the game
+				//Here
+        });
+
         instance->mSprites[4].OnMouseDown.AddEventListener([](UIMouseEvent* e) { exit(EXIT_SUCCESS); });
 }
 
@@ -220,30 +281,41 @@ void UIManager::Update(float deltaTime)
                 // Change input from Control to Escape whenever implimented
                 // Disable or enable all Sprites based off of input
                 // Sprites
-                for (int i = 0; i < instance->mSprites.size(); i++)
-                {
-                        if (instance->mSprites[i].mEnabled == true)
+                if (instance->mSprites[0].mEnabled == true) 
+				{
+					//Sprites	
+                        for (int i = 0; i < instance->mSprites.size(); i++)
                         {
                                 instance->mSprites[i].mEnabled = false;
                         }
-                        else
+				}
+                else
+				{
+					//Sprites
+                        for (int i = 0; i < instance->mSprites.size(); i++)
                         {
                                 instance->mSprites[i].mEnabled = true;
                         }
-                }
-                // Text
+				}
 
-                for (int i = 0; i < instance->mSpriteFonts.size(); i++)
+				if (instance->mSprites[0].mEnabled == true) 
+				{ 
+					// Text
+                        for (int i = 0; i < instance->mSpriteFonts.size(); i++)
+                        {
+							instance->mSpriteFonts[i]->mEnabled = true;
+                        }
+				}
+                else
                 {
-                        if (instance->mSpriteFonts[i]->mEnabled == true)
+                    // Text
+                        for (int i = 0; i < instance->mSpriteFonts.size(); i++)
                         {
                                 instance->mSpriteFonts[i]->mEnabled = false;
                         }
-                        else
-                        {
-                                instance->mSpriteFonts[i]->mEnabled = true;
-                        }
-                }
+				}
+                
+                
 
                 // Pause Game Afterwards
         }
@@ -309,14 +381,19 @@ void UIManager::Shutdown()
 {
         instance->mStates.reset();
 
+		//Release Sprites
         for (int i = 0; i < instance->mSprites.size(); i++)
         {
                 instance->mSprites[i].mTexture->Release();
         }
-        for (int i = 0; i < instance->mSpriteFonts.size(); i++)
+        //Release Fonts
+		for (int i = 0; i < instance->mSpriteFonts.size(); i++)
         {
+                instance->mSpriteFonts[i]->mTexture->Release();
                 instance->mSpriteFonts[i]->mSpriteFont.reset();
-        }
+		}
+		
+
         assert(instance);
         delete instance;
 }

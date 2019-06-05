@@ -35,7 +35,6 @@ class UIManager
                      float                PositionX,
                      float                PositionY);
         void RemoveText(int id);
-        void ScaleSprite(float scaleX, float scaleY, SpriteComponent sprite);
 
         static UIManager* instance;
     private:
