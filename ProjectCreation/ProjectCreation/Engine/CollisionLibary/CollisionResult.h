@@ -26,7 +26,7 @@ namespace Collision
                 DirectX::XMVECTOR          finalPosition;
         };
 
-        struct FAdvancedviCollisionResult
+        struct FAdvancedCollisionResult
         {
                 ECollisionType             collisionType;
                 std::vector<FContactPoint> collideSurfaces;
@@ -34,20 +34,11 @@ namespace Collision
                 DirectX::XMVECTOR          finalDirection;
         };
 
-        struct FCollisionObjects
-        {
+		struct FCollisionObjects
+		{
+                std::vector<Shapes::FAabb> aabbs;
                 std::vector<Shapes::FSphere> spheres;
-                std::vector<Shapes::FAabb>   aabbs;
-                std::vector<Shapes::FPlane>  planes;
-        };
+                std::vector<Shapes::FCapsule> capsules;
+		};
 
-        enum ECollisionObjectTypes
-        {
-                Sphere = 0,
-                Aabb, // = 1
-                Plane, // = 2
-                Capsule // = 3 
-        };
-
-        extern BVH::BVHTree bvhTree;
 }; // namespace Collision

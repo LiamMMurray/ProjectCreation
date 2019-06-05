@@ -1,7 +1,13 @@
 #pragma once
 
+#define COMPONENT_MANAGER GEngine::Get()->GetComponentManager()
+#define SYSTEM_MANAGER GEngine::Get()->GetSystemManager()
+#define ENTITY_MANAGER GEngine::Get()->GetEntityManager()
+#define RESOURCE_MANAGER GEngine::Get()->GetResourceManager()
+
 #include "../ECS/ECS.h"
 #include "ResourceManager/ResourceManager.h"
+
 
 #include "XTime.h"
 class GEngine
@@ -38,10 +44,10 @@ class GEngine
         {
                 m_DebugMode = val;
         }
-		inline bool IsDebugMode() const
-		{
+        inline bool IsDebugMode() const
+        {
                 return m_DebugMode;
-		}
+        }
         inline void ToggleDebugMode()
         {
                 m_DebugMode = !m_DebugMode;

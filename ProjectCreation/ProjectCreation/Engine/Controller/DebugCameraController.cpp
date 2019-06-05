@@ -178,7 +178,7 @@ void DebugCameraController::ApplyInput()
         
 		AddSphere(fSphereCheck, 36, XMMatrixIdentity());
         // Calcualte the type of collision
-        Collision::FAdvancedviCollisionResult result =
+        Collision::FAdvancedCollisionResult result =
             CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 0.0f);
 
         if (result.collisionType != Collision::ECollisionType::EOveralap &&

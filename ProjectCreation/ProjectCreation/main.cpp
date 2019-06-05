@@ -12,7 +12,7 @@
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
 
-#include "Engine/CollisionLibary/CollisionComponent.h"
+#include "Engine/CollisionLibary/CollisionResult.h"
 #include "Engine/CollisionLibary/CollisionLibary.h"
 
 #include "Engine/CoreInput/CoreInput.h"
@@ -299,7 +299,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 				XMVECTOR              v1 = XMVectorSet(7.0f,0.0f,0.0f,0.0f);
                 XMVECTOR              v2 = XMVectorSet(0.0f, 0.0f, 0.0f,0.0f);
                 float                 temptime = GEngine::Get()->GetDeltaTime();
-                FAdvancedviCollisionResult result;
+                FAdvancedCollisionResult result;
                // result = CollisionLibary::SweepSphereToSphere(sphere1, sphere2, sphereObj, 1.0f);
                 result = CollisionLibary::MovingSphereToMovingSphere(sphere1, sphere2, v1, v2, temptime, 0.1f, 0.01f);
 

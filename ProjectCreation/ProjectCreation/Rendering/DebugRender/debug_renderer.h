@@ -1,6 +1,6 @@
 #pragma once
 #include "../../Engine/Animation/AnimationContainers.h"
-#include "../../Engine/CollisionLibary/CollisionComponent.h"
+#include "../../Engine/CollisionLibary/CollisionResult.h"
 #include "../../Engine/MathLibrary/ColorConstants.h"
 #include "../../Engine/MathLibrary/MathLibrary.h"
 #include "../Vertex.h"
