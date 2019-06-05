@@ -901,7 +901,7 @@ void RenderSystem::OnUpdate(float deltaTime)
         debug_renderer::clear_lines();
 
         // UI Manager Update
-        UIManager::Update();
+        UIManager::Update(deltaTime);
 
         DXGI_PRESENT_PARAMETERS parameters = {0};
         m_Swapchain->Present1(1, 0, &parameters);
