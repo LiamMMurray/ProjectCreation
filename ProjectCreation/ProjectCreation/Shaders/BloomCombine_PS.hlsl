@@ -28,24 +28,32 @@ Texture2D MaskTexture : register(t5);
 
 float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
 {
-        float3 color = ScreenTexture.Sample(sampleTypeClamp, texCoord).rgb;
-        float3 bloom = BloomTexture.Sample(sampleTypeClamp, texCoord).rgb * _brightness;
-        /*float  depth = ScreenDepth.Sample(sampleTypeClamp, texCoord).r;
+        float aspectRatio = (1.0f / _inverseScreenDimensions.y) / (1.0f / _inverseScreenDimensions.x);
 
-        float3 worldPos = WorldPosFromDepth(depth, texCoord);
+		float4 uvOffset = float4(_inverseScreenDimensions.x, 0.0f, _inverseScreenDimensions.y, 1.0f);
 
-        float3 dirVec = worldPos - _playerPosition;
-        float  dist   = sqrt(dot(dirVec, dirVec));
-        
-        float mask = saturate(1 - dist / 2.0f);*/
-        // return mask;
+        float2 uv              = float2(1.0f, aspectRatio) * abs(texCoord * 2.0f - 1.0f);
+        float  fringeIntensity = dot(uv, uv);
+        fringeIntensity = saturate(fringeIntensity);
+        //return fringeIntensity;
+        float offset = 4.0f * fringeIntensity;
+
+		//return offset;
+
+        float  colorR = ScreenTexture.Sample(sampleTypeClamp, texCoord + offset * uvOffset.xz).r;
+        float  colorG = ScreenTexture.Sample(sampleTypeClamp, texCoord - offset * uvOffset.xz).g;
+        float  colorB = ScreenTexture.Sample(sampleTypeClamp, texCoord + offset * uvOffset.zy).b;
+        float3 color  = float3(colorR, colorG, colorB);
+        float3 bloom  = BloomTexture.Sample(sampleTypeClamp, texCoord).rgb * _brightness;
+
         float3 dither = InterleavedGradientNoise(pos.xy + _time);
 
         color += bloom;
+        color += 0.004f * dither / 255;
         color = color / (color + 1.f);
         // color *= 1.5f;
         color = pow(color, 1.f / 2.2f);
-        color += dither/255;
+        color += dither / 255;
 
         return float4(color, 1.f);
 }

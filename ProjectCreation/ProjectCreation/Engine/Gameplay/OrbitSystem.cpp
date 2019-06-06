@@ -71,11 +71,12 @@ void OrbitSystem::OnUpdate(float deltaTime)
                                 }
                         }
 
-                        float dist          = goalComp->targetAlpha - goalComp->currAlpha;
+                        float dist  = MathLibrary::CalulateDistance(goalComp->initialTransform.translation,
+                                                                   goalComp->goalTransform.translation);
+                        float speed = MathLibrary::lerp(
+                            goalComp->transitionInitialSpeed, goalComp->transitionFinalSpeed, goalComp->currAlpha);
                         goalComp->currAlpha = MathLibrary::MoveTowards(
-                            goalComp->currAlpha,
-                            goalComp->targetAlpha,
-                            (dist / m_GoalTransitionFactor) * (dist / m_GoalTransitionFactor) * deltaTime);
+                            goalComp->currAlpha, goalComp->targetAlpha, speed * deltaTime * 1.0f / dist);
 
                         transComp->transform =
                             FTransform::Lerp(goalComp->initialTransform, goalComp->goalTransform, goalComp->currAlpha);

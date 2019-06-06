@@ -13,7 +13,6 @@ class OrbitSystem : public ISystem
 
         const char* materialNames[3]       = {"GlowMatPlanet01", "GlowMatPlanet02", "GlowMatPlanet03"};
         int         m_Stage                = 0;
-        float       m_GoalTransitionFactor = 10.0f;
         void        CreateGoal(int n);
 
     protected:
