@@ -74,6 +74,21 @@ class MathLibrary
 
         static float MoveTowards(const float a, const float b, const float speed);
 
+        static double SmoothStart2(double x);
+        static double SmoothStop2(double x);
+
+        static double SmoothStart3(double x);
+        static double SmoothStop3(double x);
+
+        static double SmoothStart4(double x);
+        static double SmoothStop4(double x);
+
+		static double SmoothStartN(double x, double power);
+        static double SmoothStopN(double x, double power);
+
+        static double SmoothMix(double a, double b, double blend);
+        static double SmoothCrossfade(double a, double b, double time);
+
         template <typename T>
         static T lerp(T v0, T v1, T t)
         {

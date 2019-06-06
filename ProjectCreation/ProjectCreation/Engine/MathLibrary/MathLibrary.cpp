@@ -180,3 +180,56 @@ float MathLibrary::MoveTowards(const float a, const float b, const float speed)
         output     = a + std::copysignf(std::min(speed, fabsf(dist)), dist);
         return output;
 }
+
+
+// Smoothing functions from the "Fast and Funky 1D Nonlinear Transformations" GDC
+//Powers 2 - 4 are faster than the Nth power
+double MathLibrary::SmoothStart2(double x)
+{
+        return x * x;
+}
+
+double MathLibrary::SmoothStop2(double x)
+{
+        return 1 - ((1-x) * (1-x));
+}
+
+double MathLibrary::SmoothStart3(double x)
+{
+        return x * x * x;
+}
+
+double MathLibrary::SmoothStop3(double x)
+{
+        return 1 - ((1 - x) * (1 - x) * (1 - x));
+}
+
+double MathLibrary::SmoothStart4(double x)
+{
+        return x * x * x * x;
+}
+
+double MathLibrary::SmoothStop4(double x)
+{
+        return 1 - ((1 - x) * (1 - x) * (1 - x) * (1 - x));
+}
+
+double MathLibrary::SmoothStartN(double x, double power)
+{
+        return pow(x, power);
+}
+
+double MathLibrary::SmoothStopN(double x, double power)
+{
+        return 1 - pow(1 - x, power);
+}
+
+double MathLibrary::SmoothMix(double a, double b, double blend)
+{
+        return a + blend * (b - a);	
+}
+
+double MathLibrary::SmoothCrossfade(double a, double b, double time)
+{
+        return a + time * (b - a);
+}
