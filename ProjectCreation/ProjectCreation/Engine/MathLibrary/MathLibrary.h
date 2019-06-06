@@ -45,9 +45,6 @@ class MathLibrary
         static DirectX::XMVECTOR GetRandomUnitVector();
         inline static bool       QuadraticFormula(const float a,
                                                   const float b,
-        static float                    MoveTowards(const float a, const float b, const float speed);
-		inline static bool              QuadraticFormula(const float a,
-                                                  const float  b,
                                                   const float c,
                                                   float&      r1, // first
                                                   float&      r2  // and second roots
@@ -73,7 +70,10 @@ class MathLibrary
 
                         return false; // complex roots
                 }
-        }
+        };
+
+        static float MoveTowards(const float a, const float b, const float speed);
+
         template <typename T>
         static T lerp(T v0, T v1, T t)
         {
@@ -113,11 +113,11 @@ class MathLibrary
         }
 
         template <typename T>
-		static void AddNumberToVector(DirectX::XMVECTOR& vector, T number)
-		{
+        static void AddNumberToVector(DirectX::XMVECTOR& vector, T number)
+        {
                 float x = DirectX::XMVectorGetX(vector) + number;
                 float y = DirectX::XMVectorGetY(vector) + number;
                 float z = DirectX::XMVectorGetZ(vector) + number;
                 vector  = DirectX::XMVectorSet(x, y, z, DirectX::XMVectorGetW(vector));
-		}
+        }
 };

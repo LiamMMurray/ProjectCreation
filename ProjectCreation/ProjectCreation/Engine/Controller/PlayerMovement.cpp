@@ -7,6 +7,7 @@
 #include "../MathLibrary/Quaternion.h"
 
 #include "../CollisionLibary/CollisionLibary.h"
+#include "../CollisionLibary/CollisionResult.h"
 #include "../GenericComponents/TransformComponent.h"
 
 #include "../../Rendering/DebugRender/debug_renderer.h"
@@ -23,7 +24,6 @@ void PlayerController::GatherInput()
 
         if (m_TotalTime >= 5.0f)
         {
-
                 PastDirection = requestedDirection;
 
                 // requestedDirection = MoveDirections::NO_DIRECTION;
@@ -89,7 +89,7 @@ void PlayerController::ApplyInput()
         // Get Delta Time
         float deltaTime = cacheTime; // GEngine::Get()->GetDeltaTime();
 
-        //m_TotalTime += deltaTime;
+        // m_TotalTime += deltaTime;
 
         // Get the Speed from the gathered input
         float currSpeed = XMVectorGetX(XMVector3Length(m_CurrentInput));
@@ -134,13 +134,13 @@ void PlayerController::ApplyInput()
 
         m_CurrentVelocity =
             XMVectorLerp(m_CurrentVelocity, preBoostVelocity, MathLibrary::clamp(deltaTime * 0.25f, 0.0f, 1.0f));
-
+		
         // Convert the angle of change on the X-Axis and the Y-Axis to radians
         if (m_TotalTime >= 2.0f && m_TotalTime <= 5.0f)
         {
                 m_Pitch = MathLibrary::lerp(m_Pitch, 0.0f, MathLibrary::clamp(deltaTime * 0.5f, 0.0f, 1.0f));
         }
-		
+
         static float accumAngleY = 0.0f;
         m_Yaw += m_MouseXDelta * 2.0f * deltaTime;
         m_Pitch += m_MouseYDelta * 2.0f * deltaTime;
@@ -172,7 +172,8 @@ void PlayerController::ApplyInput()
 
         // Check Collision and If collided stop moving
 
-        FSweepCollisionResult result = CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 1.0f);
+        Collision::FAdvancedCollisionResult result =
+            CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 1.0f);
 
         if (result.collisionType != Collision::ECollisionType::EOveralap &&
             result.collisionType != Collision::ECollisionType::ECollide)
