@@ -4,10 +4,17 @@
 #include "../Controller/IController.h"
 #include "../Entities/BaseEntities.h"
 #include "../GEngine.h"
-
+#include "../Gameplay/LightOrbColors.h"
 
 class ControllerManager
 {
+        static ControllerManager* instance;
+
+        void init();
+        void shutdown();
+
+        void update(float delta);
+
     public:
         // bool m_toggleDebugCamera = false;
 
@@ -21,23 +28,35 @@ class ControllerManager
 
         IController* m_Controllers[E_CONTROLLERS::COUNT] = {};
 
-        SystemManager* m_SystemManager;
+        SystemManager*    m_SystemManager;
         ComponentManager* m_ComponentManager;
-        EntityManager* m_EntityManager;
+        EntityManager*    m_EntityManager;
 
 
         E_CONTROLLERS m_CurrentController;
 
+        bool m_toggleDebug = false;
 
-		bool m_toggleDebug = false;
+        bool m_togglePauseInput = false;
 
-		bool m_togglePauseInput = false;
+        int m_RedOrbCount = 0;
+        int m_BlueOrbCount = 0;
+        int m_GreenOrbCount = 0;
 
         void DisplayConsoleMenu();
 
-        void Initialize();
+        // Returns the number of orbs collected of a certain color based on passed in parameter
+        // 0 = Red Lights, 1 = Blue Lights, 2 = Green Lights
+        int GetOrbCount(E_LIGHT_ORBS color);
 
-        void Update(float delta);
+        // Adds one orb to a certain color based on passed in parameter
+        // 0 = Red Lights, 1 = Blue Lights, 2 = Green Lights
+		void SetOrbCount(E_LIGHT_ORBS color);
 
-        void Shutdown();
+        static void Initialize();
+
+
+        static ControllerManager* Get();
+        static void               Shutdown();
+        static void               Update(float deltaTime);
 };

@@ -12,7 +12,14 @@
 
 #include "../CollisionLibary/Shapes.h"
 
+#include "../../UI/UIManager.h"
+
+#include <WinUser.h>
+
 using namespace std;
+
+
+ControllerManager* ControllerManager::instance;
 
 void ControllerManager::DisplayConsoleMenu()
 {
@@ -27,7 +34,52 @@ void ControllerManager::DisplayConsoleMenu()
         }
 }
 
+int ControllerManager::GetOrbCount(E_LIGHT_ORBS color)
+{
+        if (color == E_LIGHT_ORBS::RED_LIGHTS)
+        {
+                return m_RedOrbCount;
+        }
+
+        if (color == E_LIGHT_ORBS::BLUE_LIGHTS)
+        {
+                return m_BlueOrbCount;
+        }
+
+        if (color == E_LIGHT_ORBS::GREEN_LIGHTS)
+        {
+                return m_GreenOrbCount;
+        }
+}
+
+void ControllerManager::SetOrbCount(E_LIGHT_ORBS color)
+{
+        if (color == E_LIGHT_ORBS::RED_LIGHTS)
+        {
+                m_RedOrbCount += 1;
+                std::cout << "Red Count: " << GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) << std::endl;
+        }
+
+        if (color == E_LIGHT_ORBS::BLUE_LIGHTS)
+        {
+                m_BlueOrbCount += 1;
+                std::cout << "Blue Count: " << GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) << std::endl;
+        }
+
+        if (color == E_LIGHT_ORBS::GREEN_LIGHTS)
+        {
+                m_GreenOrbCount += 1;
+                std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
+        }
+}
+
 void ControllerManager::Initialize()
+{
+        instance = new ControllerManager;
+        instance->init();
+}
+
+void ControllerManager::init()
 {
         m_SystemManager    = GEngine::Get()->GetSystemManager();
         m_ComponentManager = GEngine::Get()->GetComponentManager();
@@ -71,12 +123,30 @@ void ControllerManager::Initialize()
         m_CurrentController = E_CONTROLLERS::PLAYER;
 }
 
-void ControllerManager::Update(float delta)
+void ControllerManager::update(float delta)
 {
         if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
         {
-                m_togglePauseInput = !m_togglePauseInput;
+                //m_togglePauseInput = !m_togglePauseInput;
         }
+
+        if (GCoreInput::GetKeyState(KeyCode::R) == KeyState::DownFirst) 
+		{
+                SetOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
+                std::cout << "Red Count: " << GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) << std::endl;
+		}
+
+        if (GCoreInput::GetKeyState(KeyCode::B) == KeyState::DownFirst)
+		{
+                SetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
+                std::cout << "Blue Count: " << GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) << std::endl;
+		}
+
+        if (GCoreInput::GetKeyState(KeyCode::G) == KeyState::DownFirst)
+		{
+                SetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
+                std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
+		}
 
         if (GCoreInput::GetKeyState(KeyCode::Tab) == KeyState::DownFirst)
         {
@@ -124,15 +194,33 @@ void ControllerManager::Update(float delta)
         if (m_togglePauseInput == false)
         {
                 m_Controllers[m_CurrentController]->OnUpdate(delta);
+                // ShowCursor(false);
         }
 
         else if (m_togglePauseInput == true)
         {
                 m_Controllers[m_CurrentController]->PauseInput();
-		}
+                // ShowCursor(true);
+        }
+}
+
+ControllerManager* ControllerManager::Get()
+{
+        return instance;
 }
 
 void ControllerManager::Shutdown()
+{
+        instance->shutdown();
+        delete instance;
+}
+
+void ControllerManager::Update(float deltaTime)
+{
+        instance->update(deltaTime);
+}
+
+void ControllerManager::shutdown()
 {
         for (int i = 0; i < E_CONTROLLERS::COUNT; ++i)
         {

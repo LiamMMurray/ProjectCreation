@@ -25,6 +25,8 @@ class PlayerController : public IController
         void InactiveUpdate(float deltaTime) override;
         PlayerController();
 
+		void SpeedBoost(DirectX::XMVECTOR preBoostVelocity);
+
         enum MoveDirections
         {
                 NO_DIRECTION = 0,
@@ -65,7 +67,7 @@ class PlayerController : public IController
         // PastDirection is used for debugging, delete when done
         MoveDirections PastDirection;
 
-		float m_Pitch = 0.0f;
+		float m_Pitch = -90.0f;
 		float m_Yaw = 0.0f;
 		float m_Roll = 0.0f;
 
@@ -74,6 +76,9 @@ class PlayerController : public IController
 
 		float acceleration = 1.0;
         float deacceleration = 1.5f;
+
+		float m_TotalTime = 0.0f;
+
 
 		int32_t m_MouseXDelta;
         int32_t m_MouseYDelta;

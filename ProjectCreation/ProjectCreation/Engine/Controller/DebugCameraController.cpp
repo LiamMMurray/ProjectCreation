@@ -189,7 +189,7 @@ void DebugCameraController::ApplyInput()
 
 
         // Calcualte the type of collision
-        Collision::FSweepCollisionResult result =
+        Collision::FAdvancedCollisionResult result =
             CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 0.0f);
 
         if (result.collisionType != Collision::ECollisionType::EOveralap &&

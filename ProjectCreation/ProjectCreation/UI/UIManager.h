@@ -9,14 +9,17 @@
 #include <string>
 #include <vector>
 #include "CommonStates.h"
-#include "SpriteComponent.h"
 #include "FontComponent.h"
+#include "SpriteComponent.h"
 
 class UIManager
 {
+        using native_handle_type = void*;
+        native_handle_type m_WindowHandle;
+
     public:
-        static void Initialize();
-        static void Update(float deltaTime);
+        static void Initialize(native_handle_type hwnd);
+        static void Update();
         static void Shutdown();
 
         void AddSprite(ID3D11Device*        device,
@@ -36,9 +39,13 @@ class UIManager
                      float                PositionY);
         void RemoveText(int id);
 
-        static UIManager* instance;
-    private:
 
+        void UIClipCursor();
+
+        static UIManager* instance;
+
+    private:
+        bool                                   m_InMenu = false;
         std::unique_ptr<DirectX::SpriteBatch>  mSpriteBatch;
         std::unique_ptr<DirectX::CommonStates> mStates;
         POINT                                  mCursor;

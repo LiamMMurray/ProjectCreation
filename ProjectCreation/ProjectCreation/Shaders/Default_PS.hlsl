@@ -23,7 +23,7 @@ cbuffer SceneInfoBuffer : register(b1)
         float3 _EyePosition;
         float  _Time;
         float3 _DirectionalLightDirection;
-        // float  pad;
+        float  _playerRadius;
         float3 _DirectionalLightColor;
         // float pad
         float3 _AmbientColor;
@@ -296,19 +296,23 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
 
         float maskA     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 45.0f + _Time * 0.01f * float2(1.0f, 0.0f)).z;
         float maskB     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 40.0f + _Time * 0.01f * float2(-1.0f, 0.0f)).z;
-        float areaMaskA = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 8.0f + maskA + maskB).z*2.0f - 1.0f;
-        //return areaMaskA;
+        float areaMaskA = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 8.0f + maskA + maskB).z * 2.0f - 1.0f;
+        // return areaMaskA;
 
         float3 dirVec = pIn.PosWS + float3(areaMaskA, 0, areaMaskA) - _EyePosition;
         float  dist   = sqrt(dot(dirVec, dirVec));
 
-        float mask         = saturate(dist / 0.1f - 15.0f);
-        float bandA        = saturate(dist / 0.1f - 14.5f);
-        float bandB        = saturate(dist / 0.1f - 15.5f);
-        float bandCombined = saturate(5.0f*(bandA - bandB));
+		float modulatedDistance = dist / .1f + InterleavedGradientNoise(pIn.Pos.xy + _Time);
+
+        float mask         = saturate(dist / 0.1f - _playerRadius);
+        float bandA        = saturate(dist / 0.1f - _playerRadius + 0.5f);
+        float bandB        = saturate(dist / 0.1f - _playerRadius - 0.5f);
+        float bandCombined = saturate(5.0f * (bandA - bandB));
         color *= (1 - mask);
 
-        float3 band = bandCombined * float3(0.85f, .8f, 0.4f) * 1.0f;
+		clip((1 - bandA) < 0.01f ? -1 : 1);
+
+        float3 band = bandCombined * float3(0.85f, .8f, 0.4f) * 1.1f;
 
         // return float4(band, 1.0f);
 
@@ -318,10 +322,10 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
 
         float veinsMask = Mask1.Sample(sampleTypeWrap, pIn.Tex / 32.0f - float2(0, _Time * 0.002f)).b;
         float veins =
-            Mask2.Sample(sampleTypeWrap, pIn.Tex * float2(0.5f, 0.25f) + float2(0, _Time * 0.2f) + veinsMask * 8.0f).r;
-        float3 veinsEmissive = veins * 5.0f * float3(1.0f, 0.05f, 0.05f) * mask;
+            Mask2.Sample(sampleTypeWrap, pIn.Tex * float2(0.5f, 0.25f) + float2(0, _Time * 0.2f) + veinsMask * 2.0f).r;
+        // float3 veinsEmissive = veins * 0.1f * float3(1.0f, 0.05f, 0.05f) * mask;
 
-        color += surface.emissiveColor + band + veinsEmissive;
+        color += surface.emissiveColor + band; //   +veinsEmissive;
 
         return float4(color, 1.0f);
 }

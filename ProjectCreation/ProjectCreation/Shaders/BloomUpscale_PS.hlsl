@@ -30,5 +30,5 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
 
         float4 color = 0.0625f * (c0 + c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8);
 
-        return color;
+        return color * _brightness;
 }
