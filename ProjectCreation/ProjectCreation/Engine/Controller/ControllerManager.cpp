@@ -127,7 +127,7 @@ void ControllerManager::update(float delta)
 {
         if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
         {
-                m_togglePauseInput = !m_togglePauseInput;
+                //m_togglePauseInput = !m_togglePauseInput;
         }
 
         if (GCoreInput::GetKeyState(KeyCode::R) == KeyState::DownFirst) 

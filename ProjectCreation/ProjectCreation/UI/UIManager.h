@@ -26,7 +26,9 @@ class UIManager
                        ID3D11DeviceContext* deviceContext,
                        const wchar_t*       FileName,
                        float                PositionX,
-                       float                PositionY);
+                       float                PositionY,
+                       float                scaleX,
+                       float                scaleY);
         void RemoveSprite(int id);
 
         void AddText(ID3D11Device*        device,
