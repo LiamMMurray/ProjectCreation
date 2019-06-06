@@ -9,7 +9,8 @@ class GoalComponent : public Component<GoalComponent>
         FTransform initialTransform;
         FTransform goalTransform;
 
-        float currAlpha       = 0.0f;
-        float targetAlpha     = 0.0f;
-        float transitionSpeed = 0.0f;
+        float currAlpha            = 0.0f;
+        float targetAlpha            = 0.0f;
+        float transitionInitialSpeed = 0.1f;
+        float transitionFinalSpeed = 1200.0f;
 };

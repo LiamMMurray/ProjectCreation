@@ -231,14 +231,18 @@ void UIManager::Update()
 
         if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
         {
+                static POINT cursorPos;
+
                 instance->m_InMenu = !instance->m_InMenu;
                 if (instance->m_InMenu)
                 {
                         while (ShowCursor(TRUE) < 0)
                                 ;
+                        SetCursorPos(cursorPos.x, cursorPos.y);
                 }
                 else
                 {
+                        GetCursorPos(&cursorPos);
                         while (ShowCursor(FALSE) >= 0)
                                 ;
                 }
