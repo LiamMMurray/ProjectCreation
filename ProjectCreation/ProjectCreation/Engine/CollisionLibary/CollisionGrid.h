@@ -15,8 +15,6 @@ class CollisionGrid
 {
 
 
-        int HashTableBuckets[NUM_BUCKETS];
-
     public:
         struct Cell
         {
@@ -26,7 +24,6 @@ class CollisionGrid
         };
         static constexpr int                                     CellSize = 5;
         std::unordered_map<int, std::vector<CollisionID>> GridContainers;
-
         CollisionGrid();
         Cell                     GetCellFromShape(const Shapes::FCollisionShape* shape);
         int                      ComputeHashBucketIndex(Cell cellPos);
