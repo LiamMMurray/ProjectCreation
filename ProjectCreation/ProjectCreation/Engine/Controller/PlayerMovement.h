@@ -3,10 +3,11 @@
 #include "IController.h"
 
 #include "PlayerControllerStateMachine.h"
-
+#include "../MathLibrary/MathLibrary.h"
 #include "../Physics/PhysicsComponent.h"
 
 class TransformComponent;
+class PlayerCinematicState;
 class PlayerController : public IController
 {
         friend class PlayerControllerStateMachine;
@@ -32,6 +33,8 @@ class PlayerController : public IController
         DirectX::XMVECTOR m_CurrentVelocity;
 
 		PlayerControllerStateMachine m_StateMachine;
+
+		PlayerCinematicState* m_CinematicState;
     public:
         PlayerController();
 
@@ -117,4 +120,6 @@ class PlayerController : public IController
         {
                 m_EulerAngles = val;
         }
+
+		void RequestTransition(const FTransform& target);
 };

@@ -23,6 +23,7 @@
     <ClInclude Include="Engine\Controller\ControllerManager.h" />
     <ClInclude Include="Engine\Controller\DebugCameraController.h" />
     <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
+    <ClInclude Include="Engine\Controller\PlayerCinematicState.h" />
     <ClInclude Include="Engine\Controller\PlayerControllerState.h" />
     <ClInclude Include="Engine\Controller\PlayerControllerStateMachine.h" />
     <ClInclude Include="Engine\Controller\PlayerGroundState.h" />
@@ -184,6 +185,7 @@
     <ClCompile Include="Engine\CollisionLibary\Shapes.cpp" />
     <ClCompile Include="Engine\Controller\ControllerManager.cpp" />
     <ClCompile Include="Engine\Controller\DebugCameraController.cpp" />
+    <ClCompile Include="Engine\Controller\PlayerCinematicState.cpp" />
     <ClCompile Include="Engine\Controller\PlayerControllerStateMachine.cpp" />
     <ClCompile Include="Engine\Controller\PlayerGroundState.cpp" />
     <ClCompile Include="Engine\EngineInitShutdownHelpers.cpp" />

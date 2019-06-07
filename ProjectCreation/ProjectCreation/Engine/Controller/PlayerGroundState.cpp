@@ -10,7 +10,10 @@ using namespace DirectX;
 
 void PlayerGroundState::Enter()
 {
-        _playerController->SetEulerAngles(_cachedTransformComponent->transform.rotation.ToEulerAngles());
+        auto playerTransformComponent =
+            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(_playerController->GetControlledEntity());
+
+        _playerController->SetEulerAngles(playerTransformComponent->transform.rotation.ToEulerAngles());
 }
 
 void PlayerGroundState::Update(float deltaTime)
@@ -66,10 +69,10 @@ void PlayerGroundState::Update(float deltaTime)
 
 		XMFLOAT3 eulerAngles = _playerController->GetEulerAngles();
 
-        if (totalTime >= 2.0f && totalTime <= 5.0f)
+        /*if (totalTime >= 2.0f && totalTime <= 5.0f)
         {
                 eulerAngles.x = MathLibrary::lerp(eulerAngles.x, 0.0f, MathLibrary::clamp(deltaTime * 0.5f, 0.0f, 1.0f));
-        }
+        }*/
 
         float           angularSpeed = XMConvertToRadians(2.0f) * deltaTime;
         constexpr float pitchLimit   = XMConvertToRadians(90.0f);

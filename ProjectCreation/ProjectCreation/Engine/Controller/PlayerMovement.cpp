@@ -11,6 +11,7 @@
 #include "../CollisionLibary/CollisionResult.h"
 #include "../GenericComponents/TransformComponent.h"
 
+#include "PlayerCinematicState.h"
 #include "PlayerGroundState.h"
 
 #include "../../Rendering/DebugRender/debug_renderer.h"
@@ -106,10 +107,15 @@ void PlayerController::Init(EntityHandle h)
         m_EulerAngles = transformComp->transform.rotation.ToEulerAngles();
 
         // Create any states and set their respective variables here
-        auto groundState  = m_StateMachine.CreateState<PlayerGroundState>();
-
+        auto groundState = m_StateMachine.CreateState<PlayerGroundState>();
+        m_CinematicState = m_StateMachine.CreateState<PlayerCinematicState>();
+        m_StateMachine.AddTransition(groundState, m_CinematicState, E_STATE_EVENT::EASE_IN_START);
+        m_StateMachine.AddTransition(m_CinematicState, groundState, E_STATE_EVENT::EASE_IN_FINISH);
         // After you create the states, initialize the state machine. First created state is starting state
         m_StateMachine.Init(this);
+
+
+		RequestTransition(FTransform());
 }
 
 void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)
@@ -117,4 +123,16 @@ void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)
         preBoostVelocity = m_CurrentVelocity;
         m_CurrentVelocity += 2.0f * XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
         maxMaxSpeed += 1;
+}
+
+void PlayerController::RequestTransition(const FTransform& target)
+{
+
+        TransformComponent* transformComp =
+            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+
+        m_CinematicState->SetInitTransform(transformComp->transform);
+        m_CinematicState->SetEndTransform(target);
+
+		m_StateMachine.Transition(E_STATE_EVENT::EASE_IN_START);
 }
