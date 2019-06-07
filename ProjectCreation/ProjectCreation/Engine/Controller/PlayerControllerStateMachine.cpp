@@ -5,6 +5,7 @@ void PlayerControllerStateMachine::Update(float deltaTime, TransformComponent* t
 {
         IPlayerControllerState* pcState    = static_cast<IPlayerControllerState*>(m_Current);
         pcState->_cachedTransformComponent = transformComp;
+
         __super::Update(deltaTime);
 }
 

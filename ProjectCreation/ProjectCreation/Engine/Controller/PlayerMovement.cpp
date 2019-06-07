@@ -105,10 +105,10 @@ void PlayerController::Init(EntityHandle h)
 
         m_EulerAngles = transformComp->transform.rotation.ToEulerAngles();
 
-		// Create any states and set their respective variables here
-		m_StateMachine.CreateState<PlayerGroundState>();
+        // Create any states and set their respective variables here
+        auto groundState  = m_StateMachine.CreateState<PlayerGroundState>();
 
-		// After you create the states, initialize the state machine. First created state is starting state
+        // After you create the states, initialize the state machine. First created state is starting state
         m_StateMachine.Init(this);
 }
 
