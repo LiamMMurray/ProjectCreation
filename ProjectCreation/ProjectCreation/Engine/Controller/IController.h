@@ -5,6 +5,8 @@
 
 class IController
 {
+        bool m_Enabled = true;
+
     protected:
         virtual void GatherInput()  = 0;
         virtual void ProcessInput() = 0;
@@ -13,20 +15,25 @@ class IController
 
         EntityHandle m_ControlledEntityHandle;
 
-		float cacheTime;
+        float cacheTime;
 
 
     public:
-        
-		virtual void PauseInput() = 0;
-		
-		virtual void OnUpdate(float deltaTime);
+        inline void SetEnabled(bool val)
+        {
+                m_Enabled = val;
+        }
 
-		virtual void InactiveUpdate(float deltaTime) = 0;
+        inline bool IsEnabled()
+        {
+                return m_Enabled;
+        }
+
+        virtual void OnUpdate(float deltaTime);
 
         virtual void Init(EntityHandle handle);
-		
-        inline void  SetControlledEntity(EntityHandle handle)
+
+        inline void SetControlledEntity(EntityHandle handle)
         {
                 m_ControlledEntityHandle = handle;
         }

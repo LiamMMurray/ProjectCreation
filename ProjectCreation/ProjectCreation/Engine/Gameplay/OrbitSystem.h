@@ -11,9 +11,9 @@ class OrbitSystem : public ISystem
         ComponentManager* m_ComponentManager;
         EntityManager*    m_EntityManager;
 
-		ComponentHandle m_PlanetOutlines[3];
-		ComponentHandle m_PlanetGoals[3];
-        ComponentHandle* m_TargetTransforms[3];
+        const char* materialNames[3]       = {"GlowMatPlanet01", "GlowMatPlanet02", "GlowMatPlanet03"};
+        int         m_Stage                = 0;
+        void        CreateGoal(int n);
 
     protected:
         // Inherited via ISystem

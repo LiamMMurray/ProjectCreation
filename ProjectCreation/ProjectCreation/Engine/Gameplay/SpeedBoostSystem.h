@@ -1,8 +1,9 @@
 #pragma once
 
 #include "../../ECS/ECS.h"
-
+#include "LightOrbColors.h"
 class TransformComponent;
+class SpeedboostComponent;
 
 class SpeedBoostSystem : public ISystem
 {
@@ -10,13 +11,32 @@ class SpeedBoostSystem : public ISystem
         ComponentManager* m_ComponentManager;
         EntityManager*    m_EntityManager;
 
-        static constexpr uint32_t m_MaxSpeedBoosts = 20;
-        ComponentHandle           m_BoostTransformHandles[m_MaxSpeedBoosts];
+        static constexpr uint32_t m_MaxSpeedBoosts = 30;
+
+		uint32_t m_MaxRedOrbs = 10;
+        uint32_t m_CurRedOrbs = 0;
+
+		uint32_t m_MaxBlueOrbs = 10;
+        uint32_t m_CurBlueOrbs = 0;
+
+		uint32_t m_MaxGreenOrbs = 10;
+        uint32_t m_CurGreenOrbs = 0;
 
 
-        void RandomMoveBoost(TransformComponent* boostTC, TransformComponent* playerTC);
+        void RespawnSpeedBoost(TransformComponent*       boostTC,
+                               SpeedboostComponent*      boostSC,
+                               const TransformComponent* playerTC,
+                               const TransformComponent* targetTC);
 
-        float m_TargetRadius = 0.0f;
+        const char* materialNames[3] = {"GlowSpeedboost01", "GlowSpeedboost02", "GlowSpeedboost03"};
+
+        void SpawnSpeedBoost(const TransformComponent* playerTC, const TransformComponent* targetTC, E_LIGHT_ORBS color);
+
+        float m_PlayerEffectRadius = 0.0f;
+        float m_SpawnBoostTimer    = 0.0f;
+        float m_SpawnBoostCD       = 0.2f;
+        float m_BoostLifespan      = 8.0f;
+        float m_BoostShrinkSpeed   = m_BoostRadius;
 
     protected:
         // Inherited via ISystem
@@ -29,6 +49,6 @@ class SpeedBoostSystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
-        static constexpr float m_MaxBoostDistance = 7.0f;
+        static constexpr float m_MaxBoostDistance = 5.0f;
         static constexpr float m_BoostRadius      = 0.03f;
 };

@@ -1,4 +1,5 @@
 #pragma once
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdint.h>
 #undef max
@@ -43,12 +44,12 @@ class MathLibrary
         static DirectX::XMVECTOR GetRandomVector();
         static DirectX::XMVECTOR GetRandomVectorInRange(float min, float max);
         static DirectX::XMVECTOR GetRandomUnitVector();
-        inline static bool QuadraticFormula(const float a,
-                                            const float b,
-                                            const float c,
-                                            float&      r1, // first
-                                            float&      r2  // and second roots
-        )
+        inline static bool       QuadraticFormula(const float a,
+                                                  const float b,
+                                                  const float c,
+                                                  float&      r1, // first
+                                                  float&      r2  // and second roots
+              )
         {
                 const float q = b * b - 4 * a * c;
                 if (q >= 0)
@@ -70,7 +71,25 @@ class MathLibrary
 
                         return false; // complex roots
                 }
-        }
+        };
+
+        static float MoveTowards(const float a, const float b, const float speed);
+
+        static double SmoothStart2(double x);
+        static double SmoothStop2(double x);
+
+        static double SmoothStart3(double x);
+        static double SmoothStop3(double x);
+
+        static double SmoothStart4(double x);
+        static double SmoothStop4(double x);
+
+		static double SmoothStartN(double x, double power);
+        static double SmoothStopN(double x, double power);
+
+        static double SmoothMix(double a, double b, double blend);
+        static double SmoothCrossfade(double a, double b, double time);
+
         template <typename T>
         static T lerp(T v0, T v1, T t)
         {
@@ -107,5 +126,14 @@ class MathLibrary
                 T sum = a + b;
                 a /= sum;
                 b /= sum;
+        }
+
+        template <typename T>
+        static void AddNumberToVector(DirectX::XMVECTOR& vector, T number)
+        {
+                float x = DirectX::XMVectorGetX(vector) + number;
+                float y = DirectX::XMVectorGetY(vector) + number;
+                float z = DirectX::XMVectorGetZ(vector) + number;
+                vector  = DirectX::XMVectorSet(x, y, z, DirectX::XMVectorGetW(vector));
         }
 };

@@ -14,10 +14,13 @@ class FontComponent : public Component<FontComponent>
         DirectX::SimpleMath::Vector2         mScreenPos;
         unsigned int                         mWidth;
         unsigned int                         mHeight;
+        DirectX::XMVECTOR                    mOrigin;
+
         ID3D11ShaderResourceView*            mTexture;
         RECT                                 mRectangle;
+
         bool                                 mEnabled;
-        int                                  mId;
+        int                                  mID;
 
 
         void MakeRectangle();

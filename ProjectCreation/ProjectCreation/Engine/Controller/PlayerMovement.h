@@ -4,84 +4,91 @@
 
 #include "../Physics/PhysicsComponent.h"
 
+enum class EPlayerState
+{
+        ON_GROUND = 0,
+        ON_AIR,
+        ON_WATER,
+        ON_PUZZLE,
+        COUNT,
+};
+
+enum class EPuzzleState
+{
+        EASE_IN = 0,
+        SOLVE,
+        EASE_OUT,
+        COUNT,
+};
+
+class TransformComponent;
 class PlayerController : public IController
 {
     private:
-        void GatherInput() override;
-        void ProcessInput() override;
-        void ApplyInput() override;
+        ComponentHandle m_GoalComponent;
+        void            GatherInput() override;
+        void            ProcessInput() override;
+        void            ApplyInput() override;
 
-        void PauseInput() override;
-		
-		DirectX::XMVECTOR m_CurrentPosition;
+        void UpdateOnGround();
+        void UpdateOnPuzzle();
+        void UpdateOnPuzzleEaseIn();
+        void UpdateOnPuzzleEaseOut();
+        void UpdateOnPuzzleSolve();
 
-		struct FDebugLine
-		{
+        DirectX::XMVECTOR m_CurrentPosition;
+
+        struct FDebugLine
+        {
                 DirectX::XMVECTOR start;
                 DirectX::XMVECTOR end;
-		};
+        };
 
+        EPlayerState m_CurrentPlayerState = EPlayerState::ON_GROUND;
+        EPuzzleState m_CurrentPuzzleState = EPuzzleState::SOLVE;
+
+		TransformComponent* _cachedControlledTransformComponent;
+		DirectX::XMFLOAT3 m_EulerAngles;
     public:
-        void InactiveUpdate(float deltaTime) override;
         PlayerController();
 
-		void SpeedBoost(DirectX::XMVECTOR preBoostVelocity);
+		virtual void Init(EntityHandle h) override;
+        void SpeedBoost(DirectX::XMVECTOR preBoostVelocity);
+		
 
-        enum MoveDirections
-        {
-                NO_DIRECTION = 0,
-                FORWARD,
-                BACKWARD,
-                LEFT,
-                RIGHT
-        };
-
-        enum PlayerStates
-        {
-                ON_GROUND = 0,
-                ON_AIR,
-                ON_WATER
-        };
-
-        // Requested direction is set when we process the player's input
-        MoveDirections requestedDirection;
-
-        // Forward is the players local positive Z
-        DirectX::XMVECTOR forwardVector = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-
-        // Backward is the players local Negative Z
-        DirectX::XMVECTOR backwardVector = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
-
-        // Right is the players local positive X
-        DirectX::XMVECTOR rightVector = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-
-        // Left is the players local Negative X
-        DirectX::XMVECTOR leftVector = DirectX::XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f);
-
-        // ZeroVector will be the default vector and will be used to reset movement
-        DirectX::XMVECTOR ZeroVector = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-
-        // MoveVector will be used to apply the movement to the player
-        DirectX::XMVECTOR MoveVector = ZeroVector;
-
-        // PastDirection is used for debugging, delete when done
-        MoveDirections PastDirection;
-
-		float m_Pitch = -90.0f;
-		float m_Yaw = 0.0f;
-		float m_Roll = 0.0f;
-
-		float minMaxSpeed = 1.0f;
+        float minMaxSpeed = 1.0f;
         float maxMaxSpeed = 3.0f;
 
-		float acceleration = 1.0;
+        float acceleration   = 1.0;
         float deacceleration = 1.5f;
 
-		int32_t m_MouseXDelta;
+        float m_TotalTime = 0.0f;
+
+
+        int32_t m_MouseXDelta;
         int32_t m_MouseYDelta;
 
-		DirectX::XMVECTOR m_CurrentInput;
+        DirectX::XMVECTOR m_CurrentInput;
 
         DirectX::XMVECTOR m_CurrentVelocity;
 
+        inline void SetGoalComponent(ComponentHandle val)
+        {
+                m_GoalComponent = val;
+        }
+
+        inline ComponentHandle GetGoalComponent() const
+        {
+                return m_GoalComponent;
+        }
+
+        inline EPlayerState GetPlayerState() const
+        {
+                return m_CurrentPlayerState;
+        };
+
+        inline void SetPlayerState(EPlayerState val)
+        {
+                m_CurrentPlayerState = val;
+        };
 };

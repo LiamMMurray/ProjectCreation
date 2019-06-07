@@ -1,6 +1,6 @@
 #include "RenderingSystem.h"
+#include <iostream>
 #include "../Engine/GEngine.h"
-
 #include "../Engine/MathLibrary/MathLibrary.h"
 #include "../FileIO/FileIO.h"
 #include "PostProcess/Bloom.h"
@@ -154,7 +154,7 @@ void RenderSystem::CreateDeviceAndSwapChain()
         ID3D11Debug* debug = nullptr;
         hr                 = m_Device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&debug));
         assert(SUCCEEDED(hr));
-        // debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+        debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
         debug->Release();
 #endif
 
@@ -186,9 +186,13 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
 
         m_Context->OMSetRenderTargets(0, 0, 0);
 
+		IDXGIOutput* pOutput;
+		m_Swapchain->GetContainingOutput(&pOutput);
+        //pOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, 0, &num, s)
         // Preserve the existing buffer count and format.
         // Automatically choose the width and height to match the client rect for HWNDs.
         hr = m_Swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+        pOutput->Release();
 
         // Perform error handling here!
         assert(SUCCEEDED(hr));
@@ -245,13 +249,13 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
         descDSV.ViewDimension      = D3D11_DSV_DIMENSION_TEXTURE2D;
         descDSV.Texture2D.MipSlice = 0;
         hr = m_Device->CreateDepthStencilView(texture, &descDSV, &m_DefaultDepthStencil[E_DEPTH_STENCIL::BASE_PASS]);
-        texture->Release();
 
         D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc{};
         viewDesc.Format              = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
         viewDesc.ViewDimension       = D3D11_SRV_DIMENSION_TEXTURE2D;
         viewDesc.Texture2D.MipLevels = 1;
         m_Device->CreateShaderResourceView(texture, &viewDesc, &m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::BASE_DEPTH]);
+        texture->Release();
 
         assert(SUCCEEDED(hr));
 }
@@ -295,7 +299,7 @@ void RenderSystem::CreateInputLayouts()
             {"JOINTINDICES", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
             {"WEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}};
 
-        er = FileIO::LoadShaderDataFromFile("DefaultSkinned", "_VS", &shaderData);
+        er = FileIO::LoadShaderDataFromFile("Default_Skinned", "_VS", &shaderData);
 
         assert(er.m_Flags == ERESULT_FLAG::SUCCESS);
 
@@ -325,7 +329,7 @@ void RenderSystem::CreateInputLayouts()
 void RenderSystem::CreateCommonShaders()
 {
         m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT] = m_ResourceManager->LoadVertexShader("Default");
-        m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED] = m_ResourceManager->LoadVertexShader("DefaultSkinned");
+        m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED] = m_ResourceManager->LoadVertexShader("Default_Skinned");
         m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEBUG]   = m_ResourceManager->LoadVertexShader("Debug");
         m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEFAULT]   = m_ResourceManager->LoadPixelShader("Default");
         m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEBUG]     = m_ResourceManager->LoadPixelShader("Debug");
@@ -797,7 +801,7 @@ void RenderSystem::OnUpdate(float deltaTime)
                                       dirLightComp->m_AmbientColor.z * dirLightComp->m_AmbientColor.w);
                 }
         }
-        m_ConstantBuffer_SCENE.time = (float)GEngine::Get()->GetTotalTime();
+        m_ConstantBuffer_SCENE.time         = (float)GEngine::Get()->GetTotalTime();
         m_ConstantBuffer_SCENE.playerRadius = (float)GEngine::Get()->m_PlayerRadius;
         UpdateConstantBuffer(m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE],
                              &m_ConstantBuffer_SCENE,
@@ -818,8 +822,8 @@ void RenderSystem::OnUpdate(float deltaTime)
                 }
                 else
                 {
-                        SkeletalMesh*          mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_OpaqueDraws[i].meshResource);
-                        Material*              mat  = m_ResourceManager->GetResource<Material>(m_OpaqueDraws[i].materialHandle);
+                        SkeletalMesh* mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_OpaqueDraws[i].meshResource);
+                        Material*     mat  = m_ResourceManager->GetResource<Material>(m_OpaqueDraws[i].materialHandle);
                         SkeletalMeshComponent* meshComp =
                             m_ComponentManager->GetComponent<SkeletalMeshComponent>(m_OpaqueDraws[i].componentHandle);
                         DrawSkeletalMesh(mesh, mat, &m_OpaqueDraws[i].mtx, &meshComp->m_Skeleton);
@@ -931,7 +935,7 @@ void RenderSystem::OnInitialize()
         CreatePostProcessEffects(&desc);
 
         // UI Manager Initialize
-        UIManager::Initialize();
+        UIManager::Initialize(m_WindowHandle);
 }
 
 void RenderSystem::OnShutdown()
@@ -1037,6 +1041,9 @@ void RenderSystem::OnWindowResize(WPARAM wParam, LPARAM lParam)
                 D3D11_TEXTURE2D_DESC desc;
                 CreateDefaultRenderTargets(&desc);
                 CreatePostProcessEffects(&desc);
+                RefreshMainCameraSettings();
+
+                std::cout << m_BackBufferHeight << "   " << m_BackBufferWidth << std::endl;
         }
 }
 

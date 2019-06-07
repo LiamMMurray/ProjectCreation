@@ -4,6 +4,7 @@
 void IController::OnUpdate(float deltaTime)
 {
         cacheTime = deltaTime;
+
         GatherInput();
         ProcessInput();
         ApplyInput();
