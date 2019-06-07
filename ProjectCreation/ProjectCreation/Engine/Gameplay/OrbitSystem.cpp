@@ -1,4 +1,5 @@
 #include "OrbitSystem.h"
+#include "..//Controller/PlayerMovement.h"
 #include "..//CoreInput/CoreInput.h"
 #include "..//Entities/EntityFactory.h"
 #include "..//GEngine.h"
@@ -33,8 +34,11 @@ void OrbitSystem::OnPreUpdate(float deltaTime)
 
 void OrbitSystem::OnUpdate(float deltaTime)
 {
-        TransformComponent* playerTransform = m_ComponentManager->GetComponent<TransformComponent>(
-            ControllerManager::Get()->m_Controllers[ControllerManager::E_CONTROLLERS::PLAYER]->GetControlledEntity());
+        PlayerController* playerController =
+            (PlayerController*)ControllerManager::Get()->m_Controllers[ControllerManager::E_CONTROLLERS::PLAYER];
+
+        TransformComponent* playerTransform =
+            m_ComponentManager->GetComponent<TransformComponent>(playerController->GetControlledEntity());
 
         double totalTime = GEngine::Get()->GetTotalTime();
 
@@ -63,12 +67,10 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         float distanceSq = MathLibrary::CalulateDistanceSq(playerTransform->transform.translation,
                                                                            transComp->transform.translation);
 
-                        if (distanceSq < 1.2f)
+                        if (goalComp->goalState == E_GOAL_STATE::Ready && distanceSq < 1.5f)
                         {
-                                if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::DownFirst)
-                                {
-                                        goalComp->targetAlpha = 1.0f;
-                                }
+                                goalComp->targetAlpha = 1.0f;
+                                playerController->SetGoalComponent(goalComp->GetHandle());
                         }
 
                         float dist  = MathLibrary::CalulateDistance(goalComp->initialTransform.translation,
