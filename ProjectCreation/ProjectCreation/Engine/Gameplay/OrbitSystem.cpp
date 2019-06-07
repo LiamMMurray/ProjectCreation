@@ -51,7 +51,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         GoalComponent* goalComp = (GoalComponent*)itr.data();
 
 
-                        float time = totalTime / (1.0f + goalCount) + goalCount * 3.7792f;
+                        float time = float(totalTime / (1.0f + goalCount) + goalCount * 3.7792f);
                         float x    = sin(time);
                         float y    = cos(time);
 

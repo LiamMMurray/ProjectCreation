@@ -175,17 +175,17 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 if (m_SpawnBoostTimer <= 0)
                 {
                         m_SpawnBoostTimer += m_SpawnBoostCD;
-                        for (int redOrbs = 0; redOrbs < m_MaxRedOrbs; ++redOrbs)
+                        for (uint32_t redOrbs = 0; redOrbs < m_MaxRedOrbs; ++redOrbs)
                         {
                                 SpawnSpeedBoost(playerTransform, closestGoalTransform, E_LIGHT_ORBS::RED_LIGHTS);
                         }
 
-                        for (int blueOrbs = 0; blueOrbs < m_MaxBlueOrbs; ++blueOrbs)
+                        for (uint32_t blueOrbs = 0; blueOrbs < m_MaxBlueOrbs; ++blueOrbs)
                         {
                                 SpawnSpeedBoost(playerTransform, closestGoalTransform, E_LIGHT_ORBS::BLUE_LIGHTS);
                         }
 
-                        for (int greenOrbs = 0; greenOrbs < m_MaxGreenOrbs; ++greenOrbs)
+                        for (uint32_t greenOrbs = 0; greenOrbs < m_MaxGreenOrbs; ++greenOrbs)
                         {
                                 SpawnSpeedBoost(playerTransform, closestGoalTransform, E_LIGHT_ORBS::GREEN_LIGHTS);
                         }
@@ -209,7 +209,7 @@ void SpeedBoostSystem::OnInitialize()
         auto speedBoostMat01Handle = GEngine::Get()->GetResourceManager()->LoadMaterial("GlowSpeedboost01");
         auto speedBoostMat01       = GEngine::Get()->GetResourceManager()->GetResource<Material>(speedBoostMat01Handle);
         speedBoostMat01->m_SurfaceProperties.diffuseColor  = {0.9f, 0.1f, 0.1f};
-        speedBoostMat01->m_SurfaceProperties.emissiveColor = {1.05f, 0.05, 0.05f};
+        speedBoostMat01->m_SurfaceProperties.emissiveColor = {1.05f, 0.05f, 0.05f};
 
         // Blue Light
         auto speedBoostMat02Handle = GEngine::Get()->GetResourceManager()->LoadMaterial("GlowSpeedboost02");

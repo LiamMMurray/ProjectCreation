@@ -6,6 +6,7 @@
 #include "../MathLibrary/MathLibrary.h"
 #include "../MathLibrary/Quaternion.h"
 
+#include "..//Gameplay/GoalComponent.h"
 #include "../CollisionLibary/CollisionLibary.h"
 #include "../CollisionLibary/CollisionResult.h"
 #include "../GenericComponents/TransformComponent.h"
@@ -22,10 +23,9 @@ void PlayerController::GatherInput()
 {
         m_TotalTime += cacheTime;
 
-        if (m_TotalTime >= 5.0f)
+        m_CurrentInput = XMVectorZero();
+        if (IsEnabled() && m_TotalTime >= 5.0f)
         {
-                PastDirection = requestedDirection;
-
                 // requestedDirection = MoveDirections::NO_DIRECTION;
                 XMFLOAT4 tempDir = {0.0f, 0.0f, 0.0f, 0.0f};
 
@@ -78,18 +78,45 @@ void PlayerController::GatherInput()
 }
 
 void PlayerController::ProcessInput()
-{}
+{
+        _cachedControlledTransformComponent =
+            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+}
 
 void PlayerController::ApplyInput()
 {
-        // Get the Transoform Component
-        TransformComponent* transformComp =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+        switch (m_CurrentPlayerState)
+        {
+                case EPlayerState::ON_GROUND:
+                {
+                        UpdateOnGround();
+                        break;
+                }
+                case EPlayerState::ON_PUZZLE:
+                {
+                        UpdateOnPuzzle();
+                        break;
+                }
+                default:
+                {
+                        assert(false && "INVALID CURRENT PLAYER STATE");
+                        break;
+                }
+        }
 
+        m_CurrentPosition = _cachedControlledTransformComponent->transform.translation;
+
+        FSphere fSpherePlayer;
+        fSpherePlayer.center = m_CurrentPosition;
+        fSpherePlayer.radius = 0.25f;
+
+        debug_renderer::AddSphere(fSpherePlayer, 36, XMMatrixIdentity());
+}
+
+void PlayerController::UpdateOnGround()
+{
         // Get Delta Time
         float deltaTime = cacheTime; // GEngine::Get()->GetDeltaTime();
-
-        // m_TotalTime += deltaTime;
 
         // Get the Speed from the gathered input
         float currSpeed = XMVectorGetX(XMVector3Length(m_CurrentInput));
@@ -134,82 +161,82 @@ void PlayerController::ApplyInput()
 
         m_CurrentVelocity =
             XMVectorLerp(m_CurrentVelocity, preBoostVelocity, MathLibrary::clamp(deltaTime * 0.25f, 0.0f, 1.0f));
-		
-        // Convert the angle of change on the X-Axis and the Y-Axis to radians
+
         if (m_TotalTime >= 2.0f && m_TotalTime <= 5.0f)
         {
-                m_Pitch = MathLibrary::lerp(m_Pitch, 0.0f, MathLibrary::clamp(deltaTime * 0.5f, 0.0f, 1.0f));
+                m_EulerAngles.x = MathLibrary::lerp(m_EulerAngles.x, 0.0f, MathLibrary::clamp(deltaTime * 0.5f, 0.0f, 1.0f));
         }
 
-        static float accumAngleY = 0.0f;
-        m_Yaw += m_MouseXDelta * 2.0f * deltaTime;
-        m_Pitch += m_MouseYDelta * 2.0f * deltaTime;
-        m_Pitch = MathLibrary::clamp(m_Pitch, -90.0f, 90.0f);
-        m_Roll += m_MouseXDelta * 2.0f * deltaTime;
-        m_Roll = MathLibrary::clamp(m_Roll, -20.0f, 20.0f);
+        float           angularSpeed = XMConvertToRadians(2.0f) * deltaTime;
+        constexpr float pitchLimit   = XMConvertToRadians(90.0f);
+        constexpr float rollLimit    = 20.0f;
 
-        m_Roll = MathLibrary::lerp(m_Roll, 0.0f, MathLibrary::clamp(deltaTime * 20.0f, 0.0f, 1.0f));
+        m_EulerAngles.x += m_MouseYDelta * angularSpeed;
+        m_EulerAngles.y += m_MouseXDelta * angularSpeed;
+        m_EulerAngles.z += m_MouseXDelta * angularSpeed;
+
+        m_EulerAngles.x = MathLibrary::clamp(m_EulerAngles.x, -pitchLimit, pitchLimit);
+
+        // Convert to degrees due to precision errors using small radian values
+        float rollDegrees = XMConvertToDegrees(m_EulerAngles.z);
+        rollDegrees       = MathLibrary::clamp(rollDegrees, -rollLimit, rollLimit);
+        rollDegrees       = MathLibrary::lerp(rollDegrees, 0.0f, MathLibrary::clamp(deltaTime * rollLimit, 0.0f, 1.0f));
+        m_EulerAngles.z   = XMConvertToRadians(rollDegrees);
+        _cachedControlledTransformComponent->transform.rotation = FQuaternion::FromEulerAngles(m_EulerAngles);
 
 
         // Calculate offset
-        XMVECTOR offset = XMVector3Rotate(m_CurrentVelocity * deltaTime, transformComp->transform.rotation.data);
-        offset          = XMVector3Normalize(XMVectorSetY(offset, 0.0f)) * XMVectorGetX(XMVector3Length(offset));
-
-        FSphere fSphereStart;
-        fSphereStart.center = transformComp->transform.translation;
-        fSphereStart.radius = 0.2f;
-        FSphere fSphereEnd;
-        fSphereEnd.center = transformComp->transform.translation + offset;
-        fSphereEnd.radius = 0.2f;
-        FSphere fSphereCheck;
-        fSphereCheck.center = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-        fSphereCheck.radius = 0.2f;
-
-
-        // AddSphere(fSphereStart, 36, XMMatrixIdentity());
-        // AddSphere(fSphereEnd, 36, XMMatrixIdentity());
-        // AddSphere(fSphereCheck, 36, XMMatrixIdentity());
-
-        // Check Collision and If collided stop moving
-
-        Collision::FAdvancedCollisionResult result =
-            CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 1.0f);
-
-        if (result.collisionType != Collision::ECollisionType::EOveralap &&
-            result.collisionType != Collision::ECollisionType::ECollide)
-        {
-                transformComp->transform.translation += offset;
-        }
-        else
-        {
-                m_CurrentVelocity                    = m_CurrentVelocity - deltaVec * delta;
-                transformComp->transform.translation = result.finalPosition + m_CurrentVelocity;
-        }
-        transformComp->transform.rotation = XMQuaternionRotationRollPitchYaw(
-            XMConvertToRadians(m_Pitch), XMConvertToRadians(m_Yaw), XMConvertToRadians(m_Roll));
-
-        m_CurrentPosition = transformComp->transform.translation;
-
-
-        // Write out information to the console window
-        //  std::cout << "Current Forward < " << XMVectorGetX(nextFw) << ", " << XMVectorGetY(nextFw) << ", "
-        //            << XMVectorGetZ(nextFw) << ", " << XMVectorGetW(nextFw) << " >" << std::endl;
+        XMVECTOR offset =
+            XMVector3Rotate(m_CurrentVelocity * deltaTime, _cachedControlledTransformComponent->transform.rotation.data);
+        offset = XMVector3Normalize(XMVectorSetY(offset, 0.0f)) * XMVectorGetX(XMVector3Length(offset));
+        _cachedControlledTransformComponent->transform.translation += offset;
 }
 
-void PlayerController::PauseInput()
-{}
-
-
-void PlayerController::InactiveUpdate(float deltaTime)
+void PlayerController::UpdateOnPuzzle()
 {
-        FSphere fSpherePlayer;
-        fSpherePlayer.center = m_CurrentPosition;
-        fSpherePlayer.radius = 0.25f;
+        switch (m_CurrentPuzzleState)
+        {
+                case EPuzzleState::EASE_IN:
+                {
+                        break;
+                }
+                case EPuzzleState::EASE_OUT:
+                {
+                        break;
+                }
+                case EPuzzleState::SOLVE:
+                {
+                        break;
+                }
+                default:
+                {
+                        assert(false && "Wrong Puzzle State passed");
+                }
+        }
+}
 
-        debug_renderer::AddSphere(
-            fSpherePlayer, 36, XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslationFromVector(m_CurrentPosition)));
+void PlayerController::UpdateOnPuzzleEaseIn()
+{
+        GoalComponent*      goalComp = GEngine::Get()->GetComponentManager()->GetComponent<GoalComponent>(m_GoalComponent);
 
-        ApplyInput();
+		//goalComp->initialTransform.translation
+
+        TransformComponent* goalTransform =
+            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(goalComp->GetOwner());
+}
+
+void PlayerController::UpdateOnPuzzleEaseOut()
+{
+        GoalComponent*      goalComp = GEngine::Get()->GetComponentManager()->GetComponent<GoalComponent>(m_GoalComponent);
+        TransformComponent* goalTransform =
+            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(goalComp->GetOwner());
+}
+
+void PlayerController::UpdateOnPuzzleSolve()
+{
+        GoalComponent*      goalComp = GEngine::Get()->GetComponentManager()->GetComponent<GoalComponent>(m_GoalComponent);
+        TransformComponent* goalTransform =
+            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(goalComp->GetOwner());
 }
 
 PlayerController::PlayerController()
@@ -219,6 +246,15 @@ PlayerController::PlayerController()
         m_CurrentInput    = DirectX::XMVectorZero();
         m_MouseXDelta     = 0;
         m_MouseYDelta     = 0;
+}
+
+void PlayerController::Init(EntityHandle h)
+{
+        IController::Init(h);
+        TransformComponent* transformComp =
+            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+
+        m_EulerAngles = transformComp->transform.rotation.ToEulerAngles();
 }
 
 void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)

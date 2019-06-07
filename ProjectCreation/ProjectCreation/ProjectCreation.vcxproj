@@ -23,6 +23,7 @@
     <ClInclude Include="Engine\Controller\ControllerManager.h" />
     <ClInclude Include="Engine\Controller\DebugCameraController.h" />
     <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
+    <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
     <ClInclude Include="Engine\EngineInitShutdownHelpers.h" />
     <ClInclude Include="Engine\Entities\EntityFactory.h" />
     <ClInclude Include="Engine\Events\Event.h" />

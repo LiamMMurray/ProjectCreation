@@ -16,4 +16,8 @@ struct FQuaternion
         static FQuaternion RotateAxisAngle(DirectX::XMVECTOR& axis, float angle);
         static FQuaternion Lerp(const FQuaternion& lhs, const FQuaternion& rhs, float ratio);
         static FQuaternion LookAt(DirectX::XMVECTOR forward, DirectX::XMVECTOR up);
+
+        static FQuaternion FromEulerAngles(DirectX::XMFLOAT3 val);
+        static FQuaternion FromEulerAngles(float x, float y, float z);
+        DirectX::XMFLOAT3  ToEulerAngles();
 };

@@ -283,8 +283,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 }
 
                 // Joe's code for unpausing the game here
-                ControllerManager::Get()->m_togglePauseInput = !ControllerManager::Get()->m_togglePauseInput;
-                instance->m_InMenu                           = !instance->m_InMenu;
+                instance->m_InMenu = !instance->m_InMenu;
                 if (instance->m_InMenu)
                 {
                         while (ShowCursor(TRUE) < 0)
@@ -323,7 +322,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 instance->mSpriteFonts[i]->mEnabled = false;
                         }
                 }
-
         });
 
         instance->mSprites[4].OnMouseDown.AddEventListener([](UIMouseEvent* e) { exit(EXIT_SUCCESS); });
@@ -345,8 +343,7 @@ void UIManager::Update()
         {
                 static POINT cursorPos;
 
-                ControllerManager::Get()->m_togglePauseInput = !ControllerManager::Get()->m_togglePauseInput;
-                instance->m_InMenu = !instance->m_InMenu;
+                instance->m_InMenu                           = !instance->m_InMenu;
                 if (instance->m_InMenu)
                 {
                         while (ShowCursor(TRUE) < 0)
@@ -416,8 +413,8 @@ void UIManager::Update()
                                         // Button Was Pressed
                                         UIMouseEvent e;
 
-                                        e.mouseX = GCoreInput::GetMouseWindowPosX();
-                                        e.mouseY = GCoreInput::GetMouseWindowPosY();
+                                        e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
+                                        e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
                                         e.sprite = &instance->mSprites[0];
                                         instance->mSprites[i].OnMouseDown.Invoke(&e);
                                 }

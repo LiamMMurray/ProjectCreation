@@ -26,21 +26,21 @@ class ControllerManager
                 COUNT
         };
 
+        inline IController* GetCurrentController()
+        {
+                return m_Controllers[m_CurrentController];
+        }
+
         IController* m_Controllers[E_CONTROLLERS::COUNT] = {};
 
         SystemManager*    m_SystemManager;
         ComponentManager* m_ComponentManager;
         EntityManager*    m_EntityManager;
 
-
         E_CONTROLLERS m_CurrentController;
 
-        bool m_toggleDebug = false;
-
-        bool m_togglePauseInput = false;
-
-        int m_RedOrbCount = 0;
-        int m_BlueOrbCount = 0;
+        int m_RedOrbCount   = 0;
+        int m_BlueOrbCount  = 0;
         int m_GreenOrbCount = 0;
 
         void DisplayConsoleMenu();
@@ -51,7 +51,7 @@ class ControllerManager
 
         // Adds one orb to a certain color based on passed in parameter
         // 0 = Red Lights, 1 = Blue Lights, 2 = Green Lights
-		void SetOrbCount(E_LIGHT_ORBS color);
+        void SetOrbCount(E_LIGHT_ORBS color);
 
         static void Initialize();
 
