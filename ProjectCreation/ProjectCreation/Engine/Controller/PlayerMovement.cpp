@@ -91,13 +91,6 @@ void PlayerController::ApplyInput()
         debug_renderer::AddSphere(fSpherePlayer, 36, XMMatrixIdentity());
 }
 
-void PlayerController::UpdateOnPuzzleSolve()
-{
-        GoalComponent*      goalComp = GEngine::Get()->GetComponentManager()->GetComponent<GoalComponent>(m_GoalComponent);
-        TransformComponent* goalTransform =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(goalComp->GetOwner());
-}
-
 PlayerController::PlayerController()
 {
         m_CurrentVelocity = DirectX::XMVectorZero();

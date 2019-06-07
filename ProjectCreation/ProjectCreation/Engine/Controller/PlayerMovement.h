@@ -17,8 +17,6 @@ class PlayerController : public IController
         void            ProcessInput() override;
         void            ApplyInput() override;
 
-        void UpdateOnPuzzleSolve();
-
         TransformComponent* _cachedControlledTransformComponent;
 
         DirectX::XMFLOAT3 m_EulerAngles;
