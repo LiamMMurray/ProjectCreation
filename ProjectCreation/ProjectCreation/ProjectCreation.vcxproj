@@ -39,7 +39,6 @@
     <ClInclude Include="Engine\Gameplay\SpeedboostComponent.h" />
     <ClInclude Include="Engine\Gameplay\SpeedBoostSystem.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
-    <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
