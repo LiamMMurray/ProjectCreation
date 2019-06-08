@@ -16,7 +16,7 @@ void StateMachine::Shutdown()
         m_States.clear();
 }
 
-void StateMachine::Transition(E_STATE_EVENT event)
+void StateMachine::Transition(int event)
 {
         auto it = m_TransitionTable.find(std::make_pair(m_Current, event));
         if (it != m_TransitionTable.end())

@@ -12,38 +12,83 @@ using namespace DirectX;
 
 void PlayerCinematicState::Enter()
 {
-        m_currAlpha      = 0.0f;
-        m_cinematicAlpha = 0.0f;
+        m_currAlpha = 0.0f;
 }
 
 void PlayerCinematicState::Update(float deltaTime)
 {
-        FTransform currentTransform;
-        m_cinematicAlpha += deltaTime;
 
-        if (m_cinematicAlpha > m_Delay)
+        if (m_Delay > 0.0f)
         {
-                m_currAlpha += deltaTime / m_Duration;
+                m_Delay -= deltaTime;
+                return;
+        }
 
-                auto playerTransformComponent = GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(
-                    _playerController->GetControlledEntity());
-
-                XMVECTOR scale = playerTransformComponent->transform.scale;
-
-                currentTransform.translation =
-                    XMVectorLerp(m_initTransform.translation, m_endTransform.translation, m_currAlpha);
-                currentTransform.rotation =
-                    FQuaternion::Lerp(m_initTransform.rotation, m_endTransform.translation, m_currAlpha);
-
-                playerTransformComponent->transform = currentTransform;
-
-                playerTransformComponent->transform.scale = scale;
-
-                if (m_currAlpha >= 1.0f)
+        switch (m_transitionMode)
+        {
+                case E_TRANSITION_MODE::Simple:
                 {
-                        stateMachine->Transition(E_STATE_EVENT::EASE_IN_FINISH);
+                        UpdateSimple(deltaTime);
+                        break;
+                }
+
+                case E_TRANSITION_MODE::LookAt:
+                {
+                        UpdateLookAt(deltaTime);
+                        break;
+                }
+                default:
+                {
+                        assert(false && "invalid transition mode requested");
                 }
         }
+
+        if (m_currAlpha >= 1.0f)
+        {
+                stateMachine->Transition(m_TargetState);
+        }
+}
+
+void PlayerCinematicState::UpdateSimple(float deltaTime)
+{
+        FTransform currentTransform;
+
+        m_currAlpha += deltaTime / m_Duration;
+
+        auto playerTransformComponent =
+            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(_playerController->GetControlledEntity());
+
+        XMVECTOR scale = playerTransformComponent->transform.scale;
+
+        currentTransform.translation =
+            XMVectorLerp(m_initTransform.translation, m_endTransform.translation, std::min(1.0f, m_currAlpha));
+        currentTransform.rotation =
+            FQuaternion::Lerp(m_initTransform.rotation, m_endTransform.rotation, std::min(1.0f, m_currAlpha));
+
+        playerTransformComponent->transform       = currentTransform;
+        playerTransformComponent->transform.scale = scale;
+}
+
+void PlayerCinematicState::UpdateLookAt(float deltaTime)
+{
+        FTransform currentTransform;
+
+        m_currAlpha += deltaTime / m_Duration;
+
+        auto playerTransformComponent =
+            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(_playerController->GetControlledEntity());
+
+        auto lookAtTransformComponent = GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_lookAtTarget);
+
+        XMVECTOR scale = playerTransformComponent->transform.scale;
+
+        currentTransform.translation =
+            XMVectorLerp(m_initTransform.translation, m_endTransform.translation, std::min(1.0f, m_currAlpha));
+        currentTransform.rotation =
+            FQuaternion::LookAtWithRoll(currentTransform.translation, lookAtTransformComponent->transform.translation);
+
+        playerTransformComponent->transform       = currentTransform;
+        playerTransformComponent->transform.scale = scale;
 }
 
 void PlayerCinematicState::Exit()

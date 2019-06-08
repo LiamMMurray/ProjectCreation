@@ -1,19 +1,6 @@
 #pragma once
 #include <unordered_map>
 
-enum class E_STATE_EVENT
-{
-        EASE_IN_START,
-        EASE_IN_FINISH,
-        EASE_OUT_START,
-        EASE_OUT_FINISH,
-        MOVEMENT_STOP,
-        MOVEMENT_START,
-        RHYTHM_MATCH,
-        RHYTHM_FAIL,
-
-};
-
 class StateMachine;
 
 class IState

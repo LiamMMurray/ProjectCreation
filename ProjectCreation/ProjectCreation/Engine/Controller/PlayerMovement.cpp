@@ -13,6 +13,8 @@
 
 #include "PlayerCinematicState.h"
 #include "PlayerGroundState.h"
+#include "PlayerPuzzleState.h"
+#include "PlayerStateEvents.h"
 
 #include "../../Rendering/DebugRender/debug_renderer.h"
 // v Testing only delete when done v
@@ -107,15 +109,25 @@ void PlayerController::Init(EntityHandle h)
         m_EulerAngles = transformComp->transform.rotation.ToEulerAngles();
 
         // Create any states and set their respective variables here
-        auto groundState = m_StateMachine.CreateState<PlayerGroundState>();
         m_CinematicState = m_StateMachine.CreateState<PlayerCinematicState>();
-        m_StateMachine.AddTransition(groundState, m_CinematicState, E_STATE_EVENT::EASE_IN_START);
-        m_StateMachine.AddTransition(m_CinematicState, groundState, E_STATE_EVENT::EASE_IN_FINISH);
+        auto groundState = m_StateMachine.CreateState<PlayerGroundState>();
+        auto puzzleState = m_StateMachine.CreateState<PlayerPuzzleState>();
+
+        m_StateMachine.AddTransition(groundState, m_CinematicState, E_PLAYERSTATE_EVENT::TO_TRANSITION);
+        m_StateMachine.AddTransition(m_CinematicState, groundState, E_PLAYERSTATE_EVENT::TO_GROUND);
+        m_StateMachine.AddTransition(m_CinematicState, puzzleState, E_PLAYERSTATE_EVENT::TO_PUZZLE);
+
+        m_StateMachine.AddTransition(groundState, puzzleState, E_PLAYERSTATE_EVENT::TO_PUZZLE);
+        m_StateMachine.AddTransition(puzzleState, groundState, E_PLAYERSTATE_EVENT::TO_GROUND);
+        m_StateMachine.AddTransition(puzzleState, m_CinematicState, E_PLAYERSTATE_EVENT::TO_TRANSITION);
+
+        // Request initial transition
+        FTransform target = transformComp->transform;
+        target.rotation   = XMQuaternionIdentity();
+        RequestCinematicTransition(target, E_PLAYERSTATE_EVENT::TO_GROUND, 5.0f, 2.0f);
+
         // After you create the states, initialize the state machine. First created state is starting state
         m_StateMachine.Init(this);
-
-
-		RequestTransition(FTransform());
 }
 
 void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)
@@ -125,14 +137,80 @@ void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)
         maxMaxSpeed += 1;
 }
 
-void PlayerController::RequestTransition(const FTransform& target)
+void PlayerController::RequestCinematicTransition(const FTransform& target, int targetState, float duration, float delay)
 {
-
         TransformComponent* transformComp =
             GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
 
+        m_CinematicState->SetTransitionMode(E_TRANSITION_MODE::Simple);
         m_CinematicState->SetInitTransform(transformComp->transform);
         m_CinematicState->SetEndTransform(target);
+        m_CinematicState->SetTansitionTargetState(targetState);
+        m_CinematicState->SetTansitionDuration(duration);
+        m_CinematicState->SetTransitionDelay(delay);
 
-		m_StateMachine.Transition(E_STATE_EVENT::EASE_IN_START);
+        m_StateMachine.Transition(E_PLAYERSTATE_EVENT::TO_TRANSITION);
+}
+
+void PlayerController::RequestCinematicTransitionLookAt(const DirectX::XMVECTOR& target,
+                                                        ComponentHandle          lookAt,
+                                                        int                      targetState,
+                                                        float                    duration,
+                                                        float                    delay)
+{
+        TransformComponent* transformComp =
+            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+
+        m_CinematicState->SetTransitionMode(E_TRANSITION_MODE::LookAt);
+        m_CinematicState->SetInitTransform(transformComp->transform);
+        FTransform targetTransform;
+        targetTransform.translation = target;
+        m_CinematicState->SetEndTransform(targetTransform);
+        m_CinematicState->SetLookAtTarget(lookAt);
+        m_CinematicState->SetTansitionTargetState(targetState);
+        m_CinematicState->SetTansitionDuration(duration);
+        m_CinematicState->SetTransitionDelay(delay);
+
+        m_StateMachine.Transition(E_PLAYERSTATE_EVENT::TO_TRANSITION);
+}
+
+void PlayerController::RequestPuzzleMode(ComponentHandle          goalHandle,
+                                         const DirectX::XMVECTOR& puzzleCenter,
+                                         bool                     alignToGoal,
+                                         float                    transitionDuration)
+{
+        SetGoalComponent(goalHandle);
+
+        if (!alignToGoal)
+                m_StateMachine.Transition(E_PLAYERSTATE_EVENT::TO_PUZZLE);
+        else
+        {
+                auto playerTransformComp =
+                    GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+
+                GoalComponent*  goalComp = GEngine::Get()->GetComponentManager()->GetComponent<GoalComponent>(goalHandle);
+                ComponentHandle goalTransformHandle =
+                    GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(goalComp->GetOwner())->GetHandle();
+
+                FSphere sphereInitial;
+                sphereInitial.center = goalComp->initialTransform.translation;
+                sphereInitial.radius = goalComp->initialTransform.GetRadius();
+
+                FSphere sphereTarget;
+                sphereTarget.center = goalComp->goalTransform.translation;
+                sphereTarget.radius = goalComp->goalTransform.GetRadius();
+
+                XMVECTOR eyePos = playerTransformComp->transform.translation;
+
+                float desiredAngularDiameter = MathLibrary::CalculateAngularDiameter(eyePos, sphereTarget);
+                float desiredInitialDistance =
+                    MathLibrary::CalculateDistanceFromAngularDiameter(desiredAngularDiameter, sphereInitial);
+
+                XMVECTOR dir = XMVector3Normalize(puzzleCenter - sphereInitial.center);
+
+                XMVECTOR targetPos = sphereInitial.center - dir * desiredInitialDistance;
+
+                RequestCinematicTransitionLookAt(
+                    targetPos, goalTransformHandle, E_PLAYERSTATE_EVENT::TO_PUZZLE, transitionDuration);
+        }
 }

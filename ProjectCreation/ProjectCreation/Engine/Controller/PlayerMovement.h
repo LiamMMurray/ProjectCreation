@@ -2,9 +2,9 @@
 #include "../../ECS/ECSTypes.h"
 #include "IController.h"
 
-#include "PlayerControllerStateMachine.h"
 #include "../MathLibrary/MathLibrary.h"
 #include "../Physics/PhysicsComponent.h"
+#include "PlayerControllerStateMachine.h"
 
 class TransformComponent;
 class PlayerCinematicState;
@@ -32,9 +32,10 @@ class PlayerController : public IController
         DirectX::XMVECTOR m_CurrentInput;
         DirectX::XMVECTOR m_CurrentVelocity;
 
-		PlayerControllerStateMachine m_StateMachine;
+        PlayerControllerStateMachine m_StateMachine;
 
-		PlayerCinematicState* m_CinematicState;
+        PlayerCinematicState* m_CinematicState;
+
     public:
         PlayerController();
 
@@ -121,5 +122,14 @@ class PlayerController : public IController
                 m_EulerAngles = val;
         }
 
-		void RequestTransition(const FTransform& target);
+        void RequestCinematicTransition(const FTransform& target, int targetState, float duration, float delay = 0.0f);
+        void RequestCinematicTransitionLookAt(const DirectX::XMVECTOR& target,
+                                              ComponentHandle   lookAtTarget,
+                                              int               targetState,
+                                              float             duration,
+                                              float             delay = 0.0f);
+        void RequestPuzzleMode(ComponentHandle   goalHandle,
+                               const DirectX::XMVECTOR& puzzleCenter,
+                               bool              alignToGoal        = false,
+                               float             transitionDuration = 1.0f);
 };

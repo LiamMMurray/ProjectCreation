@@ -11,9 +11,11 @@ class OrbitSystem : public ISystem
         ComponentManager* m_ComponentManager;
         EntityManager*    m_EntityManager;
 
-        const char* materialNames[3]       = {"GlowMatPlanet01", "GlowMatPlanet02", "GlowMatPlanet03"};
-        int         m_Stage                = 0;
+        const char* materialNames[3] = {"GlowMatPlanet01", "GlowMatPlanet02", "GlowMatPlanet03"};
+        int         m_Stage          = 0;
         void        CreateGoal(int n);
+
+        DirectX::XMVECTORF32 orbitCenter = {0.0f, 1000.0f, 0.0f, 1.0f};
 
     protected:
         // Inherited via ISystem

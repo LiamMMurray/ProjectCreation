@@ -11,14 +11,14 @@ class StateMachine
         std::vector<IState*> m_States;
         IState*              m_Current;
 
-        std::unordered_map<std::pair<IState*, E_STATE_EVENT>, IState*, hash_pair> m_TransitionTable;
+        std::unordered_map<std::pair<IState*, int>, IState*, hash_pair> m_TransitionTable;
 
         void         Update(float deltaTime);
         virtual void Shutdown();
 
     public:
         // Call parent constructor
-        void Transition(E_STATE_EVENT event);
+        void Transition(int event);
 
         template <typename T>
         T* CreateState()
@@ -33,7 +33,7 @@ class StateMachine
                 return state;
         }
 
-        void AddTransition(IState* start, IState* end, E_STATE_EVENT event)
+        inline void AddTransition(IState* start, IState* end, int event)
         {
                 m_TransitionTable.insert(std::make_pair(std::make_pair(start, event), end));
         }
