@@ -330,10 +330,9 @@ FCollideResult CollisionLibary::OverlapAabbToAabb(FAabb& a, FAabb& b, float offs
         return output;
 }
 
-FCollisionObjects CollisionLibary::CollisionQuery(FSphere& startA, FSphere& endA)
+FCollisionObjects CollisionLibary::CollisionQuery(FSphere& sphere, XMVECTOR& offset)
 {
         FCollisionObjects output;
-        FCapsule          capsule;
 
 
         return output;

@@ -33,7 +33,7 @@ class CollisionLibary
                                                                                 float             epsilon);
         static Collision::FCollideResult OverlapSphereToAabb(Shapes::FSphere& sphere, Shapes::FAabb& aabb, float offset);
         static Collision::FCollideResult OverlapAabbToAabb(Shapes::FAabb& a, Shapes::FAabb& b, float offset);
-      static Collision::FCollisionObjects CollisionQuery(Shapes::FSphere& startA, Shapes::FSphere& endA);
+      static Collision::FCollisionObjects CollisionQuery(Shapes::FSphere& sphere,DirectX::XMVECTOR& offset);
 
         static Collision::FCollisionObjects SweepAndPruneCollision(Shapes::FSphere& sphere, Shapes::FAabb& aabbSpace);
 
