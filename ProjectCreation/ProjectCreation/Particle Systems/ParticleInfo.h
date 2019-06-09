@@ -9,11 +9,12 @@ namespace ParticleInfo
                 DirectX::XMFLOAT4 position;
                 DirectX::XMFLOAT4 prev_position;
                 DirectX::XMFLOAT4 color;
+                DirectX::XMFLOAT2 texture;
                 float             velocity;
                 bool              active;
         };
 
-        struct FParticleVertex
+        struct FParticleBuffer
         {
                 DirectX::XMFLOAT4 position;
                 DirectX::XMFLOAT2 texture;

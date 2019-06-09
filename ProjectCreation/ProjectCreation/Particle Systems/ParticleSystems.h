@@ -1,9 +1,12 @@
 #pragma once
-#include "ParticleInfo.h"
-#include"../ECS/ECS.h"
+#include "../ECS/ECS.h"
+
+#include"ParticleBufferSetup.h"
 class ParticleSystem : public ISystem
 {
-        
+
+       
+
 
     public:
         void Initialize();

@@ -64,7 +64,9 @@
     <ClInclude Include="Engine\MathLibrary\Quaternion.h" />
     <ClInclude Include="Engine\MathLibrary\Transform.h" />
     <ClInclude Include="Engine\MathLibrary\Vector.h" />
+    <ClInclude Include="Particle Systems\ParticleBufferSetup.h" />
     <ClInclude Include="Particle Systems\ParticleInfo.h" />
+    <ClInclude Include="Particle Systems\ParticleManager.h" />
     <ClInclude Include="Particle Systems\ParticleSystems.h" />
     <ClInclude Include="Particle Systems\Pools.h" />
     <ClInclude Include="Rendering\Components\CameraComponent.h" />
@@ -107,6 +109,12 @@
     <FxCompile Include="Shaders\BloomUpscale_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shaders\ComputeShaderTest.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\Debug_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -181,6 +189,8 @@
     <ClCompile Include="Engine\MathLibrary\Quaternion.cpp" />
     <ClCompile Include="Engine\MathLibrary\Transform.cpp" />
     <ClCompile Include="Engine\MathLibrary\Vector.cpp" />
+    <ClCompile Include="Particle Systems\ParticleBufferSetup.cpp" />
+    <ClCompile Include="Particle Systems\ParticleSystems.cpp" />
     <ClCompile Include="Rendering\DebugRender\debug_renderer.cpp" />
     <ClCompile Include="Rendering\PostProcess\Bloom.cpp" />
     <ClCompile Include="Rendering\RenderingSystem.cpp" />
