@@ -16,7 +16,7 @@ class EventDelegate : public IEventDelegate
         void                             Invoke(IEvent* e);
 };
 template <class T, typename EventType>
-const EventDelegateTypeId EventDelegate<T, EventType>::m_TypeId = TypeIdCreator<IEventDelegate>::GetUniqueTypeId<T>();
+const EventDelegateTypeId EventDelegate<T, EventType>::m_TypeId = TypeUtility<IEventDelegate>::GetUniqueTypeId<T>();
 
 template <typename T, typename EventType>
 inline EventDelegate<T, EventType>::EventDelegate(void (*delegateFunction)(EventType*))

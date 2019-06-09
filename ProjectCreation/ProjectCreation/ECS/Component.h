@@ -10,12 +10,12 @@ class Component : public IComponent
 
     public:
         Component();
-       void Init();
+        void                         Init();
         static const ComponentTypeId GetTypeId();
         const ComponentTypeId        GetStaticTypeId() const;
 };
 template <class T>
-const ComponentTypeId Component<T>::m_TypeId = TypeIdCreator<IComponent>::GetUniqueTypeId<T>();
+const ComponentTypeId Component<T>::m_TypeId = TypeUtility<IComponent>::GetUniqueTypeId<T>();
 
 template <typename T>
 inline Component<T>::Component()
@@ -32,7 +32,7 @@ inline void Component<T>::Init()
 template <typename T>
 inline const ComponentTypeId Component<T>::GetTypeId()
 {
-        static_assert(std::is_base_of<Component<T>, T>::value, "Components must follow derive from Component<T>");
+        static_assert(std::is_base_of<Component<T>, T>::value, "Components must derive from Component<T>");
         return m_TypeId;
 }
 
