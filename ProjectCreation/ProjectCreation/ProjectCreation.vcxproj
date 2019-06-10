@@ -150,7 +150,7 @@
     <ClInclude Include="Utility\ForwardDeclarations\STLTypes.h" />
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
     <ClInclude Include="Utility\Macros\DirectXMacros.h" />
-    <ClInclude Include="Utility\MemoryDebug.h" />
+    <ClInclude Include="Utility\MemoryLeakDetection.h" />
     <ClInclude Include="Utility\MemoryDefines.h" />
     <ClInclude Include="Utility\RenderUtility.h" />
     <ClInclude Include="Utility\StringUtility.h" />
