@@ -188,7 +188,9 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
 
         IDXGIOutput* pOutput;
         m_Swapchain->GetContainingOutput(&pOutput);
+
         // pOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, 0, &num, s)
+
         // Preserve the existing buffer count and format.
         // Automatically choose the width and height to match the client rect for HWNDs.
         hr = m_Swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
