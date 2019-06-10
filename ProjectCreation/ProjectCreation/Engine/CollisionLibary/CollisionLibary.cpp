@@ -1,6 +1,7 @@
 #include "CollisionLibary.h"
 #include <unordered_map>
 #include "../MathLibrary/MathLibrary.h"
+#include "CollisionGrid.h"
 using namespace std;
 using namespace DirectX;
 using namespace Collision;
@@ -330,14 +331,6 @@ FCollideResult CollisionLibary::OverlapAabbToAabb(FAabb& a, FAabb& b, float offs
         return output;
 }
 
-std::pair<Collision::FCollideResult, Shapes::FCollisionShape*> CollisionLibary::CollisionQueries(Shapes::FCollisionShape* shape)
-{
-        pair<FCollideResult, Shapes::FCollisionShape*> output;
-
-        return output;
-}
-
-
 Collision::FAdvancedCollisionResult CollisionLibary::RayToSphereCollision(DirectX::XMVECTOR& startPoint,
                                                                           DirectX::XMVECTOR& directoin,
                                                                           Shapes::FSphere&   sphere)
@@ -374,10 +367,10 @@ Collision::FCollideResult CollisionLibary::CircleToCircleCollision(Shapes::FCirc
         {
                 output.collisionType = Collision::ECollide;
         }
-		else
-		{
+        else
+        {
                 output.collisionType = Collision::ENoCollision;
-		}
+        }
         return output;
 }
 

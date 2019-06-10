@@ -34,7 +34,9 @@ class CollisionLibary
         static Collision::FCollideResult OverlapSphereToAabb(Shapes::FSphere& sphere, Shapes::FAabb& aabb, float offset);
         static Collision::FCollideResult OverlapAabbToAabb(Shapes::FAabb& a, Shapes::FAabb& b, float offset);
 
-		static std::pair<Collision::FCollideResult, Shapes::FCollisionShape*> CollisionQueries(Shapes::FCollisionShape* shape);
+		//static std::pair<Collision::FCollideResult, Shapes::FCollisionShape*> CollisionQueries(Shapes::FCollisionShape* shape);
+
+		//static std::pair<Collision::FCollideResult, Shapes::FCollisionShape*> CollisionQueries(Shapes::FCollisionShape* shape, DirectX::XMVECTOR& offset);
 
         static Collision::FAdvancedCollisionResult RayToSphereCollision(DirectX::XMVECTOR& startPoint,
                                                                           DirectX::XMVECTOR& direction,
