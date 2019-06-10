@@ -139,4 +139,5 @@ class MathLibrary
 
 		static float CalculateAngularDiameter(const DirectX::XMVECTOR& eye, const Shapes::FSphere& sphere);
 		static float CalculateDistanceFromAngularDiameter(float angularDiameter, const Shapes::FSphere& sphere);
+
 };

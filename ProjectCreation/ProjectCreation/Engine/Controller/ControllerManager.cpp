@@ -111,7 +111,7 @@ void ControllerManager::init()
                 GEngine::Get()->GetComponentManager()->AddComponent<CameraComponent>(eHandle);
 
                 auto tComp                   = GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(eHandle);
-                tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.3f, -2.0f, 1.0f);
+                tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, -2.0f, 1.0f);
                 tComp->transform.rotation =
                     DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
 

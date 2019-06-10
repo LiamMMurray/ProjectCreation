@@ -1,7 +1,6 @@
 #pragma once
 #include <DirectXMath.h>
 #include <vector>
-#include "BVH.h"
 #include "Shapes.h"
 
 namespace Collision
@@ -19,11 +18,12 @@ namespace Collision
                 DirectX::XMVECTOR position;
                 DirectX::XMVECTOR normal;
         };
-        struct FCollideResult
+        struct FOverlapResult
         {
-                ECollisionType             collisionType;
+                //ECollisionType             collisionType;
                 std::vector<FContactPoint> collideSurfaces;
-                DirectX::XMVECTOR          finalPosition;
+               // DirectX::XMVECTOR          finalPosition;
+                bool hasOverlap;
         };
 
         struct FAdvancedCollisionResult

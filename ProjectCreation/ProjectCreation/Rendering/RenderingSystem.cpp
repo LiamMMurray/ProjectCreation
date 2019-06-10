@@ -186,9 +186,9 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
 
         m_Context->OMSetRenderTargets(0, 0, 0);
 
-		IDXGIOutput* pOutput;
-		m_Swapchain->GetContainingOutput(&pOutput);
-        //pOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, 0, &num, s)
+        IDXGIOutput* pOutput;
+        m_Swapchain->GetContainingOutput(&pOutput);
+        // pOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, 0, &num, s)
         // Preserve the existing buffer count and format.
         // Automatically choose the width and height to match the client rect for HWNDs.
         hr = m_Swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
@@ -646,6 +646,11 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         m_CachedMainInvViewMatrix        = mainTransform->transform.CreateMatrix();
         XMMATRIX view                    = XMMatrixInverse(nullptr, m_CachedMainInvViewMatrix);
         m_CachedMainViewProjectionMatrix = view * m_CachedMainProjectionMatrix;
+
+        mainCamera->_cachedView           = view;
+        mainCamera->_cachedProjection     = m_CachedMainProjectionMatrix;
+        mainCamera->_cachedViewProjection = m_CachedMainViewProjectionMatrix;
+
         XMStoreFloat3(&m_ConstantBuffer_SCENE.eyePosition, mainTransform->transform.translation);
         m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(m_CachedMainViewProjectionMatrix);
 
