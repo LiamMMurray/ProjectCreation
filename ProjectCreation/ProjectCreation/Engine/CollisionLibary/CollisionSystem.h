@@ -12,18 +12,6 @@ class CollisionSystem : public ISystem
         // bool                     Moved(Shapes::ECollisionObjectTypes shapes);
         // std::vector<CollisionID> GetIDs(Shapes::ECollisionObjectTypes shapes);
         ComponentManager* m_ComponentManager;
-        template <typename T>
-		void GetCollisionComponent()
-		{
-                if (m_ComponentManager->ComponentsExist<T>())
-                {
-                        auto itr = m_ComponentManager->GetActiveComponents<T>();
-                        for (auto i = itr.begin(); i != itr.end(); i++)
-                        {
-                                T* comp = static_cast<T*>(i.data());
-                        }
-                }
-		}
 
     public:
         CollisionGrid GetCollisionGrid();

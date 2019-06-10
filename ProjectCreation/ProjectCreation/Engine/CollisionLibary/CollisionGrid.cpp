@@ -1,6 +1,6 @@
 #include "CollisionGrid.h"
-#include"../MathLibrary/MathLibrary.h"
 #include <DirectXMath.h>
+#include "../MathLibrary/MathLibrary.h"
 using namespace DirectX;
 
 CollisionGrid::CollisionGrid()
@@ -21,7 +21,7 @@ CollisionGrid::Cell CollisionGrid::GetCellFromShape(const Shapes::FCollisionShap
                 case Shapes::Aabb:
                 {
                         Shapes::FAabb* aabb = (Shapes::FAabb*)shape;
-                        center                  = aabb->center;
+                        center              = aabb->center;
                 }
                 break;
 
@@ -29,14 +29,14 @@ CollisionGrid::Cell CollisionGrid::GetCellFromShape(const Shapes::FCollisionShap
                 {
                         Shapes::FCapsule* capsule = (Shapes::FCapsule*)shape;
                         center = MathLibrary::GetMidPointFromTwoVector(capsule->startPoint, capsule->endPoint);
-				}
+                }
                 break;
                 default:
                         break;
         }
 
         Cell cellpos;
-        cellpos.x =(int) (XMVectorGetX(center) / CollisionGrid::CellSize);
+        cellpos.x = (int)(XMVectorGetX(center) / CollisionGrid::CellSize);
         cellpos.y = 0; // XMVectorGetY(center) / CollisionGrid::CellSize;
         cellpos.z = (int)(XMVectorGetZ(center) / CollisionGrid::CellSize);
 
@@ -55,62 +55,23 @@ int CollisionGrid::ComputeHashBucketIndex(Cell cellPos)
         return n;
 }
 
-const std::vector<CollisionID> CollisionGrid::GetPossibleCollisions(Shapes::FCollisionShape* shape)
+using namespace Collision;
+
+Collision::FCollisionQueryResult CollisionGrid::GetPossibleCollisions(Shapes::FCollisionShape* shape)
 {
         Shapes::ECollisionObjectTypes typeID = shape->GetID();
-        std::vector<CollisionID>      output;
+        FCollisionQueryResult         output;
 
-        switch (typeID)
+        Cell             checkCell = GetCellFromShape(shape);
+        int              index     = ComputeHashBucketIndex(checkCell);
+        auto             it        = m_Container.find(index);
+
+        if (it != m_Container.end())
         {
-                case Shapes::ECollisionObjectTypes::Sphere:
-                {
-                        Shapes::FSphere* sphere    = (Shapes::FSphere*)shape;
-                        Cell             checkCell = GetCellFromShape(sphere);
-                        int              index     = ComputeHashBucketIndex(checkCell);
-                        auto             it        = GridContainers.find(index);
-
-                        if (it != GridContainers.end())
-                        {
-                                // output.reserve(output.size() + it->second.size());
-                                output.insert(output.end(), it->second.begin(), it->second.end());
-                        }
-                }
-                break;
-                case Shapes::ECollisionObjectTypes::Aabb:
-                {
-                        Shapes::FAabb* aabb = (Shapes::FAabb*)shape;
-                        Cell            checkCell = GetCellFromShape(aabb);
-                        int            index     = ComputeHashBucketIndex(checkCell);
-                        auto           it        = GridContainers.find(index);
-
-                        if (it != GridContainers.end())
-                        {
-                                // output.reserve(output.size() + it->second.size());
-                                output.insert(output.end(), it->second.begin(), it->second.end());
-                        }
-                }
-                break;
-                case Shapes::ECollisionObjectTypes::Capsule:
-                {
-                        Shapes::FCapsule* capsule = (Shapes::FCapsule*)shape;
-                        Cell              checkCell = GetCellFromShape(capsule);
-                        int               index     = ComputeHashBucketIndex(checkCell);
-                        auto              it        = GridContainers.find(index);
-
-                        if (it != GridContainers.end())
-                        {
-                                // output.reserve(output.size() + it->second.size());
-                                output.insert(output.end(), it->second.begin(), it->second.end());
-                        }
-                }
-                break;
-                case Shapes::ECollisionObjectTypes::Plane:
-                {
-                        Shapes::FPlane* plane = (Shapes::FPlane*)shape;
-                }
-                break;
+                output.spheres  = it->second.m_Spheres;
+                output.AABBs    = it->second.m_AABBs;
+                output.capsules = it->second.m_Capsules;
         }
 
         return output;
-       
 }
