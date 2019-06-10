@@ -172,14 +172,3 @@ DirectX::XMVECTOR MathLibrary::GetRandomUnitVector()
                 return unitVec;
         }
 }
-
-DirectX::XMFLOAT2 MathLibrary::ConvertToNDC(const DirectX::XMMATRIX& matrix)
-{
-        DirectX::XMFLOAT2 output;
-        // loacal space (model matrix)
-        // world space (view matrix)
-        // view space (projection matrix)
-        // clip space (viewport transform)
-        // screen space
-        return output;
-}

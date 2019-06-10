@@ -1,7 +1,7 @@
 #include "CollisionHelpers.h"
 #include "../GEngine.h"
 #include "CollisionComponents.h"
-
+#include"CollisionLibary.h"
 #include "CollisionSystem.h"
 
 using namespace DirectX;

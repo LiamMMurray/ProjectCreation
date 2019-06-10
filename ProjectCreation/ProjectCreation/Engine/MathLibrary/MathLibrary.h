@@ -43,8 +43,6 @@ class MathLibrary
         static DirectX::XMVECTOR GetRandomVector();
         static DirectX::XMVECTOR GetRandomVectorInRange(float min, float max);
         static DirectX::XMVECTOR GetRandomUnitVector();
-        static DirectX::XMFLOAT2 ConvertToNDC(const DirectX::XMMATRIX& matrix); // Convert world space (matrix) to NDC space
-        static float             AngularDiameter();
         inline static bool       QuadraticFormula(const float a,
                                                   const float b,
                                                   const float c,

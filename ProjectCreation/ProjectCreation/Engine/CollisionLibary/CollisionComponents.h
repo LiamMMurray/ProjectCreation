@@ -2,25 +2,33 @@
 #include "../../ECS/Component.h"
 #include "Shapes.h"
 
-class SphereComponent : public Component<SphereComponent>
+#include <unordered_set>
+
+class CollisionComponentData
+{
+    public:
+        std::unordered_set<ComponentHandle> collisionComponents;
+};
+
+class SphereComponent : public Component<SphereComponent>, public CollisionComponentData
 {
     public:
         Shapes::FSphere sphere;
 };
 
-class AABBComponent : public Component<AABBComponent>
+class AABBComponent : public Component<AABBComponent>, public CollisionComponentData
 {
     public:
         Shapes::FAabb aabb;
 };
 
-class CapsuleComponent : public Component<CapsuleComponent>
+class CapsuleComponent : public Component<CapsuleComponent>, public CollisionComponentData
 {
     public:
         Shapes::FCapsule capsule;
 };
 
-class PlaneComponent : public Component<PlaneComponent>
+class PlaneComponent : public Component<PlaneComponent>, public CollisionComponentData
 {
     public:
         Shapes::FPlane plane;
