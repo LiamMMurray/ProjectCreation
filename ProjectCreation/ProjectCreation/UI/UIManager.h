@@ -24,51 +24,57 @@ class UIManager
 
 		//Main Menu
         void AddMainSprite(ID3D11Device*        device,
-                            ID3D11DeviceContext* deviceContext,
-                            const wchar_t*       FileName,
-                            float                PositionX,
-                            float                PositionY,
-                            float                scaleX,
-                            float                scaleY);
+                           ID3D11DeviceContext* deviceContext,
+                           const wchar_t*       FileName,
+                           float                PositionX,
+                           float                PositionY,
+                           float                scaleX,
+                           float                scaleY,
+                           bool                 enabled);
 
         void AddMainText(ID3D11Device*        device,
-                          ID3D11DeviceContext* deviceContext,
-                          const wchar_t*       FileName,
-                          std::string          TextDisplay,
-                          float                PositionX,
-                          float                PositionY);
+                         ID3D11DeviceContext* deviceContext,
+                         const wchar_t*       FileName,
+                         std::string          TextDisplay,
+                         float                PositionX,
+                         float                PositionY,
+                         bool                 enabled);
 
 		//Pause Menu
         void AddPauseSprite(ID3D11Device*        device,
-                       ID3D11DeviceContext* deviceContext,
-                       const wchar_t*       FileName,
-                       float                PositionX,
-                       float                PositionY,
-                       float                scaleX,
-                       float                scaleY);
-
-        void AddPauseText(ID3D11Device*        device,
-                     ID3D11DeviceContext* deviceContext,
-                     const wchar_t*       FileName,
-                     std::string          TextDisplay,
-                     float                PositionX,
-                     float                PositionY);
-
-        //Options Menu
-        void AddOptionsSprite(ID3D11Device*        device,
                             ID3D11DeviceContext* deviceContext,
                             const wchar_t*       FileName,
                             float                PositionX,
                             float                PositionY,
                             float                scaleX,
-                            float                scaleY);
+                            float                scaleY,
+                            bool                 enabled);
 
-        void AddOptionsText(ID3D11Device*        device,
+        void AddPauseText(ID3D11Device*        device,
                           ID3D11DeviceContext* deviceContext,
                           const wchar_t*       FileName,
                           std::string          TextDisplay,
                           float                PositionX,
-                          float                PositionY);
+                          float                PositionY,
+                          bool                 enabled);
+
+        //Options Menu
+        void AddOptionsSprite(ID3D11Device*        device,
+                              ID3D11DeviceContext* deviceContext,
+                              const wchar_t*       FileName,
+                              float                PositionX,
+                              float                PositionY,
+                              float                scaleX,
+                              float                scaleY,
+                              bool                 enabled);
+
+        void AddOptionsText(ID3D11Device*        device,
+                            ID3D11DeviceContext* deviceContext,
+                            const wchar_t*       FileName,
+                            std::string          TextDisplay,
+                            float                PositionX,
+                            float                PositionY,
+                            bool                 enabled);
 
 
         void CreateBackground(ID3D11Device*        device,
