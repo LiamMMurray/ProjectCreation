@@ -27,8 +27,8 @@ enum ETexture2DType
 
 enum class EMaterialType
 {
-        PBRStatic  = 0,
-        PBRSkinned = 1
+        Static  = 0,
+        Skinned = 1
 };
 
 

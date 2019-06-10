@@ -1,18 +1,37 @@
 #include "SpriteComponent.h"
 
-void SpriteComponent::ScaleSprite()
+void SpriteComponent::MakeRectangle()
 {
-        //float time = float(m_timer.GetTotalSeconds());
-        
-        //m_spriteBatch->Begin();
-        
-        //m_spriteBatch->Draw(m_texture.Get(), m_screenPos, nullptr, Colors::White, 0.f,
-        //m_origin, cosf(time) + 2.f);
-        
-        //m_spriteBatch->End();
+        mRectangle.top  = mScreenPos.y -( mOrigin.y * mScaleY);
+        mRectangle.left = mScreenPos.x -( mOrigin.x * mScaleX);
+									   
+        mRectangle.bottom = mScreenPos.y + (mOrigin.y * mScaleY);
+        mRectangle.right  = mScreenPos.x + (mOrigin.x * mScaleX);
 }
 
-void SpriteComponent::RotateSprite()
+void SpriteComponent::Scale()
+{
+        mWidth = (float)mWidth * mScaleX;
+        mHeight = (float)mHeight* mScaleY;
+
+        mRectangle.top  = (mScreenPos.y - mOrigin.y) * mScaleY;
+        mRectangle.left = (mScreenPos.x - mOrigin.x) * mScaleX;
+        mRectangle.bottom = (mScreenPos.y + mOrigin.y) * mScaleY;
+        mRectangle.right  = (mScreenPos.x + mOrigin.x) * mScaleX;
+}
+
+void SpriteComponent::SetPosition(float x, float y)
+{
+        mScreenPos.x = x;
+        mScreenPos.y = y;
+}
+
+void SpriteComponent::TransformPosition(float x, float y)
+{
+
+}
+
+void SpriteComponent::RotateSprite(float deltaTime)
 {
         //float time = float(m_timer.GetTotalSeconds
         

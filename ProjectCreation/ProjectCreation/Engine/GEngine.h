@@ -7,8 +7,6 @@
 
 #include "../ECS/ECS.h"
 #include "ResourceManager/ResourceManager.h"
-
-
 #include "XTime.h"
 class GEngine
 {
@@ -25,6 +23,8 @@ class GEngine
         bool m_DebugMode = false;
 
     public:
+        float m_PlayerRadius = 0.0f;
+
         static void Initialize();
         static void Shutdown();
 

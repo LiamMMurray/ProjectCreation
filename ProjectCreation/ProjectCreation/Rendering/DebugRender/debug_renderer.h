@@ -18,6 +18,8 @@ namespace debug_renderer
                 add_line(p, q, color, color);
         }
 
+		void AddGrid(DirectX::XMVECTOR center, float width, int segments, DirectX::XMFLOAT4 color);
+
         void AddBoneHierarchy(const Animation::FSkeleton& skel,
                               const DirectX::XMMATRIX*    globaltransforms,
                               const DirectX::XMMATRIX&    parent,

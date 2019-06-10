@@ -21,8 +21,9 @@ namespace FileIO
         struct FMaterialData
         {
                 std::string name;
-                EMaterialType            surfaceType;
                 FSurfaceProperties       surfaceProperties;
+                file_path_t               vertexShader;
+                file_path_t               pixelShader;
                 std::vector<FTextureDesc> textureDescs;
         };
 } // namespace FileIO

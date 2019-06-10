@@ -2,71 +2,134 @@
 #include "../../ECS/ECSTypes.h"
 #include "IController.h"
 
-#include "../GenericComponents/TransformComponent.h"
+#include "../MathLibrary/MathLibrary.h"
 #include "../Physics/PhysicsComponent.h"
+#include "PlayerControllerStateMachine.h"
 
+class TransformComponent;
+class PlayerCinematicState;
 class PlayerController : public IController
 {
+        friend class PlayerControllerStateMachine;
+
     private:
-        void GatherInput() override;
-        void ProcessInput() override;
-        void ApplyInput() override;
+        ComponentHandle m_GoalComponent;
+        void            GatherInput() override;
+        void            ProcessInput() override;
+        void            ApplyInput() override;
+
+        TransformComponent* _cachedControlledTransformComponent;
+
+        DirectX::XMFLOAT3 m_EulerAngles;
+
+        float minMaxSpeed = 1.0f;
+        float maxMaxSpeed = 3.0f;
 
 
+        float acceleration   = 1.0;
+        float deacceleration = 1.5f;
+
+        DirectX::XMVECTOR m_CurrentInput;
+        DirectX::XMVECTOR m_CurrentVelocity;
+
+        PlayerControllerStateMachine m_StateMachine;
+
+        PlayerCinematicState* m_CinematicState;
 
     public:
         PlayerController();
 
-        enum MoveDirections
+        virtual void Init(EntityHandle h) override;
+        void         SpeedBoost(DirectX::XMVECTOR preBoostVelocity);
+
+        inline void SetMinMaxSpeed(float val)
         {
-                NO_DIRECTION = 0,
-                FORWARD,
-                BACKWARD,
-                LEFT,
-                RIGHT
+                minMaxSpeed = val;
         };
 
-        enum PlayerStates
+        inline float GetMinMaxSpeed() const
         {
-                ON_GROUND = 0,
-                ON_AIR,
-                ON_WATER
+                return minMaxSpeed;
+        }
+
+        inline void SetMaxMaxSpeed(float val)
+        {
+                maxMaxSpeed = val;
         };
 
-        // Requested direction is set when we process the player's input
-        MoveDirections requestedDirection;
+        inline float GetMaxMaxSpeed() const
+        {
+                return maxMaxSpeed;
+        }
 
-        // Forward is the players local positive Z
-        DirectX::XMVECTOR forwardVector = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+        inline void SetAcceleration(float val)
+        {
+                acceleration = val;
+        };
 
-        // Backward is the players local Negative Z
-        DirectX::XMVECTOR backwardVector = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
+        inline float GetAcceleration() const
+        {
+                return acceleration;
+        }
 
-        // Right is the players local positive X
-        DirectX::XMVECTOR rightVector = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+        inline void SetDeacceleration(float val)
+        {
+                deacceleration = val;
+        };
 
-        // Left is the players local Negative X
-        DirectX::XMVECTOR leftVector = DirectX::XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f);
+        inline float GetDeacceleration() const
+        {
+                return deacceleration;
+        }
 
-        // ZeroVector will be the default vector and will be used to reset movement
-        DirectX::XMVECTOR ZeroVector = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+        inline DirectX::XMVECTOR GetCurrentInput() const
+        {
+                return m_CurrentInput;
+        }
 
-        // MoveVector will be used to apply the movement to the player
-        DirectX::XMVECTOR MoveVector = ZeroVector;
+        inline void SetCurrentInput(DirectX::XMVECTOR val)
+        {
+                m_CurrentInput = val;
+        }
 
-        // PastDirection is used for debugging, delete when done
-        MoveDirections PastDirection;
+        inline void SetCurrentVelocity(DirectX::XMVECTOR val)
+        {
+                m_CurrentVelocity = val;
+        }
 
-		float minMaxSpeed = 1.0f;
-        float maxMaxSpeed = 3.0f;
+        inline DirectX::XMVECTOR GetCurrentVelocity() const
+        {
+                return m_CurrentVelocity;
+        }
 
-		float acceleration = 1.0;
-        float deacceleration = 1.5f;
+        inline void SetGoalComponent(ComponentHandle val)
+        {
+                m_GoalComponent = val;
+        }
 
-		int32_t m_MouseXDelta;
-        int32_t m_MouseYDelta;
+        inline ComponentHandle GetGoalComponent() const
+        {
+                return m_GoalComponent;
+        }
 
-		DirectX::XMVECTOR m_CurrentInput;
+        inline DirectX::XMFLOAT3 GetEulerAngles() const
+        {
+                return m_EulerAngles;
+        }
 
-        DirectX::XMVECTOR m_CurrentVelocity;
+        inline void SetEulerAngles(DirectX::XMFLOAT3 val)
+        {
+                m_EulerAngles = val;
+        }
+
+        void RequestCinematicTransition(const FTransform& target, int targetState, float duration, float delay = 0.0f);
+        void RequestCinematicTransitionLookAt(const DirectX::XMVECTOR& target,
+                                              ComponentHandle   lookAtTarget,
+                                              int               targetState,
+                                              float             duration,
+                                              float             delay = 0.0f);
+        void RequestPuzzleMode(ComponentHandle   goalHandle,
+                               const DirectX::XMVECTOR& puzzleCenter,
+                               bool              alignToGoal        = false,
+                               float             transitionDuration = 1.0f);
 };

@@ -2,27 +2,30 @@
 
 #include <DirectXMath.h>
 
-struct CTransformBuffer
+struct alignas(16) CTransformBuffer
 {
         DirectX::XMMATRIX ViewProjection;
         DirectX::XMMATRIX World;
 };
 
-struct CSceneInfoBuffer
+struct alignas(16) CSceneInfoBuffer
 {
         DirectX::XMFLOAT3 eyePosition;
         float             time;
         DirectX::XMFLOAT3 directionalLightDirection;
-        float             pad;
-        DirectX::XMFLOAT4 directioanlLightColor;
+        float              playerRadius;
+        DirectX::XMFLOAT3A directionalLightColor;
+		//pad
+        DirectX::XMFLOAT3A ambientColor;
+		//pad
 };
 
-struct CAnimationBuffer
+struct alignas(16) CAnimationBuffer
 {
         DirectX::XMMATRIX jointTransforms[64];
 };
 
-struct CScreenSpaceBuffer
+struct alignas(16) CScreenSpaceBuffer
 {
         DirectX::XMMATRIX invProj;
         DirectX::XMMATRIX invView;

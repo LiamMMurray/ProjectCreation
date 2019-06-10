@@ -34,10 +34,10 @@ ResourceHandle ResourceManager::LoadMaterial(const char* name)
                 EResult               result = FileIO::LoadMaterialDataFromFile(name, &materialData);
 
                 assert(result.m_Flags == ERESULT_FLAG::SUCCESS);
-                Material* resource             = container->GetResource(outputHandle);
-                resource->m_VertexShaderHandle = LoadVertexShader("DefaultSkinned");
-                resource->m_PixelShaderHandle  = LoadVertexShader("Default");
-                resource->m_SurfaceProperties  = materialData.surfaceProperties;
+                Material* resource                          = container->GetResource(outputHandle);
+                resource->m_VertexShaderHandle              = LoadVertexShader(materialData.vertexShader.data());
+                resource->m_PixelShaderHandle               = LoadPixelShader(materialData.pixelShader.data());
+                resource->m_SurfaceProperties               = materialData.surfaceProperties;
                 //resource->m_SurfaceProperties.emissiveColor = DirectX::XMFLOAT3(20.0f, 20.0f, 20.0f);
 
                 for (auto desc : materialData.textureDescs)

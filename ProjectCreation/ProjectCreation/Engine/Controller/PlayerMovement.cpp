@@ -6,7 +6,15 @@
 #include "../MathLibrary/MathLibrary.h"
 #include "../MathLibrary/Quaternion.h"
 
+#include "..//Gameplay/GoalComponent.h"
 #include "../CollisionLibary/CollisionLibary.h"
+#include "../CollisionLibary/CollisionResult.h"
+#include "../GenericComponents/TransformComponent.h"
+
+#include "PlayerCinematicState.h"
+#include "PlayerGroundState.h"
+#include "PlayerPuzzleState.h"
+#include "PlayerStateEvents.h"
 
 #include "../../Rendering/DebugRender/debug_renderer.h"
 // v Testing only delete when done v
@@ -18,192 +26,191 @@ using namespace Collision;
 using namespace debug_renderer;
 void PlayerController::GatherInput()
 {
-        PastDirection = requestedDirection;
 
-        // requestedDirection = MoveDirections::NO_DIRECTION;
-        XMFLOAT4 tempDir = {0.0f, 0.0f, 0.0f, 0.0f};
+        m_CurrentInput = XMVectorZero();
+        if (IsEnabled())
+        {
+                // requestedDirection = MoveDirections::NO_DIRECTION;
+                XMFLOAT4 tempDir = {0.0f, 0.0f, 0.0f, 0.0f};
 
-        // Check Forward speed
-        if (GCoreInput::GetKeyState(KeyCode::W) == KeyState::Down)
-        {
-                tempDir.z += 1.0f;
-        }
+                // Check Forward speed
+                if (GCoreInput::GetKeyState(KeyCode::W) == KeyState::Down)
+                {
+                        tempDir.z += 1.0f;
+                }
 
-        if (GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Down)
-        {
-                tempDir.z += 1.0f;
-        }
+                if (GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Down)
+                {
+                        tempDir.z += 1.0f;
+                }
 
-        if (GCoreInput::GetKeyState(KeyCode::E) == KeyState::Down)
-        {
-                tempDir.z += 1.0f;
-        }
-        // Backward
-        if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
-        {
-                tempDir.z -= 1.0f;
-        }
-        // Left
-        if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
-        {
-                tempDir.x -= 1.0f;
-        }
-        // Right
-        if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
-        {
-                tempDir.x += 1.0f;
-        }
-        // Rise
-        if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Down)
-        {
-                tempDir.y += 1.0f;
-        }
-        // Fall
-        if (GCoreInput::GetKeyState(KeyCode::Control) == KeyState::Down)
-        {
-                tempDir.y -= 1.0f;
-        }
+                if (GCoreInput::GetKeyState(KeyCode::E) == KeyState::Down)
+                {
+                        tempDir.z += 1.0f;
+                }
+                // Backward
+                if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
+                {
+                        tempDir.z -= 1.0f;
+                }
+                // Left
+                if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
+                {
+                        tempDir.x -= 1.0f;
+                }
+                // Right
+                if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
+                {
+                        tempDir.x += 1.0f;
+                }
+                // Rise
+                if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Down)
+                {
+                        tempDir.y += 1.0f;
+                }
+                // Fall
+                if (GCoreInput::GetKeyState(KeyCode::Control) == KeyState::Down)
+                {
+                        tempDir.y -= 1.0f;
+                }
 
-        m_MouseXDelta = GCoreInput::GetMouseX();
-        m_MouseYDelta = GCoreInput::GetMouseY();
-
-        m_CurrentInput = XMLoadFloat4(&tempDir);
+                m_CurrentInput = XMLoadFloat4(&tempDir);
+        }
 }
 
 void PlayerController::ProcessInput()
-{}
+{
+        _cachedControlledTransformComponent =
+            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+}
 
 void PlayerController::ApplyInput()
 {
-	// Get the Transoform Component
-        TransformComponent* transformComp =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+        m_StateMachine.Update(cacheTime, _cachedControlledTransformComponent);
+        FSphere fSpherePlayer;
+        fSpherePlayer.center = _cachedControlledTransformComponent->transform.translation;
+        fSpherePlayer.radius = 0.25f;
 
-
-	// Get Delta Time
-        float deltaTime = cacheTime; // GEngine::Get()->GetDeltaTime();
-
-	// Get the Speed from the gathered input
-        float    currSpeed   = XMVectorGetX(XMVector3Length(m_CurrentInput));
-				
-	// Get the Forward from the gathered input
-        float    currForward = XMVectorGetZ(m_CurrentInput);
-
-	// Normalize the gathered input to determine the desired direction
-        XMVECTOR desiredDir  = XMVector3Normalize(m_CurrentInput);
-
-	// Determine the max speed the object can move
-        float    maxSpeed    = MathLibrary::lerp(minMaxSpeed, maxMaxSpeed, currForward - minMaxSpeed);
-
-	// Check if the currSpeed is faster than the maxSpeed
-        if (fabs(currSpeed) > fabs(maxSpeed))
-        {
-                // Clamp the currSpeed to the maxSpeed
-                currSpeed = MathLibrary::clamp(currSpeed, -maxSpeed, maxSpeed);
-        }
-
-	// Calculate desiredVelocity by multiplying the currSpeed by the direction we want to go
-        XMVECTOR desiredVelocity = currSpeed * desiredDir;
-
-	// Determine if we should speed up or slow down
-        float accel = (XMVectorGetX(XMVector3Length(desiredVelocity)) >= XMVectorGetX(XMVector3Length(m_CurrentVelocity))) ?
-                          acceleration :
-                          deacceleration;
-
-	// Calculate distance from our current velocity to our desired velocity
-        float dist = MathLibrary::CalulateDistance(m_CurrentVelocity, desiredVelocity);
-
-	// Calculate change based on the type of acceleration, the change in time, and the calculated distance
-        float delta = std::min(accel * deltaTime, dist);
-
-	// Normalize the difference of the desired velocity and the current velocity
-        XMVECTOR deltaVec = XMVector3Normalize(desiredVelocity - m_CurrentVelocity);
-
-	// Calculate current velocity based on itself, the deltaVector, and delta
-        m_CurrentVelocity = m_CurrentVelocity + deltaVec * delta;
-		
-	// Convert the angle of change on the X-Axis and the Y-Axis to radians
-        static float accumAngleY = 0.f;
-        float        angleX      = XMConvertToRadians(m_MouseXDelta * 10.f);
-        float        angleY      = XMConvertToRadians(m_MouseYDelta * 10.f);
-        
-	// Set the local X-Axis and Y-Axis
-        XMVECTOR YAxis = VectorConstants::Up;
-        XMVECTOR XAxis = transformComp->transform.GetRight();
-
-	// Get the rotation of the transform component
-        FQuaternion rot           = transformComp->transform.rotation;
-
-	// Get horizontal rotation
-        FQuaternion horizontalRot = FQuaternion::RotateAxisAngle(YAxis, angleX);
-
-	// Get the vertical rotation
-        FQuaternion verticalRot   = FQuaternion::RotateAxisAngle(XAxis, angleY);
-
-	// Get the old forward
-        XMVECTOR prevFw   = XMVectorSetY(rot.GetForward(), 0.0f);
-
-	// Normalize the old forward
-        prevFw            = XMVector3Normalize(prevFw);
-
-	// Calculate the new forward
-        XMVECTOR nextFw   = XMVector3Rotate(rot.GetForward(), verticalRot.data);
-
-	// Calculate the angle between the old forward and new forward
-        XMVECTOR angleVec = XMVector3AngleBetweenVectors(prevFw, nextFw);
-
-	// Convert the angle between the old forward and the new forward to degrees
-        float    angle    = XMConvertToDegrees(XMVectorGetX(angleVec));
-
-	// Check if the converted angle between forwards is greather that 90 degrees
-        if (angle > 90.f)
-        {
-			// Set vertical rotation to the identity
-                verticalRot = XMQuaternionIdentity();
-        }
-
-	// Calculate offset
-        XMVECTOR offset = XMVector3Rotate(m_CurrentVelocity * deltaTime, transformComp->transform.rotation.data);
-        offset          = XMVector3Normalize(XMVectorSetY(offset, 0.0f)) * XMVectorGetX(XMVector3Length(offset));
-
-        FSphere fSphereStart;
-        fSphereStart.center = transformComp->transform.translation;
-        fSphereStart.radius = 0.2f;
-        FSphere fSphereEnd;
-        fSphereEnd.center = transformComp->transform.translation + offset;
-        fSphereEnd.radius = 0.2f;            
-        FSphere fSphereCheck;
-        fSphereCheck.center = XMVectorSet(0.0f, 0.0f, 0.f, 1.0f);
-        fSphereCheck.radius = 0.2f;
-
-		//AddSphere(fSphereStart,36,XMMatrixIdentity());
-       // AddSphere(fSphereEnd, 36, XMMatrixIdentity());
-       // AddSphere(fSphereCheck, 36, XMMatrixIdentity());
-		
-		FAdvancedCollisionResult result =
-            CollisionLibary::SweepSphereToSphere(fSphereStart, fSphereEnd, fSphereCheck, 1.0f);
-
-        if (result.collisionType != Collision::ECollisionType::EOveralap &&
-            result.collisionType != Collision::ECollisionType::ECollide)
-        {
-                transformComp->transform.translation += offset;
-			
-        }
-        else
-        {
-                m_CurrentVelocity = m_CurrentVelocity - deltaVec * delta;
-                transformComp->transform.translation = result.finalPosition + m_CurrentVelocity;
-        }
-        transformComp->transform.rotation = transformComp->transform.rotation * verticalRot * horizontalRot;
-
-	// Write out information to the console window
-      //  std::cout << "Current Forward < " << XMVectorGetX(nextFw) << ", " << XMVectorGetY(nextFw) << ", "
-      //            << XMVectorGetZ(nextFw) << ", " << XMVectorGetW(nextFw) << " >" << std::endl;
+        debug_renderer::AddSphere(fSpherePlayer, 36, XMMatrixIdentity());
 }
 
 PlayerController::PlayerController()
 {
         m_CurrentVelocity = DirectX::XMVectorZero();
-        m_MouseXDelta     = 0;
-        m_MouseYDelta     = 0;
+        m_CurrentInput    = DirectX::XMVectorZero();
+}
+
+void PlayerController::Init(EntityHandle h)
+{
+        IController::Init(h);
+        TransformComponent* transformComp =
+            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+
+        m_EulerAngles = transformComp->transform.rotation.ToEulerAngles();
+
+        // Create any states and set their respective variables here
+        m_CinematicState = m_StateMachine.CreateState<PlayerCinematicState>();
+        auto groundState = m_StateMachine.CreateState<PlayerGroundState>();
+        auto puzzleState = m_StateMachine.CreateState<PlayerPuzzleState>();
+
+        m_StateMachine.AddTransition(groundState, m_CinematicState, E_PLAYERSTATE_EVENT::TO_TRANSITION);
+        m_StateMachine.AddTransition(m_CinematicState, groundState, E_PLAYERSTATE_EVENT::TO_GROUND);
+        m_StateMachine.AddTransition(m_CinematicState, puzzleState, E_PLAYERSTATE_EVENT::TO_PUZZLE);
+
+        m_StateMachine.AddTransition(groundState, puzzleState, E_PLAYERSTATE_EVENT::TO_PUZZLE);
+        m_StateMachine.AddTransition(puzzleState, groundState, E_PLAYERSTATE_EVENT::TO_GROUND);
+        m_StateMachine.AddTransition(puzzleState, m_CinematicState, E_PLAYERSTATE_EVENT::TO_TRANSITION);
+
+        // Request initial transition
+        FTransform target = transformComp->transform;
+        target.rotation   = XMQuaternionIdentity();
+        RequestCinematicTransition(target, E_PLAYERSTATE_EVENT::TO_GROUND, 5.0f, 2.0f);
+
+        // After you create the states, initialize the state machine. First created state is starting state
+        m_StateMachine.Init(this);
+}
+
+void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)
+{
+        preBoostVelocity = m_CurrentVelocity;
+        m_CurrentVelocity += 2.0f * XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+        maxMaxSpeed += 1;
+}
+
+void PlayerController::RequestCinematicTransition(const FTransform& target, int targetState, float duration, float delay)
+{
+        TransformComponent* transformComp =
+            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+
+        m_CinematicState->SetTransitionMode(E_TRANSITION_MODE::Simple);
+        m_CinematicState->SetInitTransform(transformComp->transform);
+        m_CinematicState->SetEndTransform(target);
+        m_CinematicState->SetTansitionTargetState(targetState);
+        m_CinematicState->SetTansitionDuration(duration);
+        m_CinematicState->SetTransitionDelay(delay);
+
+        m_StateMachine.Transition(E_PLAYERSTATE_EVENT::TO_TRANSITION);
+}
+
+void PlayerController::RequestCinematicTransitionLookAt(const DirectX::XMVECTOR& target,
+                                                        ComponentHandle          lookAt,
+                                                        int                      targetState,
+                                                        float                    duration,
+                                                        float                    delay)
+{
+        TransformComponent* transformComp =
+            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+
+        m_CinematicState->SetTransitionMode(E_TRANSITION_MODE::LookAt);
+        m_CinematicState->SetInitTransform(transformComp->transform);
+        FTransform targetTransform;
+        targetTransform.translation = target;
+        m_CinematicState->SetEndTransform(targetTransform);
+        m_CinematicState->SetLookAtTarget(lookAt);
+        m_CinematicState->SetTansitionTargetState(targetState);
+        m_CinematicState->SetTansitionDuration(duration);
+        m_CinematicState->SetTransitionDelay(delay);
+
+        m_StateMachine.Transition(E_PLAYERSTATE_EVENT::TO_TRANSITION);
+}
+
+void PlayerController::RequestPuzzleMode(ComponentHandle          goalHandle,
+                                         const DirectX::XMVECTOR& puzzleCenter,
+                                         bool                     alignToGoal,
+                                         float                    transitionDuration)
+{
+        SetGoalComponent(goalHandle);
+
+        if (!alignToGoal)
+                m_StateMachine.Transition(E_PLAYERSTATE_EVENT::TO_PUZZLE);
+        else
+        {
+                auto playerTransformComp =
+                    GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+
+                GoalComponent*  goalComp = GEngine::Get()->GetComponentManager()->GetComponent<GoalComponent>(goalHandle);
+                ComponentHandle goalTransformHandle =
+                    GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(goalComp->GetOwner())->GetHandle();
+
+                FSphere sphereInitial;
+                sphereInitial.center = goalComp->initialTransform.translation;
+                sphereInitial.radius = goalComp->initialTransform.GetRadius();
+
+                FSphere sphereTarget;
+                sphereTarget.center = goalComp->goalTransform.translation;
+                sphereTarget.radius = goalComp->goalTransform.GetRadius();
+
+                XMVECTOR eyePos = playerTransformComp->transform.translation;
+
+                float desiredAngularDiameter = MathLibrary::CalculateAngularDiameter(eyePos, sphereTarget);
+                float desiredInitialDistance =
+                    MathLibrary::CalculateDistanceFromAngularDiameter(desiredAngularDiameter, sphereInitial);
+
+                XMVECTOR dir = XMVector3Normalize(puzzleCenter - sphereInitial.center);
+
+                XMVECTOR targetPos = sphereInitial.center - dir * desiredInitialDistance;
+
+                RequestCinematicTransitionLookAt(
+                    targetPos, goalTransformHandle, E_PLAYERSTATE_EVENT::TO_PUZZLE, transitionDuration);
+        }
 }
