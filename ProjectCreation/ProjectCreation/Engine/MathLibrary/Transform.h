@@ -17,10 +17,7 @@ struct FTransform
         void              RotateAxisAngle(DirectX::XMVECTOR& axis, float angle);
         static FTransform Lerp(const FTransform& lhs, const FTransform& rhs, float ratio);
 
-		inline float GetRadius()
-		{
-                return DirectX::XMVectorGetX(scale);
-		}
+		float GetRadius();
 
         inline void SetScale(const DirectX::XMVECTOR& _scale)
         {

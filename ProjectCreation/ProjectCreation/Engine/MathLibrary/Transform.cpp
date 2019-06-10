@@ -1,4 +1,6 @@
 #include "Transform.h"
+#include "MathLibrary.h"
+
 using namespace DirectX;
 FTransform::FTransform()
 {
@@ -52,4 +54,13 @@ FTransform FTransform::Lerp(const FTransform& lhs, const FTransform& rhs, float 
         output.rotation    = FQuaternion::Lerp(lhs.rotation, rhs.rotation, ratio);
         output.scale       = XMVectorLerp(lhs.scale, rhs.scale, ratio);
         return output;
+}
+
+float FTransform::GetRadius()
+{
+        XMFLOAT3 vec;
+
+		XMStoreFloat3(&vec, scale);
+
+        return std::max(vec.x, std::max(vec.y, vec.z));
 }

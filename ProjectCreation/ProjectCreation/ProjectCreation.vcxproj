@@ -24,7 +24,12 @@
     <ClInclude Include="Engine\Controller\ControllerManager.h" />
     <ClInclude Include="Engine\Controller\DebugCameraController.h" />
     <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
-    <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
+    <ClInclude Include="Engine\Controller\PlayerCinematicState.h" />
+    <ClInclude Include="Engine\Controller\PlayerControllerState.h" />
+    <ClInclude Include="Engine\Controller\PlayerControllerStateMachine.h" />
+    <ClInclude Include="Engine\Controller\PlayerGroundState.h" />
+    <ClInclude Include="Engine\Controller\PlayerPuzzleState.h" />
+    <ClInclude Include="Engine\Controller\PlayerStateEvents.h" />
     <ClInclude Include="Engine\EngineInitShutdownHelpers.h" />
     <ClInclude Include="Engine\Entities\EntityFactory.h" />
     <ClInclude Include="Engine\Events\Event.h" />
@@ -37,6 +42,8 @@
     <ClInclude Include="Engine\Gameplay\OrbitSystem.h" />
     <ClInclude Include="Engine\Gameplay\SpeedboostComponent.h" />
     <ClInclude Include="Engine\Gameplay\SpeedBoostSystem.h" />
+    <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
+    <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
     <ClInclude Include="Engine\GenericComponents\TestComponents.h" />
@@ -150,6 +157,7 @@
     <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
     <ClInclude Include="Utility\ForwardDeclarations\STLTypes.h" />
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
+    <ClInclude Include="Utility\Hashing\PairHash.h" />
     <ClInclude Include="Utility\Macros\DirectXMacros.h" />
     <ClInclude Include="Utility\MemoryLeakDetection.h" />
     <ClInclude Include="Utility\MemoryDefines.h" />
@@ -181,10 +189,16 @@
     <ClCompile Include="Engine\CollisionLibary\Shapes.cpp" />
     <ClCompile Include="Engine\Controller\ControllerManager.cpp" />
     <ClCompile Include="Engine\Controller\DebugCameraController.cpp" />
+    <ClCompile Include="Engine\Controller\PlayerCinematicState.cpp" />
+    <ClCompile Include="Engine\Controller\PlayerControllerStateMachine.cpp" />
+    <ClCompile Include="Engine\Controller\PlayerGroundState.cpp" />
+    <ClCompile Include="Engine\Controller\PlayerPuzzleState.cpp" />
     <ClCompile Include="Engine\EngineInitShutdownHelpers.cpp" />
     <ClCompile Include="Engine\Entities\EntityFactory.cpp" />
     <ClCompile Include="Engine\Gameplay\OrbitSystem.cpp" />
     <ClCompile Include="Engine\Gameplay\SpeedBoostSystem.cpp" />
+    <ClCompile Include="Engine\Gameplay\StateMachine\IState.cpp" />
+    <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
     <ClCompile Include="Engine\Physics\PhysicsComponent.cpp" />
     <ClCompile Include="Engine\Controller\IController.cpp" />
     <ClCompile Include="Engine\Controller\PlayerMovement.cpp" />

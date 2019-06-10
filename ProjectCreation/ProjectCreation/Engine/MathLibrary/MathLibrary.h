@@ -136,4 +136,7 @@ class MathLibrary
                 float z = DirectX::XMVectorGetZ(vector) + number;
                 vector  = DirectX::XMVectorSet(x, y, z, DirectX::XMVectorGetW(vector));
         }
+
+		static float CalculateAngularDiameter(const DirectX::XMVECTOR& eye, const Shapes::FSphere& sphere);
+		static float CalculateDistanceFromAngularDiameter(float angularDiameter, const Shapes::FSphere& sphere);
 };

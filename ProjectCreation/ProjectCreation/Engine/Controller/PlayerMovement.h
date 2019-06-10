@@ -2,75 +2,105 @@
 #include "../../ECS/ECSTypes.h"
 #include "IController.h"
 
+#include "../MathLibrary/MathLibrary.h"
 #include "../Physics/PhysicsComponent.h"
-
-enum class EPlayerState
-{
-        ON_GROUND = 0,
-        ON_AIR,
-        ON_WATER,
-        ON_PUZZLE,
-        COUNT,
-};
-
-enum class EPuzzleState
-{
-        EASE_IN = 0,
-        SOLVE,
-        EASE_OUT,
-        COUNT,
-};
+#include "PlayerControllerStateMachine.h"
 
 class TransformComponent;
+class PlayerCinematicState;
 class PlayerController : public IController
 {
+        friend class PlayerControllerStateMachine;
+
     private:
         ComponentHandle m_GoalComponent;
         void            GatherInput() override;
         void            ProcessInput() override;
         void            ApplyInput() override;
 
-        void UpdateOnGround();
-        void UpdateOnPuzzle();
-        void UpdateOnPuzzleEaseIn();
-        void UpdateOnPuzzleEaseOut();
-        void UpdateOnPuzzleSolve();
+        TransformComponent* _cachedControlledTransformComponent;
 
-        DirectX::XMVECTOR m_CurrentPosition;
-
-        struct FDebugLine
-        {
-                DirectX::XMVECTOR start;
-                DirectX::XMVECTOR end;
-        };
-
-        EPlayerState m_CurrentPlayerState = EPlayerState::ON_GROUND;
-        EPuzzleState m_CurrentPuzzleState = EPuzzleState::SOLVE;
-
-		TransformComponent* _cachedControlledTransformComponent;
-		DirectX::XMFLOAT3 m_EulerAngles;
-    public:
-        PlayerController();
-
-		virtual void Init(EntityHandle h) override;
-        void SpeedBoost(DirectX::XMVECTOR preBoostVelocity);
-		
+        DirectX::XMFLOAT3 m_EulerAngles;
 
         float minMaxSpeed = 1.0f;
         float maxMaxSpeed = 3.0f;
 
+
         float acceleration   = 1.0;
         float deacceleration = 1.5f;
 
-        float m_TotalTime = 0.0f;
-
-
-        int32_t m_MouseXDelta;
-        int32_t m_MouseYDelta;
-
         DirectX::XMVECTOR m_CurrentInput;
-
         DirectX::XMVECTOR m_CurrentVelocity;
+
+        PlayerControllerStateMachine m_StateMachine;
+
+        PlayerCinematicState* m_CinematicState;
+
+    public:
+        PlayerController();
+
+        virtual void Init(EntityHandle h) override;
+        void         SpeedBoost(DirectX::XMVECTOR preBoostVelocity);
+
+        inline void SetMinMaxSpeed(float val)
+        {
+                minMaxSpeed = val;
+        };
+
+        inline float GetMinMaxSpeed() const
+        {
+                return minMaxSpeed;
+        }
+
+        inline void SetMaxMaxSpeed(float val)
+        {
+                maxMaxSpeed = val;
+        };
+
+        inline float GetMaxMaxSpeed() const
+        {
+                return maxMaxSpeed;
+        }
+
+        inline void SetAcceleration(float val)
+        {
+                acceleration = val;
+        };
+
+        inline float GetAcceleration() const
+        {
+                return acceleration;
+        }
+
+        inline void SetDeacceleration(float val)
+        {
+                deacceleration = val;
+        };
+
+        inline float GetDeacceleration() const
+        {
+                return deacceleration;
+        }
+
+        inline DirectX::XMVECTOR GetCurrentInput() const
+        {
+                return m_CurrentInput;
+        }
+
+        inline void SetCurrentInput(DirectX::XMVECTOR val)
+        {
+                m_CurrentInput = val;
+        }
+
+        inline void SetCurrentVelocity(DirectX::XMVECTOR val)
+        {
+                m_CurrentVelocity = val;
+        }
+
+        inline DirectX::XMVECTOR GetCurrentVelocity() const
+        {
+                return m_CurrentVelocity;
+        }
 
         inline void SetGoalComponent(ComponentHandle val)
         {
@@ -82,13 +112,24 @@ class PlayerController : public IController
                 return m_GoalComponent;
         }
 
-        inline EPlayerState GetPlayerState() const
+        inline DirectX::XMFLOAT3 GetEulerAngles() const
         {
-                return m_CurrentPlayerState;
-        };
+                return m_EulerAngles;
+        }
 
-        inline void SetPlayerState(EPlayerState val)
+        inline void SetEulerAngles(DirectX::XMFLOAT3 val)
         {
-                m_CurrentPlayerState = val;
-        };
+                m_EulerAngles = val;
+        }
+
+        void RequestCinematicTransition(const FTransform& target, int targetState, float duration, float delay = 0.0f);
+        void RequestCinematicTransitionLookAt(const DirectX::XMVECTOR& target,
+                                              ComponentHandle   lookAtTarget,
+                                              int               targetState,
+                                              float             duration,
+                                              float             delay = 0.0f);
+        void RequestPuzzleMode(ComponentHandle   goalHandle,
+                               const DirectX::XMVECTOR& puzzleCenter,
+                               bool              alignToGoal        = false,
+                               float             transitionDuration = 1.0f);
 };
