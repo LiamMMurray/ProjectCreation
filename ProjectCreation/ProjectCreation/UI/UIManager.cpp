@@ -405,7 +405,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddMainText(renderSystem->m_Device,
                               renderSystem->m_Context,
                               L"../Assets/2d/Text/myfile.spritefont",
-                              "Press any key to continue. . .",
+                              "Press Space to continue. . .",
                               renderSystem->m_BackBufferWidth * 0.5f,
                               renderSystem->m_BackBufferHeight * 0.5f,
                               true);
@@ -575,7 +575,7 @@ void UIManager::Update()
 		if (instance->m_MainSprites[0].mEnabled == true)
 		{
 		        //ControllerManager::Get()->m_togglePauseInput = true;
-		        if (GCoreInput::GetKeyState(KeyCode::N) == KeyState::DownFirst)
+		        if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::DownFirst)
 		        {
 		                //ControllerManager::Get()->m_togglePauseInput = !ControllerManager::Get()->m_togglePauseInput;
 		
