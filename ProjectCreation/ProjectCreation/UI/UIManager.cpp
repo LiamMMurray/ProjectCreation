@@ -146,8 +146,8 @@ void UIManager::CreateBackground(ID3D11Device*        device,
 
         m_fullscreenRect.left   = 0;
         m_fullscreenRect.top    = 0;
-        m_fullscreenRect.right  = ScreenWidth;
-        m_fullscreenRect.bottom = ScreenHeight;
+        m_fullscreenRect.right  = (long)ScreenWidth;
+        m_fullscreenRect.bottom = (long)ScreenHeight;
 }
 
 void UIManager::UIClipCursor()
@@ -345,6 +345,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 // Joe's code for unpausing the game here
                 instance->m_InMenu = !instance->m_InMenu;
+                GEngine::Get()->SetGamePaused(instance->m_InMenu);
                 if (instance->m_InMenu)
                 {
                         while (ShowCursor(TRUE) < 0)
@@ -575,8 +576,8 @@ void UIManager::Update()
                                         UIMouseEvent e;
 
 
-                                        e.mouseX = GCoreInput::GetMouseWindowPosX();
-                                        e.mouseY = GCoreInput::GetMouseWindowPosY();
+                                        e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
+                                        e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
                                         e.sprite = &instance->m_PauseSprites[0];
                                         instance->m_MainSprites[i].OnMouseDown.Invoke(&e);
                                 }
@@ -631,8 +632,8 @@ void UIManager::Update()
                                         UIMouseEvent e;
 
 
-                                        e.mouseX = GCoreInput::GetMouseWindowPosX();
-                                        e.mouseY = GCoreInput::GetMouseWindowPosY();
+                                        e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
+                                        e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
                                         e.sprite = &instance->m_PauseSprites[0];
                                         instance->m_PauseSprites[i].OnMouseDown.Invoke(&e);
                                 }
@@ -687,8 +688,8 @@ void UIManager::Update()
                                         // Button Was Pressed
                                         UIMouseEvent e;
 
-                                        e.mouseX = GCoreInput::GetMouseWindowPosX();
-                                        e.mouseY = GCoreInput::GetMouseWindowPosY();
+                                        e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
+                                        e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
                                         e.sprite = &instance->m_PauseSprites[0];
                                         instance->m_OptionsSprites[i].OnMouseDown.Invoke(&e);
                                 }
@@ -743,8 +744,8 @@ void UIManager::Update()
                                         // Button Was Pressed
                                         UIMouseEvent e;
 
-                                        e.mouseX = GCoreInput::GetMouseWindowPosX();
-                                        e.mouseY = GCoreInput::GetMouseWindowPosY();
+                                        e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
+                                        e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
                                         e.sprite = &instance->m_PauseSprites[0];
                                         instance->m_LevelSprites[i].OnMouseDown.Invoke(&e);
                                 }
