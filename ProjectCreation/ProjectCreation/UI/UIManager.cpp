@@ -494,11 +494,11 @@ void UIManager::Update()
         }
         else
         {
-
                 if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
                 {
                         // ControllerSystem::Get()->m_togglePauseInput = !ControllerSystem::Get()->m_togglePauseInput;
                         instance->m_InMenu = !instance->m_InMenu;
+                        GEngine::Get()->SetGamePaused(instance->m_InMenu);
                         if (instance->m_InMenu)
                         {
                                 while (ShowCursor(TRUE) < 0)
