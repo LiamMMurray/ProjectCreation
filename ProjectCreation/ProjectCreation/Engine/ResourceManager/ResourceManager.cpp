@@ -42,7 +42,7 @@ ResourceHandle ResourceManager::LoadMaterial(const char* name)
 
                 for (auto desc : materialData.textureDescs)
                 {
-                        resource->m_TextureHandles[desc.textureType] = LoadTexture2D(desc.filePath.data());
+                        resource->m_TextureHandles[int(desc.textureType)] = LoadTexture2D(desc.filePath.data());
                 }
         }
         else

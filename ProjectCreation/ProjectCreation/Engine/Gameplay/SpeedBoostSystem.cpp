@@ -49,6 +49,8 @@ void SpeedBoostSystem::SpawnSpeedBoost(const TransformComponent* playerTC,
                                        const TransformComponent* targetTC,
                                        E_LIGHT_ORBS              color)
 {
+        currentOrbCounter[color]++;
+
         ComponentHandle boostHandle;
         ComponentHandle transHandle;
         auto            entityHandle = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &boostHandle);
@@ -105,25 +107,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         if ((speedComp->m_WantsRespawn == false) && distanceSq < m_BoostRadius * 2.0f * m_BoostRadius)
                         {
-                                if (speedComp->m_Color == E_LIGHT_ORBS::RED_LIGHTS)
-                                {
-                                        m_CurRedOrbs++;
-                                        m_MaxRedOrbs--;
-                                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->SetOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
-                                }
 
-                                if (speedComp->m_Color == E_LIGHT_ORBS::BLUE_LIGHTS)
-                                {
-                                        m_CurBlueOrbs++;
-                                        m_MaxBlueOrbs--;
-                                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->SetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
-                                }
-                                if (speedComp->m_Color == E_LIGHT_ORBS::GREEN_LIGHTS)
-                                {
-                                        m_CurGreenOrbs++;
-                                        m_MaxGreenOrbs--;
-                                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->SetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
-                                }
+                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp->m_Color);
 
                                 speedComp->m_WantsRespawn = true;
                                 speedComp->m_TargetRadius = 0.0f;
@@ -166,19 +151,11 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 if (m_SpawnBoostTimer <= 0)
                 {
                         m_SpawnBoostTimer += m_SpawnBoostCD;
-                        for (uint32_t redOrbs = 0; redOrbs < m_MaxRedOrbs; ++redOrbs)
-                        {
-                                SpawnSpeedBoost(playerTransform, closestGoalTransform, E_LIGHT_ORBS::RED_LIGHTS);
-                        }
 
-                        for (uint32_t blueOrbs = 0; blueOrbs < m_MaxBlueOrbs; ++blueOrbs)
+                        for (uint32_t color = 0; color < E_LIGHT_ORBS::COUNT; ++color)
                         {
-                                SpawnSpeedBoost(playerTransform, closestGoalTransform, E_LIGHT_ORBS::BLUE_LIGHTS);
-                        }
-
-                        for (uint32_t greenOrbs = 0; greenOrbs < m_MaxGreenOrbs; ++greenOrbs)
-                        {
-                                SpawnSpeedBoost(playerTransform, closestGoalTransform, E_LIGHT_ORBS::GREEN_LIGHTS);
+                                if (currentOrbCounter[color] < m_MaxSpeedBoosts)
+                                        SpawnSpeedBoost(playerTransform, closestGoalTransform, (E_LIGHT_ORBS)color);
                         }
                 }
                 else

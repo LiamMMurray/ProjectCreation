@@ -12,7 +12,7 @@ struct Material : public Resource<Material>
         ResourceHandle            m_PixelShaderHandle;
         EMaterialType             m_MaterialType;
         FSurfaceProperties        m_SurfaceProperties;
-        ResourceHandle            m_TextureHandles[ETexture2DType::COUNT];
+        ResourceHandle            m_TextureHandles[int(ETexture2DType::COUNT)];
 
         virtual void Release() override;
 };

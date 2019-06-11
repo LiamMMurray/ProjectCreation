@@ -52,7 +52,7 @@ class ControllerSystem : public ISystem
 
         // Adds one orb to a certain color based on passed in parameter
         // 0 = Red Lights, 1 = Blue Lights, 2 = Green Lights
-        void SetOrbCount(E_LIGHT_ORBS color);
+        void IncreaseOrbCount(E_LIGHT_ORBS color);
 
         static void Initialize();
 

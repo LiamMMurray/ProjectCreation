@@ -12,16 +12,8 @@ class SpeedBoostSystem : public ISystem
         EntityManager*    m_EntityManager;
         SystemManager*    m_SystemManager;
 
-        static constexpr uint32_t m_MaxSpeedBoosts = 30;
-
-		uint32_t m_MaxRedOrbs = 10;
-        uint32_t m_CurRedOrbs = 0;
-
-		uint32_t m_MaxBlueOrbs = 10;
-        uint32_t m_CurBlueOrbs = 0;
-
-		uint32_t m_MaxGreenOrbs = 10;
-        uint32_t m_CurGreenOrbs = 0;
+        static constexpr uint32_t m_MaxSpeedBoosts = 10;
+		int                       currentOrbCounter[E_LIGHT_ORBS::COUNT]{};
 
 
         void RespawnSpeedBoost(TransformComponent*       boostTC,

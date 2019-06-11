@@ -46,41 +46,12 @@ void ControllerSystem::DisplayConsoleMenu()
 
 int ControllerSystem::GetOrbCount(E_LIGHT_ORBS color)
 {
-        if (color == E_LIGHT_ORBS::RED_LIGHTS)
-        {
-                return m_RedOrbCount;
-        }
-
-        if (color == E_LIGHT_ORBS::BLUE_LIGHTS)
-        {
-                return m_BlueOrbCount;
-        }
-
-        if (color == E_LIGHT_ORBS::GREEN_LIGHTS)
-        {
-                return m_GreenOrbCount;
-        }
+        return m_OrbCounts[color];
 }
 
-void ControllerSystem::SetOrbCount(E_LIGHT_ORBS color)
+void ControllerSystem::IncreaseOrbCount(E_LIGHT_ORBS color)
 {
-        if (color == E_LIGHT_ORBS::RED_LIGHTS)
-        {
-                m_RedOrbCount += 1;
-                std::cout << "Red Count: " << GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) << std::endl;
-        }
-
-        if (color == E_LIGHT_ORBS::BLUE_LIGHTS)
-        {
-                m_BlueOrbCount += 1;
-                std::cout << "Blue Count: " << GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) << std::endl;
-        }
-
-        if (color == E_LIGHT_ORBS::GREEN_LIGHTS)
-        {
-                m_GreenOrbCount += 1;
-                std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
-        }
+        m_OrbCounts[color]++;
 }
 
 void ControllerSystem::OnPreUpdate(float deltaTime)
@@ -90,19 +61,19 @@ void ControllerSystem::OnUpdate(float deltaTime)
 {
         if (GCoreInput::GetKeyState(KeyCode::R) == KeyState::DownFirst)
         {
-                SetOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
+                IncreaseOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
                 std::cout << "Red Count: " << GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) << std::endl;
         }
 
         if (GCoreInput::GetKeyState(KeyCode::B) == KeyState::DownFirst)
         {
-                SetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
+                IncreaseOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
                 std::cout << "Blue Count: " << GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) << std::endl;
         }
 
         if (GCoreInput::GetKeyState(KeyCode::G) == KeyState::DownFirst)
         {
-                SetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
+                IncreaseOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
                 std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
         }
 
