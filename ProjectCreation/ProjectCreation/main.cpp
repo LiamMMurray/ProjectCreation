@@ -12,8 +12,8 @@
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
 
-#include "Engine/CollisionLibary/CollisionResult.h"
 #include "Engine/CollisionLibary/CollisionLibary.h"
+#include "Engine/CollisionLibary/CollisionResult.h"
 
 #include "Engine/CoreInput/CoreInput.h"
 
@@ -30,9 +30,8 @@
 #include "Engine/Animation/AnimationSystem.h"
 #include "Engine/ResourceManager/SkeletalMesh.h"
 /////testing -vic
-#include"Rendering/DebugRender/debug_renderer.h"
-#include"Engine/CollisionLibary/BVH.h"
-#include"Engine/CollisionLibary/CollisionSystem.h"
+#include "Engine/CollisionLibary/CollisionSystem.h"
+#include "Rendering/DebugRender/debug_renderer.h"
 ////testing -vic
 
 #include "Engine/Controller/ControllerManager.h"
@@ -50,7 +49,6 @@ using namespace DirectX;
 using namespace Shapes;
 using namespace Collision;
 using namespace debug_renderer;
-using namespace BVH;
 ////testing -vic
 bool g_Running = false;
 
@@ -216,7 +214,10 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
         // Ground Plane
         {
-                EntityFactory::CreateStaticMeshEntity("GroundPlane01", "GroundMaterial01");
+                ComponentHandle tHandle;
+                EntityFactory::CreateStaticMeshEntity("GroundPlane01", "GroundMaterial01", &tHandle);
+                TransformComponent* tComp    = componentManager->GetComponent<TransformComponent>(tHandle);
+                tComp->transform.translation = XMVectorSetY(tComp->transform.translation, -0.5f);
         }
 
         // Directional Light setup
@@ -278,51 +279,6 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                         else
                                 music->PauseStream();
                 }
-
-
-                ////testing -vic
-                // Collision test
-                FSphere sphere1;
-                FSphere sphere2;
-                FSphere sphereObj;
-                // setup
-                sphere1.center = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-                sphere1.radius = 0.3f;
-
-                sphere2.center = XMVectorSet(6.0f, 0.0f, 0.0f, 1.0f);
-                sphere2.radius = 0.3f;
-
-                sphereObj.center = XMVectorSet(3.0f, 10.0f, 0.0f, 1.0f);
-                sphereObj.radius = 0.5f;
-
-                // AddSphere(sphere1, 36, XMMatrixIdentity());
-                // AddSphere(sphere2, 36, XMMatrixIdentity());
-                // AddSphere(sphereObj, 36, XMMatrixIdentity());
-
-                XMVECTOR              v1       = XMVectorSet(7.0f, 0.0f, 0.0f, 0.0f);
-                XMVECTOR              v2       = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-                float                 temptime = GEngine::Get()->GetDeltaTime();
-
-                FAdvancedCollisionResult result;
-               // result = CollisionLibary::SweepSphereToSphere(sphere1, sphere2, sphereObj, 1.0f);
-                result = CollisionLibary::MovingSphereToMovingSphere(sphere1, sphere2, v1, v2, temptime, 0.1f, 0.01f);
-
-                if (result.collisionType == Collision::ECollide)
-                {
-                        int x = 0;
-                }
-                else
-                {
-                        int y = 0;
-                }
-
-                FAabb aabb1 = CollisionLibary::CreateBoundingBoxFromShpere(sphere1);
-                // AddBox(aabb1, XMMatrixIdentity(), ColorConstants::Red);
-
-                BVHTree bvhtree;
-                bvhtree.InsertAABB(aabb1, 0);
-
-                ////////////testing -vic
 
                 debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
 

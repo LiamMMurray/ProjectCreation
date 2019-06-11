@@ -14,7 +14,6 @@
     <ClInclude Include="ECS\IContainer.h" />
     <ClInclude Include="Engine\Audio\AudioManager.h" />
     <ClInclude Include="Engine\Audio\SFXComponent.h" />
-    <ClInclude Include="Engine\CollisionLibary\BVH.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionHelpers.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionResult.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionGrid.h" />
@@ -180,7 +179,6 @@
   <ItemGroup>
     <ClCompile Include="Engine\Animation\AnimationComponent.cpp" />
     <ClCompile Include="Engine\Audio\AudioManager.cpp" />
-    <ClCompile Include="Engine\CollisionLibary\BVH.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionHelpers.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionResult.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionGrid.cpp" />

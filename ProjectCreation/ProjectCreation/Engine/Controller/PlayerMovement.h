@@ -122,14 +122,26 @@ class PlayerController : public IController
                 m_EulerAngles = val;
         }
 
-        void RequestCinematicTransition(const FTransform& target, int targetState, float duration, float delay = 0.0f);
-        void RequestCinematicTransitionLookAt(const DirectX::XMVECTOR& target,
-                                              ComponentHandle   lookAtTarget,
-                                              int               targetState,
-                                              float             duration,
-                                              float             delay = 0.0f);
-        void RequestPuzzleMode(ComponentHandle   goalHandle,
+        void RequestCinematicTransition(int                    count,
+                                        const ComponentHandle* handles,
+                                        const FTransform*      targets,
+                                        int                    targetState,
+                                        float                  duration,
+                                        float                  delay = 0.0f);
+        void RequestCinematicTransitionLookAt(ComponentHandle        lookAtTarget,
+                                              int                    count,
+                                              const ComponentHandle* handles,
+                                              const FTransform*      targets,
+                                              int                    targetState,
+                                              float                  duration,
+                                              float                  lookAtTransitionDuration = 1.0f,
+                                              float                  delay                    = 0.0f);
+        void RequestPuzzleMode(ComponentHandle          goalHandle,
                                const DirectX::XMVECTOR& puzzleCenter,
-                               bool              alignToGoal        = false,
-                               float             transitionDuration = 1.0f);
+                               bool                     alignToGoal          = false,
+                               float                    transitionDuration   = 1.0f,
+                               float                    lookAtDuration       = 1.0f,
+                               int                      otherTransformsCount = 0,
+                               const ComponentHandle*   handles              = nullptr,
+                               const FTransform*        transforms           = nullptr);
 };

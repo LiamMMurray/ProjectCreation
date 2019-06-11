@@ -3,8 +3,8 @@
 class VectorConstants
 {
     public:
-       static const DirectX::XMVECTOR Forward;
-       static const DirectX::XMVECTOR Right;
-       static const DirectX::XMVECTOR Up;
-       static const DirectX::XMVECTOR Zero;
+        static constexpr DirectX::XMVECTORF32 Right   = {1.0f, 0.0f, 0.0f, 0.0f};
+        static constexpr DirectX::XMVECTORF32 Up      = {0.0f, 1.0f, 0.0f, 0.0f};
+        static constexpr DirectX::XMVECTORF32 Forward = {0.0f, 0.0f, 1.0f, 0.0f};
+        static constexpr DirectX::XMVECTORF32 Zero    = {0.0f, 0.0f, 0.0f, 0.0f};
 };

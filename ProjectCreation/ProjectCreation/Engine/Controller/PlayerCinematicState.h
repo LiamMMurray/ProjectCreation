@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../MathLibrary/MathLibrary.h"
 #include "..//..//ECS/ECSTypes.h"
+#include "../MathLibrary/MathLibrary.h"
 #include "PlayerControllerState.h"
 
 enum class E_TRANSITION_MODE
@@ -13,17 +13,21 @@ enum class E_TRANSITION_MODE
 class PlayerCinematicState : public IPlayerControllerState
 {
     private:
+        FQuaternion _playerInitialLookAtRot;
+
         float m_currAlpha;
+        float m_lookAtAlpha;
 
-        float m_targetAlpha;
+        std::vector<FTransform>      m_InitTransforms;
+        std::vector<FTransform>      m_EndTransforms;
+        std::vector<ComponentHandle> m_TransformComponents;
 
-        FTransform m_initTransform;
-        FTransform m_endTransform;
-
-        float m_Delay       = 0.0f;
-        float m_Duration    = 1.0f;
-        int   m_TargetState = 0;
         ComponentHandle m_lookAtTarget;
+
+        float m_Delay                    = 0.0f;
+        float m_LookAtTransitionDuration = 1.0f;
+        float m_Duration                 = 1.0f;
+        int   m_TargetState              = 0;
 
         E_TRANSITION_MODE m_transitionMode;
 
@@ -32,13 +36,12 @@ class PlayerCinematicState : public IPlayerControllerState
         virtual void Enter() override;
         virtual void Update(float deltaTime) override;
 
-		void UpdateSimple(float deltaTime);
+        void UpdateSimple(float deltaTime);
         void UpdateLookAt(float deltaTime);
 
         virtual void Exit() override;
 
-        void        SetInitTransform(FTransform _transform);
-        void        SetEndTransform(FTransform _transform);
+        void        AddTransformTransitions(int transformCounts, const ComponentHandle* handles, const FTransform* ends);
         void        SetTansitionDuration(float _duration);
         inline void SetTansitionTargetState(int state)
         {
@@ -55,8 +58,13 @@ class PlayerCinematicState : public IPlayerControllerState
                 m_transitionMode = val;
         }
 
-		inline void SetLookAtTarget(ComponentHandle val)
+        inline void SetLookAtTarget(ComponentHandle val)
         {
                 m_lookAtTarget = val;
-		}
+        }
+
+		inline void SetLookAtTransitionDuration(float val)
+        {
+                m_LookAtTransitionDuration = val;
+        }
 };

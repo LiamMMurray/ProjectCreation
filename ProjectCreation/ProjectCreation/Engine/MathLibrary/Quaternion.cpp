@@ -90,14 +90,38 @@ DirectX::XMFLOAT3 FQuaternion::ToEulerAngles()
         XMFLOAT4 quat;
         XMStoreFloat4(&quat, data);
 
+
         double sqx = (double)quat.x * quat.x;
         double sqy = (double)quat.y * quat.y;
         double sqz = (double)quat.z * quat.z;
         double sqw = (double)quat.w * quat.w;
 
-        output.x = (float)atan2(2.0 * ((double)quat.y * quat.z + (double)quat.x * quat.w), (-sqx - sqy + sqz + sqw));
-        output.y = (float)asin(-2.0 * ((double)quat.x * quat.z - (double)quat.y * quat.w));
-        output.z = (float)atan2(2.0 * ((double)quat.x * quat.y + (double)quat.z * quat.w), (sqx - sqy - sqz + sqw));
+        constexpr float singularityThreshold = 0.4999995f;
+
+        const float singularityTest = quat.x * quat.y + quat.z * quat.w;
+
+        float yawY = 2.0f * (quat.w * quat.y + quat.x * quat.z);
+        float yawX = (1.0f - 2.0f * (sqz + sqy));
+
+
+        if (singularityTest < -singularityThreshold)
+        {
+                output.x = -XM_PIDIV2;
+                output.y = atan2f(yawY, yawX);
+                output.z = MathLibrary::Warprange(-output.y - (2.0f * atan2f(quat.x, quat.w)), -XM_PI, XM_PI);
+        }
+        else if (singularityTest > singularityThreshold)
+        {
+                output.x = XM_PIDIV2;
+                output.y = atan2f(yawY, yawX);
+                output.z = MathLibrary::Warprange(output.y - (2.0f * atan2f(quat.x, quat.w)), -XM_PI, XM_PI);
+        }
+        else
+        {
+                output.x = asinf(2.0f * (singularityTest));
+                output.y = atan2f(yawY, yawX);
+                output.z = atan2f(-2.0f * (quat.w * quat.x + quat.z * quat.y), (1.f - 2.f * (sqx + sqz)));
+        }
 
         return output;
 }

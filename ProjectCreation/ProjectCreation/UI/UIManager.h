@@ -22,22 +22,66 @@ class UIManager
         static void Update();
         static void Shutdown();
 
-        void AddSprite(ID3D11Device*        device,
-                       ID3D11DeviceContext* deviceContext,
-                       const wchar_t*       FileName,
-                       float                PositionX,
-                       float                PositionY,
-                       float                scaleX,
-                       float                scaleY);
-        void RemoveSprite(int id);
+		//Main Menu
+        void AddMainSprite(ID3D11Device*        device,
+                           ID3D11DeviceContext* deviceContext,
+                           const wchar_t*       FileName,
+                           float                PositionX,
+                           float                PositionY,
+                           float                scaleX,
+                           float                scaleY,
+                           bool                 enabled);
 
-        void AddText(ID3D11Device*        device,
-                     ID3D11DeviceContext* deviceContext,
-                     const wchar_t*       FileName,
-                     std::string          TextDisplay,
-                     float                PositionX,
-                     float                PositionY);
-        void RemoveText(int id);
+        void AddMainText(ID3D11Device*        device,
+                         ID3D11DeviceContext* deviceContext,
+                         const wchar_t*       FileName,
+                         std::string          TextDisplay,
+                         float                PositionX,
+                         float                PositionY,
+                         bool                 enabled);
+
+		//Pause Menu
+        void AddPauseSprite(ID3D11Device*        device,
+                            ID3D11DeviceContext* deviceContext,
+                            const wchar_t*       FileName,
+                            float                PositionX,
+                            float                PositionY,
+                            float                scaleX,
+                            float                scaleY,
+                            bool                 enabled);
+
+        void AddPauseText(ID3D11Device*        device,
+                          ID3D11DeviceContext* deviceContext,
+                          const wchar_t*       FileName,
+                          std::string          TextDisplay,
+                          float                PositionX,
+                          float                PositionY,
+                          bool                 enabled);
+
+        //Options Menu
+        void AddOptionsSprite(ID3D11Device*        device,
+                              ID3D11DeviceContext* deviceContext,
+                              const wchar_t*       FileName,
+                              float                PositionX,
+                              float                PositionY,
+                              float                scaleX,
+                              float                scaleY,
+                              bool                 enabled);
+
+        void AddOptionsText(ID3D11Device*        device,
+                            ID3D11DeviceContext* deviceContext,
+                            const wchar_t*       FileName,
+                            std::string          TextDisplay,
+                            float                PositionX,
+                            float                PositionY,
+                            bool                 enabled);
+
+
+        void CreateBackground(ID3D11Device*        device,
+                              ID3D11DeviceContext* deviceContext,
+                              const wchar_t*       FileName,
+                              float                ScreenWidth,
+                              float                ScreenHeight);
 
 
         void UIClipCursor();
@@ -45,11 +89,19 @@ class UIManager
         static UIManager* instance;
 
     private:
-        bool                                   m_InMenu = false;
-        std::unique_ptr<DirectX::SpriteBatch>  mSpriteBatch;
-        std::unique_ptr<DirectX::CommonStates> mStates;
-        POINT                                  mCursor;
+        bool                                             m_InMenu = false;
+        std::unique_ptr<DirectX::SpriteBatch>            m_SpriteBatch;
+        std::unique_ptr<DirectX::CommonStates>           m_States;
+        RECT                                             m_fullscreenRect;
+        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_background;
+        POINT                                            m_Cursor;
 
-        std::vector<SpriteComponent> mSprites;
-        std::vector<FontComponent*>  mSpriteFonts;
+        std::vector<SpriteComponent> m_MainSprites;
+        std::vector<FontComponent*>  m_MainSpriteFonts;
+
+        std::vector<SpriteComponent> m_PauseSprites;
+        std::vector<FontComponent*>  m_PauseSpriteFonts;
+
+        std::vector<SpriteComponent> m_OptionsSprites;
+        std::vector<FontComponent*>  m_OptionsSpriteFonts;
 };

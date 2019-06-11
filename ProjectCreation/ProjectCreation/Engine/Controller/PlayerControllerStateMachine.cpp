@@ -17,4 +17,5 @@ void PlayerControllerStateMachine::Init(PlayerController* playerMovement)
         }
 
 		m_Current = m_States.front();
+        m_Current->Enter();
 }

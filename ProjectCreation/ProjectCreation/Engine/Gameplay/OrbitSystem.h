@@ -16,6 +16,7 @@ class OrbitSystem : public ISystem
         void        CreateGoal(int n);
 
         DirectX::XMVECTORF32 orbitCenter = {0.0f, 1000.0f, 0.0f, 1.0f};
+        ComponentHandle      m_ClosestGoalTransform;
 
     protected:
         // Inherited via ISystem
@@ -26,4 +27,10 @@ class OrbitSystem : public ISystem
         virtual void OnShutdown() override;
         virtual void OnResume() override;
         virtual void OnSuspend() override;
+
+    public:
+        inline ComponentHandle GetClosestGoalTransform() const
+        {
+                return m_ClosestGoalTransform;
+        }
 };

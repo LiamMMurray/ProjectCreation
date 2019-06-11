@@ -124,7 +124,7 @@ void PlayerController::Init(EntityHandle h)
         // Request initial transition
         FTransform target = transformComp->transform;
         target.rotation   = XMQuaternionIdentity();
-        RequestCinematicTransition(target, E_PLAYERSTATE_EVENT::TO_GROUND, 5.0f, 2.0f);
+        RequestCinematicTransition(1, &transformComp->GetHandle(), &target, E_PLAYERSTATE_EVENT::TO_GROUND, 5.0f, 2.0f);
 
         // After you create the states, initialize the state machine. First created state is starting state
         m_StateMachine.Init(this);
@@ -137,14 +137,18 @@ void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)
         maxMaxSpeed += 1;
 }
 
-void PlayerController::RequestCinematicTransition(const FTransform& target, int targetState, float duration, float delay)
+void PlayerController::RequestCinematicTransition(int                    count,
+                                                  const ComponentHandle* handles,
+                                                  const FTransform*      targets,
+                                                  int                    targetState,
+                                                  float                  duration,
+                                                  float                  delay)
 {
         TransformComponent* transformComp =
             GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
 
         m_CinematicState->SetTransitionMode(E_TRANSITION_MODE::Simple);
-        m_CinematicState->SetInitTransform(transformComp->transform);
-        m_CinematicState->SetEndTransform(target);
+        m_CinematicState->AddTransformTransitions(count, handles, targets);
         m_CinematicState->SetTansitionTargetState(targetState);
         m_CinematicState->SetTansitionDuration(duration);
         m_CinematicState->SetTransitionDelay(delay);
@@ -152,21 +156,22 @@ void PlayerController::RequestCinematicTransition(const FTransform& target, int 
         m_StateMachine.Transition(E_PLAYERSTATE_EVENT::TO_TRANSITION);
 }
 
-void PlayerController::RequestCinematicTransitionLookAt(const DirectX::XMVECTOR& target,
-                                                        ComponentHandle          lookAt,
-                                                        int                      targetState,
-                                                        float                    duration,
-                                                        float                    delay)
+void PlayerController::RequestCinematicTransitionLookAt(const ComponentHandle  lookAtTarget,
+                                                        int                    count,
+                                                        const ComponentHandle* handles,
+                                                        const FTransform*      targets,
+                                                        int                    targetState,
+                                                        float                  duration,
+                                                        float                  lookAtTransitionDuration,
+                                                        float                  delay)
 {
         TransformComponent* transformComp =
             GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
 
         m_CinematicState->SetTransitionMode(E_TRANSITION_MODE::LookAt);
-        m_CinematicState->SetInitTransform(transformComp->transform);
-        FTransform targetTransform;
-        targetTransform.translation = target;
-        m_CinematicState->SetEndTransform(targetTransform);
-        m_CinematicState->SetLookAtTarget(lookAt);
+        m_CinematicState->AddTransformTransitions(count, handles, targets);
+        m_CinematicState->SetLookAtTransitionDuration(lookAtTransitionDuration);
+        m_CinematicState->SetLookAtTarget(lookAtTarget);
         m_CinematicState->SetTansitionTargetState(targetState);
         m_CinematicState->SetTansitionDuration(duration);
         m_CinematicState->SetTransitionDelay(delay);
@@ -177,7 +182,11 @@ void PlayerController::RequestCinematicTransitionLookAt(const DirectX::XMVECTOR&
 void PlayerController::RequestPuzzleMode(ComponentHandle          goalHandle,
                                          const DirectX::XMVECTOR& puzzleCenter,
                                          bool                     alignToGoal,
-                                         float                    transitionDuration)
+                                         float                    transitionDuration,
+                                         float                    lookAtDuration,
+                                         int                      otherTransformsCount,
+                                         const ComponentHandle*   handles,
+                                         const FTransform*        transforms)
 {
         SetGoalComponent(goalHandle);
 
@@ -206,11 +215,18 @@ void PlayerController::RequestPuzzleMode(ComponentHandle          goalHandle,
                 float desiredInitialDistance =
                     MathLibrary::CalculateDistanceFromAngularDiameter(desiredAngularDiameter, sphereInitial);
 
-                XMVECTOR dir = XMVector3Normalize(puzzleCenter - sphereInitial.center);
+                XMVECTOR dir = XMVector3Normalize(puzzleCenter - eyePos);
 
-                XMVECTOR targetPos = sphereInitial.center - dir * desiredInitialDistance;
+                FTransform targetGoalTransform  = goalComp->initialTransform;
+                targetGoalTransform.translation = eyePos + dir * desiredInitialDistance;
 
-                RequestCinematicTransitionLookAt(
-                    targetPos, goalTransformHandle, E_PLAYERSTATE_EVENT::TO_PUZZLE, transitionDuration);
+                m_CinematicState->AddTransformTransitions(1, &goalTransformHandle, &targetGoalTransform);
+                RequestCinematicTransitionLookAt(goalTransformHandle,
+                                                 otherTransformsCount,
+                                                 handles,
+                                                 transforms,
+                                                 E_PLAYERSTATE_EVENT::TO_PUZZLE,
+                                                 transitionDuration,
+                                                 lookAtDuration);
         }
 }

@@ -2,9 +2,9 @@
 #include "..//GEngine.h"
 #include "..//GenericComponents/TransformComponent.h"
 #include "..//MathLibrary/MathLibrary.h"
+#include "../CoreInput/CoreInput.h"
 #include "PlayerControllerStateMachine.h"
 #include "PlayerMovement.h"
-#include "../CoreInput/CoreInput.h"
 
 using namespace DirectX;
 
@@ -19,7 +19,7 @@ void PlayerGroundState::Enter()
 void PlayerGroundState::Update(float deltaTime)
 {
         // Get Delta Time
-        float totalTime = GEngine::Get()->GetTotalTime();
+        float totalTime = (float)GEngine::Get()->GetTotalTime();
 
         // Get the Speed from the gathered input
         XMVECTOR currentInput = _playerController->GetCurrentInput();
@@ -67,7 +67,7 @@ void PlayerGroundState::Update(float deltaTime)
 
         currentVelocity = XMVectorLerp(currentVelocity, preBoostVelocity, MathLibrary::clamp(deltaTime * 0.25f, 0.0f, 1.0f));
 
-		XMFLOAT3 eulerAngles = _playerController->GetEulerAngles();
+        XMFLOAT3 eulerAngles = _playerController->GetEulerAngles();
 
         /*if (totalTime >= 2.0f && totalTime <= 5.0f)
         {
@@ -94,12 +94,14 @@ void PlayerGroundState::Update(float deltaTime)
 
         // Calculate offset
         XMVECTOR offset = XMVector3Rotate(currentVelocity * deltaTime, _cachedTransformComponent->transform.rotation.data);
-        offset = XMVector3Normalize(XMVectorSetY(offset, 0.0f)) * XMVectorGetX(XMVector3Length(offset));
+        offset          = XMVector3Normalize(XMVectorSetY(offset, 0.0f)) * XMVectorGetX(XMVector3Length(offset));
         _cachedTransformComponent->transform.translation += offset;
 
-		_playerController->SetCurrentVelocity(currentVelocity);
+        _playerController->SetCurrentVelocity(currentVelocity);
         _playerController->SetEulerAngles(eulerAngles);
 }
 
 void PlayerGroundState::Exit()
-{}
+{
+        _playerController->SetCurrentVelocity(XMVectorZero());
+}

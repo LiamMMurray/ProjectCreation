@@ -11,7 +11,7 @@ class CollisionLibary
 
     public:
         static void CreateFrustum(Shapes::Frustum& frustum, DirectX::XMMATRIX view, DirectX::XMMATRIX projection);
-        static Collision::FCollideResult OverlapSphereToSphere(Shapes::FSphere& a, Shapes::FSphere& b, float offset = 0.01f);
+        static Collision::FOverlapResult OverlapSphereToSphere(Shapes::FSphere& a, Shapes::FSphere& b, float offset);
         static Collision::FAdvancedCollisionResult SweepSphereToSphere(Shapes::FSphere& startA,
                                                                          Shapes::FSphere& endA,
                                                                          Shapes::FSphere& checkB,
@@ -31,8 +31,9 @@ class CollisionLibary
                                                                                 float&            time,
                                                                                 float             offset,
                                                                                 float             epsilon);
-        static Collision::FCollideResult OverlapSphereToAabb(Shapes::FSphere& sphere, Shapes::FAabb& aabb, float offset = 0.01f);
-        static Collision::FCollideResult OverlapAabbToAabb(Shapes::FAabb& a, Shapes::FAabb& b, float offset);
+        static Collision::FOverlapResult OverlapSphereToAabb(Shapes::FSphere& sphere, Shapes::FAabb& aabb, float offset);
+        static Collision::FOverlapResult OverlapAabbToAabb(Shapes::FAabb& a, Shapes::FAabb& b, float offset);
+     // static Collision::FCollisionObjects CollisionQuery(Shapes::FSphere& startA, Shapes::FSphere& endA);
 
 		//static std::pair<Collision::FCollideResult, Shapes::FCollisionShape*> CollisionQueries(Shapes::FCollisionShape* shape);
 
@@ -42,12 +43,18 @@ class CollisionLibary
                                                                           DirectX::XMVECTOR& direction,
                                                                           Shapes::FSphere&   sphere);
 
-		static Collision::FCollideResult CircleToCircleCollision(Shapes::FCircle& a, Shapes::FCircle& b);
+		//static Collision::FCollideResult CircleToCircleCollision(Shapes::FCircle& a, Shapes::FCircle& b);
         static Shapes::FAabb                         AddAABB(const Shapes::FAabb& a, const Shapes::FAabb& b);
 
         static Shapes::FAabb CreateBoundingBoxFromShpere(const Shapes::FSphere sphere);
 
         static Shapes::FAabb CreateBoundingBoxFromCapsule(const Shapes::FCapsule capsule);
 
+		static Collision::FOverlapResult ScreenSpaceOverlap(const Shapes::FSphere&   a,
+                                                            const Shapes::FSphere&   b,
+                                                            const DirectX::XMMATRIX& ViewProjection);
+        ;
+        // gjk  narrow phase collision
+        // bvh  broad phrase collision
 		
 };
