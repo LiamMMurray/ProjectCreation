@@ -41,13 +41,12 @@ void SpeedBoostSystem::RespawnSpeedBoost(TransformComponent*       boostTC,
         boostSC->m_TargetRadius        = m_BoostRadius;
 
         boostSC->m_WantsRespawn = false;
-        boostSC->m_Lifetime     = m_BoostLifespan;
+        boostSC->m_Lifetime     = MathLibrary::RandomFloatInRange(m_BoostLifespan - m_BoostLifespanVariance,
+                                                              m_BoostLifespan + m_BoostLifespanVariance);
         boostSC->m_WantsRespawn = false;
 }
 
-void SpeedBoostSystem::SpawnSpeedBoost(const TransformComponent* playerTC,
-                                       const TransformComponent* targetTC,
-                                       E_LIGHT_ORBS              color)
+void SpeedBoostSystem::SpawnSpeedBoost(const TransformComponent* playerTC, const TransformComponent* targetTC, int color)
 {
         ComponentHandle boostHandle;
         ComponentHandle transHandle;
@@ -60,6 +59,8 @@ void SpeedBoostSystem::SpawnSpeedBoost(const TransformComponent* playerTC,
         gtc->transform.SetScale(0.0f);
         gsc->m_CurrentRadius = 0.0f;
         gsc->m_Color         = color;
+
+        currentOrbCounter[color]++;
 }
 
 void SpeedBoostSystem::OnPreUpdate(float deltaTime)
@@ -105,23 +106,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         if ((speedComp->m_WantsRespawn == false) && distanceSq < m_BoostRadius * 2.0f * m_BoostRadius)
                         {
-                                if (speedComp->m_Color == E_LIGHT_ORBS::RED_LIGHTS)
-                                {
-                                        m_MaxRedOrbs--;
-                                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->SetOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
-                                }
 
-                                if (speedComp->m_Color == E_LIGHT_ORBS::BLUE_LIGHTS)
-                                {
-                                        m_MaxBlueOrbs--;
-                                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->SetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
-                                }
-
-                                if (speedComp->m_Color == E_LIGHT_ORBS::GREEN_LIGHTS)
-                                {
-                                        m_MaxGreenOrbs--;
-                                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->SetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
-                                }
+                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp->m_Color);
 
                                 speedComp->m_WantsRespawn = true;
                                 speedComp->m_TargetRadius = 0.0f;
@@ -146,7 +132,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         if (!playerTransform || !closestGoalTransform)
                                 continue;
 
-                        if (speedComp->m_WantsRespawn )
+                        if (speedComp->m_WantsRespawn)
                         {
                                 if (speedComp->m_CurrentRadius <= 0.0f)
                                 {
@@ -159,29 +145,16 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
         TransformComponent* closestGoalTransform =
             m_ComponentManager->GetComponent<TransformComponent>(closestGoalTransformHandle);
 
-        if (closestGoalTransform != nullptr && speedboostCount < m_MaxSpeedBoosts)
+        if (closestGoalTransform != nullptr)
         {
                 if (m_SpawnBoostTimer <= 0)
                 {
                         m_SpawnBoostTimer += m_SpawnBoostCD;
-                        for (uint32_t redOrbs = 0; redOrbs < m_MaxRedOrbs; ++redOrbs)
-                        {
-                                SpawnSpeedBoost(playerTransform, closestGoalTransform, E_LIGHT_ORBS::RED_LIGHTS);
-                        }
 
-                        for (uint32_t blueOrbs = 0; blueOrbs < m_MaxBlueOrbs; ++blueOrbs)
+                        for (int color = 0; color < (int)E_LIGHT_ORBS::COUNT; ++color)
                         {
-                                SpawnSpeedBoost(playerTransform, closestGoalTransform, E_LIGHT_ORBS::BLUE_LIGHTS);
-                        }
-
-                        for (uint32_t greenOrbs = 0; greenOrbs < m_MaxGreenOrbs; ++greenOrbs)
-                        {
-                                SpawnSpeedBoost(playerTransform, closestGoalTransform, E_LIGHT_ORBS::GREEN_LIGHTS);
-                        }
-
-                        for (uint32_t whiteOrbs = 0; whiteOrbs < m_MaxWhiteOrbs; ++whiteOrbs)
-                        {
-                                SpawnSpeedBoost(playerTransform, closestGoalTransform, E_LIGHT_ORBS::WHITE_LIGHTS);
+                                if (currentOrbCounter[color] < m_MaxSpeedBoosts)
+                                        SpawnSpeedBoost(playerTransform, closestGoalTransform, color);
                         }
                 }
                 else

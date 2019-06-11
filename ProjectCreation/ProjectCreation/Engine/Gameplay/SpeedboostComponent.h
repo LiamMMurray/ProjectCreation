@@ -10,5 +10,5 @@ class SpeedboostComponent : public Component<SpeedboostComponent>
         float m_TargetRadius;
         float m_CurrentRadius;
         float m_Lifetime;
-        E_LIGHT_ORBS m_Color;
+        int m_Color;
 };

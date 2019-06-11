@@ -15,7 +15,7 @@ class MathLibrary
 {
     public:
         // Common Math Function
-        float RandomFloatInRange(float min, float max);
+        static float RandomFloatInRange(float min, float max);
         template <typename T>
         static T Warprange(T val, T min, T max)
         {
