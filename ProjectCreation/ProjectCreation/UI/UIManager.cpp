@@ -14,16 +14,19 @@
 
 UIManager* UIManager::instance;
 
+// Adds a sprite to the vector of text
+
 // Adds a sprite to the vector of sprites
 // Currently PositionX and PositionY are not used
-void UIManager::AddMainSprite(ID3D11Device*        device,
-                              ID3D11DeviceContext* deviceContext,
-                              const wchar_t*       FileName,
-                              float                PositionX,
-                              float                PositionY,
-                              float                scaleX,
-                              float                scaleY,
-                              bool                 enabled)
+void UIManager::AddSprite(ID3D11Device*                 device,
+                          ID3D11DeviceContext*          deviceContext,
+                          std::vector<SpriteComponent>& SpriteVector,
+                          const wchar_t*                FileName,
+                          float                         PositionX,
+                          float                         PositionY,
+                          float                         scaleX,
+                          float                         scaleY,
+                          bool                          enabled)
 {
         SpriteComponent cSprite;
 
@@ -73,7 +76,7 @@ void UIManager::AddMainSprite(ID3D11Device*        device,
 
 
         // Push back to the vector
-        instance->m_MainSprites.push_back(cSprite);
+        SpriteVector.push_back(cSprite);
 
         // Reset everything that needs to be
         Texture.Reset();
@@ -82,13 +85,16 @@ void UIManager::AddMainSprite(ID3D11Device*        device,
 
 // Adds a sprite to the vector of text
 // Currently PositionX and PositionY are not used
-void UIManager::AddMainText(ID3D11Device*        device,
-                            ID3D11DeviceContext* deviceContext,
-                            const wchar_t*       FileName,
-                            std::string          TextDisplay,
-                            float                PositionX,
-                            float                PositionY,
-                            bool                 enabled)
+void UIManager::AddText(ID3D11Device*                 device,
+                        ID3D11DeviceContext*          deviceContext,
+                        std::vector<FontComponent*>&  FontVector,
+                        std::vector<SpriteComponent>& SpriteVector,
+                        const wchar_t*                FileName,
+                        std::string                   TextDisplay,
+                        float                         PositionX,
+                        float                         PositionY,
+                        bool                          AddButton,
+                        bool                          enabled)
 {
         FontComponent* createText = new FontComponent();
 
@@ -113,216 +119,20 @@ void UIManager::AddMainText(ID3D11Device*        device,
         // C:\Program Files(x86)\Microsoft Visual Studio\2019\Preview\VC\Tools\MSVC\14.20.27508\include\xmemory0 819
         // FIXED
         // Making the vector array an array of pointers fixed this issue
-        instance->m_MainSpriteFonts.push_back(createText);
+        FontVector.push_back(createText);
 
-        instance->AddMainSprite(
-            device, deviceContext, L"../Assets/2d/Sprite/Grey Box Test.dds", PositionX, PositionY, 1.2f, 0.2f, enabled);
-}
-
-// Adds a sprite to the vector of sprites
-// Currently PositionX and PositionY are not used
-void UIManager::AddPauseSprite(ID3D11Device*        device,
-                               ID3D11DeviceContext* deviceContext,
-                               const wchar_t*       FileName,
-                               float                PositionX,
-                               float                PositionY,
-                               float                scaleX,
-                               float                scaleY,
-                               bool                 enabled)
-{
-        SpriteComponent cSprite;
-
-        Microsoft::WRL::ComPtr<ID3D11Resource> resource;
-        HRESULT hr = DirectX::CreateDDSTextureFromFile(device, FileName, resource.GetAddressOf(), &cSprite.mTexture);
-        if (FAILED(hr))
+        if (AddButton == true)
         {
-                exit(-1);
+                instance->AddSprite(device,
+                                    deviceContext,
+                                    SpriteVector,
+                                    L"../Assets/2d/Sprite/Grey Box Test.dds",
+                                    PositionX,
+                                    PositionY,
+                                    0.4f,
+                                    0.11f,
+                                    enabled);
         }
-
-        Microsoft::WRL::ComPtr<ID3D11Texture2D> Texture;
-        resource.As(&Texture);
-
-        CD3D11_TEXTURE2D_DESC TextureDesc;
-        Texture->GetDesc(&TextureDesc);
-
-
-        // Add the origin to the sprite
-        cSprite.mOrigin.x = (float)(TextureDesc.Width * 0.5f);
-        cSprite.mOrigin.y = (float)(TextureDesc.Height * 0.5f);
-
-        // Add the width and height to the sprite
-        cSprite.mWidth  = TextureDesc.Width;
-        cSprite.mHeight = TextureDesc.Height;
-
-        // Sprite Screen Position
-        cSprite.SetPosition(PositionX, PositionY);
-
-        // Set the Id of the Sprite for the Main Menu
-        if (instance->m_PauseSprites.size() <= 0)
-        {
-                cSprite.mId = 1;
-        }
-        else
-        {
-                cSprite.mId = instance->m_PauseSprites[instance->m_PauseSprites.size() - 1].mId + 1;
-        }
-        // Set the Sprite to enabled
-        cSprite.mEnabled = enabled;
-
-        // Scale
-        cSprite.mScaleX = scaleX;
-        cSprite.mScaleY = scaleY;
-
-        // Rectangle
-        cSprite.MakeRectangle();
-
-
-        // Push back to the vector
-        instance->m_PauseSprites.push_back(cSprite);
-
-        // Reset everything that needs to be
-        Texture.Reset();
-        resource.Reset();
-}
-
-// Adds a sprite to the vector of text
-// Currently PositionX and PositionY are not used
-void UIManager::AddPauseText(ID3D11Device*        device,
-                             ID3D11DeviceContext* deviceContext,
-                             const wchar_t*       FileName,
-                             std::string          TextDisplay,
-                             float                PositionX,
-                             float                PositionY,
-                             bool                 enabled)
-{
-        FontComponent* createText = new FontComponent();
-
-        createText->mSpriteFont  = std::make_unique<DirectX::SpriteFont>(device, FileName);
-        createText->mTextDisplay = TextDisplay;
-
-        // Set the Main Menu text to enabled
-        createText->mEnabled = enabled;
-
-        // Create Dimensions
-        createText->mOrigin = DirectX::XMVECTOR{createText->mSpriteFont->MeasureString(TextDisplay.c_str()).m128_f32[0] * 0.5f,
-                                                createText->mSpriteFont->MeasureString(TextDisplay.c_str()).m128_f32[1] * 0.5f};
-
-        // Text Screen Position
-        createText->mScreenPos.x = PositionX;
-        createText->mScreenPos.y = PositionY;
-
-        createText->MakeRectangle();
-
-        // Error C2280
-        // attempting to reference a deleted function
-        // C:\Program Files(x86)\Microsoft Visual Studio\2019\Preview\VC\Tools\MSVC\14.20.27508\include\xmemory0 819
-        // FIXED
-        // Making the vector array an array of pointers fixed this issue
-        instance->m_PauseSpriteFonts.push_back(createText);
-
-        instance->AddPauseSprite(
-            device, deviceContext, L"../Assets/2d/Sprite/Grey Box Test.dds", PositionX, PositionY, 0.4f, 0.11f, enabled);
-}
-
-void UIManager::AddOptionsSprite(ID3D11Device*        device,
-                                 ID3D11DeviceContext* deviceContext,
-                                 const wchar_t*       FileName,
-                                 float                PositionX,
-                                 float                PositionY,
-                                 float                scaleX,
-                                 float                scaleY,
-                                 bool                 enabled)
-{
-        SpriteComponent cSprite;
-
-        Microsoft::WRL::ComPtr<ID3D11Resource> resource;
-        HRESULT hr = DirectX::CreateDDSTextureFromFile(device, FileName, resource.GetAddressOf(), &cSprite.mTexture);
-        if (FAILED(hr))
-        {
-                exit(-1);
-        }
-
-        Microsoft::WRL::ComPtr<ID3D11Texture2D> Texture;
-        resource.As(&Texture);
-
-        CD3D11_TEXTURE2D_DESC TextureDesc;
-        Texture->GetDesc(&TextureDesc);
-
-
-        // Add the origin to the sprite
-        cSprite.mOrigin.x = (float)(TextureDesc.Width * 0.5f);
-        cSprite.mOrigin.y = (float)(TextureDesc.Height * 0.5f);
-
-        // Add the width and height to the sprite
-        cSprite.mWidth  = TextureDesc.Width;
-        cSprite.mHeight = TextureDesc.Height;
-
-        // Sprite Screen Position
-        cSprite.SetPosition(PositionX, PositionY);
-
-        // Set the Id of the Sprite for the Main Menu
-        if (instance->m_PauseSprites.size() <= 0)
-        {
-                cSprite.mId = 1;
-        }
-        else
-        {
-                cSprite.mId = instance->m_PauseSprites[instance->m_PauseSprites.size() - 1].mId + 1;
-        }
-        // Set the Sprite to enabled
-        cSprite.mEnabled = enabled;
-
-        // Scale
-        cSprite.mScaleX = scaleX;
-        cSprite.mScaleY = scaleY;
-
-        // Rectangle
-        cSprite.MakeRectangle();
-
-
-        // Push back to the vector
-        instance->m_OptionsSprites.push_back(cSprite);
-
-        // Reset everything that needs to be
-        Texture.Reset();
-        resource.Reset();
-}
-
-void UIManager::AddOptionsText(ID3D11Device*        device,
-                               ID3D11DeviceContext* deviceContext,
-                               const wchar_t*       FileName,
-                               std::string          TextDisplay,
-                               float                PositionX,
-                               float                PositionY,
-                               bool                 enabled)
-{
-        FontComponent* createText = new FontComponent();
-
-        createText->mSpriteFont  = std::make_unique<DirectX::SpriteFont>(device, FileName);
-        createText->mTextDisplay = TextDisplay;
-
-        // Set the Main Menu text to enabled
-        createText->mEnabled = enabled;
-
-        // Create Dimensions
-        createText->mOrigin = DirectX::XMVECTOR{createText->mSpriteFont->MeasureString(TextDisplay.c_str()).m128_f32[0] * 0.5f,
-                                                createText->mSpriteFont->MeasureString(TextDisplay.c_str()).m128_f32[1] * 0.5f};
-
-        // Text Screen Position
-        createText->mScreenPos.x = PositionX;
-        createText->mScreenPos.y = PositionY;
-
-        createText->MakeRectangle();
-
-        // Error C2280
-        // attempting to reference a deleted function
-        // C:\Program Files(x86)\Microsoft Visual Studio\2019\Preview\VC\Tools\MSVC\14.20.27508\include\xmemory0 819
-        // FIXED
-        // Making the vector array an array of pointers fixed this issue
-        instance->m_OptionsSpriteFonts.push_back(createText);
-
-        instance->AddOptionsSprite(
-            device, deviceContext, L"../Assets/2d/Sprite/Grey Box Test.dds", PositionX, PositionY, 0.4f, 0.11f, enabled);
 }
 
 void UIManager::CreateBackground(ID3D11Device*        device,
@@ -391,77 +201,119 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         instance->m_WindowHandle = hwnd;
 
-		//Main Menu
-        /*
-        instance->AddMainSprite(renderSystem->m_Device,
-                                 renderSystem->m_Context,
-                                 L"../Assets/2d/Sprite/InanisLogo.dds",
-                                 renderSystem->m_BackBufferWidth * 0.5f,
-                                 renderSystem->m_BackBufferHeight * 0.3f,
-                                 1.0f,
-                                 1.0f,
-                                 true);
-		*/
-        instance->AddMainText(renderSystem->m_Device,
-                              renderSystem->m_Context,
-                              L"../Assets/2d/Text/myfile.spritefont",
-                              "Press Space to continue. . .",
-                              renderSystem->m_BackBufferWidth * 0.5f,
-                              renderSystem->m_BackBufferHeight * 0.5f,
-                              true);
+        // Main Menu
+        instance->AddText(renderSystem->m_Device,
+                          renderSystem->m_Context,
+                          instance->m_MainSpriteFonts,
+                          instance->m_MainSprites,
+                          L"../Assets/2d/Text/angel.spritefont",
+                          "INANIS",
+                          renderSystem->m_BackBufferWidth * 0.5f,
+                          renderSystem->m_BackBufferHeight * 0.1f,
+                          false,
+                          true);
+
+        instance->AddText(renderSystem->m_Device,
+                          renderSystem->m_Context,
+                          instance->m_MainSpriteFonts,
+                          instance->m_MainSprites,
+                          L"../Assets/2d/Text/calibri.spritefont",
+                          "Press Spacebar to continue. . .",
+                          renderSystem->m_BackBufferWidth * 0.5f,
+                          renderSystem->m_BackBufferHeight * 0.5f,
+                          false,
+                          true);
 
 
         // Pause Menu
-        instance->AddPauseSprite(renderSystem->m_Device,
-                                 renderSystem->m_Context,
-                                 L"../Assets/2d/Sprite/Grey Box Test.dds",
-                                 renderSystem->m_BackBufferWidth * 0.5f,
-                                 renderSystem->m_BackBufferHeight * 0.5f,
-                                 0.8f,
-                                 1.2f,
-                                 false);
+        instance->AddSprite(renderSystem->m_Device,
+                            renderSystem->m_Context,
+                            instance->m_PauseSprites,
+                            L"../Assets/2d/Sprite/Grey Box Test.dds",
+                            renderSystem->m_BackBufferWidth * 0.5f,
+                            renderSystem->m_BackBufferHeight * 0.5f,
+                            0.8f,
+                            1.2f,
+                            false);
 
-        instance->AddPauseText(renderSystem->m_Device,
-                               renderSystem->m_Context,
-                               L"../Assets/2d/Text/myfile.spritefont",
-                               "Resume",
-                               renderSystem->m_BackBufferWidth * 0.5f,
-                               renderSystem->m_BackBufferHeight * 0.5f - 80.0f,
-                               false);
+        instance->AddText(renderSystem->m_Device,
+                          renderSystem->m_Context,
+                          instance->m_PauseSpriteFonts,
+                          instance->m_PauseSprites,
+                          L"../Assets/2d/Text/angel.spritefont",
+                          "INANIS",
+                          renderSystem->m_BackBufferWidth * 0.5f,
+                          renderSystem->m_BackBufferHeight * 0.1f,
+                          false,
+                          false);
 
-        instance->AddPauseText(renderSystem->m_Device,
-                               renderSystem->m_Context,
-                               L"../Assets/2d/Text/myfile.spritefont",
-                               "Levels",
-                               renderSystem->m_BackBufferWidth * 0.5f,
-                               renderSystem->m_BackBufferHeight * 0.5f - 20.0f,
-                               false);
+        instance->AddText(renderSystem->m_Device,
+                          renderSystem->m_Context,
+                          instance->m_PauseSpriteFonts,
+                          instance->m_PauseSprites,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Resume",
+                          renderSystem->m_BackBufferWidth * 0.5f,
+                          renderSystem->m_BackBufferHeight * 0.5f - 80.0f,
+                          true,
+                          false);
 
-        instance->AddPauseText(renderSystem->m_Device,
-                               renderSystem->m_Context,
-                               L"../Assets/2d/Text/myfile.spritefont",
-                               "Options",
-                               renderSystem->m_BackBufferWidth * 0.5f,
-                               renderSystem->m_BackBufferHeight * 0.5f + 40.0f,
-                               false);
+        instance->AddText(renderSystem->m_Device,
+                          renderSystem->m_Context,
+                          instance->m_PauseSpriteFonts,
+                          instance->m_PauseSprites,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Levels",
+                          renderSystem->m_BackBufferWidth * 0.5f,
+                          renderSystem->m_BackBufferHeight * 0.5f - 20.0f,
+                          true,
+                          false);
 
-        instance->AddPauseText(renderSystem->m_Device,
-                               renderSystem->m_Context,
-                               L"../Assets/2d/Text/myfile.spritefont",
-                               "Exit",
-                               renderSystem->m_BackBufferWidth * 0.5f,
-                               renderSystem->m_BackBufferHeight * 0.5f + 100.0f,
-                               false);
+        instance->AddText(renderSystem->m_Device,
+                          renderSystem->m_Context,
+                          instance->m_PauseSpriteFonts,
+                          instance->m_PauseSprites,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Options",
+                          renderSystem->m_BackBufferWidth * 0.5f,
+                          renderSystem->m_BackBufferHeight * 0.5f + 40.0f,
+                          true,
+                          false);
+
+        instance->AddText(renderSystem->m_Device,
+                          renderSystem->m_Context,
+                          instance->m_PauseSpriteFonts,
+                          instance->m_PauseSprites,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Exit",
+                          renderSystem->m_BackBufferWidth * 0.5f,
+                          renderSystem->m_BackBufferHeight * 0.5f + 100.0f,
+                          true,
+                          false);
 
         // Options Menu
-        instance->AddOptionsText(renderSystem->m_Device,
-                                 renderSystem->m_Context,
-                                 L"../Assets/2d/Text/myfile.spritefont",
-                                 "Back",
-                                 renderSystem->m_BackBufferWidth * 0.5f,
-                                 renderSystem->m_BackBufferHeight * 0.5f - 140.0f,
-                                 false);
+        instance->AddText(renderSystem->m_Device,
+                          renderSystem->m_Context,
+                          instance->m_OptionsSpriteFonts,
+                          instance->m_OptionsSprites,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Back",
+                          renderSystem->m_BackBufferWidth * 0.5f,
+                          renderSystem->m_BackBufferHeight * 0.5f - 140.0f,
+                          true,
+                          false);
 
+        // Level Menu
+        instance->AddText(renderSystem->m_Device,
+                          renderSystem->m_Context,
+                          instance->m_LevelSpriteFonts,
+                          instance->m_LevelSprites,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Back",
+                          renderSystem->m_BackBufferWidth * 0.5f,
+                          renderSystem->m_BackBufferHeight * 0.5f - 140.0f,
+                          true,
+                          false);
 
         // Events
         // Background Image
@@ -505,6 +357,33 @@ void UIManager::Initialize(native_handle_type hwnd)
                 }
         });
 
+        instance->m_PauseSprites[2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                // Sprites
+                for (int i = 0; i < instance->m_PauseSprites.size(); i++)
+                {
+                        if (i != 0)
+                        {
+                                instance->m_PauseSprites[i].mEnabled = false;
+                        }
+                }
+                // Text
+                for (int i = 0; i < instance->m_PauseSpriteFonts.size(); i++)
+                {
+                        instance->m_PauseSpriteFonts[i]->mEnabled = false;
+                }
+
+                // Sprites
+                for (int i = 0; i < instance->m_LevelSprites.size(); i++)
+                {
+                        instance->m_LevelSprites[i].mEnabled = true;
+                }
+                // Text
+                for (int i = 0; i < instance->m_LevelSpriteFonts.size(); i++)
+                {
+                        instance->m_LevelSpriteFonts[i]->mEnabled = true;
+                }
+        });
+
         instance->m_PauseSprites[3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Sprites
                 for (int i = 0; i < instance->m_PauseSprites.size(); i++)
@@ -534,6 +413,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         instance->m_PauseSprites[4].OnMouseDown.AddEventListener([](UIMouseEvent* e) { /*Shutdown Program*/; });
 
+		//Options
         instance->m_OptionsSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
 
@@ -559,6 +439,34 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_PauseSpriteFonts[i]->mEnabled = true;
                 }
         });
+
+		//Level
+        instance->m_LevelSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                // Back button to go from the options menu to the pause menu
+
+                // Disable all sprites for the options
+                for (int i = 0; i < instance->m_LevelSprites.size(); i++)
+                {
+                        instance->m_LevelSprites[i].mEnabled = false;
+                }
+                // Disable all text for the options
+                for (int i = 0; i < instance->m_LevelSpriteFonts.size(); i++)
+                {
+                        instance->m_LevelSpriteFonts[i]->mEnabled = false;
+                }
+
+                // Enable all sprites for the background
+                for (int i = 1; i < instance->m_PauseSprites.size(); i++)
+                {
+                        instance->m_PauseSprites[i].mEnabled = true;
+                }
+                // Enable all text for the background
+                for (int i = 0; i < instance->m_PauseSpriteFonts.size(); i++)
+                {
+                        instance->m_PauseSpriteFonts[i]->mEnabled = true;
+                }
+        });
+		
 }
 
 void UIManager::Update()
@@ -572,30 +480,26 @@ void UIManager::Update()
                 instance->UIClipCursor();
         }
 
-		if (instance->m_MainSprites[0].mEnabled == true)
-		{
-		        //ControllerManager::Get()->m_togglePauseInput = true;
-		        if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::DownFirst)
-		        {
-		                //ControllerManager::Get()->m_togglePauseInput = !ControllerManager::Get()->m_togglePauseInput;
-		
-		                for (int i = 0; i < instance->m_MainSprites.size(); i++)
-		                {
-		                        instance->m_MainSprites[i].mEnabled = false;
-		                }
-		                for (int i = 0; i < instance->m_MainSpriteFonts.size(); i++)
-		                {
-		                        instance->m_MainSpriteFonts[i]->mEnabled = false;
-		                }
-		        }
+        if (instance->m_MainSpriteFonts[0]->mEnabled == true)
+        {
+                // ControllerManager::Get()->m_togglePauseInput = true;
+                if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::DownFirst)
+                {
+                        // ControllerManager::Get()->m_togglePauseInput = !ControllerManager::Get()->m_togglePauseInput;
+
+                        for (int i = 0; i < instance->m_MainSpriteFonts.size(); i++)
+                        {
+                                instance->m_MainSpriteFonts[i]->mEnabled = false;
+                        }
+                }
         }
         else
         {
 
                 if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
                 {
-                        //ControllerManager::Get()->m_togglePauseInput = !ControllerManager::Get()->m_togglePauseInput;
-                        instance->m_InMenu                           = !instance->m_InMenu;
+                        // ControllerManager::Get()->m_togglePauseInput = !ControllerManager::Get()->m_togglePauseInput;
+                        instance->m_InMenu = !instance->m_InMenu;
                         if (instance->m_InMenu)
                         {
                                 while (ShowCursor(TRUE) < 0)
@@ -657,8 +561,8 @@ void UIManager::Update()
                         }
                 }
         }
-		
-			// Main Menu
+
+		//Main Menu
         for (int i = 0; i < instance->m_MainSprites.size(); i++)
         {
                 if (instance->m_MainSprites[i].mEnabled == true)
@@ -670,10 +574,11 @@ void UIManager::Update()
                                 {
                                         // Button Was Pressed
                                         UIMouseEvent e;
-                                        
+
+
                                         e.mouseX = GCoreInput::GetMouseWindowPosX();
                                         e.mouseY = GCoreInput::GetMouseWindowPosY();
-                                        e.sprite = &instance->m_MainSprites[0];
+                                        e.sprite = &instance->m_PauseSprites[0];
                                         instance->m_MainSprites[i].OnMouseDown.Invoke(&e);
                                 }
                         }
@@ -683,8 +588,7 @@ void UIManager::Update()
 
                         instance->m_SpriteBatch->Draw(
                             instance->m_MainSprites[i].mTexture,
-                            DirectX::XMVECTOR{instance->m_MainSprites[i].mScreenPos.x,
-                                              instance->m_MainSprites[i].mScreenPos.y},
+                            DirectX::XMVECTOR{instance->m_MainSprites[i].mScreenPos.x, instance->m_MainSprites[i].mScreenPos.y},
                             nullptr,
                             DirectX::Colors::White,
                             0.0f,
@@ -714,7 +618,7 @@ void UIManager::Update()
                 }
         }
 
-			// Pause Menu
+        // Pause Menu
         for (int i = 0; i < instance->m_PauseSprites.size(); i++)
         {
                 if (instance->m_PauseSprites[i].mEnabled == true)
@@ -771,7 +675,7 @@ void UIManager::Update()
                 }
         }
 
-			// Options Menu
+        // Options Menu
         for (int i = 0; i < instance->m_OptionsSprites.size(); i++)
         {
                 if (instance->m_OptionsSprites[i].mEnabled == true)
@@ -822,6 +726,62 @@ void UIManager::Update()
                             DirectX::Colors::White,
                             0.0f,
                             instance->m_OptionsSpriteFonts[i]->mOrigin);
+
+                        instance->m_SpriteBatch->End();
+                }
+        }
+
+		 // Level Menu
+        for (int i = 0; i < instance->m_LevelSprites.size(); i++)
+        {
+                if (instance->m_LevelSprites[i].mEnabled == true)
+                {
+                        if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Release)
+                        {
+                                if (PtInRect(&instance->m_OptionsSprites[i].mRectangle,
+                                             {GCoreInput::GetMouseWindowPosX(), GCoreInput::GetMouseWindowPosY()}))
+                                {
+                                        // Button Was Pressed
+                                        UIMouseEvent e;
+
+                                        e.mouseX = GCoreInput::GetMouseWindowPosX();
+                                        e.mouseY = GCoreInput::GetMouseWindowPosY();
+                                        e.sprite = &instance->m_PauseSprites[0];
+                                        instance->m_LevelSprites[i].OnMouseDown.Invoke(&e);
+                                }
+                        }
+
+                        instance->m_SpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
+                                                       instance->m_States->NonPremultiplied());
+
+                        instance->m_SpriteBatch->Draw(
+                            instance->m_LevelSprites[i].mTexture,
+                            DirectX::XMVECTOR{instance->m_LevelSprites[i].mScreenPos.x,
+                                              instance->m_LevelSprites[i].mScreenPos.y},
+                            nullptr,
+                            DirectX::Colors::White,
+                            0.0f,
+                            instance->m_LevelSprites[i].mOrigin,
+                            DirectX::XMVECTOR{instance->m_LevelSprites[i].mScaleX, instance->m_LevelSprites[i].mScaleY});
+
+
+                        instance->m_SpriteBatch->End();
+                }
+        }
+        for (int i = 0; i < instance->m_LevelSpriteFonts.size(); i++)
+        {
+                if (instance->m_LevelSpriteFonts[i]->mEnabled == true)
+                {
+                        instance->m_SpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
+                                                       instance->m_States->NonPremultiplied());
+
+                        instance->m_LevelSpriteFonts[i]->mSpriteFont->DrawString(
+                            instance->m_SpriteBatch.get(),
+                            instance->m_LevelSpriteFonts[i]->mTextDisplay.c_str(),
+                            instance->m_LevelSpriteFonts[i]->mScreenPos,
+                            DirectX::Colors::White,
+                            0.0f,
+                            instance->m_LevelSpriteFonts[i]->mOrigin);
 
                         instance->m_SpriteBatch->End();
                 }
