@@ -5,6 +5,7 @@
 
 #include "..//GenericComponents/TransformComponent.h"
 #include "GoalComponent.h"
+#include "OrbitSystem.h"
 #include "SpeedboostComponent.h"
 
 #include <cmath>
@@ -34,6 +35,7 @@ void SpeedBoostSystem::RespawnSpeedBoost(TransformComponent*       boostTC,
 
         XMVECTOR target = XMVectorLerp(playerTC->transform.translation, targetTC->transform.translation, alpha) +
                           XMVectorSet(x, 0.0f, z, 0.0f);
+        target = XMVectorSetY(target, 0.0f);
         XMVECTOR limit                 = XMVectorSet(m_MaxBoostDistance, 0.0f, m_MaxBoostDistance, 0.0f);
         boostTC->transform.translation = target;
         boostSC->m_TargetRadius        = m_BoostRadius;
@@ -71,27 +73,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
         GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_PlayerEffectRadius, deltaTime);
 
-        TransformComponent* closestGoalTransform = playerTransform;
+        ComponentHandle closestGoalTransformHandle = m_SystemManager->GetSystem<OrbitSystem>()->GetClosestGoalTransform();
 
-        if (!m_ComponentManager->ComponentsExist<GoalComponent>())
-        {
-
-                auto goalCompItr = m_ComponentManager->GetActiveComponents<GoalComponent>();
-                for (auto itr = goalCompItr.begin(); itr != goalCompItr.end(); itr++)
-                {
-                        TransformComponent* transComp =
-                            m_ComponentManager->GetComponent<TransformComponent>(itr.data()->GetOwner());
-
-                        if (closestGoalTransform == nullptr ||
-                            MathLibrary::CalulateDistanceSq(transComp->transform.translation,
-                                                            playerTransform->transform.translation) <
-                                MathLibrary::CalulateDistanceSq(closestGoalTransform->transform.translation,
-                                                                playerTransform->transform.translation))
-                        {
-                                closestGoalTransform = transComp;
-                        }
-                }
-        }
 
         int speedboostCount = 0;
         if (!m_ComponentManager->ComponentsExist<SpeedboostComponent>())
@@ -149,6 +132,9 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                     ->SpeedBoost(XMVectorZero());
                         }
 
+                        TransformComponent* closestGoalTransform =
+                            m_ComponentManager->GetComponent<TransformComponent>(closestGoalTransformHandle);
+
                         if (speedComp->m_CurrentRadius != speedComp->m_TargetRadius)
                         {
                                 speedComp->m_CurrentRadius = MathLibrary::MoveTowards(
@@ -169,6 +155,9 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         }
                 }
         }
+
+		TransformComponent* closestGoalTransform =
+            m_ComponentManager->GetComponent<TransformComponent>(closestGoalTransformHandle);
 
         if (closestGoalTransform != nullptr && speedboostCount < m_MaxSpeedBoosts)
         {
@@ -204,6 +193,7 @@ void SpeedBoostSystem::OnInitialize()
 {
         m_EntityManager    = GEngine::Get()->GetEntityManager();
         m_ComponentManager = GEngine::Get()->GetComponentManager();
+        m_SystemManager    = GEngine::Get()->GetSystemManager();
 
         // Red Light
         auto speedBoostMat01Handle = GEngine::Get()->GetResourceManager()->LoadMaterial("GlowSpeedboost01");

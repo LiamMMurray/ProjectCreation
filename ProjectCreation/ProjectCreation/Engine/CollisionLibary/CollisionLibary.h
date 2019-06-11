@@ -49,5 +49,9 @@ class CollisionLibary
 
         static Shapes::FAabb CreateBoundingBoxFromCapsule(const Shapes::FCapsule capsule);
 
+		static Collision::FOverlapResult ScreenSpaceOverlap(const Shapes::FSphere&   a,
+                                                            const Shapes::FSphere&   b,
+                                                            const DirectX::XMMATRIX& ViewProjection);
+        ;
 		
 };
