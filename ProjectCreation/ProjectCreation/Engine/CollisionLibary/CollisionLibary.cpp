@@ -329,19 +329,19 @@ Collision::FAdvancedCollisionResult CollisionLibary::RayToSphereCollision(Direct
         return output;
 }
 
-Collision::FCollideResult CollisionLibary::CircleToCircleCollision(Shapes::FCircle& a, Shapes::FCircle& b)
+Collision::FOverlapResult CollisionLibary::CircleToCircleCollision(Shapes::FCircle& a, Shapes::FCircle& b)
 {
-        Collision::FCollideResult output;
+        Collision::FOverlapResult output;
         float                     totalRadius = (a.radius + b.radius) * (a.radius + b.radius);
         float                     distance =
             ((a.center.x - b.center.x) * (a.center.x - b.center.x)) + ((a.center.y - b.center.y) * (a.center.y - b.center.y));
         if (distance <= totalRadius)
         {
-                output.collisionType = Collision::ECollide;
+                output.hasOverlap = true;
         }
         else
         {
-                output.collisionType = Collision::ENoCollision;
+                output.hasOverlap = false;
         }
         return output;
 }
