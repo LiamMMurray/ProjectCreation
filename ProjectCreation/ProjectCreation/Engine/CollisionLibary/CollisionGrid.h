@@ -2,20 +2,19 @@
 
 #define NUM_BUCKETS 1024
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include "../../ECS/ECSTypes.h"
+#include "../../Utility/Hashing/PairHash.h"
 #include "CollisionHelpers.h"
 #include "Shapes.h"
-struct CollisionID
-{
-        Shapes::ECollisionObjectTypes type;
-        ComponentHandle               handle;
-};
+
+#include "CollisionResult.h"
+
+
 class CollisionGrid
 {
 
-
-        int HashTableBuckets[NUM_BUCKETS];
 
     public:
         struct Cell
@@ -24,12 +23,19 @@ class CollisionGrid
                 int y;
                 int z;
         };
-        static constexpr int                                     CellSize = 5;
-        std::unordered_map<int, std::vector<CollisionID>> GridContainers;
 
+        struct CellContainer
+        {
+                std::vector<ComponentHandle> m_Spheres;
+                std::vector<ComponentHandle> m_AABBs;
+                std::vector<ComponentHandle> m_Capsules;
+        };
+
+
+        static constexpr int CellSize = 5;
         CollisionGrid();
-        Cell                     GetCellFromShape(const Shapes::FCollisionShape* shape);
-        int                      ComputeHashBucketIndex(Cell cellPos);
-        CollisionID              GetShapeId(Shapes::FCollisionShape& shape);
-        const std::vector<CollisionID> GetPossibleCollisions(Shapes::FCollisionShape* shape);
+        std::unordered_map<int, CellContainer> m_Container;
+        Cell                                   GetCellFromShape(const Shapes::FCollisionShape* shape);
+        int                                    ComputeHashBucketIndex(Cell cellPos);
+        Collision::FCollisionQueryResult       GetPossibleCollisions(Shapes::FCollisionShape* shape);
 };
