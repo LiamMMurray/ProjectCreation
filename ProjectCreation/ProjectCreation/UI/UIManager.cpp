@@ -146,8 +146,8 @@ void UIManager::CreateBackground(ID3D11Device*        device,
 
         m_fullscreenRect.left   = 0;
         m_fullscreenRect.top    = 0;
-        m_fullscreenRect.right  = ScreenWidth;
-        m_fullscreenRect.bottom = ScreenHeight;
+        m_fullscreenRect.right  = (long)ScreenWidth;
+        m_fullscreenRect.bottom = (long)ScreenHeight;
 }
 
 void UIManager::UIClipCursor()
@@ -346,6 +346,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 // Joe's code for unpausing the game here
                 instance->m_InMenu = !instance->m_InMenu;
+                GEngine::Get()->SetGamePaused(instance->m_InMenu);
                 if (instance->m_InMenu)
                 {
                         while (ShowCursor(TRUE) < 0)
@@ -412,9 +413,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                 }
         });
 
-        instance->m_PauseSprites[4].OnMouseDown.AddEventListener([](UIMouseEvent* e) { /*Shutdown Program*/; });
+        instance->m_PauseSprites[4].OnMouseDown.AddEventListener([](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
 
-		//Options
+        // Options
         instance->m_OptionsSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
 
@@ -441,7 +442,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 }
         });
 
-		//Level
+        // Level
         instance->m_LevelSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
 
@@ -467,7 +468,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_PauseSpriteFonts[i]->mEnabled = true;
                 }
         });
-		
 }
 
 void UIManager::Update()
@@ -487,7 +487,7 @@ void UIManager::Update()
                 if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::DownFirst)
                 {
                         // ControllerManager::Get()->m_togglePauseInput = !ControllerManager::Get()->m_togglePauseInput;
-
+                        GEngine::Get()->SetGamePaused(false);
                         for (int i = 0; i < instance->m_MainSpriteFonts.size(); i++)
                         {
                                 instance->m_MainSpriteFonts[i]->mEnabled = false;
@@ -496,11 +496,11 @@ void UIManager::Update()
         }
         else
         {
-
                 if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
                 {
-                        //ControllerSystem::Get()->m_togglePauseInput = !ControllerSystem::Get()->m_togglePauseInput;
-                        instance->m_InMenu                           = !instance->m_InMenu;
+                        // ControllerSystem::Get()->m_togglePauseInput = !ControllerSystem::Get()->m_togglePauseInput;
+                        instance->m_InMenu = !instance->m_InMenu;
+                        GEngine::Get()->SetGamePaused(instance->m_InMenu);
                         if (instance->m_InMenu)
                         {
                                 while (ShowCursor(TRUE) < 0)
@@ -563,7 +563,7 @@ void UIManager::Update()
                 }
         }
 
-		//Main Menu
+        // Main Menu
         for (int i = 0; i < instance->m_MainSprites.size(); i++)
         {
                 if (instance->m_MainSprites[i].mEnabled == true)
@@ -577,8 +577,8 @@ void UIManager::Update()
                                         UIMouseEvent e;
 
 
-                                        e.mouseX = GCoreInput::GetMouseWindowPosX();
-                                        e.mouseY = GCoreInput::GetMouseWindowPosY();
+                                        e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
+                                        e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
                                         e.sprite = &instance->m_PauseSprites[0];
                                         instance->m_MainSprites[i].OnMouseDown.Invoke(&e);
                                 }
@@ -633,8 +633,8 @@ void UIManager::Update()
                                         UIMouseEvent e;
 
 
-                                        e.mouseX = GCoreInput::GetMouseWindowPosX();
-                                        e.mouseY = GCoreInput::GetMouseWindowPosY();
+                                        e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
+                                        e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
                                         e.sprite = &instance->m_PauseSprites[0];
                                         instance->m_PauseSprites[i].OnMouseDown.Invoke(&e);
                                 }
@@ -689,8 +689,8 @@ void UIManager::Update()
                                         // Button Was Pressed
                                         UIMouseEvent e;
 
-                                        e.mouseX = GCoreInput::GetMouseWindowPosX();
-                                        e.mouseY = GCoreInput::GetMouseWindowPosY();
+                                        e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
+                                        e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
                                         e.sprite = &instance->m_PauseSprites[0];
                                         instance->m_OptionsSprites[i].OnMouseDown.Invoke(&e);
                                 }
@@ -732,7 +732,7 @@ void UIManager::Update()
                 }
         }
 
-		 // Level Menu
+        // Level Menu
         for (int i = 0; i < instance->m_LevelSprites.size(); i++)
         {
                 if (instance->m_LevelSprites[i].mEnabled == true)
@@ -745,8 +745,8 @@ void UIManager::Update()
                                         // Button Was Pressed
                                         UIMouseEvent e;
 
-                                        e.mouseX = GCoreInput::GetMouseWindowPosX();
-                                        e.mouseY = GCoreInput::GetMouseWindowPosY();
+                                        e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
+                                        e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
                                         e.sprite = &instance->m_PauseSprites[0];
                                         instance->m_LevelSprites[i].OnMouseDown.Invoke(&e);
                                 }
@@ -831,6 +831,19 @@ void UIManager::Shutdown()
         {
                 SAFE_RELEASE(instance->m_OptionsSpriteFonts[i]->mTexture);
                 instance->m_OptionsSpriteFonts[i]->mSpriteFont.reset();
+        }
+
+        // Level Menu
+        // Release Sprites
+        for (int i = 0; i < instance->m_LevelSprites.size(); i++)
+        {
+                SAFE_RELEASE(instance->m_LevelSprites[i].mTexture);
+        }
+        // Release Fonts
+        for (int i = 0; i < instance->m_LevelSpriteFonts.size(); i++)
+        {
+                SAFE_RELEASE(instance->m_LevelSpriteFonts[i]->mTexture);
+                instance->m_LevelSpriteFonts[i]->mSpriteFont.reset();
         }
 
 
