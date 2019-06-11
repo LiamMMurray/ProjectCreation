@@ -1,11 +1,11 @@
 #include "PlayerGroundState.h"
+#include <iostream>
 #include "..//GEngine.h"
 #include "..//GenericComponents/TransformComponent.h"
 #include "..//MathLibrary/MathLibrary.h"
 #include "../CoreInput/CoreInput.h"
 #include "PlayerControllerStateMachine.h"
 #include "PlayerMovement.h"
-
 using namespace DirectX;
 
 void PlayerGroundState::Enter()
@@ -22,8 +22,8 @@ void PlayerGroundState::Update(float deltaTime)
         float totalTime = (float)GEngine::Get()->GetTotalTime();
 
         // Get the Speed from the gathered input
-        XMVECTOR currentInput = _playerController->GetCurrentInput();
-        float    currSpeed    = XMVectorGetX(XMVector3Length(currentInput));
+        XMVECTOR currentInput    = _playerController->GetCurrentInput();
+        XMVECTOR currentVelocity = _playerController->GetCurrentVelocity();
 
         // Normalize the gathered input to determine the desired direction
         XMVECTOR desiredDir = XMVector3Normalize(currentInput);
@@ -31,16 +31,8 @@ void PlayerGroundState::Update(float deltaTime)
         // Determine the max speed the object can move
         float maxSpeed = _playerController->GetCurrentMaxSpeed();
 
-        // Check if the currSpeed is faster than the maxSpeed
-        if (fabs(currSpeed) > fabs(maxSpeed))
-        {
-                // Clamp the currSpeed to the maxSpeed
-                currSpeed = std::min(currSpeed, maxSpeed);
-        }
-
+        XMVECTOR desiredVelocity = maxSpeed * desiredDir;
         // Calculate desiredVelocity by multiplying the currSpeed by the direction we want to go
-        XMVECTOR desiredVelocity = currSpeed * desiredDir;
-        XMVECTOR currentVelocity = _playerController->GetCurrentVelocity();
         // Determine if we should speed up or slow down
         float accel = (XMVectorGetX(XMVector3Length(desiredVelocity)) >= XMVectorGetX(XMVector3Length(currentVelocity))) ?
                           _playerController->GetAcceleration() :
@@ -58,7 +50,16 @@ void PlayerGroundState::Update(float deltaTime)
         // Calculate current velocity based on itself, the deltaVector, and delta
         currentVelocity = currentVelocity + deltaVec * delta;
 
-        _playerController->SetCurrentMaxSpeed(MathLibrary::MoveTowards(maxSpeed, _playerController->GetMinMaxSpeed(), 0.25f));
+        if (m_SpeedboostTimer > 0.0f)
+        {
+                m_SpeedboostTimer -= deltaTime;
+        }
+        else
+        {
+                _playerController->SetCurrentMaxSpeed(MathLibrary::MoveTowards(
+                    maxSpeed, _playerController->GetMinMaxSpeed(), m_SpeedboostTransitionSpeed * deltaTime));
+        }
+        std::cout << currentVelocity.m128_f32[2] << std::endl;
 
         XMFLOAT3 eulerAngles = _playerController->GetEulerAngles();
 

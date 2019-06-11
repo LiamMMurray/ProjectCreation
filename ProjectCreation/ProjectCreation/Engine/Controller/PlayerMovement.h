@@ -8,6 +8,7 @@
 
 class TransformComponent;
 class PlayerCinematicState;
+class PlayerGroundState;
 class PlayerController : public IController
 {
         friend class PlayerControllerStateMachine;
@@ -22,8 +23,8 @@ class PlayerController : public IController
 
         DirectX::XMFLOAT3 m_EulerAngles;
 
-        float minMaxSpeed = 1.0f;
-        float maxMaxSpeed = 3.0f;
+        float minMaxSpeed     = 1.0f;
+        float maxMaxSpeed     = 3.0f;
         float currentMaxSpeed = minMaxSpeed;
 
         float acceleration   = 1.0;
@@ -35,6 +36,7 @@ class PlayerController : public IController
         PlayerControllerStateMachine m_StateMachine;
 
         PlayerCinematicState* m_CinematicState;
+        PlayerGroundState*    m_GroundState;
 
     public:
         PlayerController();
@@ -42,7 +44,7 @@ class PlayerController : public IController
         virtual void Init(EntityHandle h) override;
         void         SpeedBoost(DirectX::XMVECTOR preBoostVelocity);
 
-		inline void SetCurrentMaxSpeed(float val)
+        inline void SetCurrentMaxSpeed(float val)
         {
                 currentMaxSpeed = val;
         };

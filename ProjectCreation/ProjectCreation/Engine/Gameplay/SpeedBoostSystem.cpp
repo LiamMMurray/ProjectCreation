@@ -111,7 +111,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                                 speedComp->m_WantsRespawn = true;
                                 speedComp->m_TargetRadius = 0.0f;
-                                m_PlayerEffectRadius += 1.0f;
+                                //m_PlayerEffectRadius += 1.0f;
 
                                 static_cast<PlayerController*>(SYSTEM_MANAGER->GetSystem<ControllerSystem>()
                                                                    ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER])
