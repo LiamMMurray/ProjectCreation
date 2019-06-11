@@ -4,7 +4,7 @@
 #include "..//CoreInput/CoreInput.h"
 #include "..//Entities/EntityFactory.h"
 #include "..//GEngine.h"
-#include "../Controller/ControllerManager.h"
+#include "../Controller/ControllerSystem.h"
 #include "../GenericComponents/TransformComponent.h"
 #include "../ResourceManager/Material.h"
 #include "GoalComponent.h"
@@ -45,8 +45,8 @@ void OrbitSystem::OnPreUpdate(float deltaTime)
 
 void OrbitSystem::OnUpdate(float deltaTime)
 {
-        PlayerController* playerController =
-            (PlayerController*)ControllerManager::Get()->m_Controllers[ControllerManager::E_CONTROLLERS::PLAYER];
+        PlayerController* playerController = (PlayerController*)SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+                                                 ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
 
         TransformComponent* playerTransform =
             m_ComponentManager->GetComponent<TransformComponent>(playerController->GetControlledEntity());
@@ -140,7 +140,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 }
         }
 
-        if (ControllerManager::Get()->GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) >= 5)
+        if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) >= 5)
         {
                 static bool done = false;
                 if (!done)
@@ -148,7 +148,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 done = true;
         }
 
-        if (ControllerManager::Get()->GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) >= 5)
+        if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) >= 5)
         {
                 static bool done = false;
                 if (!done)
@@ -156,7 +156,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 done = true;
         }
 
-        if (ControllerManager::Get()->GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) >= 5)
+        if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) >= 5)
         {
                 static bool done = false;
                 if (!done)
@@ -233,8 +233,8 @@ void OrbitSystem::OnInitialize()
         planetMat03->m_SurfaceProperties.diffuseColor  = {0.7f, 0.9f, 0.7f};
         planetMat03->m_SurfaceProperties.emissiveColor = {0.1f, 1.5f, 0.1f};
 
-        PlayerController* playerController =
-            (PlayerController*)ControllerManager::Get()->m_Controllers[ControllerManager::E_CONTROLLERS::PLAYER];
+        PlayerController* playerController = (PlayerController*)SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+                                                 ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
         m_ClosestGoalTransform =
             m_ComponentManager->GetComponent<TransformComponent>(playerController->GetControlledEntity())->GetHandle();
 }

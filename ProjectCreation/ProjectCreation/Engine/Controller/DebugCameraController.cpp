@@ -7,7 +7,7 @@
 #include "../MathLibrary/Quaternion.h"
 
 #include "../../Rendering/DebugRender/debug_renderer.h"
-#include "..//Controller/ControllerManager.h"
+#include "..//Controller/ControllerSystem.h"
 #include "../CollisionLibary/CollisionLibary.h"
 
 #include "../CollisionLibary/Shapes.h"
@@ -23,7 +23,7 @@ void DebugCameraController::GatherInput()
 {
         if (!IsEnabled())
         {
-                auto eHandle             = ControllerManager::Get()->GetCurrentController()->GetControlledEntity();
+                auto eHandle             = SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetCurrentController()->GetControlledEntity();
                 auto controllerTransform = GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(eHandle);
 
                 TransformComponent* myTransform =

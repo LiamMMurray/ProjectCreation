@@ -4,7 +4,7 @@
 #include "../Engine/GEngine.h"
 #include "../Rendering/RenderingSystem.h"
 
-#include "../Engine/Controller/ControllerManager.h"
+#include "../Engine/Controller/ControllerSystem.h"
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #define NOMINMAX
@@ -574,10 +574,10 @@ void UIManager::Update()
 
 		if (instance->m_MainSprites[0].mEnabled == true)
 		{
-		        //ControllerManager::Get()->m_togglePauseInput = true;
+		        //ControllerSystem::Get()->m_togglePauseInput = true;
 		        if (GCoreInput::GetKeyState(KeyCode::N) == KeyState::DownFirst)
 		        {
-		                //ControllerManager::Get()->m_togglePauseInput = !ControllerManager::Get()->m_togglePauseInput;
+		                //ControllerSystem::Get()->m_togglePauseInput = !ControllerSystem::Get()->m_togglePauseInput;
 		
 		                for (int i = 0; i < instance->m_MainSprites.size(); i++)
 		                {
@@ -594,7 +594,7 @@ void UIManager::Update()
 
                 if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
                 {
-                        //ControllerManager::Get()->m_togglePauseInput = !ControllerManager::Get()->m_togglePauseInput;
+                        //ControllerSystem::Get()->m_togglePauseInput = !ControllerSystem::Get()->m_togglePauseInput;
                         instance->m_InMenu                           = !instance->m_InMenu;
                         if (instance->m_InMenu)
                         {

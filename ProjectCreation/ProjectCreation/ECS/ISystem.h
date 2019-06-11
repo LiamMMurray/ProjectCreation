@@ -6,10 +6,12 @@
 
 class SystemManager;
 
+#define SYSTEM_INIT_FLAG_SUSPEND_ON_START 1 << 1
+#define SYSTEM_FLAG_UPDATE_WHEN_PAUSED 1 << 2
 
 typedef uint32_t SystemTypeID;
 
-struct FSystemInitProperties
+struct FSystemProperties
 {
         uint32_t m_Flags      = 0;
         float    m_UpdateRate = 0.0f;
@@ -18,22 +20,22 @@ struct FSystemInitProperties
 
 enum E_SYSTEM_PRIORITY
 {
-        VERY_LOW = 100,
-		LOW = 200,
-		NORMAL = 300,
-		HIGH = 400,
-		VERY_HIGH = 500
+        VERY_LOW  = 100,
+        LOW       = 200,
+        NORMAL    = 300,
+        HIGH      = 400,
+        VERY_HIGH = 500
 };
 
 class ISystem
 {
         friend class SystemManager;
+        friend struct PriorityComparator;
 
         static SystemTypeId systemTypeId;
 
     private:
-        uint16_t m_Priority;
-        float    m_UpdateRateMs;
+        FSystemProperties m_Properties;
 
     protected:
         virtual void OnPreUpdate(float deltaTime)  = 0;
@@ -55,8 +57,13 @@ class ISystem
                 return id;
         }
 
-        uint16_t GetPriority();
-        void     SetPriority(uint16_t priority);
-        float    GetUpdateRateMs();
-        void     SetUpdateRateMs(float updateRateMs);
+		inline const FSystemProperties& GetSystemProperties() const
+		{
+                return m_Properties;
+		}
+
+		inline void SetSystemProperties(const FSystemProperties& val)
+        {
+                m_Properties = val;
+        }
 };

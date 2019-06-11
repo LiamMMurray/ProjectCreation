@@ -7,24 +7,18 @@
 #include "ECSTypes.h"
 #include "ISystem.h"
 
-#define SYSTEM_INIT_FLAG_SUSPEND_ON_START 1
+struct PriorityComparator
+{
+        bool operator()(ISystem* lhs, ISystem* rhs)
+        {
+                return lhs->GetSystemProperties().m_Priority < rhs->GetSystemProperties().m_Priority;
+        }
+};
 
+using SystemQueue = std::priority_queue<ISystem*, std::vector<ISystem*>, PriorityComparator>;
 
 class SystemManager
 {
-    private:
-        struct PriorityComparator
-        {
-                bool operator()(ISystem* lhs, ISystem* rhs)
-                {
-                        return lhs->m_Priority < rhs->m_Priority;
-                }
-        };
-
-        std::unordered_map<SystemTypeId, ISystem*>                                              m_SystemsMap;
-        std::priority_queue<ISystem*, std::vector<ISystem*>, SystemManager::PriorityComparator> m_ActiveSystemsQueue;
-        std::vector<ISystem*>                                                                   m_InactiveSystems;
-
     public:
         template <typename T>
         EResult CreateSystem(T** outSystem);
@@ -32,9 +26,9 @@ class SystemManager
         template <typename T>
         void DestroySystem();
         template <typename T>
-        void RegisterSystem(FSystemInitProperties* systemProperties);
+        void RegisterSystem(FSystemProperties* systemProperties);
 
-        void RegisterSystem(FSystemInitProperties* systemProperties, ISystem* isystem);
+        void RegisterSystem(FSystemProperties* systemProperties, ISystem* isystem);
         template <typename T>
         void SuspendSystem();
         template <typename T>
@@ -42,10 +36,17 @@ class SystemManager
         template <typename T>
         T* GetSystem();
 
-        std::priority_queue<ISystem*, std::vector<ISystem*>, SystemManager::PriorityComparator> GetSystemQueue();
+        void FilterSystemQueue(int flags = 0);
+        SystemQueue GetSystemQueue();
 
         void Initialize();
         void Shutdown();
+
+    private:
+        std::unordered_map<SystemTypeId, ISystem*> m_SystemsMap;
+        SystemQueue                                m_DefaultSystemsQueue;
+        SystemQueue                                m_FilteredSystemsQueue;
+        SystemQueue*                               m_CurrentSystemQueue;
 };
 
 template <typename T>
@@ -69,7 +70,7 @@ inline EResult SystemManager::CreateSystem(T** outSystem)
 }
 
 template <typename T>
-inline void SystemManager::RegisterSystem(FSystemInitProperties* systemProperties)
+inline void SystemManager::RegisterSystem(FSystemProperties* systemProperties)
 {
         ISystem* system = GetSystem<T>();
         RegisterSystem(systemProperties, system);
@@ -105,7 +106,7 @@ T* SystemManager::GetSystem()
 {
         static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
         SystemTypeId typeID = ISystem::GetTypeID<T>();
-        auto            it     = m_SystemsMap.find(typeID);
+        auto         it     = m_SystemsMap.find(typeID);
         assert(it != m_SystemsMap.end());
 
         return (T*)it->second;
