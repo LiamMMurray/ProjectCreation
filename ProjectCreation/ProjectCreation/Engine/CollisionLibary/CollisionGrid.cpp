@@ -1,99 +1,77 @@
 #include "CollisionGrid.h"
-
-Unit* CollisionGrid::cells[NumCell][NumCell] = {};
+#include <DirectXMath.h>
+#include "../MathLibrary/MathLibrary.h"
+using namespace DirectX;
 
 CollisionGrid::CollisionGrid()
+{}
+
+CollisionGrid::Cell CollisionGrid::GetCellFromShape(const Shapes::FCollisionShape* shape)
 {
-        // Clear the grid.
-        for (int x = 0; x < NumCell; x++)
+        Shapes::ECollisionObjectTypes typeID = shape->GetID();
+        XMVECTOR                      center = XMVectorZero();
+        switch (typeID)
         {
-                for (int y = 0; y < NumCell; y++)
+                case Shapes::Sphere:
                 {
-                        cells[x][y] = nullptr;
+                        Shapes::FSphere* sphere = (Shapes::FSphere*)shape;
+                        center                  = sphere->center;
                 }
-        }
-}
-
-void CollisionGrid::AddUnit(Unit* unit)
-{
-        // Determine which grid cell it's in.
-        int cellX = (int)(unit->RowX / CollisionGrid::CellSize);
-        int cellY = (int)(unit->ColY / CollisionGrid::CellSize);
-
-        // Add to the front of list for the cell it's in.
-        unit->prev          = nullptr;
-        unit->next          = cells[cellX][cellY];
-        cells[cellX][cellY] = unit;
-
-        if (unit->next != nullptr)
-        {
-                unit->next->prev = unit;
-        }
-}
-
-void CollisionGrid::HandleMelee()
-{
-        for (int x = 0; x < NumCell; x++)
-        {
-                for (int y = 0; y < NumCell; y++)
+                break;
+                case Shapes::Aabb:
                 {
-                        HandleCell(cells[x][y]);
+                        Shapes::FAabb* aabb = (Shapes::FAabb*)shape;
+                        center              = aabb->center;
                 }
-        }
-}
+                break;
 
-void CollisionGrid::HandleCell(Unit* unit)
-{
-        while (unit != nullptr)
-        {
-                Unit* other = unit->next;
-                while (other != nullptr)
+                case Shapes::Capsule:
                 {
-                        if (unit->RowX == other->RowX && unit->ColY == other->ColY)
-                        {
-                                // handleAttack(unit, other);
-                        }
-                        other = other->next;
+                        Shapes::FCapsule* capsule = (Shapes::FCapsule*)shape;
+                        center = MathLibrary::GetMidPointFromTwoVector(capsule->startPoint, capsule->endPoint);
                 }
-
-                unit = unit->next;
+                break;
+                default:
+                        break;
         }
+
+        Cell cellpos;
+        cellpos.x = (int)(XMVectorGetX(center) / CollisionGrid::CellSize);
+        cellpos.y = 0; // XMVectorGetY(center) / CollisionGrid::CellSize;
+        cellpos.z = (int)(XMVectorGetZ(center) / CollisionGrid::CellSize);
+
+        return cellpos;
 }
 
-void CollisionGrid::Move(Unit* unit, double x, double y)
+int CollisionGrid::ComputeHashBucketIndex(Cell cellPos)
 {
-        // See which cell it was in.
-        int oldCellX = (int)(unit->RowX / CollisionGrid::CellSize);
-        int oldCellY = (int)(unit->ColY / CollisionGrid::CellSize);
+        const int h1 = 0x8da6b343; // Arbitrary, large primes.
+        const int h2 = 0xd8163841; // Primes are popular for hash functions
+        const int h3 = 0xcb1ab31f; // for reducing the chance of hash collision.
+        int       n  = h1 * cellPos.x + h2 * cellPos.y + h3 * cellPos.z;
+        n            = n % NUM_BUCKETS; // Wrap indices to stay in bucket range
+        if (n < 0)
+                n += NUM_BUCKETS; // Keep indices in positive range
+        return n;
+}
 
-        // See which cell it's moving to.
-        int cellX = (int)(x / CollisionGrid::CellSize);
-        int cellY = (int)(y / CollisionGrid::CellSize);
+using namespace Collision;
 
-        unit->RowX = x;
-        unit->ColY = y;
+Collision::FCollisionQueryResult CollisionGrid::GetPossibleCollisions(Shapes::FCollisionShape* shape)
+{
+        Shapes::ECollisionObjectTypes typeID = shape->GetID();
+        FCollisionQueryResult         output;
 
-        // If it didn't change cells, we're done.
-        if (oldCellX == cellX && oldCellY == cellY)
-                return;
+        Cell             checkCell = GetCellFromShape(shape);
+        int              index     = ComputeHashBucketIndex(checkCell);
+        auto             it        = m_Container.find(index);
 
-        // Unlink it from the list of its old cell.
-        if (unit->prev != nullptr)
+        if (it != m_Container.end())
         {
-                unit->prev->next = unit->next;
+                output.spheres  = it->second.m_Spheres;
+                output.AABBs    = it->second.m_AABBs;
+                output.capsules = it->second.m_Capsules;
         }
 
-        if (unit->next != nullptr)
-        {
-                unit->next->prev = unit->prev;
-        }
-
-        // If it's the head of a list, remove it.
-        if (cells[oldCellX][oldCellY] == unit)
-        {
-                cells[oldCellX][oldCellY] = unit->next;
-        }
-
-        // Add it back to the grid at its new cell.
-        AddUnit(unit);
+        return output;
 }

@@ -13,16 +13,35 @@
   <ItemGroup>
     <ClInclude Include="Engine\Audio\AudioManager.h" />
     <ClInclude Include="Engine\Audio\SFXComponent.h" />
-    <ClInclude Include="Engine\CollisionLibary\BVH.h" />
-    <ClInclude Include="Engine\CollisionLibary\CollisionComponent.h" />
+    <ClInclude Include="Engine\CollisionLibary\CollisionHelpers.h" />
+    <ClInclude Include="Engine\CollisionLibary\CollisionResult.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionGrid.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionLibary.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionSystem.h" />
-    <ClInclude Include="Engine\CollisionLibary\Unit.h" />
+    <ClInclude Include="Engine\CollisionLibary\CollisionComponents.h" />
     <ClInclude Include="Engine\Controller\ControllerManager.h" />
     <ClInclude Include="Engine\Controller\DebugCameraController.h" />
     <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
+    <ClInclude Include="Engine\Controller\PlayerCinematicState.h" />
+    <ClInclude Include="Engine\Controller\PlayerControllerState.h" />
+    <ClInclude Include="Engine\Controller\PlayerControllerStateMachine.h" />
+    <ClInclude Include="Engine\Controller\PlayerGroundState.h" />
+    <ClInclude Include="Engine\Controller\PlayerPuzzleState.h" />
+    <ClInclude Include="Engine\Controller\PlayerStateEvents.h" />
     <ClInclude Include="Engine\EngineInitShutdownHelpers.h" />
+    <ClInclude Include="Engine\Entities\EntityFactory.h" />
+    <ClInclude Include="Engine\Events\Event.h" />
+    <ClInclude Include="Engine\Events\EventDelegate.h" />
+    <ClInclude Include="Engine\Events\EventManager.h" />
+    <ClInclude Include="Engine\Events\IEvent.h" />
+    <ClInclude Include="Engine\Events\IEventDelegate.h" />
+    <ClInclude Include="Engine\Gameplay\GoalComponent.h" />
+    <ClInclude Include="Engine\Gameplay\LightOrbColors.h" />
+    <ClInclude Include="Engine\Gameplay\OrbitSystem.h" />
+    <ClInclude Include="Engine\Gameplay\SpeedboostComponent.h" />
+    <ClInclude Include="Engine\Gameplay\SpeedBoostSystem.h" />
+    <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
+    <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
     <ClInclude Include="Engine\GenericComponents\TestComponents.h" />
@@ -64,6 +83,7 @@
     <ClInclude Include="Engine\MathLibrary\Quaternion.h" />
     <ClInclude Include="Engine\MathLibrary\Transform.h" />
     <ClInclude Include="Engine\MathLibrary\Vector.h" />
+    <ClInclude Include="UI\FontComponent.h" />
     <ClInclude Include="Particle Systems\ParticleBufferSetup.h" />
     <ClInclude Include="Particle Systems\ParticleInfo.h" />
     <ClInclude Include="Particle Systems\ParticleManager.h" />
@@ -98,6 +118,10 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.1</ShaderModel>
     </FxCompile>
+    <FxCompile Include="Shaders\BloomDownscaleKaris_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="Shaders\BloomDownscale_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -124,7 +148,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-    <FxCompile Include="Shaders\DefaultSkinned_VS.hlsl">
+    <FxCompile Include="Shaders\Default_Skinned_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.1</ShaderModel>
@@ -142,6 +166,7 @@
     <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
     <ClInclude Include="Utility\ForwardDeclarations\STLTypes.h" />
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
+    <ClInclude Include="Utility\Hashing\PairHash.h" />
     <ClInclude Include="Utility\Macros\DirectXMacros.h" />
     <ClInclude Include="Utility\MemoryDefines.h" />
     <ClInclude Include="Utility\RenderUtility.h" />
@@ -149,6 +174,10 @@
     <ClInclude Include="Shaders\PostProcessConstantBuffers.hlsl">
       <FileType>Document</FileType>
     </ClInclude>
+    <FxCompile Include="Shaders\Glow_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="Shaders\ScreenQuad_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
@@ -159,16 +188,24 @@
   <ItemGroup>
     <ClCompile Include="Engine\Animation\AnimationComponent.cpp" />
     <ClCompile Include="Engine\Audio\AudioManager.cpp" />
-    <ClCompile Include="Engine\CollisionLibary\BVH.cpp" />
-    <ClCompile Include="Engine\CollisionLibary\CollisionComponent.cpp" />
+    <ClCompile Include="Engine\CollisionLibary\CollisionHelpers.cpp" />
+    <ClCompile Include="Engine\CollisionLibary\CollisionResult.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionGrid.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionLibary.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionSystem.cpp" />
     <ClCompile Include="Engine\CollisionLibary\Shapes.cpp" />
-    <ClCompile Include="Engine\CollisionLibary\Unit.cpp" />
     <ClCompile Include="Engine\Controller\ControllerManager.cpp" />
     <ClCompile Include="Engine\Controller\DebugCameraController.cpp" />
+    <ClCompile Include="Engine\Controller\PlayerCinematicState.cpp" />
+    <ClCompile Include="Engine\Controller\PlayerControllerStateMachine.cpp" />
+    <ClCompile Include="Engine\Controller\PlayerGroundState.cpp" />
+    <ClCompile Include="Engine\Controller\PlayerPuzzleState.cpp" />
     <ClCompile Include="Engine\EngineInitShutdownHelpers.cpp" />
+    <ClCompile Include="Engine\Entities\EntityFactory.cpp" />
+    <ClCompile Include="Engine\Gameplay\OrbitSystem.cpp" />
+    <ClCompile Include="Engine\Gameplay\SpeedBoostSystem.cpp" />
+    <ClCompile Include="Engine\Gameplay\StateMachine\IState.cpp" />
+    <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
     <ClCompile Include="Engine\Physics\PhysicsComponent.cpp" />
     <ClCompile Include="Engine\Controller\IController.cpp" />
     <ClCompile Include="Engine\Controller\PlayerMovement.cpp" />
@@ -184,6 +221,7 @@
     <ClCompile Include="Engine\XTime.cpp" />
     <ClCompile Include="Engine\Entities\TestEntities.cpp" />
     <ClCompile Include="FileIO\FileIO.cpp" />
+    <ClCompile Include="UI\FontComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\MathLibrary\MathLibrary.cpp" />
     <ClCompile Include="Engine\MathLibrary\Quaternion.cpp" />
@@ -220,14 +258,12 @@
     <FxCompile Include="Shaders\Default_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.1</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\Default_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Shaders\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <ClInclude Include="Shaders\DefaultVertexIn.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

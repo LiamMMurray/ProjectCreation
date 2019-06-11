@@ -6,12 +6,14 @@
 
 #include "../../Engine/GEngine.h"
 #include "../../Engine/ResourceManager/PixelShader.h"
+#include "../../Engine/ResourceManager/Texture2D.h"
 #include "../../Engine/ResourceManager/VertexShader.h"
 
 #include "../../Utility/Macros/DirectXMacros.h"
 #include "../../Utility/RenderUtility.h"
 
 #include "../..//Engine/MathLibrary/ColorConstants.h"
+#include "../..//Engine/MathLibrary/MathLibrary.h"
 
 #include "../RenderingSystem.h"
 
@@ -52,11 +54,11 @@ void Bloom::Initialize(ID3D11Device1* device, ID3D11DeviceContext1* context, D3D
                 assert(SUCCEEDED(hr));
         }
 
-        for (int i = 0; i < BloomPasses; ++i)
+        for (int i = 0; i < MaxIterations; ++i)
         {
                 UINT div    = (UINT)pow(2, i);
-                desc.Width  = UINT(m_Width / div);
-                desc.Height = UINT(m_Height / div);
+                desc.Width  = UINT(m_Width / div) > 0 ? UINT(m_Width / div) : 1;
+                desc.Height = UINT(m_Height / div) > 0 ? UINT(m_Height / div) : 1;
                 hr          = m_Device->CreateTexture2D(&desc, nullptr, &m_BlurTextures[i]);
                 assert(SUCCEEDED(hr));
 
@@ -72,11 +74,12 @@ void Bloom::Initialize(ID3D11Device1* device, ID3D11DeviceContext1* context, D3D
                 assert(SUCCEEDED(hr));
         }
 
-        m_ScreenQuadVS     = m_ResourceManager->LoadVertexShader("ScreenQuad");
-        m_BloomMaskPS      = m_ResourceManager->LoadPixelShader("BloomMask");
-        m_BloomCombinePS   = m_ResourceManager->LoadPixelShader("BloomCombine");
-        m_BloomUpscalePS   = m_ResourceManager->LoadPixelShader("BloomUpscale");
-        m_BloomDownscalePS = m_ResourceManager->LoadPixelShader("BloomDownscale");
+        m_ScreenQuadVS          = m_ResourceManager->LoadVertexShader("ScreenQuad");
+        m_BloomMaskPS           = m_ResourceManager->LoadPixelShader("BloomMask");
+        m_BloomCombinePS        = m_ResourceManager->LoadPixelShader("BloomCombine");
+        m_BloomUpscalePS        = m_ResourceManager->LoadPixelShader("BloomUpscale");
+        m_BloomDownscalePS      = m_ResourceManager->LoadPixelShader("BloomDownscale");
+        m_BloomDownscaleKarisPS = m_ResourceManager->LoadPixelShader("BloomDownscaleKaris");
 
         D3D11_BUFFER_DESC cbDesc{};
         cbDesc.Usage          = D3D11_USAGE_DYNAMIC;
@@ -111,11 +114,19 @@ void Bloom::Render(ID3D11ShaderResourceView** inSRV, ID3D11RenderTargetView** ou
         viewport.TopLeftX = 0.0f;
         viewport.TopLeftY = 0.0f;
 
-        VertexShader* screenQuadVS = m_ResourceManager->GetResource<VertexShader>(m_ScreenQuadVS);
-        PixelShader*  maskPS       = m_ResourceManager->GetResource<PixelShader>(m_BloomMaskPS);
-        PixelShader*  combinePS    = m_ResourceManager->GetResource<PixelShader>(m_BloomCombinePS);
-        PixelShader*  upscalePS    = m_ResourceManager->GetResource<PixelShader>(m_BloomUpscalePS);
-        PixelShader*  downscalePS  = m_ResourceManager->GetResource<PixelShader>(m_BloomDownscalePS);
+        VertexShader* screenQuadVS     = m_ResourceManager->GetResource<VertexShader>(m_ScreenQuadVS);
+        PixelShader*  maskPS           = m_ResourceManager->GetResource<PixelShader>(m_BloomMaskPS);
+        PixelShader*  combinePS        = m_ResourceManager->GetResource<PixelShader>(m_BloomCombinePS);
+        PixelShader*  upscalePS        = m_ResourceManager->GetResource<PixelShader>(m_BloomUpscalePS);
+        PixelShader*  downscalePS      = m_ResourceManager->GetResource<PixelShader>(m_BloomDownscalePS);
+        PixelShader*  downscaleKarisPS = m_ResourceManager->GetResource<PixelShader>(m_BloomDownscaleKarisPS);
+
+
+        int   s           = std::max(m_Width / 2, m_Height / 2);
+        float logs        = log2f((float)s) + std::min(9.0f, 10.0f) - 10.0f;
+        float logs_i      = floorf(logs);
+        int   iterations  = (int)MathLibrary::clamp(logs_i, 1.0f, (float)MaxIterations);
+        float sampleScale = 0.5f + logs - logs_i;
 
         m_Context->IASetInputLayout(nullptr);
         m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
@@ -127,16 +138,33 @@ void Bloom::Render(ID3D11ShaderResourceView** inSRV, ID3D11RenderTargetView** ou
         m_Context->PSSetShader(maskPS->m_PixelShader, nullptr, 0);
         m_Context->Draw(4, 0);
 
-        m_Context->PSSetShader(downscalePS->m_PixelShader, nullptr, 0);
+        m_Context->PSSetShader(downscaleKarisPS->m_PixelShader, nullptr, 0);
         m_Context->OMSetRenderTargets(0, nullptr, nullptr);
         m_Context->PSSetShaderResources(0, 1, &m_BlurSRVs[Bloom::E_PASSES::MASK]);
 
-        for (int i = 0; i < BloomPasses; ++i)
+        {
+                UINT div        = (UINT)pow(2, 0);
+                viewport.Width  = FLOAT(m_Width / div);
+                viewport.Height = FLOAT(m_Height / div);
+
+                m_Context->RSSetViewports(1, &viewport);
+                // m_Context->ClearRenderTargetView(m_BlurRTVs[i], black);
+                m_Context->OMSetRenderTargets(1, &m_BlurRTVs[0], nullptr);
+                m_Context->Draw(4, 0);
+                m_Context->OMSetRenderTargets(0, nullptr, nullptr);
+                m_Context->PSSetShaderResources(E_BLOOM_PS_SRV::BLOOM, 1, &m_BlurSRVs[0]);
+        }
+
+        m_Context->PSSetShader(downscalePS->m_PixelShader, nullptr, 0);
+
+        for (int i = 1; i < iterations; ++i)
         {
                 UINT div        = (UINT)pow(2, i);
                 viewport.Width  = FLOAT(m_Width / div);
                 viewport.Height = FLOAT(m_Height / div);
 
+                m_BloomCB_CPU.inverseScreenDimensions = DirectX::XMFLOAT2(1 / viewport.Width, 1 / viewport.Height);
+                RenderUtility::UpdateConstantBuffer(m_Context, m_BloomCB_GPU, &m_BloomCB_CPU, sizeof(m_BloomCB_CPU));
                 m_Context->RSSetViewports(1, &viewport);
                 // m_Context->ClearRenderTargetView(m_BlurRTVs[i], black);
                 m_Context->OMSetRenderTargets(1, &m_BlurRTVs[i], nullptr);
@@ -153,16 +181,18 @@ void Bloom::Render(ID3D11ShaderResourceView** inSRV, ID3D11RenderTargetView** ou
         UINT  sampleMask     = 0xffffffff;
         m_Context->OMSetBlendState(m_BlendState, blendFactor, sampleMask);
 
-        for (int i = BloomPasses - 2; i >= 0; --i)
+        float _storedBrightness  = m_BloomCB_CPU.brightness;
+        m_BloomCB_CPU.blurRadius = sampleScale;
+        m_BloomCB_CPU.hOrV       = 1;
+        for (int i = iterations - 2; i >= 0; --i)
         {
-                UINT div        = (UINT)pow(2, i);
-                viewport.Width  = FLOAT(m_Width / div);
-                viewport.Height = FLOAT(m_Height / div);
-
-                m_BloomCB_CPU.blurRadius   = m_Radiuses[i];
-                m_BloomCB_CPU.blurStrength = m_Strengths[i];
+                UINT div                              = (UINT)pow(2, i);
+                viewport.Width                        = FLOAT(m_Width / div);
+                viewport.Height                       = FLOAT(m_Height / div);
+                m_BloomCB_CPU.inverseScreenDimensions = DirectX::XMFLOAT2(1 / viewport.Width, 1 / viewport.Height);
 
                 RenderUtility::UpdateConstantBuffer(m_Context, m_BloomCB_GPU, &m_BloomCB_CPU, sizeof(m_BloomCB_CPU));
+
 
                 m_Context->RSSetViewports(1, &viewport);
                 m_Context->OMSetRenderTargets(1, &m_BlurRTVs[i], nullptr);
@@ -170,11 +200,14 @@ void Bloom::Render(ID3D11ShaderResourceView** inSRV, ID3D11RenderTargetView** ou
                 m_Context->OMSetRenderTargets(0, nullptr, nullptr);
                 m_Context->PSSetShaderResources(E_BLOOM_PS_SRV::BLOOM, 1, &m_BlurSRVs[i]);
         }
+        m_BloomCB_CPU.brightness = _storedBrightness;
 
+        RenderUtility::UpdateConstantBuffer(m_Context, m_BloomCB_GPU, &m_BloomCB_CPU, sizeof(m_BloomCB_CPU));
         m_Context->OMSetBlendState(m_DefaultBlendState, blendFactor, sampleMask);
 
         m_Context->OMSetRenderTargets(1, outRTV, nullptr);
         m_Context->PSSetShader(combinePS->m_PixelShader, nullptr, 0);
+
         m_Context->PSSetShaderResources(E_BLOOM_PS_SRV::SCREEN, 1, inSRV);
 
         m_Context->Draw(4, 0);

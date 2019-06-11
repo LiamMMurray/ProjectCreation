@@ -12,8 +12,8 @@
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
 
-#include "Engine/CollisionLibary/CollisionComponent.h"
 #include "Engine/CollisionLibary/CollisionLibary.h"
+#include "Engine/CollisionLibary/CollisionResult.h"
 
 #include "Engine/CoreInput/CoreInput.h"
 
@@ -21,6 +21,7 @@
 
 #include "Engine/EngineInitShutdownHelpers.h"
 #include "Engine/Entities/BaseEntities.h"
+#include "Engine/Entities/EntityFactory.h"
 
 #include "Rendering/Components/CameraComponent.h"
 #include "Rendering/Components/SkeletalMeshComponent.h"
@@ -29,13 +30,17 @@
 #include "Engine/Animation/AnimationSystem.h"
 #include "Engine/ResourceManager/SkeletalMesh.h"
 /////testing -vic
-#include"Rendering/DebugRender/debug_renderer.h"
-#include"Engine/CollisionLibary/BVH.h"
+#include "Engine/CollisionLibary/CollisionSystem.h"
+#include "Rendering/DebugRender/debug_renderer.h"
 ////testing -vic
 
 #include "Engine/Controller/ControllerManager.h"
 
+#include "Engine/Gameplay/OrbitSystem.h"
+#include "Engine/Gameplay/SpeedBoostSystem.h"
 #include "Rendering/Components/DirectionalLightComponent.h"
+
+#include "Engine/GenericComponents/TransformComponent.h"
 
 #pragma comment(lib, "dbghelp")
 
@@ -44,7 +49,6 @@ using namespace DirectX;
 using namespace Shapes;
 using namespace Collision;
 using namespace debug_renderer;
-using namespace BVH;
 ////testing -vic
 bool g_Running = false;
 
@@ -169,7 +173,6 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                                      nullptr);            // parameters passed to new window (32 bit value)
 
 
-
         /** Main init engine **/
         EngineHelpers::InitEngineSystemManagers(handle);
         SystemManager*    systemManager    = GEngine::Get()->GetSystemManager();
@@ -191,41 +194,30 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         AudioManager::Get()->ActivateMusicAndPause(music, true);
 
         // Entity tests
-		
+
         auto testMeshHandle = entityManager->CreateEntity<BaseEntity>();
         // auto entity  = entityManager->GetEntity(eHandle);
 
-		ControllerManager controllerManager;
-
-		controllerManager.Initialize();
-
+        ControllerManager::Initialize();
 
         // Debug camera entity setup
 
         // Test skeletal mesh setup
         {
-                auto tCompHandle       = componentManager->AddComponent<TransformComponent>(testMeshHandle);
-                auto tComp             = componentManager->GetComponent<TransformComponent>(tCompHandle);
-                tComp->transform.scale = XMVectorSet(0.1f, 0.1f, 0.1f, 0.0f);
+            // std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
+            // ComponentHandle          transformHandle;
+            // EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
+            //
+            // TransformComponent* transformComp = componentManager->GetComponent<TransformComponent>(transformHandle);
+            // transformComp->transform.SetScale(0.1f);
+        }
 
-                componentManager->AddComponent<SkeletalMeshComponent>(testMeshHandle);
-                auto animCompHandle = componentManager->AddComponent<AnimationComponent>(testMeshHandle);
-
-                auto skelComp                  = componentManager->GetComponent<SkeletalMeshComponent>(testMeshHandle);
-                skelComp->m_MaterialHandle     = resourceManager->LoadMaterial("blinn1");
-                skelComp->m_SkeletalMeshHandle = resourceManager->LoadSkeletalMesh("Walk");
-                skelComp->m_Skeleton =
-                    resourceManager->GetResource<SkeletalMesh>(skelComp->m_SkeletalMeshHandle)->m_BindPoseSkeleton;
-
-                std::vector<ResourceHandle> anims;
-                anims.reserve(2);
-                anims.push_back(resourceManager->LoadAnimationClip("Idle", &skelComp->m_Skeleton));
-                anims.push_back(resourceManager->LoadAnimationClip("Walk", &skelComp->m_Skeleton));
-                anims.push_back(resourceManager->LoadAnimationClip("Run", &skelComp->m_Skeleton));
-                float weights[] = {0.5, 0.0, 0.5};
-                MathLibrary::NormalizeArray(ARRAYSIZE(weights), weights);
-                systemManager->GetSystem<AnimationSystem>()->AddAnimClipsToComponent(
-                    animCompHandle, ARRAYSIZE(weights), anims.data(), weights);
+        // Ground Plane
+        {
+                ComponentHandle tHandle;
+                EntityFactory::CreateStaticMeshEntity("GroundPlane01", "GroundMaterial01", &tHandle);
+                TransformComponent* tComp    = componentManager->GetComponent<TransformComponent>(tHandle);
+                tComp->transform.translation = XMVectorSetY(tComp->transform.translation, -0.5f);
         }
 
         // Directional Light setup
@@ -237,9 +229,22 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
                 auto dirComp = componentManager->GetComponent<DirectionalLightComponent>(dirLightEntityHandle);
                 dirComp->m_LightRotation =
-                    XMQuaternionRotationRollPitchYaw(XMConvertToRadians(-45.0f), XMConvertToRadians(120.0f), 0.0f);
-                dirComp->m_LightColor = XMFLOAT4(0.0f, 0.5f, 1.0f, 10.0f);
+                    XMQuaternionRotationRollPitchYaw(XMConvertToRadians(45.0f), XMConvertToRadians(120.0f), 0.0f);
+                dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.8f, 1.0f, 1.0f);
+                dirComp->m_AmbientColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f);
         }
+
+        // Create speedboost system
+        FSystemInitProperties sysInitProps;
+        SpeedBoostSystem*     speedBoostSystem;
+        systemManager->CreateSystem<SpeedBoostSystem>(&speedBoostSystem);
+        sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
+        sysInitProps.m_UpdateRate = 0.0f;
+        systemManager->RegisterSystem(&sysInitProps, speedBoostSystem);
+
+        OrbitSystem* orbitSystem;
+        systemManager->CreateSystem<OrbitSystem>(&orbitSystem);
+        systemManager->RegisterSystem(&sysInitProps, orbitSystem);
 
         while (msg.message != WM_QUIT)
         {
@@ -275,54 +280,13 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                                 music->PauseStream();
                 }
 
+                debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
 
-				////testing -vic
-                // Collision test
-                FSphere sphere1;
-                FSphere sphere2;
-                FSphere sphereObj;
-                // setup
-                sphere1.center = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-                sphere1.radius = 0.3f;
-
-                sphere2.center = XMVectorSet(6.0f, 0.0f, 0.0f, 1.0f);
-                sphere2.radius = 0.3f;
-
-                sphereObj.center = XMVectorSet(3.0f, 10.0f, 0.0f, 1.0f);
-                sphereObj.radius = 0.5f;
-
-                //AddSphere(sphere1, 36, XMMatrixIdentity());
-				//AddSphere(sphere2, 36, XMMatrixIdentity());
-                //AddSphere(sphereObj, 36, XMMatrixIdentity());
-
-				XMVECTOR              v1 = XMVectorSet(7.0f,0.0f,0.0f,0.0f);
-                XMVECTOR              v2 = XMVectorSet(0.0f, 0.0f, 0.0f,0.0f);
-                float                 temptime = GEngine::Get()->GetDeltaTime();
-                FAdvancedviCollisionResult result;
-               // result = CollisionLibary::SweepSphereToSphere(sphere1, sphere2, sphereObj, 1.0f);
-                result = CollisionLibary::MovingSphereToMovingSphere(sphere1, sphere2, v1, v2, temptime, 0.1f, 0.01f);
-
-                if (result.collisionType == Collision::ECollide)
-                {
-                        int x = 0;
-                }
-                else
-                {
-                        int y = 0;
-                }
-
-				FAabb aabb1 = CollisionLibary::CreateBoundingBoxFromShpere(sphere1);
-                //AddBox(aabb1, XMMatrixIdentity(), ColorConstants::Red);
-
-				BVHTree bvhtree;
-                bvhtree.InsertAABB(aabb1, 0);
-                
-                ////////////testing -vic
-
-                controllerManager.Update(GEngine::Get()->GetDeltaTime());
+                ControllerManager::Update(GEngine::Get()->GetDeltaTime());
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
         }
 
+        ControllerManager::Shutdown();
         EngineHelpers::ShutdownEngineSystemManagers();
 
         return 0;

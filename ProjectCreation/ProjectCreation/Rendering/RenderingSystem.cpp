@@ -1,11 +1,11 @@
 #include "RenderingSystem.h"
+#include <iostream>
 #include "../Engine/GEngine.h"
-
 #include "../Engine/MathLibrary/MathLibrary.h"
 #include "../FileIO/FileIO.h"
 #include "PostProcess/Bloom.h"
 
-#include <math.h>
+#include <algorithm>
 
 #include <d3d11_1.h>
 #pragma comment(lib, "d3d11.lib")
@@ -154,7 +154,7 @@ void RenderSystem::CreateDeviceAndSwapChain()
         ID3D11Debug* debug = nullptr;
         hr                 = m_Device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&debug));
         assert(SUCCEEDED(hr));
-        // debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+        debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
         debug->Release();
 #endif
 
@@ -178,12 +178,23 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
                 SAFE_RELEASE(m_DefaultDepthStencil[i]);
         }
 
+        for (int i = 0; i < E_POSTPROCESS_PIXEL_SRV::COUNT; ++i)
+        {
+                SAFE_RELEASE(m_PostProcessSRVs[i]);
+        }
+
 
         m_Context->OMSetRenderTargets(0, 0, 0);
+
+        IDXGIOutput* pOutput;
+        m_Swapchain->GetContainingOutput(&pOutput);
+
+        // pOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, 0, &num, s)
 
         // Preserve the existing buffer count and format.
         // Automatically choose the width and height to match the client rect for HWNDs.
         hr = m_Swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+        pOutput->Release();
 
         // Perform error handling here!
         assert(SUCCEEDED(hr));
@@ -240,13 +251,13 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
         descDSV.ViewDimension      = D3D11_DSV_DIMENSION_TEXTURE2D;
         descDSV.Texture2D.MipSlice = 0;
         hr = m_Device->CreateDepthStencilView(texture, &descDSV, &m_DefaultDepthStencil[E_DEPTH_STENCIL::BASE_PASS]);
-        texture->Release();
 
         D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc{};
         viewDesc.Format              = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
         viewDesc.ViewDimension       = D3D11_SRV_DIMENSION_TEXTURE2D;
         viewDesc.Texture2D.MipLevels = 1;
         m_Device->CreateShaderResourceView(texture, &viewDesc, &m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::BASE_DEPTH]);
+        texture->Release();
 
         assert(SUCCEEDED(hr));
 }
@@ -290,7 +301,7 @@ void RenderSystem::CreateInputLayouts()
             {"JOINTINDICES", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
             {"WEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}};
 
-        er = FileIO::LoadShaderDataFromFile("DefaultSkinned", "_VS", &shaderData);
+        er = FileIO::LoadShaderDataFromFile("Default_Skinned", "_VS", &shaderData);
 
         assert(er.m_Flags == ERESULT_FLAG::SUCCESS);
 
@@ -320,7 +331,7 @@ void RenderSystem::CreateInputLayouts()
 void RenderSystem::CreateCommonShaders()
 {
         m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEFAULT] = m_ResourceManager->LoadVertexShader("Default");
-        m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED] = m_ResourceManager->LoadVertexShader("DefaultSkinned");
+        m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED] = m_ResourceManager->LoadVertexShader("Default_Skinned");
         m_CommonVertexShaderHandles[E_VERTEX_SHADERS::DEBUG]   = m_ResourceManager->LoadVertexShader("Debug");
         m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEFAULT]   = m_ResourceManager->LoadPixelShader("Default");
         m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEBUG]     = m_ResourceManager->LoadPixelShader("Debug");
@@ -426,20 +437,24 @@ void RenderSystem::CreateSamplerStates()
                                         0);
         hr = m_Device->CreateSamplerState(&SamDescShad, &m_DefaultSamplerStates[E_SAMPLER_STATE::SHADOWS]);
         assert(SUCCEEDED(hr));
-
-
-        m_Context->VSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
-        m_Context->PSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
-        m_Context->HSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
-        m_Context->DSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
 }
 
 void RenderSystem::CreateBlendStates()
 {
         CD3D11_BLEND_DESC blendDescOpaque{D3D11_DEFAULT};
-
-
         m_Device->CreateBlendState(&blendDescOpaque, &m_BlendStates[E_BLEND_STATE::Opaque]);
+
+        CD3D11_BLEND_DESC blendDescTransluscent{};
+        blendDescTransluscent.RenderTarget[0].BlendEnable           = true;
+        blendDescTransluscent.RenderTarget[0].SrcBlend              = D3D11_BLEND_ONE;
+        blendDescTransluscent.RenderTarget[0].DestBlend             = D3D11_BLEND_INV_SRC_ALPHA;
+        blendDescTransluscent.RenderTarget[0].BlendOp               = D3D11_BLEND_OP_ADD;
+        blendDescTransluscent.RenderTarget[0].SrcBlendAlpha         = D3D11_BLEND_INV_DEST_ALPHA;
+        blendDescTransluscent.RenderTarget[0].DestBlendAlpha        = D3D11_BLEND_ONE;
+        blendDescTransluscent.RenderTarget[0].BlendOpAlpha          = D3D11_BLEND_OP_ADD;
+        blendDescTransluscent.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+
+        m_Device->CreateBlendState(&blendDescOpaque, &m_BlendStates[E_BLEND_STATE::Transluscent]);
 }
 
 void RenderSystem::CreateDepthStencilStates()
@@ -510,15 +525,20 @@ void RenderSystem::UpdateConstantBuffer(ID3D11Buffer* gpuBuffer, void* cpuBuffer
         m_Context->Unmap(gpuBuffer, 0);
 }
 
-void RenderSystem::DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
+void RenderSystem::DrawMesh(ID3D11Buffer*      vertexBuffer,
+                            ID3D11Buffer*      indexBuffer,
+                            uint32_t           indexCount,
+                            uint32_t           vertexSize,
+                            Material*          material,
+                            DirectX::XMMATRIX* mtx)
 {
         using namespace DirectX;
 
-        const UINT strides[] = {sizeof(FVertex)};
+        const UINT strides[] = {vertexSize};
         const UINT offsets[] = {0};
 
-        m_Context->IASetVertexBuffers(0, 1, &mesh->m_VertexBuffer, strides, offsets);
-        m_Context->IASetIndexBuffer(mesh->m_IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+        m_Context->IASetVertexBuffers(0, 1, &vertexBuffer, strides, offsets);
+        m_Context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
         VertexShader* vs = m_ResourceManager->GetResource<VertexShader>(material->m_VertexShaderHandle);
         PixelShader*  ps = m_ResourceManager->GetResource<PixelShader>(material->m_PixelShaderHandle);
@@ -526,23 +546,33 @@ void RenderSystem::DrawOpaqueStaticMesh(StaticMesh* mesh, Material* material, Di
         m_Context->VSSetShader(vs->m_VertexShader, nullptr, 0);
         m_Context->PSSetShader(ps->m_PixelShader, nullptr, 0);
 
-        m_ConstantBuffer_MVP.World = *mtx;
+        ID3D11ShaderResourceView* srvs[E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT];
+        m_ResourceManager->GetSRVs(E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, material->m_TextureHandles, srvs);
 
-        FSurfaceProperties surfaceProps;
+        m_Context->PSSetShaderResources(0, E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, srvs);
+
+        m_ConstantBuffer_MVP.World = XMMatrixTranspose(*mtx);
 
         UpdateConstantBuffer(
             m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP], &m_ConstantBuffer_MVP, sizeof(m_ConstantBuffer_MVP));
-        UpdateConstantBuffer(
-            m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE], &surfaceProps, sizeof(surfaceProps));
+        UpdateConstantBuffer(m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE],
+                             &material->m_SurfaceProperties,
+                             sizeof(FSurfaceProperties));
 
-
-        m_Context->DrawIndexed(mesh->m_IndexCount, 0, 0);
+        m_Context->DrawIndexed(indexCount, 0, 0);
 }
 
-void RenderSystem::DrawOpaqueSkeletalMesh(SkeletalMesh*               mesh,
-                                          Material*                   material,
-                                          DirectX::XMMATRIX*          mtx,
-                                          const Animation::FSkeleton* skel)
+void RenderSystem::DrawStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
+{
+        using namespace DirectX;
+
+        DrawMesh(mesh->m_VertexBuffer, mesh->m_IndexBuffer, mesh->m_IndexCount, sizeof(FVertex), material, mtx);
+}
+
+void RenderSystem::DrawSkeletalMesh(SkeletalMesh*               mesh,
+                                    Material*                   material,
+                                    DirectX::XMMATRIX*          mtx,
+                                    const Animation::FSkeleton* skel)
 {
         using namespace DirectX;
 
@@ -575,37 +605,8 @@ void RenderSystem::DrawOpaqueSkeletalMesh(SkeletalMesh*               mesh,
                              &m_ConstantBuffer_ANIM,
                              sizeof(m_ConstantBuffer_ANIM));
 
-        m_Context->IASetVertexBuffers(0, 1, &mesh->m_VertexBuffer, strides, offsets);
-        m_Context->IASetIndexBuffer(mesh->m_IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-        VertexShader* vs = m_ResourceManager->GetResource<VertexShader>(material->m_VertexShaderHandle);
-        PixelShader*  ps = m_ResourceManager->GetResource<PixelShader>(material->m_PixelShaderHandle);
-
-        m_Context->VSSetShader(vs->m_VertexShader, nullptr, 0);
-        m_Context->PSSetShader(ps->m_PixelShader, nullptr, 0);
-
-        ID3D11ShaderResourceView* srvs[E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT];
-        m_ResourceManager->GetSRVs(E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, material->m_TextureHandles, srvs);
-
-        m_Context->PSSetShaderResources(0, E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, srvs);
-
-        m_ConstantBuffer_MVP.World = *mtx;
-
-        UpdateConstantBuffer(
-            m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP], &m_ConstantBuffer_MVP, sizeof(m_ConstantBuffer_MVP));
-        UpdateConstantBuffer(m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE],
-                             &material->m_SurfaceProperties,
-                             sizeof(FSurfaceProperties));
-
-
-        m_Context->DrawIndexed(mesh->m_IndexCount, 0, 0);
+        DrawMesh(mesh->m_VertexBuffer, mesh->m_IndexBuffer, mesh->m_IndexCount, sizeof(FSkinnedVertex), material, mtx);
 }
-
-void RenderSystem::DrawTransparentStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
-{}
-
-void RenderSystem::DrawTransparentSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
-{}
 
 void RenderSystem::RefreshMainCameraSettings()
 {
@@ -624,12 +625,122 @@ void RenderSystem::RefreshMainCameraSettings()
 
 void RenderSystem::OnPreUpdate(float deltaTime)
 {
-        ID3D11ShaderResourceView* srvs[3] = {0};
+        using namespace std;
+        using namespace DirectX;
+
+        ID3D11ShaderResourceView* srvs[5] = {0};
         srvs[0] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("IBLTestDiffuseHDR"))->m_SRV;
         srvs[1] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("IBLTestSpecularHDR"))->m_SRV;
         srvs[2] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("IBLTestBrdf"))->m_SRV;
+        srvs[3] =
+            m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("Clouds_Fibers_BlurredNoise"))->m_SRV;
+        srvs[4] = m_ResourceManager->GetResource<Texture2D>(m_ResourceManager->LoadTexture2D("Veins_Caustics_Tiles"))->m_SRV;
 
-        m_Context->PSSetShaderResources(E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, 3, srvs);
+        m_Context->PSSetShaderResources(E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, 5, srvs);
+        m_Context->VSSetShaderResources(E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT + 3, 2, &srvs[3]);
+
+
+        /** Update Camera Info **/
+        CameraComponent*    mainCamera       = m_ComponentManager->GetComponent<CameraComponent>(m_MainCameraHandle);
+        EntityHandle        mainCameraEntity = mainCamera->GetOwner();
+        TransformComponent* mainTransform    = m_ComponentManager->GetComponent<TransformComponent>(mainCameraEntity);
+
+        m_CachedMainInvViewMatrix        = mainTransform->transform.CreateMatrix();
+        XMMATRIX view                    = XMMatrixInverse(nullptr, m_CachedMainInvViewMatrix);
+        m_CachedMainViewProjectionMatrix = view * m_CachedMainProjectionMatrix;
+
+        mainCamera->_cachedView           = view;
+        mainCamera->_cachedProjection     = m_CachedMainProjectionMatrix;
+        mainCamera->_cachedViewProjection = m_CachedMainViewProjectionMatrix;
+
+        XMStoreFloat3(&m_ConstantBuffer_SCENE.eyePosition, mainTransform->transform.translation);
+        m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(m_CachedMainViewProjectionMatrix);
+
+        /** Prepare draw calls **/
+        m_TransluscentDraws.clear();
+        m_OpaqueDraws.clear();
+        // Add all static meshes
+        if (!m_ComponentManager->ComponentsExist<StaticMeshComponent>())
+        {
+
+                auto staticMeshCompItr = m_ComponentManager->GetActiveComponents<StaticMeshComponent>();
+
+                for (auto itr = staticMeshCompItr.begin(); itr != staticMeshCompItr.end(); itr++)
+                {
+                        FDraw drawcall;
+                        drawcall.meshType        = FDraw::EDrawType::Static;
+                        drawcall.componentHandle = itr.data()->GetHandle();
+
+                        auto        staticMeshComp = static_cast<StaticMeshComponent*>(itr.data());
+                        StaticMesh* staticMesh = m_ResourceManager->GetResource<StaticMesh>(staticMeshComp->m_StaticMeshHandle);
+                        EntityHandle        entityHandle = staticMeshComp->GetOwner();
+                        TransformComponent* tcomp        = m_ComponentManager->GetComponent<TransformComponent>(entityHandle);
+                        Material*           mat = m_ResourceManager->GetResource<Material>(staticMeshComp->m_MaterialHandle);
+
+                        drawcall.meshResource   = staticMeshComp->m_StaticMeshHandle;
+                        drawcall.materialHandle = staticMeshComp->m_MaterialHandle;
+                        drawcall.mtx            = tcomp->transform.CreateMatrix();
+
+                        if (mat->m_SurfaceProperties.textureFlags & SURFACE_FLAG_IS_TRANSLUSCENT)
+                        {
+                                m_TransluscentDraws.emplace_back(std::move(drawcall));
+                        }
+                        else
+                        {
+                                m_OpaqueDraws.emplace_back(std::move(drawcall));
+                        }
+                }
+        }
+
+        // Add all skeletal meshes
+        if (!m_ComponentManager->ComponentsExist<SkeletalMeshComponent>())
+        {
+
+                auto skelCompItr = m_ComponentManager->GetActiveComponents<SkeletalMeshComponent>();
+
+                for (auto itr = skelCompItr.begin(); itr != skelCompItr.end(); itr++)
+                {
+                        FDraw drawcall;
+                        drawcall.meshType        = FDraw::EDrawType::Skeletal;
+                        drawcall.componentHandle = itr.data()->GetHandle();
+
+                        auto          skelMeshComp = static_cast<SkeletalMeshComponent*>(itr.data());
+                        SkeletalMesh* skelMesh =
+                            m_ResourceManager->GetResource<SkeletalMesh>(skelMeshComp->m_SkeletalMeshHandle);
+                        EntityHandle        entityHandle = skelMeshComp->GetOwner();
+                        TransformComponent* tcomp        = m_ComponentManager->GetComponent<TransformComponent>(entityHandle);
+                        Material*           mat = m_ResourceManager->GetResource<Material>(skelMeshComp->m_MaterialHandle);
+
+                        drawcall.meshResource   = skelMeshComp->m_SkeletalMeshHandle;
+                        drawcall.materialHandle = skelMeshComp->m_MaterialHandle;
+                        drawcall.mtx            = tcomp->transform.CreateMatrix();
+
+                        if (mat->m_SurfaceProperties.textureFlags & SURFACE_FLAG_IS_TRANSLUSCENT)
+                        {
+                                m_TransluscentDraws.emplace_back(std::move(drawcall));
+                        }
+                        else
+                        {
+                                m_OpaqueDraws.emplace_back(std::move(drawcall));
+                        }
+                }
+        }
+
+        // Sort opaque meshes front to back
+        std::sort(m_OpaqueDraws.begin(), m_OpaqueDraws.end(), [this](const FDraw& a, const FDraw& b) -> bool {
+                XMVECTOR va = XMVector3TransformCoord(a.mtx.r[3], m_CachedMainViewProjectionMatrix);
+                XMVECTOR vb = XMVector3TransformCoord(b.mtx.r[3], m_CachedMainViewProjectionMatrix);
+
+                return XMVectorGetZ(va) < XMVectorGetZ(vb);
+        });
+
+        // Sort transluscent meshes back to front
+        std::sort(m_OpaqueDraws.begin(), m_OpaqueDraws.end(), [this](const FDraw& a, const FDraw& b) -> bool {
+                XMVECTOR va = XMVector3TransformCoord(a.mtx.r[3], m_CachedMainViewProjectionMatrix);
+                XMVECTOR vb = XMVector3TransformCoord(b.mtx.r[3], m_CachedMainViewProjectionMatrix);
+
+                return XMVectorGetZ(va) > XMVectorGetZ(vb);
+        });
 }
 
 void RenderSystem::OnUpdate(float deltaTime)
@@ -637,6 +748,11 @@ void RenderSystem::OnUpdate(float deltaTime)
         using namespace DirectX;
 
         ResourceManager* rm = GEngine::Get()->GetResourceManager();
+
+        m_Context->VSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
+        m_Context->PSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
+        m_Context->HSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
+        m_Context->DSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
 
         // Set base pass texture as render target
         m_Context->OMSetRenderTargets(
@@ -657,31 +773,17 @@ void RenderSystem::OnUpdate(float deltaTime)
         viewport.TopLeftX = 0;
         viewport.TopLeftY = 0;
 
-        CameraComponent*    mainCamera       = m_ComponentManager->GetComponent<CameraComponent>(m_MainCameraHandle);
-        EntityHandle        mainCameraEntity = mainCamera->GetOwner();
-        TransformComponent* mainTransform    = m_ComponentManager->GetComponent<TransformComponent>(mainCameraEntity);
-
-        XMMATRIX view             = (XMMatrixInverse(nullptr, mainTransform->transform.CreateMatrix()));
-        m_CachedMainInvViewMatrix = XMMatrixInverse(nullptr, view);
-
-        m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(view * m_CachedMainProjectionMatrix);
-
         m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
         m_Context->RSSetViewports(1, &viewport);
 
-        float blendFactor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-        UINT  sampleMask     = 0xffffffff;
-        m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Opaque], blendFactor, sampleMask);
         m_Context->OMSetDepthStencilState(m_DepthStencilStates[E_DEPTH_STENCIL_STATE::BASE_PASS], 0);
-
-        /** Draw Mesh. Should be replaced by loop **/
 
         m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::SKINNED]);
         m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         m_Context->VSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
         m_Context->PSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
 
-        /** Get Drectional Light**/
+        /** Get Directional Light**/
         {
                 if (m_ComponentManager->ComponentsExist<DirectionalLightComponent>())
                         return;
@@ -695,69 +797,65 @@ void RenderSystem::OnUpdate(float deltaTime)
                         XMStoreFloat3(&m_ConstantBuffer_SCENE.directionalLightDirection,
                                       dirLightComp->m_LightRotation.GetForward());
 
-                        m_ConstantBuffer_SCENE.directioanlLightColor = dirLightComp->m_LightColor;
+                        m_ConstantBuffer_SCENE.directionalLightColor =
+                            XMFLOAT3A(dirLightComp->m_LightColor.x * dirLightComp->m_LightColor.w,
+                                      dirLightComp->m_LightColor.y * dirLightComp->m_LightColor.w,
+                                      dirLightComp->m_LightColor.z * dirLightComp->m_LightColor.w);
+
+                        m_ConstantBuffer_SCENE.ambientColor =
+                            XMFLOAT3A(dirLightComp->m_AmbientColor.x * dirLightComp->m_AmbientColor.w,
+                                      dirLightComp->m_AmbientColor.y * dirLightComp->m_AmbientColor.w,
+                                      dirLightComp->m_AmbientColor.z * dirLightComp->m_AmbientColor.w);
                 }
         }
-
-        XMStoreFloat3(&m_ConstantBuffer_SCENE.eyePosition, mainTransform->transform.translation);
-        m_ConstantBuffer_SCENE.time = (float)GEngine::Get()->GetTotalTime();
+        m_ConstantBuffer_SCENE.time         = (float)GEngine::Get()->GetTotalTime();
+        m_ConstantBuffer_SCENE.playerRadius = (float)GEngine::Get()->m_PlayerRadius;
         UpdateConstantBuffer(m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE],
                              &m_ConstantBuffer_SCENE,
                              sizeof(m_ConstantBuffer_SCENE));
 
+        float blendFactor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+        UINT  sampleMask     = 0xffffffff;
 
-        /** Render all opaque static meshes **/
-        if (false)
+        /** Render opaque meshes **/
+        m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Opaque], blendFactor, sampleMask);
+        for (size_t i = 0, n = m_OpaqueDraws.size(); i < n; ++i)
         {
+                if (m_OpaqueDraws[i].meshType == FDraw::EDrawType::Static)
                 {
-                        if (!m_ComponentManager->ComponentsExist<StaticMeshComponent>())
-                                return;
-
-                        auto     staticMeshCompItr = m_ComponentManager->GetActiveComponents<StaticMeshComponent>();
-                        Material mat;
-                        mat.m_VertexShaderHandle = m_CommonVertexShaderHandles[E_VERTEX_SHADERS::SKINNED];
-                        mat.m_PixelShaderHandle  = m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEFAULT];
-
-                        for (auto itr = staticMeshCompItr.begin(); itr != staticMeshCompItr.end(); itr++)
-                        {
-                                auto        staticMeshComp = static_cast<StaticMeshComponent*>(itr.data());
-                                StaticMesh* staticMesh =
-                                    m_ResourceManager->GetResource<StaticMesh>(staticMeshComp->m_StaticMeshHandle);
-                                EntityHandle        entityHandle = staticMeshComp->GetOwner();
-                                TransformComponent* tcomp =
-                                    m_EntityManager->GetEntity(entityHandle)->GetComponent<TransformComponent>();
-
-                                XMMATRIX world = tcomp->transform.CreateMatrix();
-
-                                DrawOpaqueStaticMesh(staticMesh, &mat, &world);
-                        }
+                        StaticMesh* mesh = m_ResourceManager->GetResource<StaticMesh>(m_OpaqueDraws[i].meshResource);
+                        Material*   mat  = m_ResourceManager->GetResource<Material>(m_OpaqueDraws[i].materialHandle);
+                        DrawStaticMesh(mesh, mat, &m_OpaqueDraws[i].mtx);
+                }
+                else
+                {
+                        SkeletalMesh* mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_OpaqueDraws[i].meshResource);
+                        Material*     mat  = m_ResourceManager->GetResource<Material>(m_OpaqueDraws[i].materialHandle);
+                        SkeletalMeshComponent* meshComp =
+                            m_ComponentManager->GetComponent<SkeletalMeshComponent>(m_OpaqueDraws[i].componentHandle);
+                        DrawSkeletalMesh(mesh, mat, &m_OpaqueDraws[i].mtx, &meshComp->m_Skeleton);
                 }
         }
 
-        /** Render all opaque skeletal meshes **/
+        /** Render transluscent meshes **/
+        m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Transluscent], blendFactor, sampleMask);
+        for (size_t i = 0, n = m_TransluscentDraws.size(); i < n; ++i)
         {
-                if (m_ComponentManager->ComponentsExist<SkeletalMeshComponent>())
-                        return;
-
-                auto skelCompItr = m_ComponentManager->GetActiveComponents<SkeletalMeshComponent>();
-
-                for (auto itr = skelCompItr.begin(); itr != skelCompItr.end(); itr++)
+                if (m_TransluscentDraws[i].meshType == FDraw::EDrawType::Static)
                 {
-                        auto          skelMeshComp = static_cast<SkeletalMeshComponent*>(itr.data());
-                        SkeletalMesh* skelMesh =
-                            m_ResourceManager->GetResource<SkeletalMesh>(skelMeshComp->m_SkeletalMeshHandle);
-                        EntityHandle        entityHandle = skelMeshComp->GetOwner();
-                        TransformComponent* tcomp        = m_ComponentManager->GetComponent<TransformComponent>(entityHandle);
-
-                        XMMATRIX world = tcomp->transform.CreateMatrix();
-
-                        DrawOpaqueSkeletalMesh(skelMesh,
-                                               m_ResourceManager->GetResource<Material>(skelMeshComp->m_MaterialHandle),
-                                               &world,
-                                               &skelMeshComp->m_Skeleton);
+                        StaticMesh* mesh = m_ResourceManager->GetResource<StaticMesh>(m_TransluscentDraws[i].meshResource);
+                        Material*   mat  = m_ResourceManager->GetResource<Material>(m_TransluscentDraws[i].materialHandle);
+                        DrawStaticMesh(mesh, mat, &m_TransluscentDraws[i].mtx);
+                }
+                else
+                {
+                        SkeletalMesh* mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_TransluscentDraws[i].meshResource);
+                        Material*     mat  = m_ResourceManager->GetResource<Material>(m_TransluscentDraws[i].materialHandle);
+                        SkeletalMeshComponent* meshComp =
+                            m_ComponentManager->GetComponent<SkeletalMeshComponent>(m_TransluscentDraws[i].componentHandle);
+                        DrawSkeletalMesh(mesh, mat, &m_TransluscentDraws[i].mtx, &meshComp->m_Skeleton);
                 }
         }
-
 
         // Set the backbuffer as render target
         m_Context->OMSetRenderTargets(1, &m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER], nullptr);
@@ -781,6 +879,8 @@ void RenderSystem::OnUpdate(float deltaTime)
                              &m_ContstantBuffer_SCREENSPACE,
                              sizeof(m_ContstantBuffer_SCREENSPACE));
 
+        m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Opaque], blendFactor, sampleMask);
+
         ID3D11ShaderResourceView* inSRV  = m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::BASE_PASS];
         ID3D11RenderTargetView*   outRTV = m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER];
         for (auto& pp : m_PostProcessChain)
@@ -802,6 +902,7 @@ void RenderSystem::OnUpdate(float deltaTime)
         debug_renderer::AddSphere(sphere, 32, XMMatrixIdentity());
         debug_renderer::AddMatrix(XMMatrixTranslationFromVector(sphere.center), 0.05f);
 
+        m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Opaque], blendFactor, sampleMask);
         if (GEngine::Get()->IsDebugMode())
                 DrawDebug();
         debug_renderer::clear_lines();
@@ -841,7 +942,7 @@ void RenderSystem::OnInitialize()
         CreatePostProcessEffects(&desc);
 
         // UI Manager Initialize
-        UIManager::Initialize();
+        UIManager::Initialize(m_WindowHandle);
 }
 
 void RenderSystem::OnShutdown()
@@ -947,6 +1048,9 @@ void RenderSystem::OnWindowResize(WPARAM wParam, LPARAM lParam)
                 D3D11_TEXTURE2D_DESC desc;
                 CreateDefaultRenderTargets(&desc);
                 CreatePostProcessEffects(&desc);
+                RefreshMainCameraSettings();
+
+                std::cout << m_BackBufferHeight << "   " << m_BackBufferWidth << std::endl;
         }
 }
 

@@ -1,23 +1,22 @@
 #pragma once
 #include <unordered_map>
-#include "CollisionLibary.h"
-#include"../../ECS/ECS.h"
+#include "../../ECS/ECS.h"
+#include "CollisionGrid.h"
+
+class ComponentManager;
+
 class CollisionSystem : public ISystem
 {
-    public:
-        static struct CollisionID
-        {
-                DirectX::XMVECTOR position;
-                int               idex;
-        };
 
-    private:
-        std::unordered_map<CollisionID, std::vector<std::pair<int, ComponentHandle>>> collisionMap;
-    public:
-        bool                     Moved(Collision::ECollisionObjectTypes shapes);
-        std::vector<CollisionID> GetIDs(Collision::ECollisionObjectTypes shapes);
+        CollisionGrid m_Grid;
+        // bool                     Moved(Shapes::ECollisionObjectTypes shapes);
+        // std::vector<CollisionID> GetIDs(Shapes::ECollisionObjectTypes shapes);
+        ComponentManager* m_ComponentManager;
 
-        // Inherited via ISystem
+    public:
+        CollisionGrid GetCollisionGrid();
+
+    protected:
         virtual void OnPreUpdate(float deltaTime) override;
         virtual void OnUpdate(float deltaTime) override;
         virtual void OnPostUpdate(float deltaTime) override;

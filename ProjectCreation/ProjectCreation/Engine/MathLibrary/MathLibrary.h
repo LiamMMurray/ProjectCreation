@@ -1,4 +1,5 @@
 #pragma once
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdint.h>
 #undef max
@@ -70,7 +71,25 @@ class MathLibrary
 
                         return false; // complex roots
                 }
-        }
+        };
+
+        static float MoveTowards(const float a, const float b, const float speed);
+
+        static double SmoothStart2(double x);
+        static double SmoothStop2(double x);
+
+        static double SmoothStart3(double x);
+        static double SmoothStop3(double x);
+
+        static double SmoothStart4(double x);
+        static double SmoothStop4(double x);
+
+		static double SmoothStartN(double x, double power);
+        static double SmoothStopN(double x, double power);
+
+        static double SmoothMix(double a, double b, double blend);
+        static double SmoothCrossfade(double a, double b, double time);
+
         template <typename T>
         static T lerp(T v0, T v1, T t)
         {
@@ -110,11 +129,15 @@ class MathLibrary
         }
 
         template <typename T>
-		static void AddNumberToVector(DirectX::XMVECTOR& vector, T number)
-		{
+        static void AddNumberToVector(DirectX::XMVECTOR& vector, T number)
+        {
                 float x = DirectX::XMVectorGetX(vector) + number;
                 float y = DirectX::XMVectorGetY(vector) + number;
                 float z = DirectX::XMVectorGetZ(vector) + number;
                 vector  = DirectX::XMVectorSet(x, y, z, DirectX::XMVectorGetW(vector));
-		}
+        }
+
+		static float CalculateAngularDiameter(const DirectX::XMVECTOR& eye, const Shapes::FSphere& sphere);
+		static float CalculateDistanceFromAngularDiameter(float angularDiameter, const Shapes::FSphere& sphere);
+
 };

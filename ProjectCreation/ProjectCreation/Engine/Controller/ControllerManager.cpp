@@ -7,24 +7,92 @@
 #include "DebugCameraController.h"
 #include "PlayerMovement.h"
 
+#include "../../Rendering/DebugRender/debug_renderer.h"
 #include "../../Rendering/RenderingSystem.h"
+
+#include "../CollisionLibary/Shapes.h"
+
+#include "../../UI/UIManager.h"
+
+#include <WinUser.h>
 
 using namespace std;
 
+
+ControllerManager* ControllerManager::instance;
+
 void ControllerManager::DisplayConsoleMenu()
 {
-        if (m_CurrentController == E_CONTROLLERS::DEBUG)
+        cout << "Switching Active Controller To : ";
+
+        switch (m_CurrentController)
         {
-                cout << "Switching Active Controller To Player Camera" << endl;
+                case E_CONTROLLERS::DEBUG:
+                {
+                        cout << "DEBUG";
+                        break;
+                }
+                case E_CONTROLLERS::PLAYER:
+                {
+                        cout << "DEBUG";
+                        break;
+                }
+
+                default:
+                {
+                        assert(false && "INVALID PLAYER SELECTED");
+                }
         }
 
-        if (m_CurrentController == E_CONTROLLERS::PLAYER)
+        cout << endl;
+}
+
+int ControllerManager::GetOrbCount(E_LIGHT_ORBS color)
+{
+        if (color == E_LIGHT_ORBS::RED_LIGHTS)
         {
-                cout << "Switching Active Controller To Debug Camera" << endl;
+                return m_RedOrbCount;
+        }
+
+        if (color == E_LIGHT_ORBS::BLUE_LIGHTS)
+        {
+                return m_BlueOrbCount;
+        }
+
+        if (color == E_LIGHT_ORBS::GREEN_LIGHTS)
+        {
+                return m_GreenOrbCount;
+        }
+}
+
+void ControllerManager::SetOrbCount(E_LIGHT_ORBS color)
+{
+        if (color == E_LIGHT_ORBS::RED_LIGHTS)
+        {
+                m_RedOrbCount += 1;
+                std::cout << "Red Count: " << GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) << std::endl;
+        }
+
+        if (color == E_LIGHT_ORBS::BLUE_LIGHTS)
+        {
+                m_BlueOrbCount += 1;
+                std::cout << "Blue Count: " << GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) << std::endl;
+        }
+
+        if (color == E_LIGHT_ORBS::GREEN_LIGHTS)
+        {
+                m_GreenOrbCount += 1;
+                std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
         }
 }
 
 void ControllerManager::Initialize()
+{
+        instance = new ControllerManager;
+        instance->init();
+}
+
+void ControllerManager::init()
 {
         m_SystemManager    = GEngine::Get()->GetSystemManager();
         m_ComponentManager = GEngine::Get()->GetComponentManager();
@@ -37,23 +105,25 @@ void ControllerManager::Initialize()
         // Player entity setup
         {
                 auto eHandle = m_EntityManager->CreateEntity<BaseEntity>();
-                m_Controllers[E_CONTROLLERS::PLAYER]->Init(eHandle);
 
 
                 GEngine::Get()->GetComponentManager()->AddComponent<TransformComponent>(eHandle);
                 GEngine::Get()->GetComponentManager()->AddComponent<CameraComponent>(eHandle);
 
                 auto tComp                   = GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(eHandle);
-                tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.3f, -2.0f, 1.0f);
+                tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, -2.0f, 1.0f);
+                tComp->transform.rotation =
+                    DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
 
                 auto cameraComp = GEngine::Get()->GetComponentManager()->GetComponent<CameraComponent>(eHandle);
                 cameraComp->m_Settings.m_HorizontalFOV = 90.0f;
+
+                GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->SetMainCameraComponent(cameraComp->GetHandle());
+                m_Controllers[E_CONTROLLERS::PLAYER]->Init(eHandle);
         }
 
         {
                 auto eHandle = m_EntityManager->CreateEntity<BaseEntity>();
-                m_Controllers[E_CONTROLLERS::DEBUG]->Init(eHandle);
-
 
                 GEngine::Get()->GetComponentManager()->AddComponent<TransformComponent>(eHandle);
                 GEngine::Get()->GetComponentManager()->AddComponent<CameraComponent>(eHandle);
@@ -63,58 +133,70 @@ void ControllerManager::Initialize()
 
                 auto cameraComp = GEngine::Get()->GetComponentManager()->GetComponent<CameraComponent>(eHandle);
                 cameraComp->m_Settings.m_HorizontalFOV = 90.0f;
+                m_Controllers[E_CONTROLLERS::DEBUG]->Init(eHandle);
+                m_Controllers[E_CONTROLLERS::DEBUG]->SetEnabled(false);
         }
 
         m_CurrentController = E_CONTROLLERS::PLAYER;
 }
 
-void ControllerManager::Update(float delta)
+void ControllerManager::update(float delta)
 {
+        if (GCoreInput::GetKeyState(KeyCode::R) == KeyState::DownFirst)
+        {
+                SetOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
+                std::cout << "Red Count: " << GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) << std::endl;
+        }
+
+        if (GCoreInput::GetKeyState(KeyCode::B) == KeyState::DownFirst)
+        {
+                SetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
+                std::cout << "Blue Count: " << GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) << std::endl;
+        }
+
+        if (GCoreInput::GetKeyState(KeyCode::G) == KeyState::DownFirst)
+        {
+                SetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
+                std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
+        }
+
         if (GCoreInput::GetKeyState(KeyCode::Tab) == KeyState::DownFirst)
         {
-                m_toggleDebug = !m_toggleDebug;
-                DisplayConsoleMenu();
-                GEngine::Get()->SetDebugMode(m_toggleDebug);
+                m_Controllers[m_CurrentController]->SetEnabled(false);
+                m_CurrentController = (E_CONTROLLERS)((m_CurrentController + 1) % E_CONTROLLERS::COUNT);
+                m_Controllers[m_CurrentController]->SetEnabled(true);
 
-                if (m_toggleDebug == true)
-                {
-                        m_CurrentController = E_CONTROLLERS::DEBUG;
-
-                        auto tPlayer = m_ComponentManager->GetComponent<TransformComponent>(
-                            m_Controllers[E_CONTROLLERS::PLAYER]->GetControlledEntity());
-                        auto tDebug = m_ComponentManager->GetComponent<TransformComponent>(
-                            m_Controllers[E_CONTROLLERS::DEBUG]->GetControlledEntity());
-
-                        tDebug->transform = tPlayer->transform;
-                }
-
-                if (m_toggleDebug == false)
-                {
-                        m_CurrentController = E_CONTROLLERS::PLAYER;
-                }
+                auto cameraHandle =
+                    GEngine::Get()
+                        ->GetComponentManager()
+                        ->GetComponent<TransformComponent>(m_Controllers[m_CurrentController]->GetControlledEntity())
+                        ->GetHandle();
+                GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->SetMainCameraComponent(cameraHandle);
         }
 
-
-        if (m_CurrentController == E_CONTROLLERS::PLAYER)
+        for (int i = 0; i < E_CONTROLLERS::COUNT; ++i)
         {
-                auto comp = m_ComponentManager->GetComponent<CameraComponent>(
-                    m_Controllers[E_CONTROLLERS::PLAYER]->GetControlledEntity());
-
-                m_SystemManager->GetSystem<RenderSystem>()->SetMainCameraComponent(comp->GetHandle());
+                m_Controllers[i]->OnUpdate(delta);
         }
+}
 
-        if (m_CurrentController == E_CONTROLLERS::DEBUG)
-        {
-                auto comp = m_ComponentManager->GetComponent<CameraComponent>(
-                    m_Controllers[E_CONTROLLERS::DEBUG]->GetControlledEntity());
-
-                m_SystemManager->GetSystem<RenderSystem>()->SetMainCameraComponent(comp->GetHandle());
-        }
-
-        m_Controllers[m_CurrentController]->OnUpdate(delta);
+ControllerManager* ControllerManager::Get()
+{
+        return instance;
 }
 
 void ControllerManager::Shutdown()
+{
+        instance->shutdown();
+        delete instance;
+}
+
+void ControllerManager::Update(float deltaTime)
+{
+        instance->update(deltaTime);
+}
+
+void ControllerManager::shutdown()
 {
         for (int i = 0; i < E_CONTROLLERS::COUNT; ++i)
         {

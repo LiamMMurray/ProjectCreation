@@ -1,6 +1,6 @@
 #pragma once
 #include "../../Engine/Animation/AnimationContainers.h"
-#include "../../Engine/CollisionLibary/CollisionComponent.h"
+#include "../../Engine/CollisionLibary/CollisionResult.h"
 #include "../../Engine/MathLibrary/ColorConstants.h"
 #include "../../Engine/MathLibrary/MathLibrary.h"
 #include "../Vertex.h"
@@ -17,6 +17,8 @@ namespace debug_renderer
         {
                 add_line(p, q, color, color);
         }
+
+		void AddGrid(DirectX::XMVECTOR center, float width, int segments, DirectX::XMFLOAT4 color);
 
         void AddBoneHierarchy(const Animation::FSkeleton& skel,
                               const DirectX::XMMATRIX*    globaltransforms,
