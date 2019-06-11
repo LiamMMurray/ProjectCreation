@@ -20,10 +20,14 @@ class GEngine
 
         static GEngine* instance;
 
-        bool m_DebugMode = false;
+        bool m_DebugMode     = false;
+        bool m_GameIsPaused  = false;
+        bool m_WantsGameExit = false;
 
     public:
         float m_PlayerRadius = 0.0f;
+
+        void SetGamePaused(bool val);
 
         static void Initialize();
         static void Shutdown();
@@ -55,4 +59,14 @@ class GEngine
 
         float  GetDeltaTime();
         double GetTotalTime();
+
+		inline bool WantsGameExit()
+		{
+                return m_WantsGameExit;
+		}
+
+        inline void RequestGameExit()
+        {
+                m_WantsGameExit = true;
+        }
 };

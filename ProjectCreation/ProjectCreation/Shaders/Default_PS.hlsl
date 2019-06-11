@@ -300,7 +300,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         // return areaMaskA;
 
         float3 dirVec = pIn.PosWS + float3(areaMaskA, 0, areaMaskA) - _EyePosition;
-        float  dist   = sqrt(dot(dirVec, dirVec));
+        float  dist   = sqrt(dot(dirVec.xz, dirVec.xz));
 
 		float modulatedDistance = dist / .1f + InterleavedGradientNoise(pIn.Pos.xy + _Time);
 

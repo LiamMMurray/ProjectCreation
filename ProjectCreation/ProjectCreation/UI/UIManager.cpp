@@ -4,7 +4,7 @@
 #include "../Engine/GEngine.h"
 #include "../Rendering/RenderingSystem.h"
 
-#include "../Engine/Controller/ControllerManager.h"
+#include "../Engine/Controller/ControllerSystem.h"
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #define NOMINMAX
@@ -498,8 +498,8 @@ void UIManager::Update()
 
                 if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
                 {
-                        // ControllerManager::Get()->m_togglePauseInput = !ControllerManager::Get()->m_togglePauseInput;
-                        instance->m_InMenu = !instance->m_InMenu;
+                        //ControllerSystem::Get()->m_togglePauseInput = !ControllerSystem::Get()->m_togglePauseInput;
+                        instance->m_InMenu                           = !instance->m_InMenu;
                         if (instance->m_InMenu)
                         {
                                 while (ShowCursor(TRUE) < 0)

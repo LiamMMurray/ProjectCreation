@@ -34,7 +34,7 @@
 #include "Rendering/DebugRender/debug_renderer.h"
 ////testing -vic
 
-#include "Engine/Controller/ControllerManager.h"
+#include "Engine/Controller/ControllerSystem.h"
 
 #include "Engine/Gameplay/OrbitSystem.h"
 #include "Engine/Gameplay/SpeedBoostSystem.h"
@@ -198,8 +198,6 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         auto testMeshHandle = entityManager->CreateEntity<BaseEntity>();
         // auto entity  = entityManager->GetEntity(eHandle);
 
-        ControllerManager::Initialize();
-
         // Debug camera entity setup
 
         // Test skeletal mesh setup
@@ -235,7 +233,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         }
 
         // Create speedboost system
-        FSystemInitProperties sysInitProps;
+        FSystemProperties sysInitProps;
         SpeedBoostSystem*     speedBoostSystem;
         systemManager->CreateSystem<SpeedBoostSystem>(&speedBoostSystem);
         sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
@@ -245,8 +243,8 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         OrbitSystem* orbitSystem;
         systemManager->CreateSystem<OrbitSystem>(&orbitSystem);
         systemManager->RegisterSystem(&sysInitProps, orbitSystem);
-
-        while (msg.message != WM_QUIT)
+        GEngine::Get()->SetGamePaused(true);
+        while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
         {
                 GCoreInput::UpdateInput();
 
@@ -281,12 +279,8 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 }
 
                 debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
-
-                ControllerManager::Update(GEngine::Get()->GetDeltaTime());
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
         }
-
-        ControllerManager::Shutdown();
         EngineHelpers::ShutdownEngineSystemManagers();
 
         return 0;

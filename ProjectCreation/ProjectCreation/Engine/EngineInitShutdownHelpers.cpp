@@ -2,6 +2,7 @@
 
 #include "../Engine/Animation/AnimationSystem.h"
 #include "../Engine/CollisionLibary/CollisionSystem.h"
+#include "../Engine/Controller/ControllerSystem.h"
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/Physics/PhysicsSystem.h"
 
@@ -13,35 +14,61 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
         EntityManager*    entityManager    = GEngine::Get()->GetEntityManager();
         ComponentManager* componentManager = GEngine::Get()->GetComponentManager();
 
-        FSystemInitProperties sysInitProps;
-		// Create Collision System
-        CollisionSystem* collisionSystem;
-        systemManager->CreateSystem<CollisionSystem>(&collisionSystem);
-        sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
-        sysInitProps.m_UpdateRate = 0.0f;
-        systemManager->RegisterSystem(&sysInitProps, collisionSystem);
+        // Create Collision System
+        {
+                FSystemProperties sysInitProps;
+                sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
+                sysInitProps.m_UpdateRate = 0.0f;
+
+                CollisionSystem* collisionSystem;
+                systemManager->CreateSystem<CollisionSystem>(&collisionSystem);
+                systemManager->RegisterSystem(&sysInitProps, collisionSystem);
+        }
 
         // Create Render System
-        RenderSystem* renderSystem;
-        systemManager->CreateSystem<RenderSystem>(&renderSystem);
-        renderSystem->SetWindowHandle(handle);
-        systemManager->RegisterSystem(&sysInitProps, renderSystem);
+        {
+                FSystemProperties sysInitProps;
+                sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::VERY_LOW;
+                sysInitProps.m_UpdateRate = 0.0f;
+                sysInitProps.m_Flags      = SYSTEM_FLAG_UPDATE_WHEN_PAUSED;
+                RenderSystem* renderSystem;
+                systemManager->CreateSystem<RenderSystem>(&renderSystem);
+                renderSystem->SetWindowHandle(handle);
+                systemManager->RegisterSystem(&sysInitProps, renderSystem);
+        }
 
         // Create Physics System
-        PhysicsSystem* physicsSystem;
-        systemManager->CreateSystem<PhysicsSystem>(&physicsSystem);
-        sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::VERY_HIGH;
-        sysInitProps.m_UpdateRate = 0.0125f;
-        systemManager->RegisterSystem(&sysInitProps, physicsSystem);
+        {
+                FSystemProperties sysInitProps;
+                sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::VERY_HIGH;
+                sysInitProps.m_UpdateRate = 0.0125f;
+
+                PhysicsSystem* physicsSystem;
+                systemManager->CreateSystem<PhysicsSystem>(&physicsSystem);
+                systemManager->RegisterSystem(&sysInitProps, physicsSystem);
+        }
 
         // Create Animation System
-        AnimationSystem* animSystem;
-        systemManager->CreateSystem<AnimationSystem>(&animSystem);
-        sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
-        sysInitProps.m_UpdateRate = 0.0f;
-        systemManager->RegisterSystem(&sysInitProps, animSystem);
+        {
+                FSystemProperties sysInitProps;
+                sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
+                sysInitProps.m_UpdateRate = 0.0f;
 
+                AnimationSystem* animSystem;
+                systemManager->CreateSystem<AnimationSystem>(&animSystem);
+                systemManager->RegisterSystem(&sysInitProps, animSystem);
+        }
 
+        // Create Controller System
+        {
+                FSystemProperties sysInitProps;
+                sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::VERY_HIGH;
+                sysInitProps.m_UpdateRate = 0.0f;
+
+                ControllerSystem* controllerSystem;
+                systemManager->CreateSystem<ControllerSystem>(&controllerSystem);
+                systemManager->RegisterSystem(&sysInitProps, controllerSystem);
+        }
 
         GCoreInput::InitializeInput((HWND)handle);
 
