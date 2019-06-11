@@ -18,6 +18,10 @@ struct HandleData
         {
                 SetFlags(m_Flags | HANDLEFLAG::INACTIVE);
         }
+		void SetValid()
+		{
+                SetFlags( (m_Flags | HANDLEFLAG::INACTIVE)  ^ HANDLEFLAG::INACTIVE);
+		}
         void SetFlags(uint8_t flags)
         {
                 m_Flags = flags;
