@@ -24,7 +24,7 @@ class PlayerController : public IController
 
         float minMaxSpeed = 1.0f;
         float maxMaxSpeed = 3.0f;
-
+        float currentMaxSpeed = minMaxSpeed;
 
         float acceleration   = 1.0;
         float deacceleration = 1.5f;
@@ -41,6 +41,16 @@ class PlayerController : public IController
 
         virtual void Init(EntityHandle h) override;
         void         SpeedBoost(DirectX::XMVECTOR preBoostVelocity);
+
+		inline void SetCurrentMaxSpeed(float val)
+        {
+                currentMaxSpeed = val;
+        };
+
+        inline float GetCurrentMaxSpeed() const
+        {
+                return currentMaxSpeed;
+        }
 
         inline void SetMinMaxSpeed(float val)
         {

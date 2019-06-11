@@ -41,12 +41,12 @@ void PlayerController::GatherInput()
 
                 if (GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Down)
                 {
-                        tempDir.z += 1.0f;
+                        //tempDir.z += 1.0f;
                 }
 
                 if (GCoreInput::GetKeyState(KeyCode::E) == KeyState::Down)
                 {
-                        tempDir.z += 1.0f;
+                        //tempDir.z += 1.0f;
                 }
                 // Backward
                 if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
@@ -134,8 +134,6 @@ void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)
 {
         preBoostVelocity = m_CurrentVelocity;
         m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
-        minMaxSpeed += 2.0f;
-        maxMaxSpeed += 2.0f;
 }
 
 void PlayerController::RequestCinematicTransition(int                    count,
