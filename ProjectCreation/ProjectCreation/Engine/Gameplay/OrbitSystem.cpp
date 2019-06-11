@@ -175,13 +175,9 @@ void OrbitSystem::OnInitialize()
 
         ComponentHandle sunHandle, ring1Handle, ring2Handle, ring3Handle;
         EntityFactory::CreateStaticMeshEntity("Sphere01", "GlowMatSun", &sunHandle);
-        //EntityFactory::CreateStaticMeshEntity("Ring01", "GlowMatRing", &ring1Handle);
-        //EntityFactory::CreateStaticMeshEntity("Ring02", "GlowMatRing", &ring2Handle);
-        //EntityFactory::CreateStaticMeshEntity("Ring03", "GlowMatRing", &ring3Handle);
-
-        EntityFactory::CreateStaticMeshEntity("Ring01", "GlowMatPlanet01", &ring1Handle);
-        EntityFactory::CreateStaticMeshEntity("Ring02", "GlowMatPlanet02", &ring2Handle);
-        EntityFactory::CreateStaticMeshEntity("Ring03", "GlowMatPlanet03", &ring3Handle);
+        EntityFactory::CreateStaticMeshEntity("Ring01", "GlowMatRing", &ring1Handle);
+        EntityFactory::CreateStaticMeshEntity("Ring02", "GlowMatRing", &ring2Handle);
+        EntityFactory::CreateStaticMeshEntity("Ring03", "GlowMatRing", &ring3Handle);
 
         auto sunTransform   = m_ComponentManager->GetComponent<TransformComponent>(sunHandle);
         auto ring1Transform = m_ComponentManager->GetComponent<TransformComponent>(ring1Handle);
