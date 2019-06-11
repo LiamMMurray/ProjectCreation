@@ -40,19 +40,17 @@ class ControllerSystem : public ISystem
 
         E_CONTROLLERS m_CurrentController;
 
-        int m_RedOrbCount   = 0;
-        int m_BlueOrbCount  = 0;
-        int m_GreenOrbCount = 0;
+		int m_OrbCounts[E_LIGHT_ORBS::COUNT] = {};
 
         void DisplayConsoleMenu();
 
         // Returns the number of orbs collected of a certain color based on passed in parameter
         // 0 = Red Lights, 1 = Blue Lights, 2 = Green Lights
-        int GetOrbCount(E_LIGHT_ORBS color);
+        int GetOrbCount(int color);
 
         // Adds one orb to a certain color based on passed in parameter
         // 0 = Red Lights, 1 = Blue Lights, 2 = Green Lights
-        void SetOrbCount(E_LIGHT_ORBS color);
+        void IncreaseOrbCount(int color);
 
         // Inherited via ISystem
         virtual void OnPreUpdate(float deltaTime) override;

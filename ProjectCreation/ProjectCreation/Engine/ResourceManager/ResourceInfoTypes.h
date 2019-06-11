@@ -15,7 +15,8 @@
 #define SURFACE_FLAG_HAS_DETAILS_MAP (SURFACE_FLAG_HAS_ROUGHNESS_MAP | SURFACE_FLAG_HAS_METALLIC_MAP | SURFACE_FLAG_HAS_AO_MAP)
 
 
-enum ETexture2DType
+
+enum class ETexture2DType
 {
         Diffuse  = 0,
         Normal   = 1,

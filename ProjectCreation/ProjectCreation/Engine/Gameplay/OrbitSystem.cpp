@@ -163,27 +163,6 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         CreateGoal(2);
                 done = true;
         }
-        //<Joseph's Temp Planet Change>
-
-        // for (int i = 0; i < 3; ++i)
-        // {
-        //         TransformComponent* tc  = m_ComponentManager->GetComponent<TransformComponent>(m_PlanetGoals[i]);
-        //         TransformComponent* tc2 = m_ComponentManager->GetComponent<TransformComponent>(m_PlanetOutlines[i]);
-        //
-        //         float distanceSq =
-        //             MathLibrary::CalulateDistanceSq(playerTransform->transform.translation, tc->transform.translation);
-        //
-        //         if (distanceSq < 1.2f)
-        //         {
-        //                 if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::DownFirst)
-        //                 {
-        //                         m_TargetTransforms[i] = &m_PlanetOutlines[i];
-        //                 }
-        //         }
-        //         TransformComponent* target = m_ComponentManager->GetComponent<TransformComponent>(*m_TargetTransforms[i]);
-        //
-        //         tc->transform = target->transform;
-        // }
 }
 
 void OrbitSystem::OnPostUpdate(float deltaTime)

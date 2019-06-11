@@ -12,16 +12,8 @@ class SpeedBoostSystem : public ISystem
         EntityManager*    m_EntityManager;
         SystemManager*    m_SystemManager;
 
-        static constexpr uint32_t m_MaxSpeedBoosts = 30;
-
-		uint32_t m_MaxRedOrbs = 10;
-        uint32_t m_CurRedOrbs = 0;
-
-		uint32_t m_MaxBlueOrbs = 10;
-        uint32_t m_CurBlueOrbs = 0;
-
-		uint32_t m_MaxGreenOrbs = 10;
-        uint32_t m_CurGreenOrbs = 0;
+        static constexpr uint32_t m_MaxSpeedBoosts = 10;
+        int                       currentOrbCounter[E_LIGHT_ORBS::COUNT]{};
 
 
         void RespawnSpeedBoost(TransformComponent*       boostTC,
@@ -29,15 +21,16 @@ class SpeedBoostSystem : public ISystem
                                const TransformComponent* playerTC,
                                const TransformComponent* targetTC);
 
-        const char* materialNames[3] = {"GlowSpeedboost01", "GlowSpeedboost02", "GlowSpeedboost03"};
+        const char* materialNames[4] = {"GlowSpeedboost01", "GlowSpeedboost02", "GlowSpeedboost03", "GlowSpeedboost04"};
 
-        void SpawnSpeedBoost(const TransformComponent* playerTC, const TransformComponent* targetTC, E_LIGHT_ORBS color);
+        void SpawnSpeedBoost(const TransformComponent* playerTC, const TransformComponent* targetTC, int color);
 
-        float m_PlayerEffectRadius = 0.0f;
-        float m_SpawnBoostTimer    = 0.0f;
-        float m_SpawnBoostCD       = 0.2f;
-        float m_BoostLifespan      = 8.0f;
-        float m_BoostShrinkSpeed   = m_BoostRadius;
+        float m_PlayerEffectRadius    = 0.0f;
+        float m_SpawnBoostTimer       = 0.0f;
+        float m_SpawnBoostCD          = 2.0f;
+        float m_BoostLifespan         = 8.0f;
+        float m_BoostLifespanVariance = 2.0f;
+        float m_BoostShrinkSpeed      = m_BoostRadius;
 
     protected:
         // Inherited via ISystem
