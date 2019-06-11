@@ -87,7 +87,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 goalCount++;
         }
 
-        if (ControllerManager::Get()->GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) >= 10)
+        if (ControllerManager::Get()->GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) >= 5)
         {
                 static bool done = false;
                 if (!done)
@@ -95,7 +95,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 done = true;
         }
 
-        if (ControllerManager::Get()->GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) >= 10)
+        if (ControllerManager::Get()->GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) >= 5)
         {
                 static bool done = false;
                 if (!done)
@@ -103,34 +103,13 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 done = true;
         }
 
-        if (ControllerManager::Get()->GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) >= 10)
+        if (ControllerManager::Get()->GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) >= 5)
         {
                 static bool done = false;
                 if (!done)
                         CreateGoal(2);
                 done = true;
         }
-        //<Joseph's Temp Planet Change>
-
-        // for (int i = 0; i < 3; ++i)
-        // {
-        //         TransformComponent* tc  = m_ComponentManager->GetComponent<TransformComponent>(m_PlanetGoals[i]);
-        //         TransformComponent* tc2 = m_ComponentManager->GetComponent<TransformComponent>(m_PlanetOutlines[i]);
-        //
-        //         float distanceSq =
-        //             MathLibrary::CalulateDistanceSq(playerTransform->transform.translation, tc->transform.translation);
-        //
-        //         if (distanceSq < 1.2f)
-        //         {
-        //                 if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::DownFirst)
-        //                 {
-        //                         m_TargetTransforms[i] = &m_PlanetOutlines[i];
-        //                 }
-        //         }
-        //         TransformComponent* target = m_ComponentManager->GetComponent<TransformComponent>(*m_TargetTransforms[i]);
-        //
-        //         tc->transform = target->transform;
-        // }
 }
 
 void OrbitSystem::OnPostUpdate(float deltaTime)
@@ -143,9 +122,13 @@ void OrbitSystem::OnInitialize()
 
         ComponentHandle sunHandle, ring1Handle, ring2Handle, ring3Handle;
         EntityFactory::CreateStaticMeshEntity("Sphere01", "GlowMatSun", &sunHandle);
-        EntityFactory::CreateStaticMeshEntity("Ring01", "GlowMatRing", &ring1Handle);
-        EntityFactory::CreateStaticMeshEntity("Ring02", "GlowMatRing", &ring2Handle);
-        EntityFactory::CreateStaticMeshEntity("Ring03", "GlowMatRing", &ring3Handle);
+        //EntityFactory::CreateStaticMeshEntity("Ring01", "GlowMatRing", &ring1Handle);
+        //EntityFactory::CreateStaticMeshEntity("Ring02", "GlowMatRing", &ring2Handle);
+        //EntityFactory::CreateStaticMeshEntity("Ring03", "GlowMatRing", &ring3Handle);
+
+        EntityFactory::CreateStaticMeshEntity("Ring01", "GlowMatPlanet01", &ring1Handle);
+        EntityFactory::CreateStaticMeshEntity("Ring02", "GlowMatPlanet02", &ring2Handle);
+        EntityFactory::CreateStaticMeshEntity("Ring03", "GlowMatPlanet03", &ring3Handle);
 
         auto sunTransform   = m_ComponentManager->GetComponent<TransformComponent>(sunHandle);
         auto ring1Transform = m_ComponentManager->GetComponent<TransformComponent>(ring1Handle);

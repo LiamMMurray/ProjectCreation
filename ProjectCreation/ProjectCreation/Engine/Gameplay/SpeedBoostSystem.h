@@ -14,13 +14,12 @@ class SpeedBoostSystem : public ISystem
         static constexpr uint32_t m_MaxSpeedBoosts = 30;
 
 		uint32_t m_MaxRedOrbs = 10;
-        uint32_t m_CurRedOrbs = 0;
 
 		uint32_t m_MaxBlueOrbs = 10;
-        uint32_t m_CurBlueOrbs = 0;
 
 		uint32_t m_MaxGreenOrbs = 10;
-        uint32_t m_CurGreenOrbs = 0;
+
+		uint32_t m_MaxWhiteOrbs = 10;
 
 
         void RespawnSpeedBoost(TransformComponent*       boostTC,
@@ -28,7 +27,7 @@ class SpeedBoostSystem : public ISystem
                                const TransformComponent* playerTC,
                                const TransformComponent* targetTC);
 
-        const char* materialNames[3] = {"GlowSpeedboost01", "GlowSpeedboost02", "GlowSpeedboost03"};
+        const char* materialNames[4] = {"GlowSpeedboost01", "GlowSpeedboost02", "GlowSpeedboost03", "GlowSpeedboost04"};
 
         void SpawnSpeedBoost(const TransformComponent* playerTC, const TransformComponent* targetTC, E_LIGHT_ORBS color);
 

@@ -122,20 +122,18 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         {
                                 if (speedComp->m_Color == E_LIGHT_ORBS::RED_LIGHTS)
                                 {
-                                        m_CurRedOrbs++;
                                         m_MaxRedOrbs--;
                                         ControllerManager::Get()->SetOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
                                 }
 
                                 if (speedComp->m_Color == E_LIGHT_ORBS::BLUE_LIGHTS)
                                 {
-                                        m_CurBlueOrbs++;
                                         m_MaxBlueOrbs--;
                                         ControllerManager::Get()->SetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
                                 }
+
                                 if (speedComp->m_Color == E_LIGHT_ORBS::GREEN_LIGHTS)
                                 {
-                                        m_CurGreenOrbs++;
                                         m_MaxGreenOrbs--;
                                         ControllerManager::Get()->SetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
                                 }
@@ -160,7 +158,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         if (!playerTransform || !closestGoalTransform)
                                 continue;
 
-                        if (speedComp->m_WantsRespawn)
+                        if (speedComp->m_WantsRespawn )
                         {
                                 if (speedComp->m_CurrentRadius <= 0.0f)
                                 {
@@ -188,6 +186,11 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         for (uint32_t greenOrbs = 0; greenOrbs < m_MaxGreenOrbs; ++greenOrbs)
                         {
                                 SpawnSpeedBoost(playerTransform, closestGoalTransform, E_LIGHT_ORBS::GREEN_LIGHTS);
+                        }
+
+                        for (uint32_t whiteOrbs = 0; whiteOrbs < m_MaxWhiteOrbs; ++whiteOrbs)
+                        {
+                                SpawnSpeedBoost(playerTransform, closestGoalTransform, E_LIGHT_ORBS::WHITE_LIGHTS);
                         }
                 }
                 else
@@ -222,6 +225,12 @@ void SpeedBoostSystem::OnInitialize()
         auto speedBoostMat03       = GEngine::Get()->GetResourceManager()->GetResource<Material>(speedBoostMat03Handle);
         speedBoostMat03->m_SurfaceProperties.diffuseColor  = {0.1f, 0.9f, 0.1f};
         speedBoostMat03->m_SurfaceProperties.emissiveColor = {0.05f, 1.05f, 0.05f};
+
+        // White Light
+        auto speedBoostMat04Handle = GEngine::Get()->GetResourceManager()->LoadMaterial("GlowSpeedboost04");
+        auto speedBoostMat04       = GEngine::Get()->GetResourceManager()->GetResource<Material>(speedBoostMat04Handle);
+        speedBoostMat04->m_SurfaceProperties.diffuseColor  = {0.5f, 0.5f, 0.5f};
+        speedBoostMat04->m_SurfaceProperties.emissiveColor = {1.05f, 1.05f, 1.05f};
 }
 
 void SpeedBoostSystem::OnShutdown()
