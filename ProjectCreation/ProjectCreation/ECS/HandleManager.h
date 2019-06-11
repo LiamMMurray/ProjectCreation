@@ -2,25 +2,7 @@
 #include <unordered_map>
 #include <vector>
 #include "Handle.h"
-
-template <typename MainType>
-class IContainer
-{
-        virtual MainType* GetObject(Handle<MainType> handle) = 0;
-};
-
-template <typename MainType, typename SubType, size_t Max>
-class Container : public IContainer<MainType>
-{
-        std::vector<HandleData> m_HandleData;
-        // make free list
-        std::vector<SubType*> m_ObjectData;
-
-		MainType* GetObject(Handle<MainType> handle)
-		{
-                return nullptr;
-		}
-};
+#include "Containers/Container.h"
 
 template <typename T>
 class HandleManager

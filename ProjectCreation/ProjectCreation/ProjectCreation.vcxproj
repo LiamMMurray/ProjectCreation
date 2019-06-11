@@ -11,6 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ECS\Containers\Container.h" />
+    <ClInclude Include="ECS\Containers\FreeList.h" />
+    <ClInclude Include="ECS\Containers\IContainer.h" />
     <ClInclude Include="ECS\IContainer.h" />
     <ClInclude Include="Engine\Audio\AudioManager.h" />
     <ClInclude Include="Engine\Audio\SFXComponent.h" />
