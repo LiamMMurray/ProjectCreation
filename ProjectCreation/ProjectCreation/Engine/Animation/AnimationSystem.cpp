@@ -113,7 +113,7 @@ void AnimationSystem::OnUpdate(float deltaTime)
                 animComp->m_Time += deltaTime * 1.0f;
 
 
-                float normTime = sin(animComp->m_Time / 5.f) * 0.5f + 0.5f;
+                float normTime = (float)sin(animComp->m_Time / 5.f) * 0.5f + 0.5f;
 
                 float w[3] = {};
 

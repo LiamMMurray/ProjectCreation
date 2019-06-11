@@ -2,6 +2,19 @@
 
 GEngine* GEngine::instance;
 
+void GEngine::SetGamePaused(bool val)
+{
+        m_GameIsPaused = val;
+        if (m_GameIsPaused)
+        {
+                m_SystemManager->FilterSystemQueue(SYSTEM_FLAG_UPDATE_WHEN_PAUSED);
+        }
+        else
+        {
+                m_SystemManager->FilterSystemQueue();
+        }
+}
+
 void GEngine::Initialize()
 {
         static GEngine engine;
@@ -12,7 +25,7 @@ void GEngine::Initialize()
         instance->m_SystemManager    = new SystemManager;
         instance->m_ResourceManager  = new ResourceManager;
 
-		instance->m_EntityManager->Initialize(instance->m_ComponentManager);
+        instance->m_EntityManager->Initialize(instance->m_ComponentManager);
         instance->m_SystemManager->Initialize();
 }
 

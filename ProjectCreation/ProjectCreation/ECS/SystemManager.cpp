@@ -3,7 +3,6 @@
 void SystemManager::Update(float deltaTime)
 {
         auto queue = GetSystemQueue();
-
         while (!queue.empty())
         {
                 ISystem* system = queue.top();
@@ -14,29 +13,50 @@ void SystemManager::Update(float deltaTime)
         }
 }
 
-void SystemManager::RegisterSystem(FSystemInitProperties* systemProperties, ISystem* isystem)
+void SystemManager::RegisterSystem(FSystemProperties* systemProperties, ISystem* isystem)
 {
         assert(systemProperties != nullptr && system != nullptr);
 
+        isystem->SetSystemProperties(*systemProperties);
         isystem->OnInitialize();
 
-        if (systemProperties->m_Flags & SYSTEM_INIT_FLAG_SUSPEND_ON_START)
-        {
-                m_InactiveSystems.push_back(isystem);
-        }
+        if (systemProperties->m_Flags & SYSTEM_INIT_FLAG_SUSPEND_ON_START) {}
         else
         {
-                m_ActiveSystemsQueue.push(isystem);
+                m_DefaultSystemsQueue.push(isystem);
         }
 }
 
-std::priority_queue<ISystem*, std::vector<ISystem*>, SystemManager::PriorityComparator> SystemManager::GetSystemQueue()
+void SystemManager::FilterSystemQueue(int flags)
 {
-        return m_ActiveSystemsQueue;
+        if (flags == 0)
+        {
+                m_CurrentSystemQueue = &m_DefaultSystemsQueue;
+                return;
+        }
+        m_FilteredSystemsQueue = SystemQueue();
+        auto queue = m_DefaultSystemsQueue;
+
+        while (!queue.empty())
+        {
+                ISystem* system = queue.top();
+				if ((system->GetSystemProperties().m_Flags & flags) > 0) {
+                        m_FilteredSystemsQueue.push(system);
+				}
+                queue.pop();
+        }
+        m_CurrentSystemQueue = &m_FilteredSystemsQueue;
+}
+
+SystemQueue SystemManager::GetSystemQueue()
+{
+        return *m_CurrentSystemQueue;
 }
 
 void SystemManager::Initialize()
-{}
+{
+        m_CurrentSystemQueue = &m_DefaultSystemsQueue;
+}
 
 void SystemManager::Shutdown()
 {

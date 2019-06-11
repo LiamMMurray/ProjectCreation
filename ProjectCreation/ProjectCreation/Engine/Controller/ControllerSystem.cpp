@@ -1,5 +1,5 @@
 #pragma once
-#include "ControllerManager.h"
+#include "ControllerSystem.h"
 
 #include <iostream>
 #include "../Controller/IController.h"
@@ -17,9 +17,6 @@
 #include <WinUser.h>
 
 using namespace std;
-
-
-ControllerSystem* ControllerSystem::instance;
 
 void ControllerSystem::DisplayConsoleMenu()
 {
@@ -86,13 +83,53 @@ void ControllerSystem::SetOrbCount(E_LIGHT_ORBS color)
         }
 }
 
-void ControllerSystem::Initialize()
+void ControllerSystem::OnPreUpdate(float deltaTime)
+{}
+
+void ControllerSystem::OnUpdate(float deltaTime)
 {
-        instance = new ControllerSystem;
-        instance->init();
+        if (GCoreInput::GetKeyState(KeyCode::R) == KeyState::DownFirst)
+        {
+                SetOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
+                std::cout << "Red Count: " << GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) << std::endl;
+        }
+
+        if (GCoreInput::GetKeyState(KeyCode::B) == KeyState::DownFirst)
+        {
+                SetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
+                std::cout << "Blue Count: " << GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) << std::endl;
+        }
+
+        if (GCoreInput::GetKeyState(KeyCode::G) == KeyState::DownFirst)
+        {
+                SetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
+                std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
+        }
+
+        if (GCoreInput::GetKeyState(KeyCode::Tab) == KeyState::DownFirst)
+        {
+                m_Controllers[m_CurrentController]->SetEnabled(false);
+                m_CurrentController = (E_CONTROLLERS)((m_CurrentController + 1) % E_CONTROLLERS::COUNT);
+                m_Controllers[m_CurrentController]->SetEnabled(true);
+
+                auto cameraHandle =
+                    GEngine::Get()
+                        ->GetComponentManager()
+                        ->GetComponent<TransformComponent>(m_Controllers[m_CurrentController]->GetControlledEntity())
+                        ->GetHandle();
+                GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->SetMainCameraComponent(cameraHandle);
+        }
+
+        for (int i = 0; i < E_CONTROLLERS::COUNT; ++i)
+        {
+                m_Controllers[i]->OnUpdate(deltaTime);
+        }
 }
 
-void ControllerSystem::init()
+void ControllerSystem::OnPostUpdate(float deltaTime)
+{}
+
+void ControllerSystem::OnInitialize()
 {
         m_SystemManager    = GEngine::Get()->GetSystemManager();
         m_ComponentManager = GEngine::Get()->GetComponentManager();
@@ -140,84 +177,7 @@ void ControllerSystem::init()
         m_CurrentController = E_CONTROLLERS::PLAYER;
 }
 
-void ControllerSystem::update(float delta)
-{
-        if (GCoreInput::GetKeyState(KeyCode::R) == KeyState::DownFirst)
-        {
-                SetOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
-                std::cout << "Red Count: " << GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) << std::endl;
-        }
-
-        if (GCoreInput::GetKeyState(KeyCode::B) == KeyState::DownFirst)
-        {
-                SetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
-                std::cout << "Blue Count: " << GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) << std::endl;
-        }
-
-        if (GCoreInput::GetKeyState(KeyCode::G) == KeyState::DownFirst)
-        {
-                SetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
-                std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
-        }
-
-        if (GCoreInput::GetKeyState(KeyCode::Tab) == KeyState::DownFirst)
-        {
-                m_Controllers[m_CurrentController]->SetEnabled(false);
-                m_CurrentController = (E_CONTROLLERS)((m_CurrentController + 1) % E_CONTROLLERS::COUNT);
-                m_Controllers[m_CurrentController]->SetEnabled(true);
-
-                auto cameraHandle =
-                    GEngine::Get()
-                        ->GetComponentManager()
-                        ->GetComponent<TransformComponent>(m_Controllers[m_CurrentController]->GetControlledEntity())
-                        ->GetHandle();
-                GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->SetMainCameraComponent(cameraHandle);
-        }
-
-        for (int i = 0; i < E_CONTROLLERS::COUNT; ++i)
-        {
-                m_Controllers[i]->OnUpdate(delta);
-        }
-}
-
-ControllerSystem* ControllerSystem::Get()
-{
-        return instance;
-}
-
-void ControllerSystem::Shutdown()
-{
-        instance->shutdown();
-        delete instance;
-}
-
-void ControllerSystem::Update(float deltaTime)
-{
-        instance->update(deltaTime);
-}
-
-void ControllerSystem::OnPreUpdate(float deltaTime)
-{}
-
-void ControllerSystem::OnUpdate(float deltaTime)
-{}
-
-void ControllerSystem::OnPostUpdate(float deltaTime)
-{}
-
-void ControllerSystem::OnInitialize()
-{}
-
 void ControllerSystem::OnShutdown()
-{}
-
-void ControllerSystem::OnResume()
-{}
-
-void ControllerSystem::OnSuspend()
-{}
-
-void ControllerSystem::shutdown()
 {
         for (int i = 0; i < E_CONTROLLERS::COUNT; ++i)
         {
@@ -225,3 +185,9 @@ void ControllerSystem::shutdown()
                         delete m_Controllers[i];
         }
 }
+
+void ControllerSystem::OnResume()
+{}
+
+void ControllerSystem::OnSuspend()
+{}

@@ -54,13 +54,6 @@ class ControllerSystem : public ISystem
         // 0 = Red Lights, 1 = Blue Lights, 2 = Green Lights
         void SetOrbCount(E_LIGHT_ORBS color);
 
-        static void Initialize();
-
-
-        static ControllerSystem* Get();
-        static void               Shutdown();
-        static void               Update(float deltaTime);
-
         // Inherited via ISystem
         virtual void OnPreUpdate(float deltaTime) override;
         virtual void OnUpdate(float deltaTime) override;

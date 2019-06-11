@@ -65,7 +65,7 @@ EntityHandle EntityFactory::CreateSkeletalMeshEntity(const char*              sk
         auto entityManager    = GEngine::Get()->GetEntityManager();
         auto resourceManager  = GEngine::Get()->GetResourceManager();
 
-        int animCount = animNames.size();
+        size_t animCount = animNames.size();
 
         auto outEntityHandle = entityManager->CreateEntity<BaseEntity>();
 
@@ -83,7 +83,7 @@ EntityHandle EntityFactory::CreateSkeletalMeshEntity(const char*              sk
 
         std::vector<ResourceHandle> anims;
         anims.reserve(animCount);
-        for (int i = 0; i < animCount; ++i)
+        for (size_t i = 0; i < animCount; ++i)
         {
                 anims.push_back(resourceManager->LoadAnimationClip(animNames[i].data(), &meshComp->m_Skeleton));
         }

@@ -1,5 +1,5 @@
 #include "SpeedBoostSystem.h"
-#include "../Controller/ControllerManager.h"
+#include "../Controller/ControllerSystem.h"
 #include "../Entities/EntityFactory.h"
 #include "../GEngine.h"
 
@@ -35,7 +35,7 @@ void SpeedBoostSystem::RespawnSpeedBoost(TransformComponent*       boostTC,
 
         XMVECTOR target = XMVectorLerp(playerTC->transform.translation, targetTC->transform.translation, alpha) +
                           XMVectorSet(x, 0.0f, z, 0.0f);
-        target = XMVectorSetY(target, 0.0f);
+        target                         = XMVectorSetY(target, 0.0f);
         XMVECTOR limit                 = XMVectorSet(m_MaxBoostDistance, 0.0f, m_MaxBoostDistance, 0.0f);
         boostTC->transform.translation = target;
         boostSC->m_TargetRadius        = m_BoostRadius;
@@ -68,8 +68,10 @@ void SpeedBoostSystem::OnPreUpdate(float deltaTime)
 void SpeedBoostSystem::OnUpdate(float deltaTime)
 {
 
-        TransformComponent* playerTransform = m_ComponentManager->GetComponent<TransformComponent>(
-            ControllerManager::Get()->m_Controllers[ControllerManager::E_CONTROLLERS::PLAYER]->GetControlledEntity());
+        TransformComponent* playerTransform =
+            m_ComponentManager->GetComponent<TransformComponent>(SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+                                                                     ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
+                                                                     ->GetControlledEntity());
 
         GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_PlayerEffectRadius, deltaTime);
 
@@ -106,27 +108,27 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 if (speedComp->m_Color == E_LIGHT_ORBS::RED_LIGHTS)
                                 {
                                         m_MaxRedOrbs--;
-                                        ControllerManager::Get()->SetOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
+                                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->SetOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
                                 }
 
                                 if (speedComp->m_Color == E_LIGHT_ORBS::BLUE_LIGHTS)
                                 {
                                         m_MaxBlueOrbs--;
-                                        ControllerManager::Get()->SetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
+                                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->SetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
                                 }
 
                                 if (speedComp->m_Color == E_LIGHT_ORBS::GREEN_LIGHTS)
                                 {
                                         m_MaxGreenOrbs--;
-                                        ControllerManager::Get()->SetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
+                                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->SetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
                                 }
 
                                 speedComp->m_WantsRespawn = true;
                                 speedComp->m_TargetRadius = 0.0f;
                                 m_PlayerEffectRadius += 1.0f;
 
-                                static_cast<PlayerController*>(
-                                    ControllerManager::Get()->m_Controllers[ControllerManager::E_CONTROLLERS::PLAYER])
+                                static_cast<PlayerController*>(SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+                                                                   ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER])
                                     ->SpeedBoost(XMVectorZero());
                         }
 
@@ -154,7 +156,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 }
         }
 
-		TransformComponent* closestGoalTransform =
+        TransformComponent* closestGoalTransform =
             m_ComponentManager->GetComponent<TransformComponent>(closestGoalTransformHandle);
 
         if (closestGoalTransform != nullptr && speedboostCount < m_MaxSpeedBoosts)
