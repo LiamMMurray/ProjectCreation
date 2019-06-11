@@ -64,6 +64,26 @@ FQuaternion FQuaternion::FromEulerAngles(float x, float y, float z)
         return XMQuaternionRotationRollPitchYaw(x, y, z);
 }
 
+FQuaternion FQuaternion::LookAtWithRoll(DirectX::XMVECTOR sourcePoint, DirectX::XMVECTOR destPoint)
+{
+        XMVECTOR forwardVector = XMVector3Normalize(destPoint - sourcePoint);
+
+        XMVECTOR vRotAxis = XMVector3Cross(VectorConstants::Forward, forwardVector);
+        float    dot      = MathLibrary::VectorDotProduct(VectorConstants::Forward, forwardVector);
+
+        XMFLOAT3 rotAxis;
+
+        XMStoreFloat3(&rotAxis, vRotAxis);
+
+        XMFLOAT4 q;
+        q.x = rotAxis.x;
+        q.y = rotAxis.y;
+        q.z = rotAxis.z;
+        q.w = dot + 1;
+
+        return XMQuaternionNormalize(XMLoadFloat4(&q));
+}
+
 DirectX::XMFLOAT3 FQuaternion::ToEulerAngles()
 {
         XMFLOAT3 output;

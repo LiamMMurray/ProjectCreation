@@ -19,5 +19,8 @@ struct FQuaternion
 
         static FQuaternion FromEulerAngles(DirectX::XMFLOAT3 val);
         static FQuaternion FromEulerAngles(float x, float y, float z);
+
+		static FQuaternion LookAtWithRoll(DirectX::XMVECTOR sourcePoint, DirectX::XMVECTOR destPoint);
+
         DirectX::XMFLOAT3  ToEulerAngles();
 };

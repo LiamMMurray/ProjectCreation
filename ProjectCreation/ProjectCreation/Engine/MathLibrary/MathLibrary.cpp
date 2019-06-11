@@ -233,3 +233,16 @@ double MathLibrary::SmoothCrossfade(double a, double b, double time)
 {
         return a + time * (b - a);
 }
+
+float MathLibrary::CalculateAngularDiameter(const DirectX::XMVECTOR& eye, const Shapes::FSphere& sphere)
+{
+        float distance = MathLibrary::CalulateDistance(eye, sphere.center);
+        float diameter = sphere.radius * 2.0f;
+        return 2.0f * asinf((diameter) / (2.0f * distance));
+}
+
+float MathLibrary::CalculateDistanceFromAngularDiameter(float angularDiameter, const Shapes::FSphere& sphere)
+{
+        float diameter = sphere.radius * 2.0f;
+        return diameter / (2.0f*sinf(angularDiameter/2.0f));
+}

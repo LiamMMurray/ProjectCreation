@@ -17,13 +17,16 @@ void OrbitSystem::CreateGoal(int n)
         n = std::min(2, n);
 
         /*** REFACTORING CODE START ***/
-        auto entityH1   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[n]);
-        auto goalHandle = m_ComponentManager->AddComponent<GoalComponent>(entityH1);
-        auto goalComp   = m_ComponentManager->GetComponent<GoalComponent>(goalHandle);
+        ComponentHandle transHandle;
+        auto            entityH1   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[n], &transHandle);
+        auto            goalHandle = m_ComponentManager->AddComponent<GoalComponent>(entityH1);
+        auto            goalComp   = m_ComponentManager->GetComponent<GoalComponent>(goalHandle);
+        auto            transComp  = m_ComponentManager->GetComponent<TransformComponent>(transHandle);
 
         goalComp->goalTransform.SetScale(50.0f);
         goalComp->initialTransform.SetScale(1.0f);
         goalComp->initialTransform.translation = XMLoadFloat3(&positions[n]);
+        transComp->transform                   = goalComp->initialTransform;
         /*** REFACTORING CODE END ***/
 
         ++n;
@@ -67,21 +70,24 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         float distanceSq = MathLibrary::CalulateDistanceSq(playerTransform->transform.translation,
                                                                            transComp->transform.translation);
 
-                        if (goalComp->goalState == E_GOAL_STATE::Ready && distanceSq < 1.5f)
+                        if (goalComp->goalState == E_GOAL_STATE::Ready && distanceSq < 3.5f)
                         {
-                                goalComp->targetAlpha = 1.0f;
-                                playerController->SetGoalComponent(goalComp->GetHandle());
+                                // goalComp->targetAlpha = 1.0f;
+                                // playerController->SetGoalComponent(goalComp->GetHandle());
+                                goalComp->goalState == E_GOAL_STATE::Puzzle;
+                                playerController->RequestPuzzleMode(goalComp->GetHandle(), orbitCenter, true, 4.0f);
                         }
 
-                        float dist  = MathLibrary::CalulateDistance(goalComp->initialTransform.translation,
+                        float dist          = MathLibrary::CalulateDistance(goalComp->initialTransform.translation,
                                                                    goalComp->goalTransform.translation);
-                        float speed = MathLibrary::lerp(
-                            goalComp->transitionInitialSpeed, goalComp->transitionFinalSpeed, goalComp->currAlpha);
+                        float speed         = MathLibrary::lerp(goalComp->transitionInitialSpeed,
+                                                        goalComp->transitionFinalSpeed,
+                                                        std::min(1.0f, goalComp->currAlpha));
                         goalComp->currAlpha = MathLibrary::MoveTowards(
                             goalComp->currAlpha, goalComp->targetAlpha, speed * deltaTime * 1.0f / dist);
 
-                        transComp->transform =
-                            FTransform::Lerp(goalComp->initialTransform, goalComp->goalTransform, goalComp->currAlpha);
+                        transComp->transform = FTransform::Lerp(
+                            goalComp->initialTransform, goalComp->goalTransform, std::min(1.0f, goalComp->currAlpha));
                 }
 
                 goalCount++;
@@ -136,7 +142,7 @@ void OrbitSystem::OnInitialize()
         auto ring3Transform = m_ComponentManager->GetComponent<TransformComponent>(ring3Handle);
 
         sunTransform->transform.translation = ring1Transform->transform.translation = ring2Transform->transform.translation =
-            ring3Transform->transform.translation                                   = XMVectorSet(0.0f, 1000.0f, 0.0f, 1.0f);
+            ring3Transform->transform.translation                                   = orbitCenter;
 
         sunTransform->transform.SetScale(150.0f);
         ring1Transform->transform.SetScale(150.0f); // radius of 1

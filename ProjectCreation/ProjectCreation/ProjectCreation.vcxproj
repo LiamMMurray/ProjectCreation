@@ -27,6 +27,8 @@
     <ClInclude Include="Engine\Controller\PlayerControllerState.h" />
     <ClInclude Include="Engine\Controller\PlayerControllerStateMachine.h" />
     <ClInclude Include="Engine\Controller\PlayerGroundState.h" />
+    <ClInclude Include="Engine\Controller\PlayerPuzzleState.h" />
+    <ClInclude Include="Engine\Controller\PlayerStateEvents.h" />
     <ClInclude Include="Engine\EngineInitShutdownHelpers.h" />
     <ClInclude Include="Engine\Entities\EntityFactory.h" />
     <ClInclude Include="Engine\Events\Event.h" />
@@ -188,6 +190,7 @@
     <ClCompile Include="Engine\Controller\PlayerCinematicState.cpp" />
     <ClCompile Include="Engine\Controller\PlayerControllerStateMachine.cpp" />
     <ClCompile Include="Engine\Controller\PlayerGroundState.cpp" />
+    <ClCompile Include="Engine\Controller\PlayerPuzzleState.cpp" />
     <ClCompile Include="Engine\EngineInitShutdownHelpers.cpp" />
     <ClCompile Include="Engine\Entities\EntityFactory.cpp" />
     <ClCompile Include="Engine\Gameplay\OrbitSystem.cpp" />
