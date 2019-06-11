@@ -10,15 +10,12 @@
 
 class ComponentManager
 {
-
-        // TODO make friend class relationship
     public:
         typedef std::unordered_map<ComponentTypeId, ComponentHandle>       ComponentTypeIdHandleMap;
         typedef std::unordered_map<EntityHandle, ComponentTypeIdHandleMap> EntityComponentIdMap;
         typedef std::vector<HandleManager<IComponent>>                     TypeAssociativeHandleManagers;
         typedef std::unordered_map<ComponentHandle, ComponentTypeId>       TypeIdLookUpTable;
 
-        HandleManager<IComponent>     m_HandleManager;
         TypeAssociativeHandleManagers m_TypeAssociativeHandleManagers;
         EntityComponentIdMap          m_EntityComponentIdMap;
         TypeIdLookUpTable             m_TypeIdMap;

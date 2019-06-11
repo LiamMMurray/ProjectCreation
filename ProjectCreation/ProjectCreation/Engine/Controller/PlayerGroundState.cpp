@@ -65,7 +65,7 @@ void PlayerGroundState::Update(float deltaTime)
 
         XMVECTOR preBoostVelocity = XMVectorZero();
 
-        currentVelocity = XMVectorLerp(currentVelocity, preBoostVelocity, MathLibrary::clamp(deltaTime * 0.25f, 0.0f, 1.0f));
+        currentVelocity = XMVectorLerp(currentVelocity, preBoostVelocity, MathLibrary::clamp(deltaTime * 0.001f, 0.0f, 1.0f));
 
         XMFLOAT3 eulerAngles = _playerController->GetEulerAngles();
 

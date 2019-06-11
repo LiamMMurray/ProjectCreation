@@ -22,60 +22,27 @@ class UIManager
         static void Update();
         static void Shutdown();
 
-		//Main Menu
-        void AddMainSprite(ID3D11Device*        device,
-                           ID3D11DeviceContext* deviceContext,
-                           const wchar_t*       FileName,
-                           float                PositionX,
-                           float                PositionY,
-                           float                scaleX,
-                           float                scaleY,
-                           bool                 enabled);
+        // Pause Menu
+        void AddSprite(ID3D11Device*                 device,
+                       ID3D11DeviceContext*          deviceContext,
+                       std::vector<SpriteComponent>& SpriteVector,
+                       const wchar_t*                FileName,
+                       float                         PositionX,
+                       float                         PositionY,
+                       float                         scaleX,
+                       float                         scaleY,
+                       bool                          enabled);
 
-        void AddMainText(ID3D11Device*        device,
-                         ID3D11DeviceContext* deviceContext,
-                         const wchar_t*       FileName,
-                         std::string          TextDisplay,
-                         float                PositionX,
-                         float                PositionY,
-                         bool                 enabled);
-
-		//Pause Menu
-        void AddPauseSprite(ID3D11Device*        device,
-                            ID3D11DeviceContext* deviceContext,
-                            const wchar_t*       FileName,
-                            float                PositionX,
-                            float                PositionY,
-                            float                scaleX,
-                            float                scaleY,
-                            bool                 enabled);
-
-        void AddPauseText(ID3D11Device*        device,
-                          ID3D11DeviceContext* deviceContext,
-                          const wchar_t*       FileName,
-                          std::string          TextDisplay,
-                          float                PositionX,
-                          float                PositionY,
-                          bool                 enabled);
-
-        //Options Menu
-        void AddOptionsSprite(ID3D11Device*        device,
-                              ID3D11DeviceContext* deviceContext,
-                              const wchar_t*       FileName,
-                              float                PositionX,
-                              float                PositionY,
-                              float                scaleX,
-                              float                scaleY,
-                              bool                 enabled);
-
-        void AddOptionsText(ID3D11Device*        device,
-                            ID3D11DeviceContext* deviceContext,
-                            const wchar_t*       FileName,
-                            std::string          TextDisplay,
-                            float                PositionX,
-                            float                PositionY,
-                            bool                 enabled);
-
+        void AddText(ID3D11Device*                 device,
+                     ID3D11DeviceContext*          deviceContext,
+                     std::vector<FontComponent*>&  FontVector,
+                     std::vector<SpriteComponent>& SpriteVector,
+                     const wchar_t*                FileName,
+                     std::string                   TextDisplay,
+                     float                         PositionX,
+                     float                         PositionY,
+                     bool                          AddButton,
+                     bool                          enabled);
 
         void CreateBackground(ID3D11Device*        device,
                               ID3D11DeviceContext* deviceContext,
@@ -104,4 +71,7 @@ class UIManager
 
         std::vector<SpriteComponent> m_OptionsSprites;
         std::vector<FontComponent*>  m_OptionsSpriteFonts;
+
+        std::vector<SpriteComponent> m_LevelSprites;
+        std::vector<FontComponent*>  m_LevelSpriteFonts;
 };

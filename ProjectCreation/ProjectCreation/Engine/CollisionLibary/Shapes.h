@@ -18,7 +18,6 @@ namespace Shapes
         };
 
 
-
         struct FSphere : FCollisionShape
         {
                 DirectX::XMVECTOR center;
@@ -61,6 +60,12 @@ namespace Shapes
                 virtual ECollisionObjectTypes GetID() const override;
         };
 
+		struct FCircle
+		{
+                DirectX::XMFLOAT2 center;
+                float             radius;
+
+		};
         FSphere  CreateFSphere(DirectX::XMVECTOR center, float radius);
         FAabb    CreateFAabb(DirectX::XMVECTOR center, DirectX::XMVECTOR extents);
         FCapsule CreateFCapsule(DirectX::XMVECTOR startPoint, DirectX::XMVECTOR endPoint, float radius);

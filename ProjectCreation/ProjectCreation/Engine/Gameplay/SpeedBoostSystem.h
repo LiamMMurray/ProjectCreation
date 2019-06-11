@@ -21,7 +21,7 @@ class SpeedBoostSystem : public ISystem
                                const TransformComponent* playerTC,
                                const TransformComponent* targetTC);
 
-        const char* materialNames[3] = {"GlowSpeedboost01", "GlowSpeedboost02", "GlowSpeedboost03"};
+        const char* materialNames[4] = {"GlowSpeedboost01", "GlowSpeedboost02", "GlowSpeedboost03", "GlowSpeedboost04"};
 
         void SpawnSpeedBoost(const TransformComponent* playerTC, const TransformComponent* targetTC, E_LIGHT_ORBS color);
 

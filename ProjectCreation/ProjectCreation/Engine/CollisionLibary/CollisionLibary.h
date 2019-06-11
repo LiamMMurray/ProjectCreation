@@ -33,13 +33,17 @@ class CollisionLibary
                                                                                 float             epsilon);
         static Collision::FOverlapResult OverlapSphereToAabb(Shapes::FSphere& sphere, Shapes::FAabb& aabb, float offset);
         static Collision::FOverlapResult OverlapAabbToAabb(Shapes::FAabb& a, Shapes::FAabb& b, float offset);
-      static Collision::FCollisionObjects CollisionQuery(Shapes::FSphere& startA, Shapes::FSphere& endA);
+     // static Collision::FCollisionObjects CollisionQuery(Shapes::FSphere& startA, Shapes::FSphere& endA);
 
-        static Collision::FCollisionObjects SweepAndPruneCollision(Shapes::FSphere& sphere, Shapes::FAabb& aabbSpace);
+		//static std::pair<Collision::FCollideResult, Shapes::FCollisionShape*> CollisionQueries(Shapes::FCollisionShape* shape);
+
+		//static std::pair<Collision::FCollideResult, Shapes::FCollisionShape*> CollisionQueries(Shapes::FCollisionShape* shape, DirectX::XMVECTOR& offset);
 
         static Collision::FAdvancedCollisionResult RayToSphereCollision(DirectX::XMVECTOR& startPoint,
                                                                           DirectX::XMVECTOR& direction,
                                                                           Shapes::FSphere&   sphere);
+
+		//static Collision::FCollideResult CircleToCircleCollision(Shapes::FCircle& a, Shapes::FCircle& b);
         static Shapes::FAabb                         AddAABB(const Shapes::FAabb& a, const Shapes::FAabb& b);
 
         static Shapes::FAabb CreateBoundingBoxFromShpere(const Shapes::FSphere sphere);

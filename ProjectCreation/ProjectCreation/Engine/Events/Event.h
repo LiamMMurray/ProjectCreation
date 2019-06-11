@@ -13,7 +13,7 @@ class Event : public IEvent
         const EventTypeId        GetStaticTypeId() const;
 };
 template <class T>
-const EventTypeId Event<T>::m_TypeId = TypeIdCreator<IEvent>::GetUniqueTypeId<T>();
+const EventTypeId Event<T>::m_TypeId = TypeUtility<IEvent>::GetUniqueTypeId<T>();
 
 template <typename T>
 inline Event<T>::Event()

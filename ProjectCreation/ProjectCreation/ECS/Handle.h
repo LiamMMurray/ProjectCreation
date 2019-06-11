@@ -7,8 +7,8 @@ enum HANDLEFLAG
 };
 struct HandleData
 {
-        uint8_t  m_Flags : 8;
         uint32_t m_DeletionAccumulator : 24;
+        uint32_t m_Flags : 8;
 
         bool IsValid()
         {
@@ -18,6 +18,10 @@ struct HandleData
         {
                 SetFlags(m_Flags | HANDLEFLAG::INACTIVE);
         }
+		void SetValid()
+		{
+                SetFlags( (m_Flags | HANDLEFLAG::INACTIVE)  ^ HANDLEFLAG::INACTIVE);
+		}
         void SetFlags(uint8_t flags)
         {
                 m_Flags = flags;
@@ -44,8 +48,8 @@ struct Handle
                                 HandleData m_HandleData;
                                 struct
                                 {
-                                        uint8_t  m_Flags : 8;
                                         uint32_t m_DeletionAccumulator : 24;
+                                        uint32_t m_Flags : 8;
                                 };
                         };
                 };

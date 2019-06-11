@@ -1,7 +1,7 @@
 #include "CollisionHelpers.h"
 #include "../GEngine.h"
 #include "CollisionComponents.h"
-
+#include "CollisionLibary.h"
 #include "CollisionSystem.h"
 
 using namespace DirectX;
@@ -11,7 +11,7 @@ void Collision::CreateSphere(const Shapes::FSphere& fSphere,
                              ComponentHandle*       sphereHandle,
                              ComponentHandle*       aabbHAndle)
 {
-	//create handle for shapes, the grid container will have aabb box as the main object to detect collision
+        // create handle for shapes, the grid container will have aabb box as the main object to detect collision
         CollisionSystem* gCollisionSystem = SYSTEM_MANAGER->GetSystem<CollisionSystem>();
 
         ComponentHandle sHandle = COMPONENT_MANAGER->AddComponent<SphereComponent>(entityH);
@@ -24,23 +24,16 @@ void Collision::CreateSphere(const Shapes::FSphere& fSphere,
 
         // adding component handle and shap types in the grid container
         CollisionGrid::Cell cellpos;
-        cellpos.x =(int)(XMVectorGetX(aComponent->aabb.center) / CollisionGrid::CellSize);
-        cellpos.y =(int)(XMVectorGetY(aComponent->aabb.center) / CollisionGrid::CellSize);
-        cellpos.z =(int)(XMVectorGetZ(aComponent->aabb.center) / CollisionGrid::CellSize);
+        cellpos.x = (int)(XMVectorGetX(aComponent->aabb.center) / CollisionGrid::CellSize);
+        cellpos.y = (int)(XMVectorGetY(aComponent->aabb.center) / CollisionGrid::CellSize);
+        cellpos.z = (int)(XMVectorGetZ(aComponent->aabb.center) / CollisionGrid::CellSize);
 
         int index = gCollisionSystem->GetCollisionGrid().ComputeHashBucketIndex(cellpos);
 
-        std::vector<CollisionID> IDs;
+		auto it = gCollisionSystem->GetCollisionGrid().m_Container.try_emplace(index, CollisionGrid::CellContainer());
+        it.first->second.m_Spheres.push_back(sHandle);
 
-        CollisionID id;
-        id.type   = Shapes::ECollisionObjectTypes::Sphere;
-        id.handle = *sphereHandle;
-        IDs.push_back(id);
-
-         std::pair<int, std::vector<CollisionID>> item(index, IDs);
-        gCollisionSystem->GetCollisionGrid().GridContainers.insert(item);
-
-		if (aabbHAndle)
+        if (aabbHAndle)
                 *aabbHAndle = aHandle;
         if (sphereHandle)
                 *sphereHandle = sHandle;
@@ -63,17 +56,10 @@ void Collision::CreateAABB(const Shapes::FAabb& fAABB, EntityHandle entityH, Com
 
         int index = gCollisionSystem->GetCollisionGrid().ComputeHashBucketIndex(cellpos);
 
-        std::vector<CollisionID> IDs;
+        auto it = gCollisionSystem->GetCollisionGrid().m_Container.try_emplace(index, CollisionGrid::CellContainer());
+        it.first->second.m_AABBs.push_back(aHandle);
 
-        CollisionID id;
-        id.type   = Shapes::ECollisionObjectTypes::Sphere;
-        id.handle = *aabbHandle;
-        IDs.push_back(id);
-
-        std::pair<int, std::vector<CollisionID>> item(index, IDs);
-        gCollisionSystem->GetCollisionGrid().GridContainers.insert(item);
-
-		if (aabbHandle)
+        if (aabbHandle)
                 *aabbHandle = aHandle;
 }
 
@@ -102,19 +88,12 @@ void Collision::CreateCapsule(const Shapes::FCapsule& fCapsule,
 
         int index = gCollisionSystem->GetCollisionGrid().ComputeHashBucketIndex(cellpos);
 
-        std::vector<CollisionID> IDs;
+        auto it = gCollisionSystem->GetCollisionGrid().m_Container.try_emplace(index, CollisionGrid::CellContainer());
+        it.first->second.m_Capsules.push_back(cHandle);
 
-        CollisionID id;
-        id.type   = Shapes::ECollisionObjectTypes::Sphere;
-        id.handle = *capsuleHandle;
-        IDs.push_back(id);
-
-        std::pair<int, std::vector<CollisionID>> item(index, IDs);
-        gCollisionSystem->GetCollisionGrid().GridContainers.insert(item);
-
-		if (capsuleHandle)
+        if (capsuleHandle)
                 *capsuleHandle = cHandle;
 
-		if (aabbHAndle)
+        if (aabbHAndle)
                 *aabbHAndle = aHandle;
 }

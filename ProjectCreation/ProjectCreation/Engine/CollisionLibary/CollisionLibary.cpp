@@ -1,6 +1,7 @@
 #include "CollisionLibary.h"
 #include <unordered_map>
 #include "../MathLibrary/MathLibrary.h"
+#include "CollisionGrid.h"
 using namespace std;
 using namespace DirectX;
 using namespace Collision;
@@ -302,22 +303,6 @@ FOverlapResult CollisionLibary::OverlapAabbToAabb(FAabb& a, FAabb& b, float offs
         return output;
 }
 
-FCollisionObjects CollisionLibary::CollisionQuery(FSphere& startA, FSphere& endA)
-{
-        FCollisionObjects output;
-        FCapsule          capsule;
-
-
-        return output;
-}
-
-FCollisionObjects CollisionLibary::SweepAndPruneCollision(FSphere& sphere, FAabb& aabbSpace)
-{
-
-
-        return FCollisionObjects();
-}
-
 Collision::FAdvancedCollisionResult CollisionLibary::RayToSphereCollision(DirectX::XMVECTOR& startPoint,
                                                                           DirectX::XMVECTOR& directoin,
                                                                           Shapes::FSphere&   sphere)
@@ -343,6 +328,23 @@ Collision::FAdvancedCollisionResult CollisionLibary::RayToSphereCollision(Direct
 
         return output;
 }
+
+//Collision::FCollideResult CollisionLibary::CircleToCircleCollision(Shapes::FCircle& a, Shapes::FCircle& b)
+//{
+//        Collision::FCollideResult output;
+//        float                     totalRadius = (a.radius + b.radius) * (a.radius + b.radius);
+//        float                     distance =
+//            ((a.center.x - b.center.x) * (a.center.x - b.center.x)) + ((a.center.y - b.center.y) * (a.center.y - b.center.y));
+//        if (distance <= totalRadius)
+//        {
+//                output.collisionType = Collision::ECollide;
+//        }
+//        else
+//        {
+//                output.collisionType = Collision::ENoCollision;
+//        }
+//        return output;
+//}
 
 FAabb CollisionLibary::AddAABB(const FAabb& a, const FAabb& b)
 {

@@ -13,7 +13,7 @@ class Entity : public IEntity
         static const EntityTypeId GetTypeId();
 };
 template <typename T>
-const EntityTypeId Entity<T>::m_TypeId{TypeIdCreator<IEntity>::GetUniqueTypeId<T>()};
+const EntityTypeId Entity<T>::m_TypeId{TypeUtility<IEntity>::GetUniqueTypeId<T>()};
 
 template <typename T>
 inline const EntityTypeId Entity<T>::GetStaticTypeId() const

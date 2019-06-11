@@ -7,7 +7,6 @@ class IComponent
         bool            m_Enabled = true;
         EntityHandle    m_Owner;
         ComponentHandle m_Handle;
-
     public:
         IComponent()
         {}
