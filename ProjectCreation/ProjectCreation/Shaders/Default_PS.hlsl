@@ -302,7 +302,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         float3 dirVec = pIn.PosWS + float3(areaMaskA, 0, areaMaskA) - _EyePosition;
         float  dist   = sqrt(dot(dirVec.xz, dirVec.xz));
 
-		float modulatedDistance = dist / .1f + InterleavedGradientNoise(pIn.Pos.xy + _Time);
+        float modulatedDistance = dist / .1f + InterleavedGradientNoise(pIn.Pos.xy + _Time);
 
         float mask         = saturate(dist / 0.1f - _playerRadius);
         float bandA        = saturate(dist / 0.1f - _playerRadius + 0.5f);
@@ -310,7 +310,6 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         float bandCombined = saturate(5.0f * (bandA - bandB));
         color *= (1 - mask);
 
-		clip((1 - bandA) < 0.01f ? -1 : 1);
 
         float3 band = bandCombined * float3(0.85f, .8f, 0.4f) * 1.1f;
 
@@ -323,9 +322,11 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         float veinsMask = Mask1.Sample(sampleTypeWrap, pIn.Tex / 32.0f - float2(0, _Time * 0.002f)).b;
         float veins =
             Mask2.Sample(sampleTypeWrap, pIn.Tex * float2(0.5f, 0.25f) + float2(0, _Time * 0.2f) + veinsMask * 2.0f).r;
-        // float3 veinsEmissive = veins * 0.1f * float3(1.0f, 0.05f, 0.05f) * mask;
+        float3 veinsEmissive = veins * 0.1f * float3(1.0f, 1.0f, 1.0f) * mask;
 
-        color += surface.emissiveColor + band; //   +veinsEmissive;
+        clip((1 - bandA + veinsEmissive) < 0.01f ? -1 : 1);
+
+        color += surface.emissiveColor + band + veinsEmissive;
 
         return float4(color, 1.0f);
 }

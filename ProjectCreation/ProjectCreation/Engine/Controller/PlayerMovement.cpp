@@ -124,7 +124,7 @@ void PlayerController::Init(EntityHandle h)
         // Request initial transition
         FTransform target = transformComp->transform;
         target.rotation   = XMQuaternionIdentity();
-        RequestCinematicTransition(1, &transformComp->GetHandle(), &target, E_PLAYERSTATE_EVENT::TO_GROUND, 5.0f, 2.0f);
+        RequestCinematicTransition(1, &transformComp->GetHandle(), &target, E_PLAYERSTATE_EVENT::TO_GROUND, 5.0f);
 
         // After you create the states, initialize the state machine. First created state is starting state
         m_StateMachine.Init(this);
@@ -133,9 +133,9 @@ void PlayerController::Init(EntityHandle h)
 void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)
 {
         preBoostVelocity = m_CurrentVelocity;
-        m_CurrentVelocity += 2.0f * XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-        minMaxSpeed += 2;
-        maxMaxSpeed += 2;
+        m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
+        minMaxSpeed += 2.0f;
+        maxMaxSpeed += 2.0f;
 }
 
 void PlayerController::RequestCinematicTransition(int                    count,

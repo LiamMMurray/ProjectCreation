@@ -44,12 +44,12 @@ void ControllerSystem::DisplayConsoleMenu()
         cout << endl;
 }
 
-int ControllerSystem::GetOrbCount(E_LIGHT_ORBS color)
+int ControllerSystem::GetOrbCount(int color)
 {
         return m_OrbCounts[color];
 }
 
-void ControllerSystem::IncreaseOrbCount(E_LIGHT_ORBS color)
+void ControllerSystem::IncreaseOrbCount(int color)
 {
         m_OrbCounts[color]++;
 }
