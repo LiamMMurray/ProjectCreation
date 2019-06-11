@@ -25,22 +25,17 @@ void PlayerGroundState::Update(float deltaTime)
         XMVECTOR currentInput = _playerController->GetCurrentInput();
         float    currSpeed    = XMVectorGetX(XMVector3Length(currentInput));
 
-        // Get the Forward from the gathered input
-        float currForward = XMVectorGetZ(currentInput);
-
         // Normalize the gathered input to determine the desired direction
         XMVECTOR desiredDir = XMVector3Normalize(currentInput);
 
         // Determine the max speed the object can move
-        float maxSpeed = MathLibrary::lerp(_playerController->GetMinMaxSpeed(),
-                                           _playerController->GetMaxMaxSpeed(),
-                                           currForward - _playerController->GetMinMaxSpeed());
+        float maxSpeed = _playerController->GetCurrentMaxSpeed();
 
         // Check if the currSpeed is faster than the maxSpeed
         if (fabs(currSpeed) > fabs(maxSpeed))
         {
                 // Clamp the currSpeed to the maxSpeed
-                currSpeed = MathLibrary::clamp(currSpeed, -maxSpeed, maxSpeed);
+                currSpeed = std::min(currSpeed, maxSpeed);
         }
 
         // Calculate desiredVelocity by multiplying the currSpeed by the direction we want to go
@@ -63,9 +58,7 @@ void PlayerGroundState::Update(float deltaTime)
         // Calculate current velocity based on itself, the deltaVector, and delta
         currentVelocity = currentVelocity + deltaVec * delta;
 
-        XMVECTOR preBoostVelocity = XMVectorZero();
-
-        currentVelocity = XMVectorLerp(currentVelocity, preBoostVelocity, MathLibrary::clamp(deltaTime * 0.001f, 0.0f, 1.0f));
+        _playerController->SetCurrentMaxSpeed(MathLibrary::MoveTowards(maxSpeed, _playerController->GetMinMaxSpeed(), 0.25f));
 
         XMFLOAT3 eulerAngles = _playerController->GetEulerAngles();
 
