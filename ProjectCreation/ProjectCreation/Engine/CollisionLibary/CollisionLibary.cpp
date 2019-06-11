@@ -1,6 +1,7 @@
 #include "CollisionLibary.h"
 #include <unordered_map>
 #include "../MathLibrary/MathLibrary.h"
+#include "CollisionGrid.h"
 using namespace std;
 using namespace DirectX;
 using namespace Collision;
@@ -62,36 +63,22 @@ void CollisionLibary::CreateFrustum(Shapes::Frustum& frustum, DirectX::XMMATRIX 
         frustum[5] = CalculatePlane(points[6], points[7], points[3]);
 }
 
-FCollideResult CollisionLibary::OverlapSphereToSphere(FSphere& a, FSphere& b, float offset)
+FOverlapResult CollisionLibary::OverlapSphereToSphere(FSphere& a, FSphere& b, float offset)
 {
-        FCollideResult output;
+        FOverlapResult output;
         FContactPoint  contactPoint;
         float          distance    = MathLibrary::CalulateDistance(a.center, b.center) + offset;
         float          totalRadius = a.radius + b.radius;
-        if (distance < totalRadius)
+        if (distance <= totalRadius)
         {
-                output.collisionType = ECollisionType::EOveralap;
+                // output.collisionType = ECollisionType::EOveralap;
+                output.hasOverlap = true;
         }
-        else if (distance > totalRadius)
+        else
         {
-                output.collisionType = ECollisionType::ENoCollision;
+                // output.collisionType = ECollisionType::ENoCollision;
+                output.hasOverlap = false;
         }
-        else if (distance == totalRadius)
-        {
-                output.collisionType = ECollisionType::ECollide;
-                /*XMVECTOR tempDir      = XMVector3Normalize(a.center - b.center);
-                XMVECTOR contactPos   = b.center + tempDir * b.radius;
-                contactPoint.position = contactPos;
-                contactPoint.normal   = tempDir;*/
-                output.collideSurfaces.push_back(CalculateSphereToSphereContactPoint(a.center, b.center, b.radius));
-
-                /*    XMVECTOR tempDirA     = XMVector3Normalize(b.center - a.center);
-                    XMVECTOR contactPosA  = a.center + tempDir * a.radius;
-                    contactPoint.position = contactPosA;
-                    contactPoint.normal   = tempDirA;*/
-                output.collideSurfaces.push_back(CalculateSphereToSphereContactPoint(b.center, a.center, a.radius));
-        }
-
 
         return output;
 }
@@ -99,8 +86,8 @@ FCollideResult CollisionLibary::OverlapSphereToSphere(FSphere& a, FSphere& b, fl
 FAdvancedCollisionResult CollisionLibary::SweepSphereToSphere(FSphere& startA, FSphere& endA, FSphere& checkB, float offset)
 {
         FAdvancedCollisionResult output;
-        FContactPoint              contactPoint;
-        FCapsule                   capsule;
+        FContactPoint            contactPoint;
+        FCapsule                 capsule;
 
         capsule.startPoint = startA.center;
         capsule.endPoint   = endA.center;
@@ -135,11 +122,11 @@ FAdvancedCollisionResult CollisionLibary::SweepSphereToSphere(FSphere& startA, F
 }
 
 Collision::FAdvancedCollisionResult CollisionLibary::SphereSphereSweep(const Shapes::FSphere&  sphere1,
-                                                                         const DirectX::XMVECTOR S1CurrPosition,
-                                                                         const Shapes::FSphere&  sphere2,
-                                                                         const DirectX::XMVECTOR S2CurrPosition,
-                                                                         float& u0, // normalized time of first collision
-                                                                         float& u1) // normalized time of second collision
+                                                                       const DirectX::XMVECTOR S1CurrPosition,
+                                                                       const Shapes::FSphere&  sphere2,
+                                                                       const DirectX::XMVECTOR S2CurrPosition,
+                                                                       float& u0, // normalized time of first collision
+                                                                       float& u1) // normalized time of second collision
 {
         FAdvancedCollisionResult output;
 
@@ -202,18 +189,18 @@ Collision::FAdvancedCollisionResult CollisionLibary::SphereSphereSweep(const Sha
 }
 
 FAdvancedCollisionResult CollisionLibary::MovingSphereToMovingSphere(FSphere&          a,
-                                                                       FSphere&          b,
-                                                                       DirectX::XMVECTOR velocityA,
-                                                                       DirectX::XMVECTOR velocityB,
-                                                                       float&            time,
-                                                                       float             offset,
-                                                                       float             epsilon)
+                                                                     FSphere&          b,
+                                                                     DirectX::XMVECTOR velocityA,
+                                                                     DirectX::XMVECTOR velocityB,
+                                                                     float&            time,
+                                                                     float             offset,
+                                                                     float             epsilon)
 {
         FAdvancedCollisionResult output;
-        XMVECTOR                   sphereDir   = b.center - a.center;
-        XMVECTOR                   velocity    = velocityB - velocityA;
-        float                      TotalRadius = a.radius + b.radius;
-        float                      c = MathLibrary::VectorDotProduct(sphereDir, sphereDir) - TotalRadius * TotalRadius;
+        XMVECTOR                 sphereDir   = b.center - a.center;
+        XMVECTOR                 velocity    = velocityB - velocityA;
+        float                    TotalRadius = a.radius + b.radius;
+        float                    c           = MathLibrary::VectorDotProduct(sphereDir, sphereDir) - TotalRadius * TotalRadius;
         if (c < 0.0f)
         {
                 time                 = 0.0f;
@@ -260,42 +247,32 @@ FAdvancedCollisionResult CollisionLibary::MovingSphereToMovingSphere(FSphere&   
 }
 
 
-FCollideResult CollisionLibary::OverlapSphereToAabb(FSphere& sphere, FAabb& aabb, float offset)
+FOverlapResult CollisionLibary::OverlapSphereToAabb(FSphere& sphere, FAabb& aabb, float offset)
 {
-        FCollideResult output;
+        FOverlapResult output;
         XMVECTOR       aabbMin           = aabb.center - aabb.extents;
         XMVECTOR       aabbMax           = aabb.center + aabb.extents;
         XMVECTOR       cloestPointinAABB = XMVectorMin(XMVectorMax(sphere.center, aabbMin), aabbMax);
         float          distance          = MathLibrary::CalulateDistance(cloestPointinAABB, sphere.center) + offset;
 
         XMVECTOR direction = XMVector3Normalize(aabb.center - sphere.center);
-        if (distance < sphere.radius)
+        if (distance <= sphere.radius)
         {
-                output.collisionType = EOveralap;
+                // output.collisionType = EOveralap;
+                output.hasOverlap = true;
         }
         else if (distance > sphere.radius)
         {
-                output.collisionType = ENoCollision;
+                //  output.collisionType = ENoCollision;
+                output.hasOverlap = false;
         }
-        else
-        {
-                output.collisionType = ECollide;
-                output.collideSurfaces.push_back(
-                    CalculateSphereToSphereContactPoint(cloestPointinAABB, sphere.center, sphere.radius));
-                output.collideSurfaces.push_back(
-                    CalculateSphereToSphereContactPoint(sphere.center, cloestPointinAABB, (distance - sphere.radius)));
-                FContactPoint temp;
-                temp             = CalculateSphereToSphereContactPoint(aabb.center, sphere.center, sphere.radius);
-                XMVECTOR tempPos = cloestPointinAABB - (direction * sphere.radius) + (direction * (aabb.center + aabb.extents));
-                // output.finalPoaition = tempPos;
-                sphere.center = tempPos;
-        }
+
         return output;
 }
 
-FCollideResult CollisionLibary::OverlapAabbToAabb(FAabb& a, FAabb& b, float offset)
+FOverlapResult CollisionLibary::OverlapAabbToAabb(FAabb& a, FAabb& b, float offset)
 {
-        FCollideResult output;
+        FOverlapResult output;
 
         XMVECTOR aMax = a.center + a.extents;
         XMVECTOR aMin = a.center - a.extents;
@@ -318,43 +295,23 @@ FCollideResult CollisionLibary::OverlapAabbToAabb(FAabb& a, FAabb& b, float offs
         float bMinY = XMVectorGetY(bMin);
         float bMinZ = XMVectorGetZ(bMin);
 
-        if (aMaxX < bMinX || aMinX > bMaxX)
-                output.collisionType = ENoCollision;
-        if (aMaxY < bMinY || aMinY > bMaxY)
-                output.collisionType = ENoCollision;
-        if (aMaxZ < bMinZ || aMinZ > bMaxZ)
-                output.collisionType = ENoCollision;
+        output.hasOverlap = false;
+        if (aMaxX < bMinX || aMinX > bMaxX || aMaxY < bMinY || aMinY > bMaxY || aMaxZ < bMinZ || aMinZ > bMaxZ)
+                return output;
 
-
-        output.collisionType = EOveralap;
+        output.hasOverlap = true;
         return output;
-}
-
-FCollisionObjects CollisionLibary::CollisionQuery(FSphere& startA, FSphere& endA)
-{
-        FCollisionObjects output;
-        FCapsule          capsule;
-
-
-        return output;
-}
-
-FCollisionObjects CollisionLibary::SweepAndPruneCollision(FSphere& sphere, FAabb& aabbSpace)
-{
-
-
-        return FCollisionObjects();
 }
 
 Collision::FAdvancedCollisionResult CollisionLibary::RayToSphereCollision(DirectX::XMVECTOR& startPoint,
-                                                                            DirectX::XMVECTOR& directoin,
-                                                                            Shapes::FSphere&   sphere)
+                                                                          DirectX::XMVECTOR& directoin,
+                                                                          Shapes::FSphere&   sphere)
 {
         FAdvancedCollisionResult output;
-        XMVECTOR                   vectorToTarget = startPoint - sphere.center;
-        float                      dot            = MathLibrary::VectorDotProduct(directoin, vectorToTarget);
-        XMVECTOR                   length         = directoin * dot;
-        XMVECTOR                   cloestPoint    = startPoint + length;
+        XMVECTOR                 vectorToTarget = startPoint - sphere.center;
+        float                    dot            = MathLibrary::VectorDotProduct(directoin, vectorToTarget);
+        XMVECTOR                 length         = directoin * dot;
+        XMVECTOR                 cloestPoint    = startPoint + length;
 
         float distance    = MathLibrary::VectorDotProduct((sphere.center - cloestPoint), (sphere.center - cloestPoint));
         float totalRadius = sphere.radius * sphere.radius;
@@ -371,6 +328,23 @@ Collision::FAdvancedCollisionResult CollisionLibary::RayToSphereCollision(Direct
 
         return output;
 }
+
+//Collision::FCollideResult CollisionLibary::CircleToCircleCollision(Shapes::FCircle& a, Shapes::FCircle& b)
+//{
+//        Collision::FCollideResult output;
+//        float                     totalRadius = (a.radius + b.radius) * (a.radius + b.radius);
+//        float                     distance =
+//            ((a.center.x - b.center.x) * (a.center.x - b.center.x)) + ((a.center.y - b.center.y) * (a.center.y - b.center.y));
+//        if (distance <= totalRadius)
+//        {
+//                output.collisionType = Collision::ECollide;
+//        }
+//        else
+//        {
+//                output.collisionType = Collision::ENoCollision;
+//        }
+//        return output;
+//}
 
 FAabb CollisionLibary::AddAABB(const FAabb& a, const FAabb& b)
 {
@@ -402,5 +376,27 @@ Shapes::FAabb CollisionLibary::CreateBoundingBoxFromCapsule(const Shapes::FCapsu
         output.center  = MathLibrary::GetMidPointFromTwoVector(capsule.startPoint, capsule.endPoint);
         float length   = MathLibrary::CalulateVectorLength(output.center - capsule.startPoint);
         output.extents = XMVectorSet(capsule.radius + length, capsule.radius + length, capsule.radius + length, 0.0f);
+        return output;
+}
+
+Collision::FOverlapResult CollisionLibary::ScreenSpaceOverlap(const Shapes::FSphere&   a,
+                                                              const Shapes::FSphere&   b,
+                                                              const DirectX::XMMATRIX& ViewProjection)
+{
+        Collision::FOverlapResult output;
+        XMVECTOR                  center1 = XMVector4Transform(a.center, ViewProjection);
+        XMVECTOR                  center2 = XMVector4Transform(b.center, ViewProjection);
+        float                     w1      = XMVectorGetW(center1);
+        float                     w2      = XMVectorGetW(center2);
+        center1                           = center1 / w1; // get the screen space vector of sphere
+        center2                           = center2 / w2;
+
+        float radius1 = a.radius / w1;
+        float radius2 = b.radius / w2;
+
+        FSphere screenSphere1(center1, radius1);
+        FSphere screenSphere2(center2, radius2);
+        output = OverlapSphereToSphere(screenSphere1, screenSphere2, 0.0f);
+
         return output;
 }

@@ -10,6 +10,7 @@ class SpeedBoostSystem : public ISystem
     private:
         ComponentManager* m_ComponentManager;
         EntityManager*    m_EntityManager;
+        SystemManager*    m_SystemManager;
 
         static constexpr uint32_t m_MaxSpeedBoosts = 30;
 

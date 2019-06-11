@@ -1,13 +1,14 @@
 #pragma once
 #include "ECSTypes.h"
+#include <vector>
+
 
 template <typename T>
-class TypeIdCreator
+class TypeUtility
 {
         static uint32_t m_Count;
-
     public:
-        template <typename U>
+        template <typename SubType>
         static uint32_t GetUniqueTypeId()
         {
                 static const uint32_t increment_once_per_secondary_type{m_Count++};
@@ -15,4 +16,4 @@ class TypeIdCreator
         }
 };
 template <typename T>
-uint32_t TypeIdCreator<T>::m_Count{0};
+uint32_t TypeUtility<T>::m_Count{0};

@@ -5,9 +5,10 @@
 
 enum class E_GOAL_STATE
 {
-        Ready,
+        Idle,
+        InitialTransition,
         Puzzle,
-        Done,
+		Done,
         COUNT
 };
 
@@ -17,9 +18,11 @@ class GoalComponent : public Component<GoalComponent>
         FTransform initialTransform;
         FTransform goalTransform;
 
+        ComponentHandle collisionHandle;
+
         float        currAlpha              = 0.0f;
         float        targetAlpha            = 0.0f;
-        float        transitionInitialSpeed = 0.1f;
-        float        transitionFinalSpeed   = 1200.0f;
-        E_GOAL_STATE goalState              = E_GOAL_STATE::Ready;
+        float        transitionInitialSpeed = 300.0f;
+        float        transitionFinalSpeed   = 800.0f;
+        E_GOAL_STATE goalState              = E_GOAL_STATE::Idle;
 };

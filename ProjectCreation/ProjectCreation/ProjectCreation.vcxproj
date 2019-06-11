@@ -11,9 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ECS\Containers\Container.h" />
+    <ClInclude Include="ECS\Containers\FreeList.h" />
+    <ClInclude Include="ECS\Containers\IContainer.h" />
+    <ClInclude Include="ECS\IContainer.h" />
     <ClInclude Include="Engine\Audio\AudioManager.h" />
     <ClInclude Include="Engine\Audio\SFXComponent.h" />
-    <ClInclude Include="Engine\CollisionLibary\BVH.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionHelpers.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionResult.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionGrid.h" />
@@ -158,6 +161,7 @@
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
     <ClInclude Include="Utility\Hashing\PairHash.h" />
     <ClInclude Include="Utility\Macros\DirectXMacros.h" />
+    <ClInclude Include="Utility\MemoryLeakDetection.h" />
     <ClInclude Include="Utility\MemoryDefines.h" />
     <ClInclude Include="Utility\RenderUtility.h" />
     <ClInclude Include="Utility\StringUtility.h" />
@@ -178,7 +182,6 @@
   <ItemGroup>
     <ClCompile Include="Engine\Animation\AnimationComponent.cpp" />
     <ClCompile Include="Engine\Audio\AudioManager.cpp" />
-    <ClCompile Include="Engine\CollisionLibary\BVH.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionHelpers.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionResult.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionGrid.cpp" />
