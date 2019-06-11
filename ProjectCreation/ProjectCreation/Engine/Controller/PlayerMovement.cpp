@@ -134,7 +134,8 @@ void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)
 {
         preBoostVelocity = m_CurrentVelocity;
         m_CurrentVelocity += 2.0f * XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-        maxMaxSpeed += 1;
+        minMaxSpeed += 2;
+        maxMaxSpeed += 2;
 }
 
 void PlayerController::RequestCinematicTransition(int                    count,
