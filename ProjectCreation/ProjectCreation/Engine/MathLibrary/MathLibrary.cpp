@@ -90,7 +90,6 @@ DirectX::XMVECTOR MathLibrary::GetMidPointFromTwoVector(DirectX::XMVECTOR a, Dir
 
 float MathLibrary::CalulateDistance(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
 {
-
         float output;
         output = sqrtf(CalulateDistanceSq(a, b));
         return output;
@@ -101,6 +100,23 @@ float MathLibrary::CalulateDistanceSq(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
         float    output;
         XMVECTOR temp = (a - b);
         temp          = XMVector3Dot(temp, temp);
+        output        = XMVectorGetX(temp);
+        return output;
+}
+
+float MathLibrary::CalulateDistanceIgnoreY(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
+{
+        float output;
+        output = sqrtf(CalulateDistanceSqIgnoreY(a, b));
+        return output;
+}
+
+float MathLibrary::CalulateDistanceSqIgnoreY(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
+{
+        float    output;
+        XMVECTOR temp = (a - b);
+        temp          = XMVectorSwizzle(temp, 0, 2, 2, 3);
+        temp          = XMVector2Dot(temp, temp);
         output        = XMVectorGetX(temp);
         return output;
 }

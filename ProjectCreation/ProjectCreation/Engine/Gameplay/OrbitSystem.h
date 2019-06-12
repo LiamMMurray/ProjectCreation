@@ -33,4 +33,8 @@ class OrbitSystem : public ISystem
         {
                 return m_ClosestGoalTransform;
         }
+
+        static constexpr DirectX::XMVECTORF32 GoalPositions[3] = {{0.0f, 0.0f, 23.0f, 1.0f},
+                                                                  {-20.0f, 0.0f, -11.0f, 1.0f},
+                                                                  {20.0f, 0.0f, -11.0f, 1.0f}};
 };

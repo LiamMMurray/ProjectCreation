@@ -41,6 +41,7 @@
 #include "Rendering/Components/DirectionalLightComponent.h"
 
 #include "Engine/GenericComponents/TransformComponent.h"
+#include "Engine/MathLibrary/MathLibrary.h"
 
 #pragma comment(lib, "dbghelp")
 
@@ -129,6 +130,8 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                    int       nCmdShow       // how the windows is shown. Legacy. Can ignore
 )
 {
+        std::srand(unsigned(std::time(0)));
+
         constexpr char appName[] = "Inanis";
         // window info
         WNDCLASSEX winInfo;
@@ -234,17 +237,23 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
         // Create speedboost system
         FSystemProperties sysInitProps;
-        SpeedBoostSystem*     speedBoostSystem;
-        systemManager->CreateSystem<SpeedBoostSystem>(&speedBoostSystem);
         sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
         sysInitProps.m_UpdateRate = 0.0f;
-        systemManager->RegisterSystem(&sysInitProps, speedBoostSystem);
 
         OrbitSystem* orbitSystem;
         systemManager->CreateSystem<OrbitSystem>(&orbitSystem);
         systemManager->RegisterSystem(&sysInitProps, orbitSystem);
+
+        SpeedBoostSystem* speedBoostSystem;
+        systemManager->CreateSystem<SpeedBoostSystem>(&speedBoostSystem);
+        systemManager->RegisterSystem(&sysInitProps, speedBoostSystem);
+
+
         GEngine::Get()->SetGamePaused(true);
+
         while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
+
+
         {
                 GCoreInput::UpdateInput();
 
@@ -277,6 +286,20 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                         else
                                 music->PauseStream();
                 }
+
+                /*Spline<XMVECTOR, float> splineTest(3, spline::eUNIFORM);
+                std::vector<XMVECTOR>   testPoints = {XMVECTORF32{0.0f, 4.0f, 1.0f, 1.0f},
+                                                    XMVECTORF32{3.0f, 4.0f, 4.0f, 1.0f},
+                                                    XMVECTORF32{6.0f, 4.0f, 3.0f, 1.0f},
+                                                    XMVECTORF32{-4.0f, 2.0f, 7.0f, 1.0f}};
+                splineTest.set_ctrl_points(testPoints);
+                for (int i = 0; i < 49; ++i)
+                {
+                        XMVECTOR start = splineTest.eval_f((float)i / (50 - 1));
+                        XMVECTOR end   = splineTest.eval_f((float)(i + 1) / (50 - 1));
+                        debug_renderer::add_line(start, end, ColorConstants::White);
+                }*/
+
 
                 debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());

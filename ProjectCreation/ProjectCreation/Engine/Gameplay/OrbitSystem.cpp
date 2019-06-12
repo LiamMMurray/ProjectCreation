@@ -14,9 +14,6 @@ using namespace DirectX;
 
 void OrbitSystem::CreateGoal(int n)
 {
-        static const XMFLOAT4 positions[3] = {
-            {0.0f, 0.0f, 20.0f, 1.0f}, {24.0f, 0.0f, 60.0f, 1.0f}, {-16.0f, 0.0f, 60.0f, 1.0f}};
-
         n = std::min(2, n);
 
         /*** REFACTORING CODE START ***/
@@ -32,7 +29,7 @@ void OrbitSystem::CreateGoal(int n)
         goalComp->collisionHandle = transHandle2;
         goalComp->goalTransform.SetScale(50.0f);
         goalComp->initialTransform.SetScale(1.0f);
-        goalComp->initialTransform.translation = XMLoadFloat4(&positions[n]);
+        goalComp->initialTransform.translation = GoalPositions[n];
         transComp->transform                   = goalComp->initialTransform;
         transComp2->transform                  = goalComp->goalTransform;
         /*** REFACTORING CODE END ***/

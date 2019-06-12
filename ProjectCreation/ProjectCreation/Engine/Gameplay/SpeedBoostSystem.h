@@ -2,6 +2,8 @@
 
 #include "../../ECS/ECS.h"
 #include "LightOrbColors.h"
+#include <DirectXMath.h>
+#include <vector>
 class TransformComponent;
 class SpeedboostComponent;
 
@@ -15,6 +17,9 @@ class SpeedBoostSystem : public ISystem
         static constexpr uint32_t m_MaxSpeedBoosts = 10;
         int                       currentOrbCounter[E_LIGHT_ORBS::COUNT]{};
 
+		static constexpr int PathCount = 9;
+
+        std::vector<std::vector<DirectX::XMVECTOR>> m_Paths;
 
         void RespawnSpeedBoost(TransformComponent*       boostTC,
                                SpeedboostComponent*      boostSC,
@@ -23,7 +28,7 @@ class SpeedBoostSystem : public ISystem
 
         const char* materialNames[4] = {"GlowSpeedboost01", "GlowSpeedboost02", "GlowSpeedboost03", "GlowSpeedboost04"};
 
-        void SpawnSpeedBoost(const TransformComponent* playerTC, const TransformComponent* targetTC, int color);
+        void SpawnSpeedBoost(DirectX::XMVECTOR position, int color);
 
         float m_PlayerEffectRadius    = 0.0f;
         float m_SpawnBoostTimer       = 0.0f;

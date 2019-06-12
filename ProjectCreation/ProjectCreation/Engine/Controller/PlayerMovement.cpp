@@ -41,12 +41,12 @@ void PlayerController::GatherInput()
 
                 if (GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Down)
                 {
-                        //tempDir.z += 1.0f;
+                        // tempDir.z += 1.0f;
                 }
 
                 if (GCoreInput::GetKeyState(KeyCode::E) == KeyState::Down)
                 {
-                        //tempDir.z += 1.0f;
+                        // tempDir.z += 1.0f;
                 }
                 // Backward
                 if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
@@ -110,15 +110,15 @@ void PlayerController::Init(EntityHandle h)
 
         // Create any states and set their respective variables here
         m_CinematicState = m_StateMachine.CreateState<PlayerCinematicState>();
-        auto groundState = m_StateMachine.CreateState<PlayerGroundState>();
+        m_GroundState    = m_StateMachine.CreateState<PlayerGroundState>();
         auto puzzleState = m_StateMachine.CreateState<PlayerPuzzleState>();
 
-        m_StateMachine.AddTransition(groundState, m_CinematicState, E_PLAYERSTATE_EVENT::TO_TRANSITION);
-        m_StateMachine.AddTransition(m_CinematicState, groundState, E_PLAYERSTATE_EVENT::TO_GROUND);
+        m_StateMachine.AddTransition(m_GroundState, m_CinematicState, E_PLAYERSTATE_EVENT::TO_TRANSITION);
+        m_StateMachine.AddTransition(m_CinematicState, m_GroundState, E_PLAYERSTATE_EVENT::TO_GROUND);
         m_StateMachine.AddTransition(m_CinematicState, puzzleState, E_PLAYERSTATE_EVENT::TO_PUZZLE);
 
-        m_StateMachine.AddTransition(groundState, puzzleState, E_PLAYERSTATE_EVENT::TO_PUZZLE);
-        m_StateMachine.AddTransition(puzzleState, groundState, E_PLAYERSTATE_EVENT::TO_GROUND);
+        m_StateMachine.AddTransition(m_GroundState, puzzleState, E_PLAYERSTATE_EVENT::TO_PUZZLE);
+        m_StateMachine.AddTransition(puzzleState, m_GroundState, E_PLAYERSTATE_EVENT::TO_GROUND);
         m_StateMachine.AddTransition(puzzleState, m_CinematicState, E_PLAYERSTATE_EVENT::TO_TRANSITION);
 
         // Request initial transition
@@ -133,7 +133,10 @@ void PlayerController::Init(EntityHandle h)
 void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)
 {
         preBoostVelocity = m_CurrentVelocity;
+        currentMaxSpeed = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
         m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
+        m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
+		m_GroundState->AddSpeedBoost();
 }
 
 void PlayerController::RequestCinematicTransition(int                    count,

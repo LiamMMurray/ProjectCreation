@@ -47,6 +47,7 @@
     <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
+    <ClInclude Include="Engine\MathLibrary\Maze\MazeGenerator.h" />
     <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
     <ClInclude Include="Engine\GenericComponents\TestComponents.h" />
     <ClInclude Include="Engine\GenericComponents\TransformComponent.h" />
@@ -164,6 +165,8 @@
     <ClInclude Include="Utility\MemoryLeakDetection.h" />
     <ClInclude Include="Utility\MemoryDefines.h" />
     <ClInclude Include="Utility\RenderUtility.h" />
+    <ClInclude Include="Engine\MathLibrary\Splines\FGoodSpline.h" />
+    <ClInclude Include="Engine\MathLibrary\Splines\splines.hpp" />
     <ClInclude Include="Utility\StringUtility.h" />
     <ClInclude Include="Shaders\PostProcessConstantBuffers.hlsl">
       <FileType>Document</FileType>
@@ -200,6 +203,8 @@
     <ClCompile Include="Engine\Gameplay\SpeedBoostSystem.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\IState.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
+    <ClCompile Include="Engine\MathLibrary\Maze\MazeGenerator.cpp" />
+    <ClCompile Include="Engine\MathLibrary\Splines\FGoodSpline.cpp" />
     <ClCompile Include="Engine\Physics\PhysicsComponent.cpp" />
     <ClCompile Include="Engine\Controller\IController.cpp" />
     <ClCompile Include="Engine\Controller\PlayerMovement.cpp" />
@@ -266,6 +271,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Engine\MathLibrary\Splines\splines.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

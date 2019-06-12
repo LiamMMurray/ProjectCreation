@@ -5,6 +5,9 @@
 #undef max
 #undef min
 
+#include <ctime>        // std::time
+#include <cstdlib>      // std::rand, std::srand
+
 #include <algorithm>
 #include "../../Rendering/Vertex.h"
 #include "../CollisionLibary/Shapes.h"
@@ -33,6 +36,8 @@ class MathLibrary
         static DirectX::XMVECTOR GetMidPointFromTwoVector(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateDistance(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateDistanceSq(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
+        static float             CalulateDistanceIgnoreY(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
+        static float             CalulateDistanceSqIgnoreY(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateVectorLength(DirectX::XMVECTOR vector);
         static float             VectorDotProduct(DirectX::XMVECTOR m, DirectX::XMVECTOR n);
         static float             ManhattanDistance(Shapes::FAabb& a, Shapes::FAabb& b);
