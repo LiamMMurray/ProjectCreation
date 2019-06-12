@@ -888,20 +888,6 @@ void RenderSystem::OnUpdate(float deltaTime)
                 pp->Render(&inSRV, &outRTV);
         }
 
-        /** Draw Debug Renderer **/
-        Shapes::FAabb   aabb;
-        Shapes::FSphere sphere;
-
-        aabb.center  = XMVectorSet(0.0f, 0.5f, 0.0f, 1.0f);
-        aabb.extents = XMVectorSet(1.0f, 0.5f, 0.2f, 1.0f);
-
-        sphere.center = XMVectorSet(0.0f, 0.2f, 0.5f, 2.0f);
-        sphere.radius = 0.1f;
-
-        debug_renderer::AddBox(aabb, XMMatrixIdentity(), ColorConstants::White);
-        debug_renderer::AddSphere(sphere, 32, XMMatrixIdentity());
-        debug_renderer::AddMatrix(XMMatrixTranslationFromVector(sphere.center), 0.05f);
-
         m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Opaque], blendFactor, sampleMask);
         if (GEngine::Get()->IsDebugMode())
                 DrawDebug();

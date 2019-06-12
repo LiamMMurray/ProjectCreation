@@ -48,6 +48,7 @@
     <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\MathLibrary\Maze\MazeGenerator.h" />
+    <ClInclude Include="Engine\MathLibrary\Splines\SplineUtility.h" />
     <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
     <ClInclude Include="Engine\GenericComponents\TestComponents.h" />
     <ClInclude Include="Engine\GenericComponents\TransformComponent.h" />
@@ -205,6 +206,7 @@
     <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
     <ClCompile Include="Engine\MathLibrary\Maze\MazeGenerator.cpp" />
     <ClCompile Include="Engine\MathLibrary\Splines\FGoodSpline.cpp" />
+    <ClCompile Include="Engine\MathLibrary\Splines\SplineUtility.cpp" />
     <ClCompile Include="Engine\Physics\PhysicsComponent.cpp" />
     <ClCompile Include="Engine\Controller\IController.cpp" />
     <ClCompile Include="Engine\Controller\PlayerMovement.cpp" />

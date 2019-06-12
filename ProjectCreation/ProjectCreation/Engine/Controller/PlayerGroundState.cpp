@@ -50,6 +50,8 @@ void PlayerGroundState::Update(float deltaTime)
         // Calculate current velocity based on itself, the deltaVector, and delta
         currentVelocity = currentVelocity + deltaVec * delta;
 
+        float y = XMVectorGetY(_cachedTransformComponent->transform.translation);
+        y       = MathLibrary::MoveTowards(y, m_TargetY, m_TargetYSpeed * deltaTime);
         if (m_SpeedboostTimer > 0.0f)
         {
                 m_SpeedboostTimer -= deltaTime;
@@ -58,8 +60,11 @@ void PlayerGroundState::Update(float deltaTime)
         {
                 _playerController->SetCurrentMaxSpeed(MathLibrary::MoveTowards(
                     maxSpeed, _playerController->GetMinMaxSpeed(), m_SpeedboostTransitionSpeed * deltaTime));
+                m_TargetY = MathLibrary::MoveTowards(m_TargetY, 0.0f, m_YRestorationSpeed * deltaTime);
         }
-        std::cout << currentVelocity.m128_f32[2] << std::endl;
+
+
+        _cachedTransformComponent->transform.translation = XMVectorSetY(_cachedTransformComponent->transform.translation, y);
 
         XMFLOAT3 eulerAngles = _playerController->GetEulerAngles();
 
@@ -90,6 +95,7 @@ void PlayerGroundState::Update(float deltaTime)
         XMVECTOR offset = XMVector3Rotate(currentVelocity * deltaTime, _cachedTransformComponent->transform.rotation.data);
         offset          = XMVector3Normalize(XMVectorSetY(offset, 0.0f)) * XMVectorGetX(XMVector3Length(offset));
         _cachedTransformComponent->transform.translation += offset;
+
 
         _playerController->SetCurrentVelocity(currentVelocity);
         _playerController->SetEulerAngles(eulerAngles);

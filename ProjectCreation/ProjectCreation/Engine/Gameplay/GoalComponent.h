@@ -5,10 +5,11 @@
 
 enum class E_GOAL_STATE
 {
+        Spawning,
         Idle,
         InitialTransition,
         Puzzle,
-		Done,
+        Done,
         COUNT
 };
 

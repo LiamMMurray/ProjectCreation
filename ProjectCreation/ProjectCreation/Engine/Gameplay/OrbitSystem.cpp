@@ -12,29 +12,29 @@
 
 using namespace DirectX;
 
-void OrbitSystem::CreateGoal(int n)
+void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
 {
-        n = std::min(2, n);
+        color = std::min(2, color);
 
         /*** REFACTORING CODE START ***/
         ComponentHandle transHandle, transHandle2;
-        auto            entityH1   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[n], &transHandle);
+        auto            entityH1   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle);
         auto            goalHandle = m_ComponentManager->AddComponent<GoalComponent>(entityH1);
         auto            goalComp   = m_ComponentManager->GetComponent<GoalComponent>(goalHandle);
         auto            transComp  = m_ComponentManager->GetComponent<TransformComponent>(transHandle);
 
-        auto entityH2   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[n], &transHandle2);
+        auto entityH2   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle2);
         auto transComp2 = m_ComponentManager->GetComponent<TransformComponent>(transHandle2);
 
         goalComp->collisionHandle = transHandle2;
         goalComp->goalTransform.SetScale(50.0f);
         goalComp->initialTransform.SetScale(1.0f);
-        goalComp->initialTransform.translation = GoalPositions[n];
+        goalComp->initialTransform.translation = position;
+        goalComp->goalState                    = E_GOAL_STATE::Spawning;
         transComp->transform                   = goalComp->initialTransform;
-        transComp2->transform                  = goalComp->goalTransform;
+        transComp->transform.SetScale(0.0f);
+        transComp2->transform = goalComp->goalTransform;
         /*** REFACTORING CODE END ***/
-
-        ++n;
 }
 
 void OrbitSystem::OnPreUpdate(float deltaTime)
@@ -94,6 +94,18 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         TransformComponent* transCompPuzzle =
                             m_ComponentManager->GetComponent<TransformComponent>(goalComp->collisionHandle);
 
+                        if (goalComp->goalState == E_GOAL_STATE::Spawning)
+                        {
+                                float scale       = transComp->transform.GetRadius();
+                                float targetScale = goalComp->initialTransform.GetRadius();
+                                float newScale    = MathLibrary::MoveTowards(scale, targetScale, deltaTime*0.25f);
+                                transComp->transform.SetScale(newScale);
+
+                                if (scale >= targetScale)
+                                        goalComp->goalState = E_GOAL_STATE::Idle;
+
+                                return;
+                        }
 
                         float time = float(totalTime / (1.0f + goalCount) + goalCount * 3.7792f);
                         float x    = sin(time);
@@ -141,7 +153,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
         {
                 static bool done = false;
                 if (!done)
-                        CreateGoal(0);
+                        CreateGoal(0, GoalPositions[0]);
                 done = true;
         }
 
@@ -149,7 +161,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
         {
                 static bool done = false;
                 if (!done)
-                        CreateGoal(1);
+                        CreateGoal(1, GoalPositions[1]);
                 done = true;
         }
 
@@ -157,7 +169,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
         {
                 static bool done = false;
                 if (!done)
-                        CreateGoal(2);
+                        CreateGoal(2, GoalPositions[2]);
                 done = true;
         }
 }

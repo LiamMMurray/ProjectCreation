@@ -130,9 +130,9 @@ void PlayerController::Init(EntityHandle h)
         m_StateMachine.Init(this);
 }
 
-void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)
+void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos)
 {
-        preBoostVelocity = m_CurrentVelocity;
+        m_GroundState->m_TargetY = XMVectorGetY(boostPos);
         currentMaxSpeed = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
         m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
         m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);

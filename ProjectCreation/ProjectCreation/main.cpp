@@ -273,6 +273,21 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
 
+				{
+                        static DWORD frameCount = 0;
+                        ++frameCount;
+                        static DWORD framesPast = frameCount;
+                        static DWORD prevCount  = (DWORD)GEngine::Get()->GetTotalTime();
+                        if (GetTickCount() - prevCount > 1000) // only update every second
+                        {
+                                char buffer[256];
+                                sprintf_s(buffer, "DirectX Test. FPS: %d", frameCount - framesPast);
+                                SetWindowTextA(static_cast<HWND>(handle), buffer);
+                                framesPast = frameCount;
+                                prevCount  = GetTickCount();
+                        }
+                }
+
                 if (GCoreInput::GetKeyState(KeyCode::P) == KeyState::DownFirst)
                 {
                         boop->Play();
