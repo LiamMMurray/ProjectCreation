@@ -50,12 +50,18 @@ class UIManager
                               float                ScreenWidth,
                               float                ScreenHeight);
 
+        void MainTilteUnpause();
+        void Pause();
+        void Unpause();
+
 
         void UIClipCursor();
 
         static UIManager* instance;
 
     private:
+        bool                                             m_EscPush = false;
+        bool                                             m_IsFullscreen = false;
         bool                                             m_InMenu = false;
         std::unique_ptr<DirectX::SpriteBatch>            m_SpriteBatch;
         std::unique_ptr<DirectX::CommonStates>           m_States;
