@@ -12,6 +12,8 @@
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
 
+#include "UI/UIManager.h"
+
 #include "Engine/CollisionLibary/CollisionLibary.h"
 #include "Engine/CollisionLibary/CollisionResult.h"
 
@@ -264,6 +266,11 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
 
+                if (GetActiveWindow() != handle)
+                {
+                        UIManager::instance->Pause();
+                }
+
                 if (GCoreInput::GetKeyState(KeyCode::P) == KeyState::DownFirst)
                 {
                         boop->Play();
@@ -277,7 +284,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                         else
                                 music->PauseStream();
                 }
-
+				
                 debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
         }
