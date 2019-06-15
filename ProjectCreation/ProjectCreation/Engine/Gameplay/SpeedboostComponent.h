@@ -4,21 +4,6 @@
 #include <DirectXMath.h>
 #include "LightOrbColors.h"
 
-struct FSpeedboostSpawnSettings
-{
-        float             lifetime;
-        int               color;
-        DirectX::XMVECTOR pos;
-        bool              randomLifetime = true;
-
-        FSpeedboostSpawnSettings() = default;
-        FSpeedboostSpawnSettings(const DirectX::XMVECTOR& p, int c, bool r, float l = -1.0f) :
-            lifetime(l),
-            color(c),
-            pos(p),
-            randomLifetime(r){};
-};
-
 class SpeedboostComponent : public Component<SpeedboostComponent>
 {
     public:
