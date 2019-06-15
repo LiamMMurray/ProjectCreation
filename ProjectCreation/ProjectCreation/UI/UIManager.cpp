@@ -14,7 +14,10 @@
 
 UIManager* UIManager::instance;
 
-// Adds a sprite to the vector of text
+// 1280 x 720: Default Resolution
+// 1920 x 1080
+// 2048 x 1080
+
 
 // Adds a sprite to the vector of sprites
 // Currently PositionX and PositionY are not used
@@ -56,7 +59,7 @@ void UIManager::AddSprite(ID3D11Device*                 device,
         cSprite.SetPosition(PositionX, PositionY);
 
         // Set the Id of the Sprite for the Main Menu
-        if (instance->m_PauseSprites.size() <= 0)
+        if (instance->m_PauseSprites.empty())
         {
                 cSprite.mId = 1;
         }
@@ -173,6 +176,113 @@ void UIManager::UIClipCursor()
         rect.bottom = lr.y;
 
         ClipCursor(&rect);
+}
+
+void UIManager::MainTilteUnpause()
+{
+        GEngine::Get()->SetGamePaused(false);
+        for (int i = 0; i < instance->m_MainSpriteFonts.size(); i++)
+        {
+                instance->m_MainSpriteFonts[i]->mEnabled = false;
+        }
+}
+
+void UIManager::Pause()
+{
+        instance->m_InMenu = true;
+        GEngine::Get()->SetGamePaused(true);
+        if (instance->m_InMenu)
+        {
+                while (ShowCursor(TRUE) < 0)
+                        ;
+        }
+        else
+        {
+                while (ShowCursor(FALSE) >= 0)
+                        ;
+        }
+
+        // Pause Menu Sprites
+        for (int i = 0; i < instance->m_PauseSprites.size(); i++)
+        {
+                instance->m_PauseSprites[i].mEnabled = true;
+        }
+		// Text
+        for (int i = 0; i < instance->m_PauseSpriteFonts.size(); i++)
+        {
+                instance->m_PauseSpriteFonts[i]->mEnabled = true;
+        }
+
+        // Options Menu Sprites
+        for (int i = 0; i < instance->m_OptionsSprites.size(); i++)
+        {
+                instance->m_OptionsSprites[i].mEnabled = false;
+        }
+        // Text
+        for (int i = 0; i < instance->m_OptionsSpriteFonts.size(); i++)
+        {
+                instance->m_OptionsSpriteFonts[i]->mEnabled = false;
+        }
+
+        // Level Select Menu Sprites
+        for (int i = 0; i < instance->m_LevelSprites.size(); i++)
+        {
+                instance->m_LevelSprites[i].mEnabled = false;
+        }
+        // Text
+        for (int i = 0; i < instance->m_LevelSpriteFonts.size(); i++)
+        {
+                instance->m_LevelSpriteFonts[i]->mEnabled = false;
+        }
+}
+
+void UIManager::Unpause()
+{
+        instance->m_InMenu = false;
+        GEngine::Get()->SetGamePaused(false);
+        if (instance->m_InMenu)
+        {
+                while (ShowCursor(TRUE) < 0)
+                        ;
+        }
+        else
+        {
+                while (ShowCursor(FALSE) >= 0)
+                        ;
+        }
+
+        // Pause Menu Sprites
+        for (int i = 0; i < instance->m_PauseSprites.size(); i++)
+        {
+                instance->m_PauseSprites[i].mEnabled = false;
+        }
+        // Text
+        for (int i = 0; i < instance->m_PauseSpriteFonts.size(); i++)
+        {
+                instance->m_PauseSpriteFonts[i]->mEnabled = false;
+        }
+
+        // Options Menu Sprites
+        for (int i = 0; i < instance->m_OptionsSprites.size(); i++)
+        {
+                instance->m_OptionsSprites[i].mEnabled = false;
+        }
+        // Text
+        for (int i = 0; i < instance->m_OptionsSpriteFonts.size(); i++)
+        {
+                instance->m_OptionsSpriteFonts[i]->mEnabled = false;
+        }
+
+        // Level Select Menu Sprites
+        for (int i = 0; i < instance->m_LevelSprites.size(); i++)
+        {
+                instance->m_LevelSprites[i].mEnabled = false;
+        }
+        // Text
+        for (int i = 0; i < instance->m_LevelSpriteFonts.size(); i++)
+        {
+                instance->m_LevelSpriteFonts[i]->mEnabled = false;
+        }
 }
 
 
@@ -303,6 +413,28 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           false);
 
+        instance->AddText(renderSystem->m_Device,
+                          renderSystem->m_Context,
+                          instance->m_OptionsSpriteFonts,
+                          instance->m_OptionsSprites,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Fullscreen: ",
+                          renderSystem->m_BackBufferWidth * 0.4f,
+                          renderSystem->m_BackBufferHeight * 0.5f - 80.0f,
+                          false,
+                          false);
+
+        instance->AddText(renderSystem->m_Device,
+                          renderSystem->m_Context,
+                          instance->m_OptionsSpriteFonts,
+                          instance->m_OptionsSprites,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Resolution: ",
+                          renderSystem->m_BackBufferWidth * 0.4f,
+                          renderSystem->m_BackBufferHeight * 0.5f,
+                          false,
+                          false);
+
         // Level Menu
         instance->AddText(renderSystem->m_Device,
                           renderSystem->m_Context,
@@ -315,7 +447,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           false);
 
-        // Events
+			// Events
+		// Pause
         // Background Image
         instance->m_PauseSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 std::cout << "OnPress Event" << std::endl;
@@ -331,34 +464,10 @@ void UIManager::Initialize(native_handle_type hwnd)
                 std::cout << std::endl;
         });
 
-        instance->m_PauseSprites[1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                // Sprites
-                for (int i = 0; i < instance->m_PauseSprites.size(); i++)
-                {
-                        instance->m_PauseSprites[i].mEnabled = false;
-                }
+		// Resume Button
+        instance->m_PauseSprites[1].OnMouseDown.AddEventListener([](UIMouseEvent* e) { instance->Unpause(); });
 
-                // Text
-                for (int i = 0; i < instance->m_PauseSpriteFonts.size(); i++)
-                {
-                        instance->m_PauseSpriteFonts[i]->mEnabled = false;
-                }
-
-                // Joe's code for unpausing the game here
-                instance->m_InMenu = !instance->m_InMenu;
-                GEngine::Get()->SetGamePaused(instance->m_InMenu);
-                if (instance->m_InMenu)
-                {
-                        while (ShowCursor(TRUE) < 0)
-                                ;
-                }
-                else
-                {
-                        while (ShowCursor(FALSE) >= 0)
-                                ;
-                }
-        });
-
+		// Level Select Button
         instance->m_PauseSprites[2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Sprites
                 for (int i = 0; i < instance->m_PauseSprites.size(); i++)
@@ -386,6 +495,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 }
         });
 
+		// Options Button
         instance->m_PauseSprites[3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Sprites
                 for (int i = 0; i < instance->m_PauseSprites.size(); i++)
@@ -413,9 +523,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                 }
         });
 
+		//Exit Button
         instance->m_PauseSprites[4].OnMouseDown.AddEventListener([](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
 
-        // Options
+		// Options
+		// Back Button
         instance->m_OptionsSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
 
@@ -442,7 +554,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                 }
         });
 
-        // Level
+        // Level Select
+		// Back Button
         instance->m_LevelSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
 
@@ -481,84 +594,27 @@ void UIManager::Update()
                 instance->UIClipCursor();
         }
 
-        if (instance->m_MainSpriteFonts[0]->mEnabled == true)
+		//Pause / Unpause
+        if (instance->m_MainSpriteFonts[0]->mEnabled)
         {
-                // ControllerManager::Get()->m_togglePauseInput = true;
                 if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::DownFirst)
                 {
-                        // ControllerManager::Get()->m_togglePauseInput = !ControllerManager::Get()->m_togglePauseInput;
-                        GEngine::Get()->SetGamePaused(false);
-                        for (int i = 0; i < instance->m_MainSpriteFonts.size(); i++)
-                        {
-                                instance->m_MainSpriteFonts[i]->mEnabled = false;
-                        }
+                        instance->MainTilteUnpause();
                 }
         }
         else
         {
                 if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
                 {
-                        // ControllerSystem::Get()->m_togglePauseInput = !ControllerSystem::Get()->m_togglePauseInput;
-                        instance->m_InMenu = !instance->m_InMenu;
-                        GEngine::Get()->SetGamePaused(instance->m_InMenu);
-                        if (instance->m_InMenu)
+                        if (!instance->m_EscPush)
                         {
-                                while (ShowCursor(TRUE) < 0)
-                                        ;
+                                instance->Pause();
+                                instance->m_EscPush = true;
                         }
                         else
                         {
-                                while (ShowCursor(FALSE) >= 0)
-                                        ;
-                        }
-
-
-                        // Change input from Control to Escape whenever implimented
-                        // Disable or enable all Sprites based off of input
-                        // Pause Menu
-                        if (instance->m_PauseSprites[0].mEnabled == true)
-                        {
-                                // Sprites
-                                for (int i = 0; i < instance->m_PauseSprites.size(); i++)
-                                {
-                                        instance->m_PauseSprites[i].mEnabled = false;
-                                }
-                        }
-                        else
-                        {
-                                // Sprites
-                                for (int i = 0; i < instance->m_PauseSprites.size(); i++)
-                                {
-                                        instance->m_PauseSprites[i].mEnabled = true;
-                                }
-                        }
-                        if (instance->m_PauseSprites[0].mEnabled == true)
-                        {
-                                // Text
-                                for (int i = 0; i < instance->m_PauseSpriteFonts.size(); i++)
-                                {
-                                        instance->m_PauseSpriteFonts[i]->mEnabled = true;
-                                }
-                        }
-                        else
-                        {
-                                // Text
-                                for (int i = 0; i < instance->m_PauseSpriteFonts.size(); i++)
-                                {
-                                        instance->m_PauseSpriteFonts[i]->mEnabled = false;
-                                }
-                        }
-
-                        // Options Menu
-                        // Sprites
-                        for (int i = 0; i < instance->m_OptionsSprites.size(); i++)
-                        {
-                                instance->m_OptionsSprites[i].mEnabled = false;
-                        }
-                        // Text
-                        for (int i = 0; i < instance->m_OptionsSpriteFonts.size(); i++)
-                        {
-                                instance->m_OptionsSpriteFonts[i]->mEnabled = false;
+                                instance->Unpause();
+                                instance->m_EscPush = false;
                         }
                 }
         }

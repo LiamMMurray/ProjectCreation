@@ -12,6 +12,8 @@
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
 
+#include "UI/UIManager.h"
+
 #include "Engine/CollisionLibary/CollisionLibary.h"
 #include "Engine/CollisionLibary/CollisionResult.h"
 
@@ -273,6 +275,11 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
 
+                if (GetActiveWindow() != handle)
+                {
+                        UIManager::instance->Pause();
+                }
+
 				{
                         static DWORD frameCount = 0;
                         ++frameCount;
@@ -301,20 +308,6 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                         else
                                 music->PauseStream();
                 }
-
-                /*Spline<XMVECTOR, float> splineTest(3, spline::eUNIFORM);
-                std::vector<XMVECTOR>   testPoints = {XMVECTORF32{0.0f, 4.0f, 1.0f, 1.0f},
-                                                    XMVECTORF32{3.0f, 4.0f, 4.0f, 1.0f},
-                                                    XMVECTORF32{6.0f, 4.0f, 3.0f, 1.0f},
-                                                    XMVECTORF32{-4.0f, 2.0f, 7.0f, 1.0f}};
-                splineTest.set_ctrl_points(testPoints);
-                for (int i = 0; i < 49; ++i)
-                {
-                        XMVECTOR start = splineTest.eval_f((float)i / (50 - 1));
-                        XMVECTOR end   = splineTest.eval_f((float)(i + 1) / (50 - 1));
-                        debug_renderer::add_line(start, end, ColorConstants::White);
-                }*/
-
 
                 debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
