@@ -12,6 +12,8 @@
 #include "FontComponent.h"
 #include "SpriteComponent.h"
 
+class RenderSystem;
+
 class UIManager
 {
         using native_handle_type = void*;
@@ -55,19 +57,27 @@ class UIManager
         void Unpause();
 
 
-        void UIClipCursor();
+        void              UIClipCursor();
+        static void       OnScreenResize();
+
 
         static UIManager* instance;
 
     private:
-        bool                                             m_EscPush = false;
+        bool                                             m_EscPush      = false;
         bool                                             m_IsFullscreen = false;
-        bool                                             m_InMenu = false;
+        bool                                             m_InMenu       = false;
         std::unique_ptr<DirectX::SpriteBatch>            m_SpriteBatch;
         std::unique_ptr<DirectX::CommonStates>           m_States;
         RECT                                             m_fullscreenRect;
         Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_background;
         POINT                                            m_Cursor;
+
+        RenderSystem* m_RenderSystem;
+
+        DirectX::XMFLOAT2 m_TexelSize;
+        DirectX::XMFLOAT2 m_ScreenSize;
+        DirectX::XMVECTOR m_ScreenCenter;
 
         std::vector<SpriteComponent> m_MainSprites;
         std::vector<FontComponent*>  m_MainSpriteFonts;

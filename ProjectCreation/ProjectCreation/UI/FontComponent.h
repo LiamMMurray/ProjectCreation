@@ -11,7 +11,7 @@ class FontComponent : public Component<FontComponent>
     public:
         std::unique_ptr<DirectX::SpriteFont> mSpriteFont;
         std::string                          mTextDisplay;
-        DirectX::SimpleMath::Vector2         mScreenPos;
+        DirectX::SimpleMath::Vector2         mScreenOffset;
         unsigned int                         mWidth;
         unsigned int                         mHeight;
         DirectX::XMVECTOR                    mOrigin;
