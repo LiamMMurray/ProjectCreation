@@ -29,7 +29,9 @@
 #include "../Engine/GenericComponents/TransformComponent.h"
 #include "Vertex.h"
 
+#include "../Engine/Particle Systems/ParticleManager.h"
 #include "../UI/UIManager.h"
+
 #include "Components/CameraComponent.h"
 #include "Components/DirectionalLightComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -325,6 +327,21 @@ void RenderSystem::CreateInputLayouts()
                                          shaderData.bytes.data(),
                                          shaderData.bytes.size(),
                                          &m_DefaultInputLayouts[E_INPUT_LAYOUT::DEBUG]);
+
+        // Vertex Shader for Geomatry Shader
+        D3D11_INPUT_ELEMENT_DESC vGeometryLayout[] = {
+            {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}};
+        er = FileIO::LoadShaderDataFromFile("Geometry", "_VS", &shaderData);
+
+        assert(er.m_Flags == ERESULT_FLAG::SUCCESS);
+
+        hr = m_Device->CreateInputLayout(vGeometryLayout,
+                                         ARRAYSIZE(vGeometryLayout),
+                                         shaderData.bytes.data(),
+                                         shaderData.bytes.size(),
+                                         &m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
+
         assert(SUCCEEDED(hr));
 }
 
@@ -857,6 +874,8 @@ void RenderSystem::OnUpdate(float deltaTime)
                 }
         }
 
+        ParticleManager::Update(deltaTime);
+
         // Set the backbuffer as render target
         m_Context->OMSetRenderTargets(1, &m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER], nullptr);
 
@@ -943,6 +962,7 @@ void RenderSystem::OnInitialize()
 
         // UI Manager Initialize
         UIManager::Initialize(m_WindowHandle);
+        ParticleManager::Initialize();
 }
 
 void RenderSystem::OnShutdown()
@@ -1021,6 +1041,8 @@ void RenderSystem::OnShutdown()
         }
         // UI Manager Shutdown
         UIManager::Shutdown();
+
+        ParticleManager::Shutdown();
 }
 
 void RenderSystem::OnResume()

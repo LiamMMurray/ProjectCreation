@@ -4,6 +4,7 @@
 #include "../Engine/CollisionLibary/CollisionSystem.h"
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/Physics/PhysicsSystem.h"
+#include"../Engine/Particle Systems/ParticleSystems.h"
 
 void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type handle)
 {
@@ -41,7 +42,12 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
         sysInitProps.m_UpdateRate = 0.0f;
         systemManager->RegisterSystem(&sysInitProps, animSystem);
 
-
+		// Create Particle System
+        ParticleSystem* particleSystem;
+        systemManager->CreateSystem<ParticleSystem>(&particleSystem);
+        sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
+        sysInitProps.m_UpdateRate = 0.0f;
+        systemManager->RegisterSystem(&sysInitProps, particleSystem);
 
         GCoreInput::InitializeInput((HWND)handle);
 
