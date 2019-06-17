@@ -134,6 +134,9 @@ class PlayerController : public IController
                 m_EulerAngles = val;
         }
 
+        void SetUseGravity(bool val);
+        void SetYExtraSpeed(float val);
+
         void RequestCinematicTransition(int                    count,
                                         const ComponentHandle* handles,
                                         const FTransform*      targets,

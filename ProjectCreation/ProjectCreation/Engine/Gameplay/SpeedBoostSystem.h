@@ -6,6 +6,7 @@
 #include "../../ECS/ECS.h"
 #include "LightOrbColors.h"
 #include "SpeedboostComponent.h"
+#include "SplineCluster.h"
 
 class TransformComponent;
 class SpeedboostComponent;
@@ -20,18 +21,23 @@ class SpeedBoostSystem : public ISystem
         static constexpr uint32_t m_MaxSpeedBoosts = 30;
         unsigned int              randomOrbCount   = 0;
 
-
-
+		float                      flyTimer = 0.0f;
+		float                      flyCD = 1.0f;
+        std::vector<SplineCluster> m_SplineClusterSpawners;
 
         static constexpr int PathCount = 9;
 
         std::vector<std::vector<DirectX::XMVECTOR>> m_Paths;
 
-        std::queue<FSpeedboostSpawnSettings> m_SpawnQueue;
-
         const char* materialNames[4] = {"GlowSpeedboost01", "GlowSpeedboost02", "GlowSpeedboost03", "GlowSpeedboost04"};
 
-        void SpawnSpeedBoost(const FSpeedboostSpawnSettings& settings);
+        void         SpawnRandomSpeedBoost();
+        void         SpawnSplineSpeedBoost(const SplineCluster& cluster,
+                                           unsigned int         index,
+                                           int                  color,
+                                           bool                 tail = false,
+                                           bool                 head = false);
+        EntityHandle SpawnSpeedBoost(const DirectX::XMVECTOR& pos, int color);
 
         float m_PlayerEffectRadius    = 0.0f;
         float m_SpawnBoostTimer       = 0.0f;

@@ -2,7 +2,7 @@
 
 #include "../../ECS/Component.h"
 
-class SpeedboostSplineComponent : public Component<SpeedboostSplineComponent>
+class SplineElementComponent : public Component<SplineElementComponent>
 {
     public:
         ComponentHandle m_NextOrb;

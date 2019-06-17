@@ -56,12 +56,18 @@ class MathLibrary
         static DirectX::XMVECTOR GetRandomVectorInRange(float min, float max);
         static DirectX::XMVECTOR GetRandomUnitVector();
         static DirectX::XMVECTOR GetRandomUnitVector2D();
-        inline static bool       QuadraticFormula(const float a,
-                                                  const float b,
-                                                  const float c,
-                                                  float&      r1, // first
-                                                  float&      r2  // and second roots
-              )
+
+        inline static float GetSign(float val)
+        {
+                return (val == 0) ? 0.0f : (val > 0 ? 1.0f : -1.0f);
+        }
+
+        inline static bool QuadraticFormula(const float a,
+                                            const float b,
+                                            const float c,
+                                            float&      r1, // first
+                                            float&      r2  // and second roots
+        )
         {
                 const float q = b * b - 4 * a * c;
                 if (q >= 0)
