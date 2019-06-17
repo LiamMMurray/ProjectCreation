@@ -43,7 +43,6 @@ class SpriteComponent : public Component<SpriteComponent>
 
         bool mEnabled;
 
-        void Scale();
         void SetPosition(float x, float y);
 
         UIMouseEventManager OnMouseDown;
