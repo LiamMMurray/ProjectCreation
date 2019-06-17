@@ -680,8 +680,8 @@ void UIManager::Update()
                 }
         }
 
-        for (auto& vec : instance->m_AllSprites)
-                for (auto& sprite : *vec)
+        for (auto& it : instance->m_AllSprites)
+                for (auto& sprite : it.second)
                 {
                         if (sprite.mEnabled)
                         {
@@ -724,8 +724,8 @@ void UIManager::Update()
                         }
                 }
 
-        for (auto& vec : instance->m_AllFonts)
-                for (auto& font : *vec)
+        for (auto& it : instance->m_AllFonts)
+                for (auto& font : it.second)
                 {
                         if (font.mEnabled)
                         {
@@ -762,14 +762,14 @@ void UIManager::Shutdown()
         instance->m_SpriteBatch.reset();
         instance->m_background.Reset();
 
-        for (auto& vec : instance->m_AllSprites)
-                for (auto& sprite : *vec)
+        for (auto& it : instance->m_AllSprites)
+                for (auto& sprite : it.second)
                 {
                         SAFE_RELEASE(sprite.mTexture);
                 }
 
-        for (auto& vec : instance->m_AllFonts)
-                for (auto& font : *vec)
+        for (auto& it : instance->m_AllFonts)
+                for (auto& font : it.second)
                 {
                         SAFE_RELEASE(font.mTexture);
                         font.mSpriteFont.reset();
