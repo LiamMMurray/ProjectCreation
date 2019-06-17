@@ -107,11 +107,14 @@ void UIManager::AddText(ID3D11Device*        device,
         cFont.mScreenOffset.x = PositionX;
         cFont.mScreenOffset.y = PositionY;
 
-        // Error C2280
-        // attempting to reference a deleted function
-        // C:\Program Files(x86)\Microsoft Visual Studio\2019\Preview\VC\Tools\MSVC\14.20.27508\include\xmemory0 819
-        // FIXED
-        // Making the vector array an array of pointers fixed this issue
+        // This was not the error, fixed by Jose
+        {
+                // Error C2280
+                // attempting to reference a deleted function
+                // C:\Program Files(x86)\Microsoft Visual Studio\2019\Preview\VC\Tools\MSVC\14.20.27508\include\xmemory0 819
+                // FIXED
+                // Making the vector array an array of pointers fixed this issue
+        }
         m_AllFonts[category].emplace_back(std::move(cFont));
 
         float bWidth  = scale * aspectRatio;
@@ -296,8 +299,6 @@ void UIManager::Unpause()
 void UIManager::Initialize(native_handle_type hwnd)
 {
         assert(!instance);
-
-
         instance = new UIManager;
 
         instance->m_RenderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
@@ -353,11 +354,12 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           false);
 
+		// "Press Spacebar, Q, and E to continue. . . "
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
                           L"../Assets/2d/Text/calibri.spritefont",
-                          "Press Spacebar to continue. . .",
+                          "Press Spacebar, Q, and E to continue. . .",
                           0.06f,
                           0.0f,
                           0.0f,
@@ -366,8 +368,8 @@ void UIManager::Initialize(native_handle_type hwnd)
 
 
         // Pause Menu
-        constexpr float pauseButtonWidth  = 0.3f;
-        constexpr float pauseButtonHeight = 0.08f;
+        constexpr float pauseButtonWidth  = 0.25f;
+        constexpr float pauseButtonHeight = 0.05f;
         instance->AddSprite(instance->m_RenderSystem->m_Device,
                             instance->m_RenderSystem->m_Context,
                             E_MENU_CATEGORIES::PauseMenu,
@@ -394,7 +396,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::PauseMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
                           "Resume",
-                          0.06f,
+                          0.05f,
                           0.0f,
                           -0.15f,
                           false,
@@ -408,7 +410,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::PauseMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
                           "Levels",
-                          0.06f,
+                          0.05f,
                           0.0f,
                           -0.05f,
                           false,
@@ -422,9 +424,23 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::PauseMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
                           "Options",
-                          0.06f,
+                          0.05f,
                           0.0f,
                           0.05f,
+                          false,
+                          true,
+                          true,
+                          pauseButtonWidth,
+                          pauseButtonHeight);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::PauseMenu,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Controls",
+                          0.05f,
+                          0.0f,
+                          0.15f,
                           false,
                           true,
                           true,
@@ -436,9 +452,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::PauseMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
                           "Exit",
-                          0.06f,
+                          0.05f,
                           0.0f,
-                          0.15f,
+                          0.25f,
                           false,
                           true,
                           true,
@@ -448,10 +464,10 @@ void UIManager::Initialize(native_handle_type hwnd)
         // Options Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::PauseMenu,
+                          E_MENU_CATEGORIES::OptionsMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
                           "Back",
-                          0.06f,
+                          0.05f,
                           0.0f,
                           -0.15f,
                           false,
@@ -462,12 +478,12 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::PauseMenu,
+                          E_MENU_CATEGORIES::OptionsMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "Fullscreen: ",
-                          0.06f,
-                          0.1f,
-                          -0.05f,
+                          "Window Mode",
+                          0.04f,
+                          0.0f,
+                          0.0f,
                           false,
                           true,
                           true,
@@ -476,12 +492,12 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::PauseMenu,
+                          E_MENU_CATEGORIES::OptionsMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "Resolution: ",
-                          0.06f,
+                          "Resolution",
+                          0.04f,
+                          0.0f,
                           0.1f,
-                          0.05f,
                           false,
                           true,
                           true,
@@ -494,28 +510,14 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::LevelMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
                           "Back",
-                          0.06f,
+                          0.05f,
                           0.0f,
-                          0.2f,
+                          -0.15f,
                           false,
                           true,
                           true,
                           pauseButtonWidth,
                           pauseButtonHeight);
-
-        // Events
-        // Pause
-        // Background Image
-        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                std::cout << "OnPress Event" << std::endl;
-                std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
-                std::cout << std::endl;
-        });
-        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                std::cout << "OnPress Event2" << std::endl;
-                std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
-                std::cout << std::endl;
-        });
 
         // Resume Button
         instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][1].OnMouseDown.AddEventListener(
@@ -577,8 +579,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                 }
         });
 
+        // Controls Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][4].OnMouseDown.AddEventListener([](UIMouseEvent* e) {});
+
         // Exit Button
-        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][4].OnMouseDown.AddEventListener(
+        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][5].OnMouseDown.AddEventListener(
             [](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
 
         // Options
@@ -607,6 +612,10 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
                 }
+        });
+
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e){
+                
         });
 
         // Level Select
@@ -657,10 +666,12 @@ void UIManager::Update()
                 instance->UIClipCursor();
         }
 
-        // Pause / Unpause
+        // Pause & Unpause
         if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled)
         {
-                if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::DownFirst)
+                if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Down &&
+                    GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Down &&
+                    GCoreInput::GetKeyState(KeyCode::E) == KeyState::Down)
                 {
                         instance->MainTilteUnpause();
                 }
