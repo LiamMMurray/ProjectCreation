@@ -16,13 +16,18 @@ class FontComponent : public Component<FontComponent>
         unsigned int                         mHeight;
         DirectX::XMVECTOR                    mOrigin;
 
-        ID3D11ShaderResourceView*            mTexture;
-        RECT                                 mRectangle;
+        float mScaleX;
+        float mScaleY;
 
-        bool                                 mEnabled;
-        int                                  mID;
+        ID3D11ShaderResourceView* mTexture;
 
+        bool mEnabled;
+        int  mID;
 
-        void MakeRectangle();
         void SetPosition(float x, float y);
+
+        FontComponent()                     = default;
+        FontComponent(const FontComponent&) = delete;
+        FontComponent(FontComponent&&) = default;
+        FontComponent& operator=(const FontComponent&) = delete;
 };
