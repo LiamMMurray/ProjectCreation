@@ -151,6 +151,7 @@
     </FxCompile>
     <ClInclude Include="System\PhysicsSystem.h" />
     <ClInclude Include="UI\SpriteComponent.h" />
+    <ClInclude Include="UI\UICollision.h" />
     <ClInclude Include="UI\UIManager.h" />
     <ClInclude Include="Engine\Physics\PhysicsSystem.h" />
     <ClInclude Include="Shaders\BasePassTextureMaps.hlsl" />
@@ -243,6 +244,7 @@
     <ClCompile Include="Engine\ResourceManager\StaticMesh.cpp" />
     <ClCompile Include="Engine\ResourceManager\Texture2D.cpp" />
     <ClCompile Include="Engine\ResourceManager\VertexShader.cpp" />
+    <ClCompile Include="UI\UICollision.cpp" />
     <ClCompile Include="Utility\RenderUtility.cpp" />
     <ClCompile Include="UI\UIManager.cpp" />
     <ClCompile Include="UI\SpriteComponent.cpp" />
