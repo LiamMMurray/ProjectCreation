@@ -32,6 +32,7 @@ class PlayerController : public IController
 
         DirectX::XMVECTOR m_CurrentInput;
         DirectX::XMVECTOR m_CurrentVelocity;
+        DirectX::XMVECTOR m_CurrentForward;
 
         PlayerControllerStateMachine m_StateMachine;
 
@@ -112,6 +113,16 @@ class PlayerController : public IController
         inline DirectX::XMVECTOR GetCurrentVelocity() const
         {
                 return m_CurrentVelocity;
+        }
+
+        inline void SetCurrentForward(DirectX::XMVECTOR val)
+        {
+                m_CurrentVelocity = val;
+        }
+
+        inline DirectX::XMVECTOR GetCurrentForward() const
+        {
+                return m_CurrentForward;
         }
 
         inline void SetGoalComponent(ComponentHandle val)
