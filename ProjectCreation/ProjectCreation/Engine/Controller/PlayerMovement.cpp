@@ -134,10 +134,12 @@ void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos)
 {
         currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
         XMVECTOR currentInput = XMVector3Rotate(m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
-        if (MathLibrary::VectorDotProduct(currentInput, _cachedControlledTransformComponent->transform.GetForward()) > 0.0f)
+        if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
+        {
                 m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
-        m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
-        m_GroundState->AddSpeedBoost();
+                m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
+                m_GroundState->AddSpeedBoost();
+        }
 }
 
 void PlayerController::AddCurrentVelocity(DirectX::XMVECTOR val)

@@ -276,24 +276,31 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 auto                             compItr = m_ComponentManager->GetActiveComponents<SpeedboostSplineComponent>();
                 bool                             canFly  = false;
                 static SpeedboostSplineComponent closestComp;
+                float                            checkRadius = m_BoostRadius * 4.0f;
+
+                float prevDistance =
+                    MathLibrary::CalulateDistanceIgnoreY(closestComp.m_CurrPos, playerTransform->transform.translation);
+
                 for (auto itr = compItr.begin(); itr != compItr.end(); itr++)
                 {
                         SpeedboostSplineComponent* splineComp = (SpeedboostSplineComponent*)itr.data();
                         float                      distance =
-                            MathLibrary::CalulateDistance(playerTransform->transform.translation, splineComp->m_CurrPos);
+                            MathLibrary::CalulateDistanceIgnoreY(playerTransform->transform.translation, splineComp->m_CurrPos);
 
-                        float checkRadius = m_BoostRadius * 4.0f;
                         if (distance < (checkRadius))
                         {
+                                if (playerController->GetUseGravity() == true || prevDistance > distance)
+                                        closestComp = *splineComp;
+
                                 playerController->SetUseGravity(false);
-                                flyTimer    = flyCD;
-                                canFly      = true;
-                                closestComp = *splineComp;
-                                break;
+                                flyTimer = flyCD;
+                                canFly   = true;
+                                // break;
                         }
                 }
-
-                if (!canFly)
+                float closestDistance =
+                    MathLibrary::CalulateDistanceIgnoreY(closestComp.m_CurrPos, playerTransform->transform.translation);
+                if (!canFly && closestDistance >= checkRadius)
                 {
                         flyTimer -= deltaTime;
 
@@ -303,12 +310,38 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                 if (playerController->GetUseGravity() == false)
                 {
-                        XMVECTOR point = MathLibrary::GetClosestPointFromLine(
-                            closestComp.m_PrevPos, closestComp.m_NextPos, playerTransform->transform.translation);
-                        point += 0.05f * VectorConstants::Up;
-                        XMVECTOR dir = XMVector3Normalize(point - playerTransform->transform.translation);
+                        XMVECTOR dirNext = XMVector3Normalize(closestComp.m_NextPos - playerTransform->transform.translation);
+                        XMVECTOR dirPrev = XMVector3Normalize(closestComp.m_PrevPos - playerTransform->transform.translation);
 
-                        playerController->AddCurrentVelocity(dir * 3.0f * deltaTime);
+                        XMVECTOR dir, next;
+                        bool     attached = false;
+                        if (MathLibrary::VectorDotProduct(playerTransform->transform.GetForward(), dirNext) > 0.3f)
+                        {
+                                attached = true;
+                                next     = closestComp.m_NextPos;
+                        }
+                        else if (MathLibrary::VectorDotProduct(playerTransform->transform.GetForward(), dirPrev) > 0.3f)
+                        {
+                                attached = true;
+                                next     = closestComp.m_PrevPos;
+                        }
+
+                        if (attached)
+                        {
+                                XMVECTOR offset = 0.05f * VectorConstants::Up;
+                                XMVECTOR closestPointOnLine =
+                                    MathLibrary::GetClosestPointFromLine(closestComp.m_PrevPos + offset,
+                                                                         closestComp.m_NextPos + offset,
+                                                                         playerTransform->transform.translation);
+                                float    distanceToLine = MathLibrary::CalulateDistance(closestPointOnLine + offset,
+                                                                                     playerTransform->transform.translation);
+                                XMVECTOR point = next + offset;
+                                dir            = XMVector3Normalize(point - playerTransform->transform.translation);
+
+                                float strength = MathLibrary::clamp(distanceToLine * 3.0f, 0.5f, 8.0f);
+                                playerTransform->transform.translation += dir * strength * deltaTime;
+                                // playerController->AddCurrentVelocity(dir * 10.0f * deltaTime);
+                        }
                 }
         }
 
@@ -357,26 +390,18 @@ void SpeedBoostSystem::OnInitialize()
         // Red Light
         auto speedBoostMat01Handle = GEngine::Get()->GetResourceManager()->LoadMaterial("GlowSpeedboost01");
         auto speedBoostMat01       = GEngine::Get()->GetResourceManager()->GetResource<Material>(speedBoostMat01Handle);
-        speedBoostMat01->m_SurfaceProperties.diffuseColor  = {0.9f, 0.1f, 0.1f};
-        speedBoostMat01->m_SurfaceProperties.emissiveColor = {1.05f, 0.05f, 0.05f};
 
         // Blue Light
         auto speedBoostMat02Handle = GEngine::Get()->GetResourceManager()->LoadMaterial("GlowSpeedboost02");
         auto speedBoostMat02       = GEngine::Get()->GetResourceManager()->GetResource<Material>(speedBoostMat02Handle);
-        speedBoostMat02->m_SurfaceProperties.diffuseColor  = {0.7f, 0.7f, 0.9f};
-        speedBoostMat02->m_SurfaceProperties.emissiveColor = {0.01f, 0.1f, 1.125f};
 
         // Green Light
         auto speedBoostMat03Handle = GEngine::Get()->GetResourceManager()->LoadMaterial("GlowSpeedboost03");
         auto speedBoostMat03       = GEngine::Get()->GetResourceManager()->GetResource<Material>(speedBoostMat03Handle);
-        speedBoostMat03->m_SurfaceProperties.diffuseColor  = {0.1f, 0.9f, 0.1f};
-        speedBoostMat03->m_SurfaceProperties.emissiveColor = {0.05f, 1.05f, 0.05f};
 
         // White Light
         auto speedBoostMat04Handle = GEngine::Get()->GetResourceManager()->LoadMaterial("GlowSpeedboost04");
         auto speedBoostMat04       = GEngine::Get()->GetResourceManager()->GetResource<Material>(speedBoostMat04Handle);
-        speedBoostMat04->m_SurfaceProperties.diffuseColor  = {0.5f, 0.5f, 0.5f};
-        speedBoostMat04->m_SurfaceProperties.emissiveColor = {1.05f, 1.05f, 1.05f};
 
         MazeGenerator mazeGenerator;
         m_Paths.resize(PathCount);

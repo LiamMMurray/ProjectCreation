@@ -445,6 +445,7 @@ void RenderSystem::CreateBlendStates()
         m_Device->CreateBlendState(&blendDescOpaque, &m_BlendStates[E_BLEND_STATE::Opaque]);
 
         CD3D11_BLEND_DESC blendDescTransluscent{};
+
         blendDescTransluscent.RenderTarget[0].BlendEnable           = true;
         blendDescTransluscent.RenderTarget[0].SrcBlend              = D3D11_BLEND_ONE;
         blendDescTransluscent.RenderTarget[0].DestBlend             = D3D11_BLEND_INV_SRC_ALPHA;
@@ -452,16 +453,32 @@ void RenderSystem::CreateBlendStates()
         blendDescTransluscent.RenderTarget[0].SrcBlendAlpha         = D3D11_BLEND_INV_DEST_ALPHA;
         blendDescTransluscent.RenderTarget[0].DestBlendAlpha        = D3D11_BLEND_ONE;
         blendDescTransluscent.RenderTarget[0].BlendOpAlpha          = D3D11_BLEND_OP_ADD;
-        blendDescTransluscent.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+        blendDescTransluscent.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-        m_Device->CreateBlendState(&blendDescOpaque, &m_BlendStates[E_BLEND_STATE::Transluscent]);
+        m_Device->CreateBlendState(&blendDescTransluscent, &m_BlendStates[E_BLEND_STATE::Transluscent]);
+
+        CD3D11_BLEND_DESC blendAdditive{};
+
+        blendAdditive.RenderTarget[0].BlendEnable           = true;
+        blendAdditive.RenderTarget[0].SrcBlend              = D3D11_BLEND_ONE;
+        blendAdditive.RenderTarget[0].DestBlend             = D3D11_BLEND_ONE;
+        blendAdditive.RenderTarget[0].BlendOp               = D3D11_BLEND_OP_ADD;
+        blendAdditive.RenderTarget[0].SrcBlendAlpha         = D3D11_BLEND_ONE;
+        blendAdditive.RenderTarget[0].DestBlendAlpha        = D3D11_BLEND_ONE;
+        blendAdditive.RenderTarget[0].BlendOpAlpha          = D3D11_BLEND_OP_ADD;
+        blendAdditive.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+        m_Device->CreateBlendState(&blendDescTransluscent, &m_BlendStates[E_BLEND_STATE::Additive]);
 }
 
 void RenderSystem::CreateDepthStencilStates()
 {
         CD3D11_DEPTH_STENCIL_DESC desc = CD3D11_DEPTH_STENCIL_DESC();
-
+        desc.DepthFunc                 = D3D11_COMPARISON_LESS_EQUAL;
+        desc.DepthEnable               = true;
         m_Device->CreateDepthStencilState(&desc, &m_DepthStencilStates[E_DEPTH_STENCIL_STATE::BASE_PASS]);
+        desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+        m_Device->CreateDepthStencilState(&desc, &m_DepthStencilStates[E_DEPTH_STENCIL_STATE::TRANSLUSCENT]);
 }
 
 void RenderSystem::CreatePostProcessEffects(D3D11_TEXTURE2D_DESC* desc)
@@ -776,8 +793,6 @@ void RenderSystem::OnUpdate(float deltaTime)
         m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
         m_Context->RSSetViewports(1, &viewport);
 
-        m_Context->OMSetDepthStencilState(m_DepthStencilStates[E_DEPTH_STENCIL_STATE::BASE_PASS], 0);
-
         m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::SKINNED]);
         m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         m_Context->VSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
@@ -814,11 +829,12 @@ void RenderSystem::OnUpdate(float deltaTime)
                              &m_ConstantBuffer_SCENE,
                              sizeof(m_ConstantBuffer_SCENE));
 
-        float blendFactor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-        UINT  sampleMask     = 0xffffffff;
+        float blendFactor[] = {0.75f, 0.75f, 0.75f, 1.0f};
+        UINT  sampleMask    = 0xffffffff;
 
         /** Render opaque meshes **/
-        m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Opaque], blendFactor, sampleMask);
+        m_Context->OMSetDepthStencilState(m_DepthStencilStates[E_DEPTH_STENCIL_STATE::BASE_PASS], 0);
+        m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Opaque], 0, sampleMask);
         for (size_t i = 0, n = m_OpaqueDraws.size(); i < n; ++i)
         {
                 if (m_OpaqueDraws[i].meshType == FDraw::EDrawType::Static)
@@ -838,7 +854,8 @@ void RenderSystem::OnUpdate(float deltaTime)
         }
 
         /** Render transluscent meshes **/
-        m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Transluscent], blendFactor, sampleMask);
+        m_Context->OMSetDepthStencilState(m_DepthStencilStates[E_DEPTH_STENCIL_STATE::TRANSLUSCENT], 1);
+        m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Additive], blendFactor, sampleMask);
         for (size_t i = 0, n = m_TransluscentDraws.size(); i < n; ++i)
         {
                 if (m_TransluscentDraws[i].meshType == FDraw::EDrawType::Static)
@@ -926,6 +943,8 @@ void RenderSystem::OnInitialize()
         CreateSamplerStates();
         CreateDebugBuffers();
         CreatePostProcessEffects(&desc);
+        CreateBlendStates();
+        CreateDepthStencilStates();
 
         // UI Manager Initialize
         UIManager::Initialize(m_WindowHandle);
