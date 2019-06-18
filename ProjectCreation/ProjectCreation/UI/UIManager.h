@@ -12,6 +12,8 @@
 #include "FontComponent.h"
 #include "SpriteComponent.h"
 
+class RenderSystem;
+
 class UIManager
 {
         using native_handle_type = void*;
@@ -35,14 +37,18 @@ class UIManager
 
         void AddText(ID3D11Device*                 device,
                      ID3D11DeviceContext*          deviceContext,
-                     std::vector<FontComponent*>&  FontVector,
+                     std::vector<FontComponent>&   FontVector,
                      std::vector<SpriteComponent>& SpriteVector,
                      const wchar_t*                FileName,
                      std::string                   TextDisplay,
+                     float                         scale,
                      float                         PositionX,
                      float                         PositionY,
-                     bool                          AddButton,
-                     bool                          enabled);
+                     bool                          enabled,
+                     bool                          AddButton                 = false,
+                     bool                          bOverrideButtonDimensions = false,
+                     float                         buttonwidth               = 0.5f,
+                     float                         buttonheight              = 0.5f);
 
         void CreateBackground(ID3D11Device*        device,
                               ID3D11DeviceContext* deviceContext,
@@ -50,28 +56,44 @@ class UIManager
                               float                ScreenWidth,
                               float                ScreenHeight);
 
+        void MainTilteUnpause();
+        void Pause();
+        void Unpause();
 
-        void UIClipCursor();
+
+        void        UIClipCursor();
+        static void OnScreenResize();
+
 
         static UIManager* instance;
 
     private:
-        bool                                             m_InMenu = false;
+        bool                                             m_IsFullscreen = false;
+        bool                                             m_InMenu       = false;
         std::unique_ptr<DirectX::SpriteBatch>            m_SpriteBatch;
         std::unique_ptr<DirectX::CommonStates>           m_States;
         RECT                                             m_fullscreenRect;
         Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_background;
         POINT                                            m_Cursor;
 
+        RenderSystem* m_RenderSystem;
+
+        DirectX::XMFLOAT2 m_TexelSize;
+        DirectX::XMFLOAT2 m_ScreenSize;
+        DirectX::XMVECTOR m_ScreenCenter;
+
+        std::vector<std::vector<SpriteComponent>*> m_AllSprites;
+        std::vector<std::vector<FontComponent>*>   m_AllFonts;
+
         std::vector<SpriteComponent> m_MainSprites;
-        std::vector<FontComponent*>  m_MainSpriteFonts;
+        std::vector<FontComponent>   m_MainSpriteFonts;
 
         std::vector<SpriteComponent> m_PauseSprites;
-        std::vector<FontComponent*>  m_PauseSpriteFonts;
+        std::vector<FontComponent>   m_PauseSpriteFonts;
 
         std::vector<SpriteComponent> m_OptionsSprites;
-        std::vector<FontComponent*>  m_OptionsSpriteFonts;
+        std::vector<FontComponent>   m_OptionsSpriteFonts;
 
         std::vector<SpriteComponent> m_LevelSprites;
-        std::vector<FontComponent*>  m_LevelSpriteFonts;
+        std::vector<FontComponent>   m_LevelSpriteFonts;
 };

@@ -194,6 +194,7 @@ struct E_BLEND_STATE
         {
                 Opaque = 0,
                 Transluscent,
+				Additive,
                 COUNT
         };
 };
@@ -212,6 +213,7 @@ struct E_DEPTH_STENCIL_STATE
         enum
         {
                 BASE_PASS,
+				TRANSLUSCENT,
                 COUNT
         };
 };

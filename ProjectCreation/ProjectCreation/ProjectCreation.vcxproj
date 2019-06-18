@@ -23,7 +23,6 @@
     <ClInclude Include="Engine\CollisionLibary\CollisionResult.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionGrid.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionLibary.h" />
-    <ClInclude Include="Engine\CollisionLibary\CollisionSystem.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionComponents.h" />
     <ClInclude Include="Engine\Controller\ControllerSystem.h" />
     <ClInclude Include="Engine\Controller\DebugCameraController.h" />
@@ -44,11 +43,16 @@
     <ClInclude Include="Engine\Gameplay\GoalComponent.h" />
     <ClInclude Include="Engine\Gameplay\LightOrbColors.h" />
     <ClInclude Include="Engine\Gameplay\OrbitSystem.h" />
+    <ClInclude Include="Engine\Gameplay\OrbRespawnComponent.h" />
     <ClInclude Include="Engine\Gameplay\SpeedboostComponent.h" />
+    <ClInclude Include="Engine\Gameplay\SplineCluster.h" />
+    <ClInclude Include="Engine\Gameplay\SplineElementComponent.h" />
     <ClInclude Include="Engine\Gameplay\SpeedBoostSystem.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
+    <ClInclude Include="Engine\MathLibrary\Maze\MazeGenerator.h" />
+    <ClInclude Include="Engine\MathLibrary\Splines\SplineUtility.h" />
     <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
     <ClInclude Include="Engine\GenericComponents\TestComponents.h" />
     <ClInclude Include="Engine\GenericComponents\TransformComponent.h" />
@@ -130,6 +134,7 @@
     <FxCompile Include="Shaders\BloomMask_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\BloomUpscale_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -151,6 +156,7 @@
     </FxCompile>
     <ClInclude Include="System\PhysicsSystem.h" />
     <ClInclude Include="UI\SpriteComponent.h" />
+    <ClInclude Include="UI\UICollision.h" />
     <ClInclude Include="UI\UIManager.h" />
     <ClInclude Include="Engine\Physics\PhysicsSystem.h" />
     <ClInclude Include="Shaders\BasePassTextureMaps.hlsl" />
@@ -166,6 +172,8 @@
     <ClInclude Include="Utility\MemoryLeakDetection.h" />
     <ClInclude Include="Utility\MemoryDefines.h" />
     <ClInclude Include="Utility\RenderUtility.h" />
+    <ClInclude Include="Engine\MathLibrary\Splines\FGoodSpline.h" />
+    <ClInclude Include="Engine\MathLibrary\Splines\splines.hpp" />
     <ClInclude Include="Utility\StringUtility.h" />
     <ClInclude Include="Shaders\PostProcessConstantBuffers.hlsl">
       <FileType>Document</FileType>
@@ -189,7 +197,6 @@
     <ClCompile Include="Engine\CollisionLibary\CollisionResult.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionGrid.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionLibary.cpp" />
-    <ClCompile Include="Engine\CollisionLibary\CollisionSystem.cpp" />
     <ClCompile Include="Engine\CollisionLibary\Shapes.cpp" />
     <ClCompile Include="Engine\Controller\ControllerSystem.cpp" />
     <ClCompile Include="Engine\Controller\DebugCameraController.cpp" />
@@ -203,6 +210,9 @@
     <ClCompile Include="Engine\Gameplay\SpeedBoostSystem.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\IState.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
+    <ClCompile Include="Engine\MathLibrary\Maze\MazeGenerator.cpp" />
+    <ClCompile Include="Engine\MathLibrary\Splines\FGoodSpline.cpp" />
+    <ClCompile Include="Engine\MathLibrary\Splines\SplineUtility.cpp" />
     <ClCompile Include="Engine\Physics\PhysicsComponent.cpp" />
     <ClCompile Include="Engine\Controller\IController.cpp" />
     <ClCompile Include="Engine\Controller\PlayerMovement.cpp" />
@@ -239,6 +249,7 @@
     <ClCompile Include="Engine\ResourceManager\StaticMesh.cpp" />
     <ClCompile Include="Engine\ResourceManager\Texture2D.cpp" />
     <ClCompile Include="Engine\ResourceManager\VertexShader.cpp" />
+    <ClCompile Include="UI\UICollision.cpp" />
     <ClCompile Include="Utility\RenderUtility.cpp" />
     <ClCompile Include="UI\UIManager.cpp" />
     <ClCompile Include="UI\SpriteComponent.cpp" />
@@ -269,6 +280,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Engine\MathLibrary\Splines\splines.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -37,5 +37,5 @@ class CollisionGrid
         std::unordered_map<int, CellContainer> m_Container;
         Cell                                   GetCellFromShape(const Shapes::FCollisionShape* shape);
         int                                    ComputeHashBucketIndex(Cell cellPos);
-        Collision::FCollisionQueryResult       GetPossibleCollisions(Shapes::FCollisionShape* shape);
+        std::vector<const CellContainer*>      GetPossibleCollisions(Shapes::FCollisionShape* shape);
 };

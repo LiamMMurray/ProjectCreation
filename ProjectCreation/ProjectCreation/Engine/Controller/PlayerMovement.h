@@ -28,7 +28,7 @@ class PlayerController : public IController
         float currentMaxSpeed = minMaxSpeed;
 
         float acceleration   = 1.0;
-        float deacceleration = 1.5f;
+        float deacceleration = 8.0f;
 
         DirectX::XMVECTOR m_CurrentInput;
         DirectX::XMVECTOR m_CurrentVelocity;
@@ -43,7 +43,7 @@ class PlayerController : public IController
         PlayerController();
 
         virtual void Init(EntityHandle h) override;
-        void         SpeedBoost(DirectX::XMVECTOR preBoostVelocity);
+        void         SpeedBoost(DirectX::XMVECTOR boostPos);
 
         inline void SetCurrentMaxSpeed(float val)
         {
@@ -105,6 +105,8 @@ class PlayerController : public IController
                 m_CurrentInput = val;
         }
 
+        void AddCurrentVelocity(DirectX::XMVECTOR val);
+
         inline void SetCurrentVelocity(DirectX::XMVECTOR val)
         {
                 m_CurrentVelocity = val;
@@ -144,6 +146,10 @@ class PlayerController : public IController
         {
                 m_EulerAngles = val;
         }
+
+        void SetUseGravity(bool val);
+        bool GetUseGravity();
+        void SetYExtraSpeed(float val);
 
         void RequestCinematicTransition(int                    count,
                                         const ComponentHandle* handles,

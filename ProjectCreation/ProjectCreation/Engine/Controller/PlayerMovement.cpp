@@ -130,13 +130,36 @@ void PlayerController::Init(EntityHandle h)
         m_StateMachine.Init(this);
 }
 
-void PlayerController::SpeedBoost(DirectX::XMVECTOR preBoostVelocity)
+void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos)
 {
-        preBoostVelocity = m_CurrentVelocity;
-        currentMaxSpeed = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
-        m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
-        m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
-		m_GroundState->AddSpeedBoost();
+        currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
+        XMVECTOR currentInput = XMVector3Rotate(m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
+        if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
+        {
+                m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
+                m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
+                m_GroundState->AddSpeedBoost();
+        }
+}
+
+void PlayerController::AddCurrentVelocity(DirectX::XMVECTOR val)
+{
+        m_CurrentVelocity = m_CurrentVelocity + val;
+}
+
+void PlayerController::SetUseGravity(bool val)
+{
+        m_GroundState->bUseGravity = val;
+}
+
+bool PlayerController::GetUseGravity()
+{
+        return m_GroundState->bUseGravity;
+}
+
+void PlayerController::SetYExtraSpeed(float val)
+{
+        m_GroundState->m_ExtraYSpeed = val;
 }
 
 void PlayerController::RequestCinematicTransition(int                    count,

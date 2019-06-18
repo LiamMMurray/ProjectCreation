@@ -13,7 +13,7 @@ class OrbitSystem : public ISystem
 
         const char* materialNames[3] = {"GlowMatPlanet01", "GlowMatPlanet02", "GlowMatPlanet03"};
         int         m_Stage          = 0;
-        void        CreateGoal(int n);
+        void        CreateGoal(int color, DirectX::XMVECTOR position);
 
         DirectX::XMVECTORF32 orbitCenter = {0.0f, 1000.0f, 0.0f, 1.0f};
         ComponentHandle      m_ClosestGoalTransform;
@@ -33,4 +33,8 @@ class OrbitSystem : public ISystem
         {
                 return m_ClosestGoalTransform;
         }
+
+        static constexpr DirectX::XMVECTORF32 GoalPositions[3] = {{0.0f, 0.0f, 23.0f, 1.0f},
+                                                                  {-20.0f, 0.0f, -11.0f, 1.0f},
+                                                                  {20.0f, 0.0f, -11.0f, 1.0f}};
 };

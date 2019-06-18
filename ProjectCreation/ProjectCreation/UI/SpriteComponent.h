@@ -1,13 +1,15 @@
 #pragma once
 
 #include <d3d11.h>
+#include "../ECS/Component.h"
 #include "../Engine/Events/Event.h"
 #include "../Engine/Events/EventDelegate.h"
 #include "../Engine/Events/EventManager.h"
-#include "../ECS/Component.h"
+#include "UICollision.h"
 
 #include "SimpleMath.h"
 #include "SpriteFont.h"
+
 class SpriteComponent;
 class UIMouseEvent : public Event<UIMouseEvent>
 {
@@ -29,24 +31,19 @@ class UIMouseEventManager : public EventManager<UIMouseEventDelegate, UIMouseEve
 class SpriteComponent : public Component<SpriteComponent>
 {
     public:
-        DirectX::SimpleMath::Vector2          mScreenPos;
-        DirectX::SimpleMath::Vector2          mOrigin;
-        unsigned int                          mHeight;
-        unsigned int                          mWidth;
-        float                                 mScaleX;
-        float                                 mScaleY;
+        DirectX::SimpleMath::Vector2 mScreenOffset;
+        DirectX::SimpleMath::Vector2 mOrigin;
+        unsigned int                 mHeight;
+        unsigned int                 mWidth;
+        float                        mScaleX;
+        float                        mScaleY;
 
-        ID3D11ShaderResourceView*             mTexture;
-        RECT							      mRectangle;
+        ID3D11ShaderResourceView* mTexture;
+        UI::UIRect                mRectangle;
 
-        bool                                  mEnabled;
-        unsigned int                          mId;
+        bool mEnabled;
 
-        void MakeRectangle();
-        void Scale();
         void SetPosition(float x, float y);
-        void TransformPosition(float x, float y);
-        void RotateSprite(float degree);
 
         UIMouseEventManager OnMouseDown;
         UIMouseEventManager OnMouseUp;

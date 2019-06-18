@@ -12,6 +12,8 @@
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
 
+#include "UI/UIManager.h"
+
 #include "Engine/CollisionLibary/CollisionLibary.h"
 #include "Engine/CollisionLibary/CollisionResult.h"
 
@@ -30,7 +32,6 @@
 #include "Engine/Animation/AnimationSystem.h"
 #include "Engine/ResourceManager/SkeletalMesh.h"
 /////testing -vic
-#include "Engine/CollisionLibary/CollisionSystem.h"
 #include "Rendering/DebugRender/debug_renderer.h"
 ////testing -vic
 
@@ -41,6 +42,7 @@
 #include "Rendering/Components/DirectionalLightComponent.h"
 
 #include "Engine/GenericComponents/TransformComponent.h"
+#include "Engine/MathLibrary/MathLibrary.h"
 
 #pragma comment(lib, "dbghelp")
 
@@ -129,6 +131,8 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                    int       nCmdShow       // how the windows is shown. Legacy. Can ignore
 )
 {
+        std::srand(unsigned(std::time(0)));
+
         constexpr char appName[] = "Inanis";
         // window info
         WNDCLASSEX winInfo;
@@ -228,23 +232,29 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 auto dirComp = componentManager->GetComponent<DirectionalLightComponent>(dirLightEntityHandle);
                 dirComp->m_LightRotation =
                     XMQuaternionRotationRollPitchYaw(XMConvertToRadians(45.0f), XMConvertToRadians(120.0f), 0.0f);
-                dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.8f, 1.0f, 1.0f);
+                dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.8f, 1.0f, 0.4f);
                 dirComp->m_AmbientColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f);
         }
 
         // Create speedboost system
         FSystemProperties sysInitProps;
-        SpeedBoostSystem*     speedBoostSystem;
-        systemManager->CreateSystem<SpeedBoostSystem>(&speedBoostSystem);
         sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
         sysInitProps.m_UpdateRate = 0.0f;
-        systemManager->RegisterSystem(&sysInitProps, speedBoostSystem);
 
         OrbitSystem* orbitSystem;
         systemManager->CreateSystem<OrbitSystem>(&orbitSystem);
         systemManager->RegisterSystem(&sysInitProps, orbitSystem);
+
+        SpeedBoostSystem* speedBoostSystem;
+        systemManager->CreateSystem<SpeedBoostSystem>(&speedBoostSystem);
+        systemManager->RegisterSystem(&sysInitProps, speedBoostSystem);
+
+
         GEngine::Get()->SetGamePaused(true);
+
         while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
+
+
         {
                 GCoreInput::UpdateInput();
 
@@ -263,6 +273,26 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
+
+                if (GetActiveWindow() != handle)
+                {
+                        UIManager::instance->Pause();
+                }
+
+				{
+                        static DWORD frameCount = 0;
+                        ++frameCount;
+                        static DWORD framesPast = frameCount;
+                        static DWORD prevCount  = (DWORD)GEngine::Get()->GetTotalTime();
+                        if (GetTickCount() - prevCount > 1000) // only update every second
+                        {
+                                char buffer[256];
+                                sprintf_s(buffer, "DirectX Test. FPS: %d", frameCount - framesPast);
+                                SetWindowTextA(static_cast<HWND>(handle), buffer);
+                                framesPast = frameCount;
+                                prevCount  = GetTickCount();
+                        }
+                }
 
                 if (GCoreInput::GetKeyState(KeyCode::P) == KeyState::DownFirst)
                 {

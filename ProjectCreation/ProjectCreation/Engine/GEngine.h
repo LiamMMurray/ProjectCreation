@@ -27,7 +27,11 @@ class GEngine
     public:
         float m_PlayerRadius = 0.0f;
 
-        void SetGamePaused(bool val);
+        void        SetGamePaused(bool val);
+        inline bool GetGamePaused()
+        {
+                return m_GameIsPaused;
+        }
 
         static void Initialize();
         static void Shutdown();
@@ -60,10 +64,10 @@ class GEngine
         float  GetDeltaTime();
         double GetTotalTime();
 
-		inline bool WantsGameExit()
-		{
+        inline bool WantsGameExit()
+        {
                 return m_WantsGameExit;
-		}
+        }
 
         inline void RequestGameExit()
         {

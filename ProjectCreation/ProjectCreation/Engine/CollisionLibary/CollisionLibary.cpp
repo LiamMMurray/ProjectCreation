@@ -329,22 +329,22 @@ Collision::FAdvancedCollisionResult CollisionLibary::RayToSphereCollision(Direct
         return output;
 }
 
-//Collision::FCollideResult CollisionLibary::CircleToCircleCollision(Shapes::FCircle& a, Shapes::FCircle& b)
-//{
-//        Collision::FCollideResult output;
-//        float                     totalRadius = (a.radius + b.radius) * (a.radius + b.radius);
-//        float                     distance =
-//            ((a.center.x - b.center.x) * (a.center.x - b.center.x)) + ((a.center.y - b.center.y) * (a.center.y - b.center.y));
-//        if (distance <= totalRadius)
-//        {
-//                output.collisionType = Collision::ECollide;
-//        }
-//        else
-//        {
-//                output.collisionType = Collision::ENoCollision;
-//        }
-//        return output;
-//}
+Collision::FOverlapResult CollisionLibary::CircleToCircleCollision(Shapes::FCircle& a, Shapes::FCircle& b)
+{
+        Collision::FOverlapResult output;
+        float                     totalRadius = (a.radius + b.radius) * (a.radius + b.radius);
+        float                     distance =
+            ((a.center.x - b.center.x) * (a.center.x - b.center.x)) + ((a.center.y - b.center.y) * (a.center.y - b.center.y));
+        if (distance <= totalRadius)
+        {
+                output.hasOverlap = true;
+        }
+        else
+        {
+                output.hasOverlap = false;
+        }
+        return output;
+}
 
 FAabb CollisionLibary::AddAABB(const FAabb& a, const FAabb& b)
 {

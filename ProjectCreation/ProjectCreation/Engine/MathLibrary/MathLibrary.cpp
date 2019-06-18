@@ -59,7 +59,7 @@ void MathLibrary::TurnTo(DirectX::XMMATRIX& matrix, DirectX::XMVECTOR targetPosi
         matrix = output;
 }
 
-DirectX::XMVECTOR MathLibrary::GetClosestPointFromLine(DirectX::XMVECTOR startPoint,
+DirectX::XMVECTOR MathLibrary::GetClosestPointFromLineClamped(DirectX::XMVECTOR startPoint,
                                                        DirectX::XMVECTOR endPoint,
                                                        DirectX::XMVECTOR point)
 {
@@ -70,10 +70,24 @@ DirectX::XMVECTOR MathLibrary::GetClosestPointFromLine(DirectX::XMVECTOR startPo
         XMVECTOR distance     = XMVectorMultiply(length, dotValue);
         output                = startPoint + distance;
         XMVECTOR minv         = XMVectorMin(startPoint, endPoint);
-        XMVECTOR maxv         = XMVectorMin(startPoint, endPoint);
+        XMVECTOR maxv         = XMVectorMax(startPoint, endPoint);
 
         output = XMVectorMin(output, maxv);
         output = XMVectorMax(output, minv);
+
+        return output;
+}
+
+DirectX::XMVECTOR MathLibrary::GetClosestPointFromLine(DirectX::XMVECTOR startPoint,
+                                                              DirectX::XMVECTOR endPoint,
+                                                              DirectX::XMVECTOR point)
+{
+        XMVECTOR output;
+        XMVECTOR length       = XMVector3Normalize(endPoint - startPoint);
+        XMVECTOR targetVector = point - startPoint;
+        XMVECTOR dotValue     = XMVector3Dot(length, targetVector);
+        XMVECTOR distance     = XMVectorMultiply(length, dotValue);
+        output                = startPoint + distance;
 
         return output;
 }
@@ -90,7 +104,6 @@ DirectX::XMVECTOR MathLibrary::GetMidPointFromTwoVector(DirectX::XMVECTOR a, Dir
 
 float MathLibrary::CalulateDistance(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
 {
-
         float output;
         output = sqrtf(CalulateDistanceSq(a, b));
         return output;
@@ -105,10 +118,26 @@ float MathLibrary::CalulateDistanceSq(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
         return output;
 }
 
+float MathLibrary::CalulateDistanceIgnoreY(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
+{
+        float output;
+        output = sqrtf(CalulateDistanceSqIgnoreY(a, b));
+        return output;
+}
+
+float MathLibrary::CalulateDistanceSqIgnoreY(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
+{
+        float    output;
+        XMVECTOR temp = (a - b);
+        temp          = XMVectorSwizzle(temp, 0, 2, 2, 3);
+        temp          = XMVector2Dot(temp, temp);
+        output        = XMVectorGetX(temp);
+        return output;
+}
+
 float MathLibrary::CalulateVectorLength(DirectX::XMVECTOR vector)
 {
-        return sqrtf(XMVectorGetX(vector) * XMVectorGetX(vector) + XMVectorGetY(vector) * XMVectorGetY(vector) +
-                     XMVectorGetZ(vector) * XMVectorGetZ(vector));
+        return XMVectorGetX(XMVector3Length(vector));
 }
 
 float MathLibrary::VectorDotProduct(DirectX::XMVECTOR m, DirectX::XMVECTOR n)
@@ -129,6 +158,20 @@ float MathLibrary::ManhattanDistance(Shapes::FAabb& a, Shapes::FAabb& b)
         return output;
 }
 
+DirectX::XMVECTOR MathLibrary::GetRandomPointInRadius(const DirectX::XMVECTOR& center, float innerRadius, float outerRadius)
+{
+        XMVECTOR vec = GetRandomUnitVector();
+        vec          = vec * innerRadius + vec * RandomFloatInRange(0.0f, outerRadius);
+        return vec;
+}
+
+DirectX::XMVECTOR MathLibrary::GetRandomPointInRadius2D(const DirectX::XMVECTOR& center, float innerRadius, float outerRadius)
+{
+        XMVECTOR vec = GetRandomUnitVector2D();
+        vec          = vec * innerRadius + vec * RandomFloatInRange(0.0f, outerRadius);
+        return center + vec;
+}
+
 float MathLibrary::GetRandomFloat()
 {
         return RANDOMFLOAT;
@@ -138,6 +181,11 @@ float MathLibrary::GetRandomFloatInRange(float min, float max)
 {
         float output = (rand() / (float)RAND_MAX * (max - min)) + min;
         return output;
+}
+
+int MathLibrary::GetRandomIntInRange(int min, int max)
+{
+        return (rand() % (max - min)) + min;
 }
 
 double MathLibrary::GetRandomDouble()
@@ -154,7 +202,7 @@ double MathLibrary::GetRandomDoubleInRange(double min, double max)
 
 DirectX::XMVECTOR MathLibrary::GetRandomVector()
 {
-        return XMVectorSet(RANDOMFLOAT, RANDOMFLOAT, RANDOMFLOAT, 0.0f);
+        return XMVectorSet(RANDOMFLOAT * 2.0f - 1.0f, RANDOMFLOAT * 2.0f - 1.0f, RANDOMFLOAT * 2.0f - 1.0f, 0.0f);
 }
 
 DirectX::XMVECTOR MathLibrary::GetRandomVectorInRange(float min, float max)
@@ -165,12 +213,28 @@ DirectX::XMVECTOR MathLibrary::GetRandomVectorInRange(float min, float max)
 
 DirectX::XMVECTOR MathLibrary::GetRandomUnitVector()
 {
-        XMVECTOR output  = GetRandomVector();
-        XMVECTOR unitVec = output / MathLibrary::VectorDotProduct(output, output);
-        if (MathLibrary::CalulateVectorLength(unitVec) == 1)
+        XMVECTOR output = GetRandomVector();
+        float    length = MathLibrary::CalulateVectorLength(output);
+        if (length <= 0.0f)
         {
-                return unitVec;
+                output = VectorConstants::Forward;
         }
+        output = XMVector3Normalize(output);
+
+        return output;
+}
+
+DirectX::XMVECTOR MathLibrary::GetRandomUnitVector2D()
+{
+        XMVECTOR output = XMVectorSet(RANDOMFLOAT * 2.0f - 1.0f, 0.0f, RANDOMFLOAT * 2.0f - 1.0f, 0.0f);
+        float    length = MathLibrary::CalulateVectorLength(output);
+        if (length <= 0.0f)
+        {
+                output = VectorConstants::Forward;
+        }
+        output = XMVector3Normalize(output);
+
+        return output;
 }
 
 float MathLibrary::MoveTowards(const float a, const float b, const float speed)
@@ -181,9 +245,18 @@ float MathLibrary::MoveTowards(const float a, const float b, const float speed)
         return output;
 }
 
+DirectX::XMVECTOR MathLibrary::MoveTowards(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b, const float speed)
+{
+        XMVECTOR output;
+        XMVECTOR delta = b - a;
+        float    dist  = MathLibrary::CalulateVectorLength(delta);
+        output         = a + delta * (std::min(speed, fabsf(dist)), dist);
+        return output;
+}
+
 
 // Smoothing functions from the "Fast and Funky 1D Nonlinear Transformations" GDC
-//Powers 2 - 4 are faster than the Nth power
+// Powers 2 - 4 are faster than the Nth power
 double MathLibrary::SmoothStart2(double x)
 {
         return x * x;
@@ -191,7 +264,7 @@ double MathLibrary::SmoothStart2(double x)
 
 double MathLibrary::SmoothStop2(double x)
 {
-        return 1 - ((1-x) * (1-x));
+        return 1 - ((1 - x) * (1 - x));
 }
 
 double MathLibrary::SmoothStart3(double x)
@@ -226,7 +299,7 @@ double MathLibrary::SmoothStopN(double x, double power)
 
 double MathLibrary::SmoothMix(double a, double b, double blend)
 {
-        return a + blend * (b - a);	
+        return a + blend * (b - a);
 }
 
 double MathLibrary::SmoothCrossfade(double a, double b, double time)
@@ -244,5 +317,5 @@ float MathLibrary::CalculateAngularDiameter(const DirectX::XMVECTOR& eye, const 
 float MathLibrary::CalculateDistanceFromAngularDiameter(float angularDiameter, const Shapes::FSphere& sphere)
 {
         float diameter = sphere.radius * 2.0f;
-        return diameter / (2.0f*sinf(angularDiameter/2.0f));
+        return diameter / (2.0f * sinf(angularDiameter / 2.0f));
 }

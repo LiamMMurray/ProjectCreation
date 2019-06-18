@@ -1,7 +1,6 @@
 #include "EngineInitShutdownHelpers.h"
 
 #include "../Engine/Animation/AnimationSystem.h"
-#include "../Engine/CollisionLibary/CollisionSystem.h"
 #include "../Engine/Controller/ControllerSystem.h"
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/Physics/PhysicsSystem.h"
@@ -14,16 +13,6 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
         EntityManager*    entityManager    = GEngine::Get()->GetEntityManager();
         ComponentManager* componentManager = GEngine::Get()->GetComponentManager();
 
-        // Create Collision System
-        {
-                FSystemProperties sysInitProps;
-                sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
-                sysInitProps.m_UpdateRate = 0.0f;
-
-                CollisionSystem* collisionSystem;
-                systemManager->CreateSystem<CollisionSystem>(&collisionSystem);
-                systemManager->RegisterSystem(&sysInitProps, collisionSystem);
-        }
 
         // Create Render System
         {

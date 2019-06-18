@@ -45,14 +45,14 @@ class ResourceContainer : public ResourceContainerBase
                         resource.Release();
         };
 
-        T* GetResource(ResourceHandle handle)
+        T* GetResource(const ResourceHandle& handle)
         {
                 T* resource = m_ResourceTable[handle];
                 assert(resource && "Resource doesn't exist");
                 return m_ResourceTable[handle];
         }
 
-        T* DestroyResource(ResourceHandle handle)
+        T* DestroyResource(const ResourceHandle& handle)
         {
                 T* resource = m_ResourceTable[handle];
                 assert(resource && "Resource doesn't exist");
@@ -63,7 +63,7 @@ class ResourceContainer : public ResourceContainerBase
                 return resource;
         }
 
-        T* AcquireResource(ResourceHandle handle)
+        T* AcquireResource(const ResourceHandle& handle)
         {
                 T* resource = m_ResourceTable[handle];
                 assert(resource && "Resource doesn't exist");
@@ -71,7 +71,7 @@ class ResourceContainer : public ResourceContainerBase
                 return resource;
         }
 
-        uint16_t ReleaseResource(ResourceHandle handle)
+        uint16_t ReleaseResource(const ResourceHandle& handle)
         {
                 T* resource = m_ResourceTable[handle];
                 assert(resource && "Resource doesn't exist");
@@ -131,13 +131,13 @@ class ResourceManager
         void GetSRVs(unsigned int count, ResourceHandle* textureHandles, ID3D11ShaderResourceView** srvsOut);
 
         template <typename T>
-        T* AcquireResource(ResourceHandle handle);
+        T* AcquireResource(const ResourceHandle& handle);
 
         template <typename T>
-        uint16_t ReleaseResource(ResourceHandle handle);
+        uint16_t ReleaseResource(const ResourceHandle& handle);
 
         template <typename T>
-        T* GetResource(ResourceHandle handle);
+        T* GetResource(const ResourceHandle& handle);
 
 
         void Initialize();
@@ -171,21 +171,21 @@ ResourceContainer<T>* ResourceManager::GetResourceContainer()
 }
 
 template <typename T>
-T* ResourceManager::AcquireResource(ResourceHandle handle)
+T* ResourceManager::AcquireResource(const ResourceHandle& handle)
 {
         ResourceContainer<T>* container = GetResourceContainer<T>();
         return container->AcquireResource(handle);
 }
 
 template <typename T>
-uint16_t ResourceManager::ReleaseResource(ResourceHandle handle)
+uint16_t ResourceManager::ReleaseResource(const ResourceHandle& handle)
 {
         ResourceContainer<T>* container = GetResourceContainer<T>();
         return container->ReleaseResource(handle);
 }
 
 template <typename T>
-T* ResourceManager::GetResource(ResourceHandle handle)
+T* ResourceManager::GetResource(const ResourceHandle& handle)
 {
         ResourceContainer<T>* container = GetResourceContainer<T>();
         return container->GetResource(handle);
