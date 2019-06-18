@@ -24,6 +24,7 @@ using namespace DirectX;
 using namespace Shapes;
 using namespace Collision;
 using namespace debug_renderer;
+
 void PlayerController::GatherInput()
 {
 
@@ -39,15 +40,42 @@ void PlayerController::GatherInput()
                         tempDir.z += 1.0f;
                 }
 
+                // Set blue input to true while Q is pressed
                 if (GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Down)
                 {
-                        // tempDir.z += 1.0f;
+                        blueInput = true;
                 }
 
+                // Set blue input to false when Q is released
+                else if (GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Release)
+                {
+                        blueInput = false;
+                }
+
+                // Set green input to true while E is pressed
                 if (GCoreInput::GetKeyState(KeyCode::E) == KeyState::Down)
                 {
-                        // tempDir.z += 1.0f;
+                        greenInput = true;
                 }
+
+                // Set green input to false when E is released
+                else if (GCoreInput::GetKeyState(KeyCode::E) == KeyState::Release)
+                {
+                        greenInput = false;
+                }
+
+                // Set red input to true while E is pressed
+                if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Down)
+                {
+                        redInput = true;
+                }
+
+                // Set red input to false when E is released
+                else if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Release)
+                {
+                        redInput = false;
+                }
+
                 // Backward
                 if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
                 {
@@ -62,16 +90,6 @@ void PlayerController::GatherInput()
                 if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
                 {
                         tempDir.x += 1.0f;
-                }
-                // Rise
-                if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Down)
-                {
-                        tempDir.y += 1.0f;
-                }
-                // Fall
-                if (GCoreInput::GetKeyState(KeyCode::Control) == KeyState::Down)
-                {
-                        tempDir.y -= 1.0f;
                 }
 
                 m_CurrentInput = XMLoadFloat4(&tempDir);
@@ -130,15 +148,80 @@ void PlayerController::Init(EntityHandle h)
         m_StateMachine.Init(this);
 }
 
-void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos)
+void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
 {
-        currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
-        XMVECTOR currentInput = XMVector3Rotate(m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
-        if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
+
+        // Audio that will play on boost
+        auto boop = AudioManager::Get()->CreateSFX("boop");
+
+        switch (color)
         {
-                m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
-                m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
-                m_GroundState->AddSpeedBoost();
+                        // Red light collision
+                case 0:
+                        if (redInput == true)
+                        {
+                                boop->Play();
+                                ConsoleWindow::PrintMessage("Boosting on red light", "PlayerMovement");
+                                currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
+                                XMVECTOR currentInput = XMVector3Rotate(
+                                    m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
+                                if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
+                                {
+                                        m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
+                                        m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
+                                        m_GroundState->AddSpeedBoost();
+                                }
+                        }
+                        break;
+
+                        // Blue light collision
+                case 1:
+                        if (blueInput == true)
+                        {
+                                boop->Play();
+                                ConsoleWindow::PrintMessage("Boosting on blue light", "PlayerMovement");
+                                currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
+                                XMVECTOR currentInput = XMVector3Rotate(
+                                    m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
+                                if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
+                                {
+                                        m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
+                                        m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
+                                        m_GroundState->AddSpeedBoost();
+                                }
+                        }
+                        break;
+
+                        // Green light collision
+                case 2:
+                        if (greenInput == true)
+                        {
+                                boop->Play();
+                                ConsoleWindow::PrintMessage("Boosting on green light", "PlayerMovement");
+                                currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
+                                XMVECTOR currentInput = XMVector3Rotate(
+                                    m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
+                                if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
+                                {
+                                        m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
+                                        m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
+                                        m_GroundState->AddSpeedBoost();
+                                }
+                        }
+                        break;
+
+                        // White light collision
+                case 3:
+                        currentMaxSpeed = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
+                        XMVECTOR currentInput =
+                            XMVector3Rotate(m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
+                        if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
+                        {
+                                m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
+                                m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
+                                m_GroundState->AddSpeedBoost();
+                        }
+                        break;
         }
 }
 

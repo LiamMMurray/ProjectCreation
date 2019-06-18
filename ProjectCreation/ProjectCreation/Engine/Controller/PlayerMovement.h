@@ -5,6 +5,12 @@
 #include "../MathLibrary/MathLibrary.h"
 #include "../Physics/PhysicsComponent.h"
 #include "PlayerControllerStateMachine.h"
+#include "../ConsoleWindow/ConsoleWindow.h"
+
+// Audio Includes
+#include <Interface/G_Audio/GMusic.h>
+#include <Interface/G_Audio/GSound.h>
+#include "../Audio/AudioManager.h"
 
 class TransformComponent;
 class PlayerCinematicState;
@@ -39,11 +45,24 @@ class PlayerController : public IController
         PlayerCinematicState* m_CinematicState;
         PlayerGroundState*    m_GroundState;
 
+		// Boolean values for the light collection keys
+		// Names will most likely change later on
+
+		// Space will be input for red
+        bool redInput = false;
+
+		// Q will be input for blue
+        bool blueInput = false;
+
+		// E will be input for green
+        bool greenInput = false;
+
+
     public:
         PlayerController();
 
         virtual void Init(EntityHandle h) override;
-        void         SpeedBoost(DirectX::XMVECTOR boostPos);
+        void         SpeedBoost(DirectX::XMVECTOR boostPos, int color);
 
         inline void SetCurrentMaxSpeed(float val)
         {

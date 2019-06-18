@@ -194,7 +194,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 						// END: Move speed boosts with ai stuff here
                         float distSq = MathLibrary::CalulateDistanceSq(transComp->transform.translation,
                                                                        playerTransform->transform.translation);
-
+						// onCD: cool down for speed boosts
                         bool onCD = false;
 
                         if (speedComp->m_Timer > 0)
@@ -216,7 +216,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 // speedComp->m_TargetRadius = 0.0f;
                                 // m_PlayerEffectRadius += 1.0f;
                                 speedComp->m_Timer = speedComp->m_CD;
-                                playerController->SpeedBoost(transComp->transform.translation);
+                                playerController->SpeedBoost(transComp->transform.translation, speedComp->m_Color);
                         }
 
                         TransformComponent* closestGoalTransform =
@@ -331,7 +331,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         if (attached)
                         {
-                                XMVECTOR offset = 0.05f * VectorConstants::Up;
+                                XMVECTOR offset = 0.02f * VectorConstants::Up;
                                 XMVECTOR closestPointOnLine =
                                     MathLibrary::GetClosestPointFromLine(closestComp.m_PrevPos + offset,
                                                                          closestComp.m_NextPos + offset,

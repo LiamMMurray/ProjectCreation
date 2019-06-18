@@ -45,6 +45,7 @@
     <ClInclude Include="Engine\Gameplay\OrbitSystem.h" />
     <ClInclude Include="Engine\Gameplay\OrbRespawnComponent.h" />
     <ClInclude Include="Engine\Gameplay\SpeedboostComponent.h" />
+    <ClInclude Include="Engine\Gameplay\SpeedboostSplineComponent.h" />
     <ClInclude Include="Engine\Gameplay\SplineCluster.h" />
     <ClInclude Include="Engine\Gameplay\SplineElementComponent.h" />
     <ClInclude Include="Engine\Gameplay\SpeedBoostSystem.h" />

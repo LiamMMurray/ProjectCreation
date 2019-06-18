@@ -29,7 +29,7 @@ class SpeedBoostSystem : public ISystem
 
         std::vector<std::vector<DirectX::XMVECTOR>> m_Paths;
 
-        const char* materialNames[4] = {"GlowSpeedboost01", "GlowSpeedboost02", "GlowSpeedboost03", "GlowSpeedboost04"};
+        const char* materialNames[4] = {"GlowSpeedboost02", "GlowSpeedboost01", "GlowSpeedboost03", "GlowSpeedboost04"};
 
         void         SpawnRandomSpeedBoost();
         void         SpawnSplineSpeedBoost(const SplineCluster& cluster,

@@ -20,11 +20,17 @@ class ConsoleWindow
         }
 
         // Prints out a passed in vector, vectorName is used to display what the variable is
-        void PrintVector(DirectX::XMVECTOR vector, std::string vectorName)
+        static void PrintVector(DirectX::XMVECTOR vector, std::string vectorName)
         {
-                DirectX::XMFLOAT4      tempFloat;
+                DirectX::XMFLOAT4 tempFloat;
                 DirectX::XMStoreFloat4(&tempFloat, vector);
                 std::cout << vectorName << " <X: " << tempFloat.x << ", Y: " << tempFloat.y << ", Z: " << tempFloat.z
                           << ", W: " << tempFloat.w << ">" << std::endl;
+        }
+
+        // Prints out a simple message, class name will be used to display which class called the message
+        static void PrintMessage(std::string msg, std::string className)
+        {
+                std::cout << className << ": " << msg << std::endl;
 		}
 };
