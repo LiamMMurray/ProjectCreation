@@ -93,6 +93,10 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         TransformComponent*  transComp =
                             m_ComponentManager->GetComponent<TransformComponent>(itr.data()->GetOwner());
 
+						// START: Move speed boosts with ai stuff here
+						
+						// END: Move speed boosts with ai stuff here
+
 
                         float distanceSq = MathLibrary::CalulateDistanceSq(playerTransform->transform.translation,
                                                                            transComp->transform.translation);
