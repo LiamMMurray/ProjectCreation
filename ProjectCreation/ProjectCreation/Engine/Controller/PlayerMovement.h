@@ -104,6 +104,8 @@ class PlayerController : public IController
                 m_CurrentInput = val;
         }
 
+        void AddCurrentVelocity(DirectX::XMVECTOR val);
+
         inline void SetCurrentVelocity(DirectX::XMVECTOR val)
         {
                 m_CurrentVelocity = val;
@@ -135,6 +137,7 @@ class PlayerController : public IController
         }
 
         void SetUseGravity(bool val);
+        bool GetUseGravity();
         void SetYExtraSpeed(float val);
 
         void RequestCinematicTransition(int                    count,

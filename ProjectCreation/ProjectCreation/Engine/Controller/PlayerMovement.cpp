@@ -140,9 +140,19 @@ void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos)
         m_GroundState->AddSpeedBoost();
 }
 
+void PlayerController::AddCurrentVelocity(DirectX::XMVECTOR val)
+{
+        m_CurrentVelocity = m_CurrentVelocity + val;
+}
+
 void PlayerController::SetUseGravity(bool val)
 {
         m_GroundState->bUseGravity = val;
+}
+
+bool PlayerController::GetUseGravity()
+{
+        return m_GroundState->bUseGravity;
 }
 
 void PlayerController::SetYExtraSpeed(float val)

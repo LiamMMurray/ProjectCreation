@@ -32,7 +32,6 @@
 #include "Engine/Animation/AnimationSystem.h"
 #include "Engine/ResourceManager/SkeletalMesh.h"
 /////testing -vic
-#include "Engine/CollisionLibary/CollisionSystem.h"
 #include "Rendering/DebugRender/debug_renderer.h"
 ////testing -vic
 
@@ -233,7 +232,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                 auto dirComp = componentManager->GetComponent<DirectionalLightComponent>(dirLightEntityHandle);
                 dirComp->m_LightRotation =
                     XMQuaternionRotationRollPitchYaw(XMConvertToRadians(45.0f), XMConvertToRadians(120.0f), 0.0f);
-                dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.8f, 1.0f, 1.0f);
+                dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.8f, 1.0f, 0.4f);
                 dirComp->m_AmbientColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f);
         }
 

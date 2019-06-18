@@ -57,20 +57,28 @@ int CollisionGrid::ComputeHashBucketIndex(Cell cellPos)
 
 using namespace Collision;
 
-Collision::FCollisionQueryResult CollisionGrid::GetPossibleCollisions(Shapes::FCollisionShape* shape)
+std::vector<const CollisionGrid::CellContainer*> CollisionGrid::GetPossibleCollisions(Shapes::FCollisionShape* shape)
 {
-        Shapes::ECollisionObjectTypes typeID = shape->GetID();
-        FCollisionQueryResult         output;
+        Shapes::ECollisionObjectTypes                    typeID = shape->GetID();
+        std::vector<const CollisionGrid::CellContainer*> output;
 
-        Cell             checkCell = GetCellFromShape(shape);
-        int              index     = ComputeHashBucketIndex(checkCell);
-        auto             it        = m_Container.find(index);
+        Cell checkCell = GetCellFromShape(shape);
 
-        if (it != m_Container.end())
+        for (int i = -1; i <= 1; ++i)
         {
-                output.spheres  = it->second.m_Spheres;
-                output.AABBs    = it->second.m_AABBs;
-                output.capsules = it->second.m_Capsules;
+                for (int j = -1; j <= 1; ++j)
+                {
+                        Cell copyCell = checkCell;
+                        copyCell.x += i;
+                        copyCell.z += j;
+                        int  index = ComputeHashBucketIndex(copyCell);
+                        auto it    = m_Container.find(index);
+
+                        if (it != m_Container.end())
+                        {
+                                output.push_back(&it->second);
+                        }
+                }
         }
 
         return output;

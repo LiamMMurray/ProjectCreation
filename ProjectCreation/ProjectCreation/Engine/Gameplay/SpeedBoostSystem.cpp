@@ -153,7 +153,7 @@ void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
         int         segments = length / m_SplineLengthPerOrb;
         m_SplineClusterSpawners.back().spawnQueue =
             SplineUtility::BakePointsFromSplineAndTransform(spline, start, end, width, segments, waveCount);
-        m_SplineClusterSpawners.back().color;
+        m_SplineClusterSpawners.back().color   = color;
         m_SplineClusterSpawners.back().current = 0;
 }
 
@@ -273,8 +273,9 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
         if (!m_ComponentManager->ComponentsExist<SpeedboostSplineComponent>())
         {
-                auto compItr = m_ComponentManager->GetActiveComponents<SpeedboostSplineComponent>();
-                bool canFly  = false;
+                auto                             compItr = m_ComponentManager->GetActiveComponents<SpeedboostSplineComponent>();
+                bool                             canFly  = false;
+                static SpeedboostSplineComponent closestComp;
                 for (auto itr = compItr.begin(); itr != compItr.end(); itr++)
                 {
                         SpeedboostSplineComponent* splineComp = (SpeedboostSplineComponent*)itr.data();
@@ -285,8 +286,9 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         if (distance < (checkRadius))
                         {
                                 playerController->SetUseGravity(false);
-                                flyTimer = flyCD;
-                                canFly   = true;
+                                flyTimer    = flyCD;
+                                canFly      = true;
+                                closestComp = *splineComp;
                                 break;
                         }
                 }
@@ -297,6 +299,16 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         if (flyTimer <= 0.0f)
                                 playerController->SetUseGravity(true);
+                }
+
+                if (playerController->GetUseGravity() == false)
+                {
+                        XMVECTOR point = MathLibrary::GetClosestPointFromLine(
+                            closestComp.m_PrevPos, closestComp.m_NextPos, playerTransform->transform.translation);
+                        point += 0.05f * VectorConstants::Up;
+                        XMVECTOR dir = XMVector3Normalize(point - playerTransform->transform.translation);
+
+                        playerController->AddCurrentVelocity(dir * 3.0f * deltaTime);
                 }
         }
 

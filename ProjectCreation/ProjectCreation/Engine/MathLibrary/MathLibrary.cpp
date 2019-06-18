@@ -59,7 +59,7 @@ void MathLibrary::TurnTo(DirectX::XMMATRIX& matrix, DirectX::XMVECTOR targetPosi
         matrix = output;
 }
 
-DirectX::XMVECTOR MathLibrary::GetClosestPointFromLine(DirectX::XMVECTOR startPoint,
+DirectX::XMVECTOR MathLibrary::GetClosestPointFromLineClamped(DirectX::XMVECTOR startPoint,
                                                        DirectX::XMVECTOR endPoint,
                                                        DirectX::XMVECTOR point)
 {
@@ -70,10 +70,24 @@ DirectX::XMVECTOR MathLibrary::GetClosestPointFromLine(DirectX::XMVECTOR startPo
         XMVECTOR distance     = XMVectorMultiply(length, dotValue);
         output                = startPoint + distance;
         XMVECTOR minv         = XMVectorMin(startPoint, endPoint);
-        XMVECTOR maxv         = XMVectorMin(startPoint, endPoint);
+        XMVECTOR maxv         = XMVectorMax(startPoint, endPoint);
 
         output = XMVectorMin(output, maxv);
         output = XMVectorMax(output, minv);
+
+        return output;
+}
+
+DirectX::XMVECTOR MathLibrary::GetClosestPointFromLine(DirectX::XMVECTOR startPoint,
+                                                              DirectX::XMVECTOR endPoint,
+                                                              DirectX::XMVECTOR point)
+{
+        XMVECTOR output;
+        XMVECTOR length       = XMVector3Normalize(endPoint - startPoint);
+        XMVECTOR targetVector = point - startPoint;
+        XMVECTOR dotValue     = XMVector3Dot(length, targetVector);
+        XMVECTOR distance     = XMVectorMultiply(length, dotValue);
+        output                = startPoint + distance;
 
         return output;
 }

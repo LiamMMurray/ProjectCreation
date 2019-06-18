@@ -33,6 +33,9 @@ class MathLibrary
         static DirectX::XMVECTOR GetClosestPointFromLine(DirectX::XMVECTOR startPoint,
                                                          DirectX::XMVECTOR endPoint,
                                                          DirectX::XMVECTOR point);
+        static DirectX::XMVECTOR GetClosestPointFromLineClamped(DirectX::XMVECTOR startPoint,
+                                                         DirectX::XMVECTOR endPoint,
+                                                         DirectX::XMVECTOR point);
         static DirectX::XMVECTOR GetMidPointFromTwoVector(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateDistance(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateDistanceSq(DirectX::XMVECTOR a, DirectX::XMVECTOR b);

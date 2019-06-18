@@ -1,13 +1,14 @@
 #pragma once
-#include "../../ECS/Component.h"
-#include "Shapes.h"
-#include "CollisionResult.h"
 #include <unordered_set>
+#include "../../ECS/Component.h"
+#include "CollisionResult.h"
+#include "Shapes.h"
 
 class CollisionComponentData
 {
     public:
         Collision::FCollisionQueryResult prevColliders;
+        int                              cell;
 };
 
 class SphereComponent : public Component<SphereComponent>, public CollisionComponentData
