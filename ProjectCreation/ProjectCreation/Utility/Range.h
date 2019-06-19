@@ -105,7 +105,7 @@ class active_range
             size(size),
             isActives(isActives)
         {}
-        static active_range<T> GetNullActiveRange()
+        static active_range<T> SGetNullActiveRange()
         {
                 return active_range(0, 0, null_isActives);
         }

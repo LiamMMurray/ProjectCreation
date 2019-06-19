@@ -122,7 +122,7 @@ range<Entity> HandleManager::GetEntities()
 active_range<Entity> HandleManager::GetActiveEntities()
 {
         if (entity_random_access_pools.m_mem_starts.size() == 0)
-                return active_range<Entity>::GetNullActiveRange();
+                return active_range<Entity>::SGetNullActiveRange();
 
         Entity*                  data          = reinterpret_cast<Entity*>(entity_random_access_pools.m_mem_starts[0]);
         size_t                   element_count = static_cast<size_t>(entity_random_access_pools.m_element_counts[0]);

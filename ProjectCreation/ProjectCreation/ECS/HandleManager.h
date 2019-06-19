@@ -39,7 +39,9 @@ struct HandleManager
         HandleManager(NMemory::NPools::RandomAccessPools& componentRandomAccessPools,
                       NMemory::NPools::RandomAccessPools& entityRandomAccessPools,
                       NMemory::PoolMemory&                   pool_memory);
+
         ~HandleManager();
+
         template <typename T>
         T* GetComponent(ComponentHandle handle);
 
@@ -102,7 +104,7 @@ inline active_range<T> HandleManager::GetActiveComponents()
 {
         NMemory::type_index pool_index = T::SGetTypeIndex();
         if (component_random_access_pools.m_mem_starts.size() <= pool_index)
-                return active_range<T>::GetNullActiveRange();
+                return active_range<T>::SGetNullActiveRange();
 
         T*     data                        = reinterpret_cast<T*>(component_random_access_pools.m_mem_starts[pool_index]);
         size_t element_count               = static_cast<size_t>(component_random_access_pools.m_element_counts[pool_index]);
