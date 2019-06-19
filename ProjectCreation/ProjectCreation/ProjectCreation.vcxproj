@@ -11,12 +11,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ECS\Containers\Container.h" />
-    <ClInclude Include="ECS\Containers\FreeList.h" />
-    <ClInclude Include="ECS\Containers\IContainer.h" />
-    <ClInclude Include="ECS\IContainer.h" />
     <ClInclude Include="Engine\AI\AIComponent.h" />
     <ClInclude Include="Engine\AI\AISystem.h" />
+    <ClInclude Include="ECS\Component.h" />
+    <ClInclude Include="ECS\ComponentHandle.h" />
+    <ClInclude Include="ECS\Entity.h" />
+    <ClInclude Include="ECS\EntityHandle.h" />
+    <ClInclude Include="ECS\IComponent.h" />
+    <ClInclude Include="ECS\IPoolElement.h" />
+    <ClInclude Include="ECS\Memory.h" />
+    <ClInclude Include="ECS\Pools.h" />
     <ClInclude Include="Engine\Audio\AudioManager.h" />
     <ClInclude Include="Engine\Audio\SFXComponent.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionHelpers.h" />
@@ -61,27 +65,18 @@
     <ClInclude Include="Engine\Controller\IController.h" />
     <ClInclude Include="Engine\Controller\PlayerMovement.h" />
     <ClInclude Include="Engine\CoreInput\CoreInput.h" />
-    <ClInclude Include="ECS\Component.h" />
-    <ClInclude Include="ECS\ComponentManager.h" />
     <ClInclude Include="ECS\ECS.h" />
     <ClInclude Include="ECS\ECSTypes.h" />
-    <ClInclude Include="ECS\Entity.h" />
-    <ClInclude Include="ECS\EntityContainer.h" />
-    <ClInclude Include="ECS\EntityManager.h" />
     <ClInclude Include="ECS\HandleManager.h" />
     <ClInclude Include="Engine\Animation\AnimationComponent.h" />
     <ClInclude Include="Engine\Animation\AnimationContainers.h" />
     <ClInclude Include="Engine\Animation\AnimationSystem.h" />
     <ClInclude Include="Engine\GEngine.h" />
     <ClInclude Include="ECS\Handle.h" />
-    <ClInclude Include="ECS\IComponent.h" />
-    <ClInclude Include="ECS\IEntity.h" />
     <ClInclude Include="ECS\ISystem.h" />
     <ClInclude Include="ECS\SystemManager.h" />
-    <ClInclude Include="ECS\Util.h" />
     <ClInclude Include="Engine\XTime.h" />
     <ClInclude Include="Engine\Entities\TestEntities.h" />
-    <ClInclude Include="Engine\Entities\BaseEntities.h" />
     <ClInclude Include="ErrorHandling\ErrorTypes.h" />
     <ClInclude Include="FileIO\BasicIOTypes.h" />
     <ClInclude Include="FileIO\FileIO.h" />
@@ -118,6 +113,8 @@
     <ClInclude Include="Engine\ResourceManager\StaticMesh.h" />
     <ClInclude Include="Engine\ResourceManager\Texture2D.h" />
     <ClInclude Include="Engine\ResourceManager\VertexShader.h" />
+    <ClInclude Include="Utility\Hashing\SpookyHashV2.h" />
+    <ClInclude Include="Utility\TypeIndexFactory.h" />
     <FxCompile Include="Shaders\BloomCombine_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -170,8 +167,9 @@
     <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
     <ClInclude Include="Utility\Hashing\PairHash.h" />
     <ClInclude Include="Utility\Macros\DirectXMacros.h" />
-    <ClInclude Include="Utility\MemoryLeakDetection.h" />
     <ClInclude Include="Utility\MemoryDefines.h" />
+    <ClInclude Include="Utility\MemoryLeakDetection.h" />
+    <ClInclude Include="Utility\Range.h" />
     <ClInclude Include="Utility\RenderUtility.h" />
     <ClInclude Include="Engine\MathLibrary\Splines\FGoodSpline.h" />
     <ClInclude Include="Engine\MathLibrary\Splines\splines.hpp" />
@@ -192,6 +190,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\AI\AISystem.cpp" />
+    <ClCompile Include="ECS\Entity.cpp" />
+    <ClCompile Include="ECS\HandleManager.cpp" />
+    <ClCompile Include="ECS\IComponent.cpp" />
+    <ClCompile Include="ECS\IPoolElement.cpp" />
+    <ClCompile Include="ECS\Memory.cpp" />
+    <ClCompile Include="ECS\Pools.cpp" />
     <ClCompile Include="Engine\Animation\AnimationComponent.cpp" />
     <ClCompile Include="Engine\Audio\AudioManager.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionHelpers.cpp" />
@@ -218,16 +222,11 @@
     <ClCompile Include="Engine\Controller\IController.cpp" />
     <ClCompile Include="Engine\Controller\PlayerMovement.cpp" />
     <ClCompile Include="Engine\CoreInput\CoreInput.cpp" />
-    <ClCompile Include="ECS\ComponentManager.cpp" />
-    <ClCompile Include="ECS\EntityManager.cpp" />
     <ClCompile Include="Engine\Animation\AnimationSystem.cpp" />
     <ClCompile Include="Engine\GEngine.cpp" />
-    <ClCompile Include="ECS\IComponent.cpp" />
-    <ClCompile Include="ECS\IEntity.cpp" />
     <ClCompile Include="ECS\ISystem.cpp" />
     <ClCompile Include="ECS\SystemManager.cpp" />
     <ClCompile Include="Engine\XTime.cpp" />
-    <ClCompile Include="Engine\Entities\TestEntities.cpp" />
     <ClCompile Include="FileIO\FileIO.cpp" />
     <ClCompile Include="UI\FontComponent.cpp" />
     <ClCompile Include="main.cpp" />
@@ -251,6 +250,7 @@
     <ClCompile Include="Engine\ResourceManager\Texture2D.cpp" />
     <ClCompile Include="Engine\ResourceManager\VertexShader.cpp" />
     <ClCompile Include="UI\UICollision.cpp" />
+    <ClCompile Include="Utility\Hashing\SpookyHashV2.cpp" />
     <ClCompile Include="Utility\RenderUtility.cpp" />
     <ClCompile Include="UI\UIManager.cpp" />
     <ClCompile Include="UI\SpriteComponent.cpp" />
@@ -280,8 +280,8 @@
     <ClCompile Include="Engine\Physics\PhysicsSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="Engine\MathLibrary\Splines\splines.inl" />
+    <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -365,12 +365,12 @@
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\directxtk_desktop_2015.2019.4.26.1\build\native\directxtk_desktop_2015.targets" Condition="Exists('..\packages\directxtk_desktop_2015.2019.4.26.1\build\native\directxtk_desktop_2015.targets')" />
+    <Import Project="..\packages\directxtk_desktop_2015.2019.5.31.1\build\native\directxtk_desktop_2015.targets" Condition="Exists('..\packages\directxtk_desktop_2015.2019.5.31.1\build\native\directxtk_desktop_2015.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\directxtk_desktop_2015.2019.4.26.1\build\native\directxtk_desktop_2015.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk_desktop_2015.2019.4.26.1\build\native\directxtk_desktop_2015.targets'))" />
+    <Error Condition="!Exists('..\packages\directxtk_desktop_2015.2019.5.31.1\build\native\directxtk_desktop_2015.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk_desktop_2015.2019.5.31.1\build\native\directxtk_desktop_2015.targets'))" />
   </Target>
 </Project>

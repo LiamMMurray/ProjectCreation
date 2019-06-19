@@ -1,29 +1,18 @@
 #pragma once
-#include "ECSTypes.h"
-#include "IEntity.h"
+#include <unordered_map>
+#include <vector>
+#include <unordered_set>
+#include "IPoolElement.h"
 
-template <typename T>
-class Entity : public IEntity
+
+struct Entity : IPoolElement
 {
-    private:
-        static const EntityTypeId m_TypeId;
+        static NMemory::index s_max_elements;
 
-    public:
-        const EntityTypeId        GetStaticTypeId() const;
-        static const EntityTypeId GetTypeId();
+        static void           SSetMaxElements(NMemory::index max_elements);
+        static NMemory::index SGetMaxElements();
+
+        NMemory::entity_component_container m_OwnedComponents;
+
+		~Entity();
 };
-template <typename T>
-const EntityTypeId Entity<T>::m_TypeId{TypeUtility<IEntity>::GetUniqueTypeId<T>()};
-
-template <typename T>
-inline const EntityTypeId Entity<T>::GetStaticTypeId() const
-{
-        return m_TypeId;
-}
-
-template <typename T>
-inline const EntityTypeId Entity<T>::GetTypeId()
-{
-        static_assert(std::is_base_of<Entity<T>, T>::value, "GetTypeId can only accept CRTP classes derived from Entity<T>");
-        return m_TypeId;
-}

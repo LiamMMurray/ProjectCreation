@@ -1,8 +1,7 @@
 #pragma once
 
-#pragma once
-
-#include "../../ECS/ECS.h"
+#include "../../ECS/HandleManager.h"
+#include "../../ECS/SystemManager.h"
 #include "../../Utility/ForwardDeclarations/D3DNativeTypes.h"
 #include "../../Utility/ForwardDeclarations/WinProcTypes.h"
 
@@ -15,9 +14,8 @@ class AnimationSystem : public ISystem
 {
         friend class ResourceManager;
 
-        ComponentManager* m_ComponentManager;
-        EntityManager*    m_EntityManager;
-        ResourceManager*  m_ResourceManager;
+        HandleManager*   m_HandleManager;
+        ResourceManager* m_ResourceManager;
 
         void calcTransforms(Animation::FJoint*          sumVec,
                             int                         jointCount,

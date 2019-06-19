@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../ECS/ECS.h"
+#include "../../ECS/HandleManager.h"
 
 #include "../../Engine/ResourceManager/AnimationClip.h"
 

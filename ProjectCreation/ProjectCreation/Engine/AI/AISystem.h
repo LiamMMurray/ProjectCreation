@@ -11,8 +11,7 @@ class AIComponent;
 class AISystem : public ISystem
 {
     private:
-        ComponentManager* m_ComponentManager;
-        EntityManager*    m_EntityManager;
+        HandleManager* m_HandleManager;
         SystemManager*    m_SystemManager;
 
         XMVECTOR calculateAlignment(AIComponent* boid);

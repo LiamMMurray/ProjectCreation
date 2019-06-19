@@ -36,16 +36,18 @@ std::uniform_real_distribution<float> uniform_dist(0.0f, 1.0f);
 
 void SpeedBoostSystem::SpawnRandomSpeedBoost()
 {
-        TransformComponent* playerTransform =
-            m_ComponentManager->GetComponent<TransformComponent>(SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                                                     ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-                                                                     ->GetControlledEntity());
+        EntityHandle controlledEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+                                            ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
+                                            ->GetControlledEntity();
+
+        TransformComponent* playerTransform = controlledEntity.GetComponent<TransformComponent>();
+
         int      color = MathLibrary::GetRandomIntInRange(0, 4);
         XMVECTOR pos =
             MathLibrary::GetRandomPointInRadius2D(playerTransform->transform.translation, 0.5f, m_MaxBoostDistance - 0.5f);
         auto entityH              = SpawnSpeedBoost(pos, color);
-        auto spawnCompH           = m_ComponentManager->AddComponent<OrbRespawnComponent>(entityH);
-        auto spawnComp            = m_ComponentManager->GetComponent<OrbRespawnComponent>(spawnCompH);
+        auto spawnCompH           = entityH.AddComponent<OrbRespawnComponent>();
+        auto spawnComp            = spawnCompH.Get<OrbRespawnComponent>();
         spawnComp->m_WantsRespawn = false;
         spawnComp->m_Lifetime     = MathLibrary::RandomFloatInRange(m_BoostLifespan - m_BoostLifespanVariance,
                                                                 m_BoostLifespan + m_BoostLifespanVariance);
@@ -56,8 +58,8 @@ void SpeedBoostSystem::SpawnRandomSpeedBoost()
 void SpeedBoostSystem::SpawnSplineSpeedBoost(const SplineCluster& cluster, unsigned int index, int color, bool tail, bool head)
 {
         auto entityH          = SpawnSpeedBoost(cluster.spawnQueue[index], color);
-        auto splineH          = m_ComponentManager->AddComponent<SpeedboostSplineComponent>(entityH);
-        auto splineComp       = m_ComponentManager->GetComponent<SpeedboostSplineComponent>(splineH);
+        auto splineH          = entityH.AddComponent<SpeedboostSplineComponent>();
+        auto splineComp       = splineH.Get<SpeedboostSplineComponent>();
         splineComp->bHead     = head;
         splineComp->bTail     = tail;
         splineComp->m_CurrPos = cluster.spawnQueue[index];
@@ -76,11 +78,10 @@ EntityHandle SpeedBoostSystem::SpawnSpeedBoost(const DirectX::XMVECTOR& pos, int
         ComponentHandle boostHandle;
         ComponentHandle transHandle;
         auto            entityHandle = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &boostHandle);
-        boostHandle                  = m_ComponentManager->AddComponent<SpeedboostComponent>(entityHandle);
+        boostHandle                  = m_HandleManager->AddComponent<SpeedboostComponent>(entityHandle);
 
-        SpeedboostComponent* gsc = m_ComponentManager->GetComponent<SpeedboostComponent>(boostHandle);
-        TransformComponent*  gtc = m_ComponentManager->GetComponent<TransformComponent>(entityHandle);
-
+        SpeedboostComponent* gsc = boostHandle.Get<SpeedboostComponent>();
+        TransformComponent*  gtc = entityHandle.GetComponent<TransformComponent>();
 
         gtc->transform.translation = pos;
         gtc->transform.SetScale(0.0f);
@@ -95,11 +96,11 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
 {
         ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         PlayerController* pc = (PlayerController*)controllerSystem->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
+        EntityHandle      controlledEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+                                            ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
+                                            ->GetControlledEntity();
+        TransformComponent* playerTransform = controlledEntity.GetComponent<TransformComponent>();
 
-        TransformComponent* playerTransform =
-            m_ComponentManager->GetComponent<TransformComponent>(SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                                                     ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-                                                                     ->GetControlledEntity());
         static bool bFirstStage = false;
         {
                 if (!bFirstStage)
@@ -163,44 +164,40 @@ void SpeedBoostSystem::OnPreUpdate(float deltaTime)
 void SpeedBoostSystem::OnUpdate(float deltaTime)
 {
 
-        TransformComponent* playerTransform =
-            m_ComponentManager->GetComponent<TransformComponent>(SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                                                     ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-                                                                     ->GetControlledEntity());
+
+        EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+                                        ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
+                                        ->GetControlledEntity();
+
+        TransformComponent* playerTransform = playerEntity.GetComponent<TransformComponent>();
+
         auto playerController = static_cast<PlayerController*>(
             SYSTEM_MANAGER->GetSystem<ControllerSystem>()->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]);
+
         GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_PlayerEffectRadius, deltaTime);
 
         // m_PlayerEffectRadius                       = 25.0f;
         ComponentHandle closestGoalTransformHandle = m_SystemManager->GetSystem<OrbitSystem>()->GetClosestGoalTransform();
 
-
-        int speedboostCount = 0;
-        if (!m_ComponentManager->ComponentsExist<SpeedboostComponent>())
         {
-
-                auto speedboostCompItr = m_ComponentManager->GetActiveComponents<SpeedboostComponent>();
-
-                for (auto itr = speedboostCompItr.begin(); itr != speedboostCompItr.end(); itr++)
+                int speedboostCount = 0;
+                for (auto& speedComp : m_HandleManager->GetActiveComponents<SpeedboostComponent>())
                 {
                         speedboostCount++;
 
-                        SpeedboostComponent* speedComp = static_cast<SpeedboostComponent*>(itr.data());
-                        TransformComponent*  transComp =
-                            m_ComponentManager->GetComponent<TransformComponent>(itr.data()->GetOwner());
+                        TransformComponent* transComp = speedComp.GetParent().GetComponent<TransformComponent>();
+                        // START: Move speed boosts with ai stuff here
 
-						// START: Move speed boosts with ai stuff here
-						
-						// END: Move speed boosts with ai stuff here
+                        // END: Move speed boosts with ai stuff here
                         float distSq = MathLibrary::CalulateDistanceSq(transComp->transform.translation,
                                                                        playerTransform->transform.translation);
-						// onCD: cool down for speed boosts
+                        // onCD: cool down for speed boosts
                         bool onCD = false;
 
-                        if (speedComp->m_Timer > 0)
+                        if (speedComp.m_Timer > 0)
                         {
                                 onCD = true;
-                                speedComp->m_Timer -= deltaTime;
+                                speedComp.m_Timer -= deltaTime;
                         }
 
                         float distanceSq = MathLibrary::CalulateDistanceSq(playerTransform->transform.translation,
@@ -210,90 +207,76 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         if (!onCD && distanceSq < (checkRadius * checkRadius))
                         {
 
-                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp->m_Color);
+                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.m_Color);
 
                                 // speedComp->m_WantsRespawn = true;
                                 // speedComp->m_TargetRadius = 0.0f;
                                 // m_PlayerEffectRadius += 1.0f;
-                                speedComp->m_Timer = speedComp->m_CD;
-                                playerController->SpeedBoost(transComp->transform.translation, speedComp->m_Color);
+                                speedComp.m_Timer = speedComp.m_CD;
+                                playerController->SpeedBoost(transComp->transform.translation, speedComp.m_Color);
                         }
 
-                        TransformComponent* closestGoalTransform =
-                            m_ComponentManager->GetComponent<TransformComponent>(closestGoalTransformHandle);
+                        TransformComponent* closestGoalTransform = closestGoalTransformHandle.Get<TransformComponent>();
 
-                        if (speedComp->m_CurrentRadius != speedComp->m_TargetRadius)
+                        if (speedComp.m_CurrentRadius != speedComp.m_TargetRadius)
                         {
-                                speedComp->m_CurrentRadius = MathLibrary::MoveTowards(
-                                    speedComp->m_CurrentRadius, speedComp->m_TargetRadius, m_BoostShrinkSpeed * deltaTime);
-                                transComp->transform.SetScale(speedComp->m_CurrentRadius);
+                                speedComp.m_CurrentRadius = MathLibrary::MoveTowards(
+                                    speedComp.m_CurrentRadius, speedComp.m_TargetRadius, m_BoostShrinkSpeed * deltaTime);
+                                transComp->transform.SetScale(speedComp.m_CurrentRadius);
                         }
                 }
         }
 
-        if (!m_ComponentManager->ComponentsExist<OrbRespawnComponent>())
+        for (auto& spawnComp : m_HandleManager->GetActiveComponents<OrbRespawnComponent>())
         {
 
-                auto compItr = m_ComponentManager->GetActiveComponents<OrbRespawnComponent>();
+                SpeedboostComponent* speedComp = spawnComp.GetParent().GetComponent<SpeedboostComponent>();
+                TransformComponent*  transComp = spawnComp.GetParent().GetComponent<TransformComponent>();
 
-                for (auto itr = compItr.begin(); itr != compItr.end(); itr++)
+                spawnComp.m_Lifetime -= deltaTime;
+                float distanceSq = MathLibrary::CalulateDistanceSqIgnoreY(playerTransform->transform.translation,
+                                                                          transComp->transform.translation);
+                if (spawnComp.m_Lifetime < 0.0f || distanceSq > (m_MaxBoostDistance) * (m_MaxBoostDistance))
                 {
-                        auto                 spawnComp = (OrbRespawnComponent*)itr.data();
-                        SpeedboostComponent* speedComp =
-                            m_ComponentManager->GetComponent<SpeedboostComponent>(itr.data()->GetOwner());
-                        TransformComponent* transComp =
-                            m_ComponentManager->GetComponent<TransformComponent>(itr.data()->GetOwner());
+                        spawnComp.m_WantsRespawn  = true;
+                        speedComp->m_TargetRadius = 0.0f;
+                }
 
-                        spawnComp->m_Lifetime -= deltaTime;
-                        float distanceSq = MathLibrary::CalulateDistanceSqIgnoreY(playerTransform->transform.translation,
-                                                                                  transComp->transform.translation);
-                        if (spawnComp->m_Lifetime < 0.0f || distanceSq > (m_MaxBoostDistance) * (m_MaxBoostDistance))
+
+                if (spawnComp.m_WantsRespawn)
+                {
+                        if (speedComp->m_CurrentRadius <= 0.0f)
                         {
-                                spawnComp->m_WantsRespawn = true;
-                                speedComp->m_TargetRadius = 0.0f;
-                        }
+                                XMVECTOR pos = MathLibrary::GetRandomPointInRadius2D(playerTransform->transform.translation,
+                                                                                     m_MaxBoostDistance - 5.2f,
+                                                                                     m_MaxBoostDistance - 0.8f);
 
-
-                        if (spawnComp->m_WantsRespawn)
-                        {
-                                if (speedComp->m_CurrentRadius <= 0.0f)
-                                {
-                                        XMVECTOR pos =
-                                            MathLibrary::GetRandomPointInRadius2D(playerTransform->transform.translation,
-                                                                                  m_MaxBoostDistance - 5.2f,
-                                                                                  m_MaxBoostDistance - 0.8f);
-
-                                        spawnComp->m_Lifetime =
-                                            MathLibrary::RandomFloatInRange(m_BoostLifespan - m_BoostLifespanVariance,
-                                                                            m_BoostLifespan + m_BoostLifespanVariance);
-                                        transComp->transform.translation = pos;
-                                        speedComp->m_TargetRadius        = m_BoostRadius;
-                                        spawnComp->m_WantsRespawn        = false;
-                                }
+                                spawnComp.m_Lifetime = MathLibrary::RandomFloatInRange(
+                                    m_BoostLifespan - m_BoostLifespanVariance, m_BoostLifespan + m_BoostLifespanVariance);
+                                transComp->transform.translation = pos;
+                                speedComp->m_TargetRadius        = m_BoostRadius;
+                                spawnComp.m_WantsRespawn         = false;
                         }
                 }
         }
 
-        if (!m_ComponentManager->ComponentsExist<SpeedboostSplineComponent>())
         {
-                auto                             compItr = m_ComponentManager->GetActiveComponents<SpeedboostSplineComponent>();
-                bool                             canFly  = false;
+                bool                             canFly = false;
                 static SpeedboostSplineComponent closestComp;
                 float                            checkRadius = m_BoostRadius * 4.0f;
 
                 float prevDistance =
                     MathLibrary::CalulateDistanceIgnoreY(closestComp.m_CurrPos, playerTransform->transform.translation);
 
-                for (auto itr = compItr.begin(); itr != compItr.end(); itr++)
+                for (auto& splineComp : m_HandleManager->GetActiveComponents<SpeedboostSplineComponent>())
                 {
-                        SpeedboostSplineComponent* splineComp = (SpeedboostSplineComponent*)itr.data();
                         float                      distance =
-                            MathLibrary::CalulateDistanceIgnoreY(playerTransform->transform.translation, splineComp->m_CurrPos);
+                            MathLibrary::CalulateDistanceIgnoreY(playerTransform->transform.translation, splineComp.m_CurrPos);
 
                         if (distance < (checkRadius))
                         {
                                 if (playerController->GetUseGravity() == true || prevDistance > distance)
-                                        closestComp = *splineComp;
+                                        closestComp = splineComp;
 
                                 playerController->SetUseGravity(false);
                                 flyTimer = flyCD;
@@ -338,8 +321,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                                          playerTransform->transform.translation);
                                 float    distanceToLine = MathLibrary::CalulateDistance(closestPointOnLine + offset,
                                                                                      playerTransform->transform.translation);
-                                XMVECTOR point = next + offset;
-                                dir            = XMVector3Normalize(point - playerTransform->transform.translation);
+                                XMVECTOR point          = next + offset;
+                                dir                     = XMVector3Normalize(point - playerTransform->transform.translation);
 
                                 float strength = MathLibrary::clamp(distanceToLine * 3.0f, 0.5f, 8.0f);
                                 playerTransform->transform.translation += dir * strength * deltaTime;
@@ -386,9 +369,8 @@ void SpeedBoostSystem::OnPostUpdate(float deltaTime)
 
 void SpeedBoostSystem::OnInitialize()
 {
-        m_EntityManager    = GEngine::Get()->GetEntityManager();
-        m_ComponentManager = GEngine::Get()->GetComponentManager();
-        m_SystemManager    = GEngine::Get()->GetSystemManager();
+        m_HandleManager = GEngine::Get()->GetHandleManager();
+        m_SystemManager = GEngine::Get()->GetSystemManager();
 
         // Red Light
         auto speedBoostMat01Handle = GEngine::Get()->GetResourceManager()->LoadMaterial("GlowSpeedboost01");
@@ -415,10 +397,11 @@ void SpeedBoostSystem::OnInitialize()
 
         std::random_shuffle(m_Paths.begin(), m_Paths.end());
 
-        TransformComponent* playerTransform =
-            m_ComponentManager->GetComponent<TransformComponent>(SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                                                     ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-                                                                     ->GetControlledEntity());
+        EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+            ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
+            ->GetControlledEntity();
+
+        TransformComponent* playerTransform = playerEntity.GetComponent<TransformComponent>();
 
 
         SpawnSpeedBoost(playerTransform->transform.translation + 2.0f * VectorConstants::Forward, E_LIGHT_ORBS::WHITE_LIGHTS);

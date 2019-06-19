@@ -1,26 +1,26 @@
 #pragma once
 #include <stdint.h>
-enum HANDLEFLAG
+enum GHANDLEFLAG
 {
         INACTIVE = 0b00000001,
         DESTROY  = 0b00000010
 };
-struct HandleData
+struct GHandleData
 {
         uint32_t m_DeletionAccumulator : 24;
         uint32_t m_Flags : 8;
 
         bool IsValid()
         {
-                return (m_Flags & HANDLEFLAG::INACTIVE) == 0;
+                return (m_Flags & GHANDLEFLAG::INACTIVE) == 0;
         }
         void SetInvalid()
         {
-                SetFlags(m_Flags | HANDLEFLAG::INACTIVE);
+                SetFlags(m_Flags | GHANDLEFLAG::INACTIVE);
         }
 		void SetValid()
 		{
-                SetFlags( (m_Flags | HANDLEFLAG::INACTIVE)  ^ HANDLEFLAG::INACTIVE);
+                SetFlags((m_Flags | GHANDLEFLAG::INACTIVE) ^ GHANDLEFLAG::INACTIVE);
 		}
         void SetFlags(uint8_t flags)
         {
@@ -28,11 +28,11 @@ struct HandleData
         }
 };
 template <typename T>
-struct Handle
+struct GHandle
 {
-        Handle() : m_Data(0)
+        GHandle() : m_Data(0)
         {}
-        Handle(uint32_t id, uint32_t version = 0U, uint8_t flags = 0U) :
+        GHandle(uint32_t id, uint32_t version = 0U, uint8_t flags = 0U) :
             m_Id(id),
             m_DeletionAccumulator(version),
             m_Flags(flags)
@@ -45,7 +45,7 @@ struct Handle
                         uint32_t m_Id;
                         union
                         {
-                                HandleData m_HandleData;
+                                GHandleData m_HandleData;
                                 struct
                                 {
                                         uint32_t m_DeletionAccumulator : 24;
@@ -54,17 +54,17 @@ struct Handle
                         };
                 };
         };
-        bool operator==(const Handle<T>& other) const
+        bool operator==(const GHandle<T>& other) const
         {
                 return this->m_Data == other.m_Data;
         }
         bool IsValid()
         {
-                return (m_Flags & HANDLEFLAG::INACTIVE) == 0;
+                return (m_Flags & GHANDLEFLAG::INACTIVE) == 0;
         }
         void SetInvalid()
         {
-                SetFlags(m_Flags | HANDLEFLAG::INACTIVE);
+                SetFlags(m_Flags | GHANDLEFLAG::INACTIVE);
         }
         void SetFlags(uint8_t flags)
         {
@@ -73,10 +73,10 @@ struct Handle
 };
 
 template <typename T>
-class std::hash<Handle<T>>
+class std::hash<GHandle<T>>
 {
     public:
-        size_t operator()(const Handle<T> handle) const
+        size_t operator()(const GHandle<T> handle) const
         {
                 return hash<uint32_t>()(handle.m_Id);
         }

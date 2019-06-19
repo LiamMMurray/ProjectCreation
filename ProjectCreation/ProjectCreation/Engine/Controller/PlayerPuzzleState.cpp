@@ -16,21 +16,17 @@ void PlayerPuzzleState::Enter()
 {
         dragVelocity = XMVectorZero();
 
-        auto goalComp =
-            GEngine::Get()->GetComponentManager()->GetComponent<GoalComponent>(_playerController->GetGoalComponent());
+        auto goalComp       = _playerController->GetGoalComponent().Get<GoalComponent>();
         goalComp->goalState = E_GOAL_STATE::Puzzle;
-
 }
 
 void PlayerPuzzleState::Update(float deltaTime)
 {
-        auto goalComp =
-            GEngine::Get()->GetComponentManager()->GetComponent<GoalComponent>(_playerController->GetGoalComponent());
-        auto goalTransform = GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(goalComp->GetOwner());
-        auto playerTransformComp =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(_playerController->GetControlledEntity());
-        auto cameraComponent =
-            GEngine::Get()->GetComponentManager()->GetComponent<CameraComponent>(_playerController->GetControlledEntity());
+        auto goalComp              = _playerController->GetGoalComponent().Get<GoalComponent>();
+        auto goalTransform         = goalComp->GetParent().GetComponent<TransformComponent>();
+        auto playerTransformHandle = _playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
+        auto playerTransformComp   = playerTransformHandle.Get<TransformComponent>();
+        auto cameraComponent       = _playerController->GetControlledEntity().GetComponent<CameraComponent>();
 
         XMVECTOR input = deltaTime * XMVectorSet((float)GCoreInput::GetMouseX(), (float)-GCoreInput::GetMouseY(), 0.0f, 0.0f);
         float    speed = MathLibrary::CalulateVectorLength(dragVelocity);
@@ -65,10 +61,9 @@ void PlayerPuzzleState::Update(float deltaTime)
         if (result.hasOverlap)
         {
                 // stateMachine->Transition();
-                auto tHandle = GEngine::Get()->GetSystemManager()->GetSystem<OrbitSystem>()->GetClosestGoalTransform();
-                auto tComp   = GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(tHandle);
-                auto currGoalComp =
-                    GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(goalComp->GetOwner());
+                auto tHandle      = GEngine::Get()->GetSystemManager()->GetSystem<OrbitSystem>()->GetClosestGoalTransform();
+                auto tComp        = tHandle.Get<TransformComponent>();
+                auto currGoalComp = goalComp->GetParent().GetComponent<TransformComponent>();
 
                 if (tComp == playerTransformComp || tComp == currGoalComp)
                 {
@@ -76,7 +71,7 @@ void PlayerPuzzleState::Update(float deltaTime)
                         targetTransform.translation = XMVectorSetY(tComp->transform.translation, 0.0f);
                         targetTransform.rotation    = FQuaternion::FromEulerAngles(0.0f, 0.0f, 0.0f);
                         _playerController->RequestCinematicTransition(
-                            1, &playerTransformComp->GetHandle(), &targetTransform, E_PLAYERSTATE_EVENT::TO_GROUND, 4.0f, 1.0f);
+                            1, &playerTransformHandle, &targetTransform, E_PLAYERSTATE_EVENT::TO_GROUND, 4.0f, 1.0f);
                 }
                 else
                 {
