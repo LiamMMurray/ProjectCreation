@@ -44,6 +44,11 @@ class MathLibrary
         static DirectX::XMVECTOR GetRandomVector();
         static DirectX::XMVECTOR GetRandomVectorInRange(float min, float max);
         static DirectX::XMVECTOR GetRandomUnitVector();
+        static DirectX::XMFLOAT4 GetRandomColor();
+        static DirectX::XMFLOAT4 GetRandomColorInRange(DirectX::XMFLOAT2 red,    // Xmfloat2 : x = min, y = max
+                                                       DirectX::XMFLOAT2 green,  // Xmfloat2 : x = min, y = max
+                                                       DirectX::XMFLOAT2 blue,   // Xmfloat2 : x = min, y = max
+                                                       DirectX::XMFLOAT2 alpha); // Xmfloat2 : x = min, y = max
         inline static bool       QuadraticFormula(const float a,
                                                   const float b,
                                                   const float c,
@@ -84,7 +89,7 @@ class MathLibrary
         static double SmoothStart4(double x);
         static double SmoothStop4(double x);
 
-		static double SmoothStartN(double x, double power);
+        static double SmoothStartN(double x, double power);
         static double SmoothStopN(double x, double power);
 
         static double SmoothMix(double a, double b, double blend);
@@ -137,7 +142,6 @@ class MathLibrary
                 vector  = DirectX::XMVectorSet(x, y, z, DirectX::XMVectorGetW(vector));
         }
 
-		static float CalculateAngularDiameter(const DirectX::XMVECTOR& eye, const Shapes::FSphere& sphere);
-		static float CalculateDistanceFromAngularDiameter(float angularDiameter, const Shapes::FSphere& sphere);
-
+        static float CalculateAngularDiameter(const DirectX::XMVECTOR& eye, const Shapes::FSphere& sphere);
+        static float CalculateDistanceFromAngularDiameter(float angularDiameter, const Shapes::FSphere& sphere);
 };

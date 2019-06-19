@@ -1,5 +1,5 @@
 #pragma once
-#include<stdint.h>
+#include <stdint.h>
 namespace Pools
 {
         template <typename T, int16_t N>
@@ -9,13 +9,13 @@ namespace Pools
                 // Todo: Implement the function bodies
 
                 // Returns the number of active elements
-                size_t size() const
+                static size_t size() const
                 {
                         return active_count;
                 }
 
                 // Returns the maximum supported number of elements
-                size_t capacity() const
+                static size_t capacity() const
                 {
                         return N;
                 }
@@ -35,7 +35,7 @@ namespace Pools
                 // Returns the index of the first inactive element
                 //   and updates the active count
                 // Returns -1 if no inactive elements remain
-                int16_t alloc()
+                static int16_t alloc()
                 {
                         if (active_count >= N)
                                 return -1;
@@ -45,7 +45,7 @@ namespace Pools
 
                 // Moves the element at 'index' to the inactive
                 // region and updates the active count
-                void free(int16_t index)
+                static void free(int16_t index)
                 {
                         std::swap(pool[index], pool[--active_count]);
                 }
@@ -64,7 +64,7 @@ namespace Pools
 
                 // Removes the first element from the free list and returns its index
                 // Returns -1 if no free elements remain
-                int16_t alloc()
+                static int16_t alloc()
                 {
                         if (free_start == -1)
                                 return -1;
@@ -74,7 +74,7 @@ namespace Pools
                 }
 
                 // Adds 'index' to the free list
-                void free(int16_t index)
+                static void free(int16_t index)
                 {
                         pool[index].next = free_start;
                         free_start       = index;
@@ -113,4 +113,4 @@ namespace Pools
 
                 int16_t free_start = 0;
         };
-}
+} // namespace Pools

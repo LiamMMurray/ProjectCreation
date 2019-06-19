@@ -12,8 +12,6 @@ class BufferSetup
     public:
         static BufferSetup* GetBufferData();
         void                InitBuffer();
-        void                UpdateBuffer();
-        static void         ComputeShaderSetup(ID3D11Device1* device1, FVertex* vertexData);
-        void                GeometryShaderSetup();
+        static void ComputeShaderSetup(ID3D11Device1* device1, ParticleData::FParticleGPU* particleData, int numParticles);
         void                ShutdownBuffer();
 };

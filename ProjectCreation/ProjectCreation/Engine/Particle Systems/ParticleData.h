@@ -5,42 +5,49 @@
 #include "Pools.h"
 namespace ParticleData
 {
-        /*   struct FParticleType
-           {
-                   DirectX::XMFLOAT4 position;
-                   DirectX::XMFLOAT4 prev_position;
-                   DirectX::XMFLOAT4 color;
-                   bool              active;
-           };
-   */
-        /* struct FParticleBuffer
-         {
-                 DirectX::XMFLOAT4 position;
-                 DirectX::XMFLOAT2 texture;
-                 DirectX::XMFLOAT4 color;
-         };*/
+        /*  struct FParticleType
+          {
+                  DirectX::XMFLOAT4 position;
+                  DirectX::XMFLOAT4 prev_position;
+                  DirectX::XMFLOAT4 color;
+                  DirectX::XMFLOAT3 velocity;
+          };*/
 
-        struct FEmitter
+
+        struct FEmitterCPU
         {
+                bool              active;
+                int               maxParticles;
                 DirectX::XMFLOAT4 spawnPosition;
                 DirectX::XMFLOAT4 spawnColor;
                 DirectX::XMFLOAT3 velocity;
                 DirectX::XMFLOAT2 texture;
                 float             time;
-                FEmitter();
-                FEmitter(DirectX::XMFLOAT4 pos, DirectX::XMFLOAT4 color, DirectX::XMFLOAT3 vel, DirectX::XMFLOAT2 uv, float time);
+                FEmitterCPU();
+                FEmitterCPU(DirectX::XMFLOAT4 pos,
+                            DirectX::XMFLOAT4 color,
+                            DirectX::XMFLOAT3 vel,
+                            DirectX::XMFLOAT2 uv,
+                            float             t);
         };
 
-        struct FParticleSystemElement
+
+        struct FEmitterGPU
         {
-                std::vector<FEmitter> emitters;
-                int                   particleCount;
-                int                   maxParticles;
+                int   currentParticleCount;
+                float accumulatedTime;
         };
 
-        class ParticleComponent : public Component<ParticleComponent>
+        struct FParticleGPU
         {
-            public:
-                FEmitter particleType;
+                DirectX::XMFLOAT4 position;
+                DirectX::XMFLOAT4 color;
+                DirectX::XMFLOAT3 velocity;
+                DirectX::XMFLOAT2 texture;
+                float             time;
+                bool              active;
+                int               index;
         };
+
+
 } // namespace ParticleData

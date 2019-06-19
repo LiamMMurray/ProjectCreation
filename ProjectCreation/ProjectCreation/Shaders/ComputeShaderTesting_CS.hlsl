@@ -1,16 +1,20 @@
-struct ParticleEmitter
+struct FParticleGPU
 {
-        float4 spawnPosition;
-        float4 spawnColor;
+        float4 position;
+        float4 color;
         float3 velocity;
         float2 uv;
         float  time;
+        bool   active;
+        int    index;
+		
 };
 
-[numthreads(1, 1, 1)]
-RWStructuredBuffer<ParticleEmitter> buffer : register(u0);
+[numthreads(10, 1, 1)]
+StructuredBuffer<ParticleGPU> ParticleBuffer : register(u0);
+
 
 void main(uint3 DTid : SV_DispatchThreadID)
 {
-        buffer[DTid.x].spawnPosition += 1.0f;
+        ParticleBuffer[DTid.x].position += 0.25;
 }

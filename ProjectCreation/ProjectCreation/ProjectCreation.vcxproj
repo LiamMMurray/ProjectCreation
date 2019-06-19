@@ -43,6 +43,7 @@
     <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
+    <ClInclude Include="Engine\Particle Systems\EmitterComponent.h" />
     <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
     <ClInclude Include="Engine\GenericComponents\TestComponents.h" />
     <ClInclude Include="Engine\GenericComponents\TransformComponent.h" />
@@ -175,7 +176,17 @@
     <ClInclude Include="Shaders\PostProcessConstantBuffers.hlsl">
       <FileType>Document</FileType>
     </ClInclude>
+    <FxCompile Include="Shaders\GeometryShaderTesting_GS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Shaders\Glow_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shaders\PurePixelShader_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
@@ -211,6 +222,7 @@
     <ClCompile Include="Engine\Gameplay\SpeedBoostSystem.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\IState.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
+    <ClCompile Include="Engine\Particle Systems\ParticleData.cpp" />
     <ClCompile Include="Engine\Particle Systems\ParticleManager.cpp" />
     <ClCompile Include="Engine\Physics\PhysicsComponent.cpp" />
     <ClCompile Include="Engine\Controller\IController.cpp" />

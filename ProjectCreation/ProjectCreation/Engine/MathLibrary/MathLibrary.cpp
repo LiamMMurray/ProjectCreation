@@ -1,5 +1,6 @@
 #include "MathLibrary.h"
 #include <random>
+#include<assert.h>
 using namespace DirectX;
 using namespace std;
 
@@ -173,6 +174,37 @@ DirectX::XMVECTOR MathLibrary::GetRandomUnitVector()
         }
 }
 
+DirectX::XMFLOAT4 MathLibrary::GetRandomColor()
+{
+	//color must be setted in between 0 and 1
+        DirectX::XMFLOAT4 output = {GetRandomFloatInRange(0.0f, 1.0f),
+                                    GetRandomFloatInRange(0.0f, 1.0f),
+                                    GetRandomFloatInRange(0.0f, 1.0f),
+                                    GetRandomFloatInRange(0.0f, 1.0f)};
+        return output;
+}
+
+DirectX::XMFLOAT4 MathLibrary::GetRandomColorInRange(DirectX::XMFLOAT2 red,
+                                                     DirectX::XMFLOAT2 green,
+                                                     DirectX::XMFLOAT2 blue,
+                                                     DirectX::XMFLOAT2 alpha)
+{
+        DirectX::XMFLOAT4 output;
+		//exception 
+		//The color value must be between 0 and 1
+        assert(red.x >= 0.0f && red.y <= 1.0f);
+        assert(green.x >= 0.0f && green.y <= 1.0f);
+        assert(blue.x >= 0.0f && blue.y <= 1.0f);
+        assert(alpha.x >= 0.0f && alpha.y <= 1.0f);
+
+        output.x = GetRandomFloatInRange(red.x, red.y); //red
+        output.y = GetRandomFloatInRange(green.x, green.y); //green
+        output.z = GetRandomFloatInRange(blue.x, blue.y); //blue
+        output.w = GetRandomFloatInRange(alpha.x, alpha.y); //alpha
+
+        return output;
+}
+
 float MathLibrary::MoveTowards(const float a, const float b, const float speed)
 {
         float output;
@@ -183,7 +215,7 @@ float MathLibrary::MoveTowards(const float a, const float b, const float speed)
 
 
 // Smoothing functions from the "Fast and Funky 1D Nonlinear Transformations" GDC
-//Powers 2 - 4 are faster than the Nth power
+// Powers 2 - 4 are faster than the Nth power
 double MathLibrary::SmoothStart2(double x)
 {
         return x * x;
@@ -191,7 +223,7 @@ double MathLibrary::SmoothStart2(double x)
 
 double MathLibrary::SmoothStop2(double x)
 {
-        return 1 - ((1-x) * (1-x));
+        return 1 - ((1 - x) * (1 - x));
 }
 
 double MathLibrary::SmoothStart3(double x)
@@ -226,7 +258,7 @@ double MathLibrary::SmoothStopN(double x, double power)
 
 double MathLibrary::SmoothMix(double a, double b, double blend)
 {
-        return a + blend * (b - a);	
+        return a + blend * (b - a);
 }
 
 double MathLibrary::SmoothCrossfade(double a, double b, double time)
@@ -244,5 +276,5 @@ float MathLibrary::CalculateAngularDiameter(const DirectX::XMVECTOR& eye, const 
 float MathLibrary::CalculateDistanceFromAngularDiameter(float angularDiameter, const Shapes::FSphere& sphere)
 {
         float diameter = sphere.radius * 2.0f;
-        return diameter / (2.0f*sinf(angularDiameter/2.0f));
+        return diameter / (2.0f * sinf(angularDiameter / 2.0f));
 }
