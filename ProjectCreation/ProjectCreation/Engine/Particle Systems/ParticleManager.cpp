@@ -40,9 +40,9 @@ void ParticleManager::update(float deltaTime)
                 }
         }
         // Send data to gpu
-        ComputeShader*  computeShader = RESOURCE_MANAGER->GetResource<ComputeShader>(m_ComputeShaderHandle);
-        VertexShader* vertexShader  = RESOURCE_MANAGER->GetResource<VertexShader>(m_VertexShaderHandle);
-        PixelShader*    pixelShader   = RESOURCE_MANAGER->GetResource<PixelShader>(m_PixelShaderHandle);
+        ComputeShader*  computeShader  = RESOURCE_MANAGER->GetResource<ComputeShader>(m_ComputeShaderHandle);
+        VertexShader*   vertexShader   = RESOURCE_MANAGER->GetResource<VertexShader>(m_VertexShaderHandle);
+        PixelShader*    pixelShader    = RESOURCE_MANAGER->GetResource<PixelShader>(m_PixelShaderHandle);
         GeometryShader* geometryShader = RESOURCE_MANAGER->GetResource<GeometryShader>(m_GeometryShaderHandle);
         m_BufferData->ComputeShaderSetup(m_RenderSystem->m_Device, &m_ParticleInfo, 10);
 
@@ -51,13 +51,29 @@ void ParticleManager::update(float deltaTime)
         // Set Compute Shaders
         m_RenderSystem->m_Context->CSSetShader(computeShader->m_ComputerShader, nullptr, 0);
         m_RenderSystem->m_Context->CSSetUnorderedAccessViews(0, 1, &m_BufferData->m_UAV, 0);
+		//dispatch before setting UAV to null
         m_RenderSystem->m_Context->Dispatch(1, 1, 1);
 
+		// set compute shader's UAV to null after dispatch
         ID3D11UnorderedAccessView* nullUAV = NULL;
 
         m_RenderSystem->m_Context->CSSetUnorderedAccessViews(
             0, 1, &nullUAV, 0); // Set UAV to null before have other shader able to get data from compute shader
         m_RenderSystem->m_Context->VSSetShaderResources(1, 0, &m_BufferData->m_StructuredView);
+
+		m_RenderSystem->m_Context->GSSetShader(geometryShader->m_GeometryShader, 0, 0);
+        m_RenderSystem->m_Context->GSSetShaderResources(0, 0, &m_BufferData->m_StructuredView);
+
+		//draw call;
+
+
+		//reset srv null for geometry shader
+
+		ID3D11ShaderResourceView* nullSRV = nullptr;
+        m_RenderSystem->m_Context->GSSetShaderResources(0, 0, &nullSRV);
+
+		m_RenderSystem->m_Swapchain->Present(1, 0);
+
 }
 
 void ParticleManager::init()
