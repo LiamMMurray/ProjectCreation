@@ -2,7 +2,8 @@
 
 /** Includes **/
 
-#include "../ECS/ECS.h"
+#include "../ECS/HandleManager.h"
+#include "../ECS/SystemManager.h"
 #include "../Utility/ForwardDeclarations/D3DNativeTypes.h"
 #include "../Utility/ForwardDeclarations/WinProcTypes.h"
 #include "PostProcess/PostProcessEffectBase.h"
@@ -299,11 +300,10 @@ class RenderSystem : public ISystem
         void DrawSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx, const Animation::FSkeleton* skel);
 
 
-        ComponentHandle   m_MainCameraHandle;
-        ComponentHandle   m_MainTransformHandle;
-        ResourceManager*  m_ResourceManager;
-        ComponentManager* m_ComponentManager;
-        EntityManager*    m_EntityManager;
+        ComponentHandle  m_MainCameraHandle;
+        ComponentHandle  m_MainTransformHandle;
+        ResourceManager* m_ResourceManager;
+        HandleManager*   m_HandleManager;
 
         DirectX::XMMATRIX m_CachedMainProjectionMatrix;
         DirectX::XMMATRIX m_CachedMainViewProjectionMatrix;

@@ -98,8 +98,7 @@ void PlayerController::GatherInput()
 
 void PlayerController::ProcessInput()
 {
-        _cachedControlledTransformComponent =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+        _cachedControlledTransformComponent = m_ControlledEntityHandle.GetComponent<TransformComponent>();
 }
 
 void PlayerController::ApplyInput()
@@ -121,10 +120,10 @@ PlayerController::PlayerController()
 void PlayerController::Init(EntityHandle h)
 {
         IController::Init(h);
-        TransformComponent* transformComp =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+        ComponentHandle     tHandle = m_ControlledEntityHandle.GetComponentHandle<TransformComponent>();
+        TransformComponent* tComp   = tHandle.Get<TransformComponent>();
 
-        m_EulerAngles = transformComp->transform.rotation.ToEulerAngles();
+        m_EulerAngles = tComp->transform.rotation.ToEulerAngles();
 
         // Create any states and set their respective variables here
         m_CinematicState = m_StateMachine.CreateState<PlayerCinematicState>();
@@ -140,9 +139,10 @@ void PlayerController::Init(EntityHandle h)
         m_StateMachine.AddTransition(puzzleState, m_CinematicState, E_PLAYERSTATE_EVENT::TO_TRANSITION);
 
         // Request initial transition
-        FTransform target = transformComp->transform;
+        FTransform target = tComp->transform;
         target.rotation   = XMQuaternionIdentity();
-        RequestCinematicTransition(1, &transformComp->GetHandle(), &target, E_PLAYERSTATE_EVENT::TO_GROUND, 5.0f);
+
+        RequestCinematicTransition(1, &tHandle, &target, E_PLAYERSTATE_EVENT::TO_GROUND, 5.0f);
 
         // After you create the states, initialize the state machine. First created state is starting state
         m_StateMachine.Init(this);
@@ -254,8 +254,7 @@ void PlayerController::RequestCinematicTransition(int                    count,
                                                   float                  duration,
                                                   float                  delay)
 {
-        TransformComponent* transformComp =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+        TransformComponent* transformComp = m_ControlledEntityHandle.GetComponent<TransformComponent>();
 
         m_CinematicState->SetTransitionMode(E_TRANSITION_MODE::Simple);
         m_CinematicState->AddTransformTransitions(count, handles, targets);
@@ -275,8 +274,7 @@ void PlayerController::RequestCinematicTransitionLookAt(const ComponentHandle  l
                                                         float                  lookAtTransitionDuration,
                                                         float                  delay)
 {
-        TransformComponent* transformComp =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+        TransformComponent* transformComp = m_ControlledEntityHandle.GetComponent<TransformComponent>();
 
         m_CinematicState->SetTransitionMode(E_TRANSITION_MODE::LookAt);
         m_CinematicState->AddTransformTransitions(count, handles, targets);
@@ -304,12 +302,10 @@ void PlayerController::RequestPuzzleMode(ComponentHandle          goalHandle,
                 m_StateMachine.Transition(E_PLAYERSTATE_EVENT::TO_PUZZLE);
         else
         {
-                auto playerTransformComp =
-                    GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
-
-                GoalComponent*  goalComp = GEngine::Get()->GetComponentManager()->GetComponent<GoalComponent>(goalHandle);
-                ComponentHandle goalTransformHandle =
-                    GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(goalComp->GetOwner())->GetHandle();
+                TransformComponent* playerTransformComp = m_ControlledEntityHandle.GetComponent<TransformComponent>();
+                GoalComponent*      goalComp            = goalHandle.Get<GoalComponent>();
+                EntityHandle        goalCompParent      = goalComp->GetParent();
+                ComponentHandle     goalTransformHandle = goalCompParent.GetComponentHandle<TransformComponent>();
 
                 FSphere sphereInitial;
                 sphereInitial.center = goalComp->initialTransform.translation;

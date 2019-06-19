@@ -40,12 +40,5 @@ class std::hash<ECSTypeId<T>>
         }
 };
 
-class IComponent;
-class IEntity;
 class ISystem;
-
-typedef Handle<IComponent>    ComponentHandle;
-typedef Handle<IEntity>       EntityHandle;
-typedef ECSTypeId<IComponent> ComponentTypeId;
-typedef ECSTypeId<IEntity>    EntityTypeId;
 typedef ECSTypeId<ISystem>    SystemTypeId;

@@ -10,8 +10,7 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
         GEngine::Initialize();
 
         SystemManager*    systemManager    = GEngine::Get()->GetSystemManager();
-        EntityManager*    entityManager    = GEngine::Get()->GetEntityManager();
-        ComponentManager* componentManager = GEngine::Get()->GetComponentManager();
+        HandleManager* HandleManager = GEngine::Get()->GetHandleManager();
 
 
         // Create Render System

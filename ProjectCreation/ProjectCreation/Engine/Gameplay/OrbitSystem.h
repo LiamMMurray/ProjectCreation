@@ -1,15 +1,15 @@
 #pragma once
 
-#include "../../ECS/ECS.h"
-#include "..//MathLibrary/MathLibrary.h"
+#include "../../ECS/HandleManager.h"
+#include "../../ECS/SystemManager.h"
+#include "../MathLibrary/MathLibrary.h"
 
 class TransformComponent;
 
 class OrbitSystem : public ISystem
 {
     private:
-        ComponentManager* m_ComponentManager;
-        EntityManager*    m_EntityManager;
+        HandleManager* m_HandleManager;
 
         const char* materialNames[3] = {"GlowMatPlanet01", "GlowMatPlanet02", "GlowMatPlanet03"};
         int         m_Stage          = 0;

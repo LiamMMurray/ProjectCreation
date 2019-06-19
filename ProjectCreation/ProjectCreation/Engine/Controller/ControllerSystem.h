@@ -2,8 +2,7 @@
 
 #include "../../Rendering/Components/CameraComponent.h"
 #include "../Controller/IController.h"
-#include "../Entities/BaseEntities.h"
-#include "..//..//ECS/ECS.h"
+#include "../../ECS/HandleManager.h"
 #include "../GEngine.h"
 #include "../Gameplay/LightOrbColors.h"
 
@@ -35,8 +34,7 @@ class ControllerSystem : public ISystem
         IController* m_Controllers[E_CONTROLLERS::COUNT] = {};
 
         SystemManager*    m_SystemManager;
-        ComponentManager* m_ComponentManager;
-        EntityManager*    m_EntityManager;
+        HandleManager* m_HandleManager;
 
         E_CONTROLLERS m_CurrentController;
 
