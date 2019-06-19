@@ -22,7 +22,6 @@
 #include "Engine/ConsoleWindow/ConsoleWindow.h"
 
 #include "Engine/EngineInitShutdownHelpers.h"
-#include "Engine/Entities/BaseEntities.h"
 #include "Engine/Entities/EntityFactory.h"
 
 #include "Rendering/Components/CameraComponent.h"
@@ -43,6 +42,7 @@
 #include "Rendering/Components/DirectionalLightComponent.h"
 
 #include "Engine/GenericComponents/TransformComponent.h"
+#include "Utility/MemoryLeakDetection.h"
 
 #pragma comment(lib, "dbghelp")
 
@@ -123,6 +123,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
+int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
 
 // Windows version of main. WINAPI reverses order of parameters
 int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
@@ -130,6 +131,15 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                    LPSTR     lpCmdLine,     // command line of app excluding program name
                    int       nCmdShow       // how the windows is shown. Legacy. Can ignore
 )
+{
+        _WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+
+		_CrtDumpMemoryLeaks();
+
+        return 0;
+}
+
+int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
         constexpr char appName[] = "Inanis";
         // window info
@@ -177,10 +187,9 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
         /** Main init engine **/
         EngineHelpers::InitEngineSystemManagers(handle);
-        SystemManager*    systemManager    = GEngine::Get()->GetSystemManager();
-        EntityManager*    entityManager    = GEngine::Get()->GetEntityManager();
-        ComponentManager* componentManager = GEngine::Get()->GetComponentManager();
-        ResourceManager*  resourceManager  = GEngine::Get()->GetResourceManager();
+        SystemManager*   systemManager   = GEngine::Get()->GetSystemManager();
+        HandleManager*   HandleManager   = GEngine::Get()->GetHandleManager();
+        ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
 
         // message loop
         ShowWindow(handle, SW_SHOW);
@@ -197,8 +206,8 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
         // Entity tests
 
-        auto testMeshHandle = entityManager->CreateEntity<BaseEntity>();
-        // auto entity  = entityManager->GetEntity(eHandle);
+        //auto testMeshHandle = HandleManager->CreateEntity();
+        // auto entity  = HandleManager->GetEntity(eHandle);
 
         // Debug camera entity setup
 
@@ -208,7 +217,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
             // ComponentHandle          transformHandle;
             // EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
             //
-            // TransformComponent* transformComp = componentManager->GetComponent<TransformComponent>(transformHandle);
+            // TransformComponent* transformComp = HandleManager->GetComponentHandle<TransformComponent>(transformHandle);
             // transformComp->transform.SetScale(0.1f);
         }
 
@@ -216,7 +225,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         {
                 ComponentHandle tHandle;
                 EntityFactory::CreateStaticMeshEntity("GroundPlane01", "GroundMaterial01", &tHandle);
-                TransformComponent* tComp    = componentManager->GetComponent<TransformComponent>(tHandle);
+                TransformComponent* tComp    = tHandle.Get<TransformComponent>();
                 tComp->transform.translation = XMVectorSetY(tComp->transform.translation, -0.5f);
         }
 
@@ -224,10 +233,10 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         {
                 using namespace DirectX;
 
-                auto dirLightEntityHandle = entityManager->CreateEntity<BaseEntity>();
-                componentManager->AddComponent<DirectionalLightComponent>(dirLightEntityHandle);
+                auto dirLightEntityHandle = HandleManager->CreateEntity();
+                HandleManager->AddComponent<DirectionalLightComponent>(dirLightEntityHandle);
 
-                auto dirComp = componentManager->GetComponent<DirectionalLightComponent>(dirLightEntityHandle);
+                auto dirComp = dirLightEntityHandle.GetComponent<DirectionalLightComponent>();
                 dirComp->m_LightRotation =
                     XMQuaternionRotationRollPitchYaw(XMConvertToRadians(45.0f), XMConvertToRadians(120.0f), 0.0f);
                 dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.8f, 1.0f, 1.0f);
@@ -236,7 +245,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
         // Create speedboost system
         FSystemProperties sysInitProps;
-        SpeedBoostSystem*     speedBoostSystem;
+        SpeedBoostSystem* speedBoostSystem;
         systemManager->CreateSystem<SpeedBoostSystem>(&speedBoostSystem);
         sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
         sysInitProps.m_UpdateRate = 0.0f;
@@ -284,7 +293,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                         else
                                 music->PauseStream();
                 }
-				
+
                 debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
         }

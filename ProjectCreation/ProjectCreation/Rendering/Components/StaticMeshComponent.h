@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../../ECS/ECS.h"
+#include "../../ECS/HandleManager.h"
 
 #include "../../Engine/ResourceManager/IResource.h"
+#include "../../ECS/Component.h"
 
 struct StaticMeshComponent : public Component<StaticMeshComponent>
 {

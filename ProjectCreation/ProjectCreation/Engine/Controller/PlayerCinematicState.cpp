@@ -21,13 +21,12 @@ void PlayerCinematicState::Enter()
         m_InitTransforms.resize(n);
         for (size_t i = 0; i < n; ++i)
         {
-                auto transformComp =
-                    GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_TransformComponents[i]);
+                auto transformComp = m_TransformComponents[i].Get<TransformComponent>();
                 m_InitTransforms[i] = transformComp->transform;
         }
 
-        auto playerTransformComp =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(_playerController->GetControlledEntity());
+        EntityHandle        eHandle             = _playerController->GetControlledEntity();
+        TransformComponent* playerTransformComp = eHandle.GetComponent<TransformComponent>();
 
         _playerInitialLookAtRot = playerTransformComp->transform.rotation;
 }
@@ -72,8 +71,7 @@ void PlayerCinematicState::UpdateSimple(float deltaTime)
         for (size_t i = 0; i < n; ++i)
         {
                 FTransform currentTransform;
-                auto       transformComp =
-                    GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_TransformComponents[i]);
+                TransformComponent* transformComp = m_TransformComponents[i].Get<TransformComponent>();
 
                 currentTransform = FTransform::Lerp(m_InitTransforms[i], m_EndTransforms[i], std::min(1.0f, m_currAlpha));
 
@@ -89,18 +87,16 @@ void PlayerCinematicState::UpdateLookAt(float deltaTime)
         for (size_t i = 0; i < n; ++i)
         {
                 FTransform currentTransform;
-                auto       transformComp =
-                    GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_TransformComponents[i]);
+                auto       transformComp = m_TransformComponents[i].Get<TransformComponent>();
 
                 currentTransform = FTransform::Lerp(m_InitTransforms[i], m_EndTransforms[i], std::min(1.0f, m_currAlpha));
 
                 transformComp->transform = currentTransform;
         }
+        EntityHandle eHandle = _playerController->GetControlledEntity();
 
-        auto playerTransformComponent =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(_playerController->GetControlledEntity());
-
-        auto lookAtTransformComponent = GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_lookAtTarget);
+        TransformComponent* playerTransformComponent = eHandle.GetComponent<TransformComponent>();
+        TransformComponent* lookAtTransformComponent = m_lookAtTarget.Get<TransformComponent>();
 
         FQuaternion desiredRotation = FQuaternion::LookAtWithRoll(playerTransformComponent->transform.translation,
                                                                   lookAtTransformComponent->transform.translation);

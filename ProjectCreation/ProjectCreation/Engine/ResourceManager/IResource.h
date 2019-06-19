@@ -2,11 +2,10 @@
 
 #include <string>
 #include "../../ECS/ECSTypes.h"
-#include "../../ECS/Util.h"
 
 class IResource;
 
-typedef Handle<IResource> ResourceHandle;
+typedef GHandle<IResource> ResourceHandle;
 
 class IResource
 {

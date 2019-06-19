@@ -14,7 +14,7 @@ void PhysicsSystem::OnUpdate(float deltaTime)
         return;
         using namespace DirectX;
 
-        //auto iter = GEngine::Get()->GetComponentManager()->GetActiveComponents<PhysicsComponent>();
+        //auto iter = GEngine::Get()->GetHandleManager()->GetActiveComponents<PhysicsComponent>();
 
 
         // for (iter == iter.begin(); iter != iter.end(); ++iter)
@@ -27,7 +27,7 @@ void PhysicsSystem::OnUpdate(float deltaTime)
 
                 //IEntity*            currEntity = GEngine::Get()->GetEntityManager()->GetEntity(currPhysics->GetOwner());
                 //TransformComponent* currComponent =
-                //    dynamic_cast<TransformComponent*>(currEntity->GetComponent<TransformComponent>());
+                //    dynamic_cast<TransformComponent*>(currEntity->GetComponentHandle<TransformComponent>());
 
 				//Sweep Sphere
 
@@ -49,7 +49,7 @@ void PhysicsSystem::OnUpdate(float deltaTime)
 			// CRITICAL_TODO: Implement iterator
                 //PhysicsComponent*   currPhysics = nullptr;
                 //IEntity*            currEntity  = GEngine::Get()->GetEntityManager()->GetEntity(currPhysics->GetOwner());
-                //TransformComponent* currComponent = dynamic_cast<TransformComponent*>(currEntity->GetComponent<TransformComponent>());
+                //TransformComponent* currComponent = dynamic_cast<TransformComponent*>(currEntity->GetComponentHandle<TransformComponent>());
 
                 //currComponent->transform.translation = currComponent->transform.translation + currPhysics->GetVelocity() * deltaTime;
 
@@ -67,7 +67,7 @@ void PhysicsSystem::OnInitialize()
 
 void PhysicsSystem::OnShutdown()
 {
-        //int activeCount = GEngine::Get()->GetComponentManager()->GetActiveComponentCount();
+        //int activeCount = GEngine::Get()->GetHandleManager()->GetActiveComponentCount();
 
         // for (iter == iter.begin(); iter != iter.end(); ++iter)
         {
@@ -77,7 +77,7 @@ void PhysicsSystem::OnShutdown()
 
 void PhysicsSystem::OnResume()
 {
-        //int activeCount = GEngine::Get()->GetComponentManager()->GetActiveComponentCount();
+        //int activeCount = GEngine::Get()->GetHandleManager()->GetActiveComponentCount();
 
         // for (iter == iter.begin(); iter != iter.end(); ++iter)
         {
@@ -87,7 +87,7 @@ void PhysicsSystem::OnResume()
 
 void PhysicsSystem::OnSuspend()
 {
-        //int activeCount = GEngine::Get()->GetComponentManager()->GetActiveComponentCount();
+        //int activeCount = GEngine::Get()->GetHandleManager()->GetActiveComponentCount();
 
         // for (iter == iter.begin(); iter != iter.end(); ++iter)
         {

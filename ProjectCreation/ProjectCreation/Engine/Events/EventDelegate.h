@@ -1,6 +1,7 @@
 #pragma once
 #include "IEventDelegate.h"
-#include "../../ECS/Util.h"
+#include "../../Utility/TypeIndexFactory.h"
+
 class IEvent;
 template <typename T, typename EventType>
 class EventDelegate : public IEventDelegate
@@ -16,7 +17,7 @@ class EventDelegate : public IEventDelegate
         void                             Invoke(IEvent* e);
 };
 template <class T, typename EventType>
-const EventDelegateTypeId EventDelegate<T, EventType>::m_TypeId = TypeIdCreator<IEventDelegate>::GetUniqueTypeId<T>();
+const EventDelegateTypeId EventDelegate<T, EventType>::m_TypeId = TypeIndexFactory<IEventDelegate>::GetTypeIndex<T>();
 
 template <typename T, typename EventType>
 inline EventDelegate<T, EventType>::EventDelegate(void (*delegateFunction)(EventType*))

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../../ECS/ECS.h"
+#include "../../ECS/HandleManager.h"
+#include "../../ECS/SystemManager.h"
 #include "LightOrbColors.h"
 class TransformComponent;
 class SpeedboostComponent;
@@ -8,8 +9,7 @@ class SpeedboostComponent;
 class SpeedBoostSystem : public ISystem
 {
     private:
-        ComponentManager* m_ComponentManager;
-        EntityManager*    m_EntityManager;
+        HandleManager* m_HandleManager;
         SystemManager*    m_SystemManager;
 
         static constexpr uint32_t m_MaxSpeedBoosts = 30;

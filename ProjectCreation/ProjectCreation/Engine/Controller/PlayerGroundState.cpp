@@ -10,8 +10,8 @@ using namespace DirectX;
 
 void PlayerGroundState::Enter()
 {
-        auto playerTransformComponent =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(_playerController->GetControlledEntity());
+        TransformComponent* playerTransformComponent =
+            _playerController->GetControlledEntity().GetComponent<TransformComponent>();
 
         _playerController->SetEulerAngles(playerTransformComponent->transform.rotation.ToEulerAngles());
 }

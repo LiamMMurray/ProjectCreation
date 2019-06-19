@@ -1,6 +1,6 @@
 #pragma once
 #include "IResource.h"
-
+#include "..//..//Utility//TypeIndexFactory.h"
 typedef ECSTypeId<IResource> ResourceTypeID;
 
 
@@ -17,7 +17,7 @@ class Resource : public IResource
 };
 
 template <class T>
-const ResourceTypeID Resource<T>::m_TypeId = TypeIdCreator<IResource>::GetUniqueTypeId<T>();
+const ResourceTypeID Resource<T>::m_TypeId = TypeIndexFactory<IResource>::GetTypeIndex<T>();
 
 template <typename T>
 inline const ResourceTypeID Resource<T>::GetTypeID()

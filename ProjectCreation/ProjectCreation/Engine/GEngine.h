@@ -1,19 +1,25 @@
 #pragma once
 
-#define COMPONENT_MANAGER GEngine::Get()->GetComponentManager()
+#define COMPONENT_MANAGER GEngine::Get()->GetHandleManager()
 #define SYSTEM_MANAGER GEngine::Get()->GetSystemManager()
-#define ENTITY_MANAGER GEngine::Get()->GetEntityManager()
+#define ENTITY_MANAGER GEngine::Get()->GetHandleManager()
 #define RESOURCE_MANAGER GEngine::Get()->GetResourceManager()
 
-#include "../ECS/ECS.h"
+#include "../ECS/HandleManager.h"
+#include "../ECS/SystemManager.h"
 #include "ResourceManager/ResourceManager.h"
 #include "XTime.h"
 class GEngine
 {
-        EntityManager*    m_EntityManager;
-        ComponentManager* m_ComponentManager;
-        SystemManager*    m_SystemManager;
-        ResourceManager*  m_ResourceManager;
+
+        static NMemory::memsize            s_PoolAllocSize;
+        NMemory::PoolMemory                m_PoolMemory;
+        NMemory::NPools::RandomAccessPools m_ComponentPools;
+        NMemory::NPools::RandomAccessPools m_EntityPools;
+
+        HandleManager*   m_HandleManager;
+        SystemManager*   m_SystemManager;
+        ResourceManager* m_ResourceManager;
 
         XTime m_XTime;
 
@@ -40,8 +46,7 @@ class GEngine
 
         void Signal();
 
-        EntityManager*          GetEntityManager();
-        ComponentManager*       GetComponentManager();
+        HandleManager*          GetHandleManager();
         SystemManager*          GetSystemManager();
         inline ResourceManager* GetResourceManager()
         {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../ECS/ECSTypes.h"
+#include "../../ECS/HandleManager.h"
 #include "Shapes.h"
 
 namespace Collision

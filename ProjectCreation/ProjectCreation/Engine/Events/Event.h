@@ -1,6 +1,7 @@
 #pragma once
 #include "IEvent.h"
-#include "../../ECS/Util.h"
+#include "../../Utility/TypeIndexFactory.h"
+
 template <typename T>
 class Event : public IEvent
 {
@@ -13,7 +14,7 @@ class Event : public IEvent
         const EventTypeId        GetStaticTypeId() const;
 };
 template <class T>
-const EventTypeId Event<T>::m_TypeId = TypeIdCreator<IEvent>::GetUniqueTypeId<T>();
+const EventTypeId Event<T>::m_TypeId = TypeIndexFactory<IEvent>::GetTypeIndex<T>();
 
 template <typename T>
 inline Event<T>::Event()
