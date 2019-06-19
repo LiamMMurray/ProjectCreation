@@ -98,7 +98,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         {
                                 float scale       = transComp->transform.GetRadius();
                                 float targetScale = goalComp->initialTransform.GetRadius();
-                                float newScale    = MathLibrary::MoveTowards(scale, targetScale, deltaTime*0.25f);
+                                float newScale    = MathLibrary::MoveTowards(scale, targetScale, deltaTime * 0.25f);
                                 transComp->transform.SetScale(newScale);
 
                                 if (scale >= targetScale)
@@ -125,6 +125,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         {
                                 // goalComp->targetAlpha = 1.0f;
                                 // playerController->SetGoalComponent(goalComp->GetHandle());
+
                                 goalComp->goalState = E_GOAL_STATE::InitialTransition;
                                 playerController->RequestPuzzleMode(goalComp->GetHandle(), orbitCenter, true, 4.0f);
                         }
@@ -152,24 +153,51 @@ void OrbitSystem::OnUpdate(float deltaTime)
         if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) >= 5)
         {
                 static bool done = false;
+
+                // play sfx when spawned
+                auto redSpawn = AudioManager::Get()->CreateSFX("redPlanetSpawn");
+                redSpawn->SetVolume(0.8f);
+
                 if (!done)
+                {
                         CreateGoal(0, GoalPositions[0]);
+                        redSpawn->Play();
+                }
+
                 done = true;
         }
 
         if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) >= 5)
         {
                 static bool done = false;
+
+                // play sfx when spawned
+                auto blueSpawn = AudioManager::Get()->CreateSFX("bluePlanetSpawn");
+                blueSpawn->SetVolume(0.8f);
+
                 if (!done)
+                {
                         CreateGoal(1, GoalPositions[1]);
+                        blueSpawn->Play();
+                }
+
+
                 done = true;
         }
 
         if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) >= 5)
         {
                 static bool done = false;
+
+                // play sfx when spawned
+                auto greenSpawn = AudioManager::Get()->CreateSFX("greenPlanetSpawn");
+                greenSpawn->SetVolume(0.8f);
+
                 if (!done)
+                {
                         CreateGoal(2, GoalPositions[2]);
+                        greenSpawn->Play();
+                }
                 done = true;
         }
 }

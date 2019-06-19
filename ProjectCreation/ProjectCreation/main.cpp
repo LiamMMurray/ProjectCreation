@@ -193,9 +193,17 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
 
         // Sound tests
-        auto boop  = AudioManager::Get()->CreateSFX("boop");
-        auto music = AudioManager::Get()->LoadMusic("extreme");
+
+		// Joseph found a sfx track for speed boosts and is replacing the old music with it for testing <06/19/19>
+        auto boop  = AudioManager::Get()->CreateSFX("whiteSpeedBoost");
+        boop->SetVolume(0.1f);
+		
+		// Joseph found an underwater abience music track and is replacing the old music with it for testing <06/19/19>
+        //auto music = AudioManager::Get()->LoadMusic("extreme");
+        auto music = AudioManager::Get()->LoadMusic("AMBIENCE_Under_Water_Active_loop_stereo");
         AudioManager::Get()->ActivateMusicAndPause(music, true);
+
+		music->ResumeStream();
 
         // Entity tests
 
