@@ -155,13 +155,19 @@ void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
         auto boost = AudioManager::Get()->CreateSFX("whiteSpeedBoost");
         boost->SetVolume(0.3f);
 
+        bool isPlaying = false;
+
         switch (color)
         {
                         // Red light collision
                 case 0:
                         if (redInput == true)
                         {
-                                boost->Play();
+                                if (boost->isSoundPlaying(isPlaying))
+                                {
+                                        boost->Play();
+                                        isPlaying = true;
+                                }
                                 ConsoleWindow::PrintMessage("Boosting on red light", "PlayerMovement");
                                 currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
                                 XMVECTOR currentInput = XMVector3Rotate(
@@ -179,7 +185,11 @@ void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 case 1:
                         if (blueInput == true)
                         {
-                                boost->Play();
+                                if (boost->isSoundPlaying(isPlaying))
+                                {
+                                        boost->Play();
+                                        isPlaying = true;
+                                }
                                 ConsoleWindow::PrintMessage("Boosting on blue light", "PlayerMovement");
                                 currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
                                 XMVECTOR currentInput = XMVector3Rotate(
@@ -197,7 +207,11 @@ void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 case 2:
                         if (greenInput == true)
                         {
-                                boost->Play();
+                                if (boost->isSoundPlaying(isPlaying))
+                                {
+                                        boost->Play();
+                                        isPlaying = true;
+                                }
                                 ConsoleWindow::PrintMessage("Boosting on green light", "PlayerMovement");
                                 currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
                                 XMVECTOR currentInput = XMVector3Rotate(
@@ -213,7 +227,11 @@ void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
 
                         // White light collision
                 case 3:
-                        boost->Play();
+                        if (boost->isSoundPlaying(isPlaying))
+                        {
+                                boost->Play();
+                                isPlaying = true;
+                        }
                         currentMaxSpeed = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
                         XMVECTOR currentInput =
                             XMVector3Rotate(m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);

@@ -199,7 +199,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         g_Running = true;
         MSG msg;
         ZeroMemory(&msg, sizeof(msg));
-        PlayerController pMovement;
+        PlayerController pMovement ;
 
 
         // Sound tests
