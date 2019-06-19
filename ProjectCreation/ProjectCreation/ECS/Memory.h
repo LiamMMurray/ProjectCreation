@@ -20,7 +20,7 @@ namespace NMemory
         typedef std::unordered_multimap<type_index, index>                    entity_component_container;
         typedef std::pair<entity_component_container::iterator, entity_component_container::iterator> entity_components;
 
-        struct PoolMemory
+        struct MemoryStack
         {
                 byte* m_MemStart = 0;
                 byte* m_MemCurr  = 0;
@@ -29,6 +29,6 @@ namespace NMemory
 
 
         // Allocates memory on the system level
-        void ReserveGameMemory(PoolMemory& poolMemory, memsize allocSize);
-        void FreeGameMemory(PoolMemory& poolMemory);
+        void ReserveGameMemory(MemoryStack& poolMemory, memsize allocSize);
+        void FreeGameMemory(MemoryStack& poolMemory);
 } // namespace NMemory

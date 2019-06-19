@@ -30,15 +30,15 @@ namespace std
 
 struct HandleManager
 {
-        NMemory::index                      pool_count;
-        NMemory::NPools::RandomAccessPools& component_random_access_pools;
-        NMemory::NPools::RandomAccessPools& entity_random_access_pools;
-        NMemory::PoolMemory&                pool_memory;
-        NMemory::NPools::pool_descs         pool_descs;
+        NMemory::index                      m_PoolCount;
+        NMemory::NPools::RandomAccessPools& m_ComponentRandomAccessPools;
+        NMemory::NPools::RandomAccessPools& m_EntityRandomAccessPools;
+        NMemory::MemoryStack&               m_MemoryStack;
+        NMemory::NPools::pool_descs         m_PoolDescs;
 
         HandleManager(NMemory::NPools::RandomAccessPools& componentRandomAccessPools,
                       NMemory::NPools::RandomAccessPools& entityRandomAccessPools,
-                      NMemory::PoolMemory&                   pool_memory);
+                      NMemory::MemoryStack&               pool_memory);
 
         ~HandleManager();
 
@@ -68,7 +68,7 @@ struct HandleManager
 
         void SetIsActive(EntityHandle handle, bool isActive);
 
-        void ShutDown();
+        void Shutdown();
 
         template <typename T>
         range<T> GetComponents();
@@ -84,18 +84,18 @@ struct HandleManager
 template <typename T>
 inline T* HandleManager::GetComponent(ComponentHandle handle)
 {
-        return reinterpret_cast<T*>(GetData(component_random_access_pools, handle.pool_index, handle.redirection_index));
+        return reinterpret_cast<T*>(GetData(m_ComponentRandomAccessPools, handle.pool_index, handle.redirection_index));
 }
 
 template <typename T>
 inline range<T> HandleManager::GetComponents()
 {
         NMemory::type_index pool_index = T::SGetTypeIndex();
-        if (component_random_access_pools.m_mem_starts.size() <= pool_index)
+        if (m_ComponentRandomAccessPools.m_mem_starts.size() <= pool_index)
                 return range<T>(0, 0);
 
-        T*     data          = reinterpret_cast<T*>(component_random_access_pools.m_mem_starts[pool_index]);
-        size_t element_count = static_cast<size_t>(component_random_access_pools.m_element_counts[pool_index]);
+        T*     data          = reinterpret_cast<T*>(m_ComponentRandomAccessPools.m_mem_starts[pool_index]);
+        size_t element_count = static_cast<size_t>(m_ComponentRandomAccessPools.m_element_counts[pool_index]);
         return range<T>(data, element_count);
 }
 
@@ -103,12 +103,12 @@ template <typename T>
 inline active_range<T> HandleManager::GetActiveComponents()
 {
         NMemory::type_index pool_index = T::SGetTypeIndex();
-        if (component_random_access_pools.m_mem_starts.size() <= pool_index)
+        if (m_ComponentRandomAccessPools.m_mem_starts.size() <= pool_index)
                 return active_range<T>::SGetNullActiveRange();
 
-        T*     data                        = reinterpret_cast<T*>(component_random_access_pools.m_mem_starts[pool_index]);
-        size_t element_count               = static_cast<size_t>(component_random_access_pools.m_element_counts[pool_index]);
-        NMemory::dynamic_bitset& isActives = component_random_access_pools.m_element_isactives[pool_index];
+        T*                       data          = reinterpret_cast<T*>(m_ComponentRandomAccessPools.m_mem_starts[pool_index]);
+        size_t                   element_count = static_cast<size_t>(m_ComponentRandomAccessPools.m_element_counts[pool_index]);
+        NMemory::dynamic_bitset& isActives     = m_ComponentRandomAccessPools.m_element_isactives[pool_index];
         return active_range<T>(data, element_count, isActives);
 }
 
@@ -123,14 +123,15 @@ template <typename T>
 inline ComponentHandle HandleManager::AddComponent(EntityHandle parentHandle)
 {
         NMemory::type_index pool_index = T::SGetTypeIndex();
-        if (component_random_access_pools.m_mem_starts.size() <= pool_index ||
-            component_random_access_pools.m_element_capacities[pool_index] < T::SGetMaxElements())
+        if (m_ComponentRandomAccessPools.m_mem_starts.size() <= pool_index ||
+            m_ComponentRandomAccessPools.m_element_capacities[pool_index] < T::SGetMaxElements())
         {
-                if (pool_memory.m_MemCurr + sizeof(T) * T::SGetMaxElements() >= pool_memory.m_MemMax)
+                if (m_MemoryStack.m_MemCurr + sizeof(T) * T::SGetMaxElements() >= m_MemoryStack.m_MemMax)
                         assert(false);
-                InsertPool(component_random_access_pools, {sizeof(T), T::SGetMaxElements()}, pool_memory.m_MemCurr, pool_index);
+                InsertPool(
+                    m_ComponentRandomAccessPools, {sizeof(T), T::SGetMaxElements()}, m_MemoryStack.m_MemCurr, pool_index);
         }
-        auto            allocation = Allocate(component_random_access_pools, pool_index);
+        auto            allocation = Allocate(m_ComponentRandomAccessPools, pool_index);
         ComponentHandle componentHandle(pool_index, allocation.redirection_idx);
         T*              objectPtr = reinterpret_cast<T*>(allocation.objectPtr);
         new (objectPtr) T();
@@ -138,8 +139,8 @@ inline ComponentHandle HandleManager::AddComponent(EntityHandle parentHandle)
         objectPtr->m_redirection_index        = componentHandle.redirection_index;
         objectPtr->m_parent_redirection_index = parentHandle.redirection_index;
 
-        Entity*        entities_mem_start = reinterpret_cast<Entity*>(entity_random_access_pools.m_mem_starts[0]);
-        NMemory::index parent_index       = entity_random_access_pools.m_redirection_indices[0][parentHandle.redirection_index];
+        Entity*        entities_mem_start = reinterpret_cast<Entity*>(m_EntityRandomAccessPools.m_mem_starts[0]);
+        NMemory::index parent_index       = m_EntityRandomAccessPools.m_redirection_indices[0][parentHandle.redirection_index];
         Entity*        parent_mem         = entities_mem_start + parent_index;
 
         parent_mem->m_OwnedComponents.emplace(componentHandle.pool_index, componentHandle.redirection_index);

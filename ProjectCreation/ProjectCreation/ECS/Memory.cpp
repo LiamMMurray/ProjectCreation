@@ -7,7 +7,7 @@
 
 namespace NMemory
 {
-        void ReserveGameMemory(PoolMemory& poolMemory, memsize allocSize)
+        void ReserveGameMemory(MemoryStack& poolMemory, memsize allocSize)
         {
                 // LPVOID ptr = VirtualAlloc(0, allocSize, MEM_RESERVE, PAGE_READWRITE);
                 // ptr        = VirtualAlloc(ptr, allocSize, MEM_COMMIT, PAGE_READWRITE);
@@ -16,7 +16,7 @@ namespace NMemory
                 poolMemory.m_MemCurr  = poolMemory.m_MemStart;
                 poolMemory.m_MemMax   = poolMemory.m_MemStart + allocSize;
         }
-        void FreeGameMemory(PoolMemory& poolMemory)
+        void FreeGameMemory(MemoryStack& poolMemory)
         {
                 // int error = VirtualFree(GameMemory_Singleton::GameMemory_Start, 0, MEM_RELEASE);
 

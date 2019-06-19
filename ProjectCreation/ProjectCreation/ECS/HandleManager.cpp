@@ -4,11 +4,11 @@
 
 HandleManager::HandleManager(NMemory::NPools::RandomAccessPools& componentRandomAccessPools,
                              NMemory::NPools::RandomAccessPools& entityRandomAccessPools,
-                             NMemory::PoolMemory&                poolMemory) :
-    component_random_access_pools(componentRandomAccessPools),
-    entity_random_access_pools(entityRandomAccessPools),
-    pool_memory(poolMemory),
-    pool_count(TypeIndexFactory<IComponent>::GetTypeIndex<void>())
+                             NMemory::MemoryStack&                poolMemory) :
+    m_ComponentRandomAccessPools(componentRandomAccessPools),
+    m_EntityRandomAccessPools(entityRandomAccessPools),
+    m_MemoryStack(poolMemory),
+    m_PoolCount(TypeIndexFactory<IComponent>::GetTypeIndex<void>())
 // TypeIndexFactory<IComponent>::GetTypeIndex<void>() gets one past the last pool's index since this is the only place this
 // function is called dynamically, and not statically.
 {
@@ -18,23 +18,23 @@ HandleManager::HandleManager(NMemory::NPools::RandomAccessPools& componentRandom
 
 HandleManager::~HandleManager()
 {
-        ShutDown();
+        Shutdown();
 }
 
 Entity* HandleManager::GetEntity(EntityHandle handle)
 {
-        return reinterpret_cast<Entity*>(GetData(entity_random_access_pools, 0, handle.redirection_index));
+        return reinterpret_cast<Entity*>(GetData(m_EntityRandomAccessPools, 0, handle.redirection_index));
 }
 
 EntityHandle HandleManager::CreateEntity(EntityHandle parentHandle)
 {
         NMemory::type_index pool_index = 0;
-        if (entity_random_access_pools.m_mem_starts.size() <= pool_index)
+        if (m_EntityRandomAccessPools.m_mem_starts.size() <= pool_index)
         {
-                assert(pool_memory.m_MemCurr + sizeof(Entity) * Entity::SGetMaxElements() <= pool_memory.m_MemMax);
-                InsertPool(entity_random_access_pools, {sizeof(Entity), Entity::SGetMaxElements()}, pool_memory.m_MemCurr, pool_index);
+                assert(m_MemoryStack.m_MemCurr + sizeof(Entity) * Entity::SGetMaxElements() <= m_MemoryStack.m_MemMax);
+                InsertPool(m_EntityRandomAccessPools, {sizeof(Entity), Entity::SGetMaxElements()}, m_MemoryStack.m_MemCurr, pool_index);
         }
-        auto         allocation   = Allocate(entity_random_access_pools, pool_index);
+        auto         allocation   = Allocate(m_EntityRandomAccessPools, pool_index);
         EntityHandle entityHandle = allocation.redirection_idx;
         Entity*      objectPtr    = reinterpret_cast<Entity*>(allocation.objectPtr);
         new (objectPtr) Entity();
@@ -47,86 +47,86 @@ EntityHandle HandleManager::CreateEntity(EntityHandle parentHandle)
 void HandleManager::FreeComponent(ComponentHandle handle)
 {
         NMemory::indices _adapter = {{handle.redirection_index}};
-        Free(component_random_access_pools, handle.pool_index, _adapter);
+        Free(m_ComponentRandomAccessPools, handle.pool_index, _adapter);
 }
 
 void HandleManager::FreeEntity(EntityHandle handle)
 {
         // handle.Get()->~Entity();
         NMemory::indices _adapter = {{handle.redirection_index}};
-        Free(entity_random_access_pools, 0, _adapter);
+        Free(m_EntityRandomAccessPools, 0, _adapter);
 }
 
 void HandleManager::ReleaseComponentHandle(ComponentHandle handle)
 {
         NMemory::indices _adapter = {{handle.redirection_index}};
-        ReleaseRedirectionIndices(component_random_access_pools, handle.pool_index, _adapter);
+        ReleaseRedirectionIndices(m_ComponentRandomAccessPools, handle.pool_index, _adapter);
 }
 
 void HandleManager::ReleaseEntityHandle(EntityHandle handle)
 {
         NMemory::indices _adapter = {{handle.redirection_index}};
-        ReleaseRedirectionIndices(entity_random_access_pools, 0, _adapter);
+        ReleaseRedirectionIndices(m_EntityRandomAccessPools, 0, _adapter);
 }
 
 bool HandleManager::IsActive(ComponentHandle handle)
 {
         NMemory::index element_index =
-            component_random_access_pools.m_redirection_indices[handle.pool_index][handle.redirection_index];
+            m_ComponentRandomAccessPools.m_redirection_indices[handle.pool_index][handle.redirection_index];
         if (element_index == -1)
                 return false;
-        return component_random_access_pools.m_element_isactives[handle.pool_index][element_index];
+        return m_ComponentRandomAccessPools.m_element_isactives[handle.pool_index][element_index];
 }
 
 bool HandleManager::IsActive(EntityHandle handle)
 {
-        NMemory::index element_index = component_random_access_pools.m_redirection_indices[0][handle.redirection_index];
+        NMemory::index element_index = m_ComponentRandomAccessPools.m_redirection_indices[0][handle.redirection_index];
         if (element_index == -1)
                 return false;
-        return entity_random_access_pools.m_element_isactives[0][element_index];
+        return m_EntityRandomAccessPools.m_element_isactives[0][element_index];
 }
 
 void HandleManager::SetIsActive(ComponentHandle handle, bool isActive)
 {
         NMemory::index element_index =
-            component_random_access_pools.m_redirection_indices[handle.pool_index][handle.redirection_index];
+            m_ComponentRandomAccessPools.m_redirection_indices[handle.pool_index][handle.redirection_index];
         if (element_index == -1)
                 return;
-        component_random_access_pools.m_element_isactives[handle.pool_index][element_index] = isActive;
+        m_ComponentRandomAccessPools.m_element_isactives[handle.pool_index][element_index] = isActive;
 }
 
 void HandleManager::SetIsActive(EntityHandle handle, bool isActive)
 {
-        NMemory::index element_index = component_random_access_pools.m_redirection_indices[0][handle.redirection_index];
+        NMemory::index element_index = m_ComponentRandomAccessPools.m_redirection_indices[0][handle.redirection_index];
         if (element_index == -1)
                 return;
-        entity_random_access_pools.m_element_isactives[0][element_index] = isActive;
+        m_EntityRandomAccessPools.m_element_isactives[0][element_index] = isActive;
 }
 
-void HandleManager::ShutDown()
+void HandleManager::Shutdown()
 {
-        NMemory::NPools::ClearPools(component_random_access_pools);
-        NMemory::NPools::ClearPools(entity_random_access_pools);
+        NMemory::NPools::ClearPools(m_ComponentRandomAccessPools);
+        NMemory::NPools::ClearPools(m_EntityRandomAccessPools);
 }
 
 range<Entity> HandleManager::GetEntities()
 {
-        if (entity_random_access_pools.m_mem_starts.size() == 0)
+        if (m_EntityRandomAccessPools.m_mem_starts.size() == 0)
                 return range<Entity>(0, 0);
 
-        Entity* data          = reinterpret_cast<Entity*>(entity_random_access_pools.m_mem_starts[0]);
-        size_t  element_count = static_cast<size_t>(entity_random_access_pools.m_element_counts[0]);
+        Entity* data          = reinterpret_cast<Entity*>(m_EntityRandomAccessPools.m_mem_starts[0]);
+        size_t  element_count = static_cast<size_t>(m_EntityRandomAccessPools.m_element_counts[0]);
         return range<Entity>(data, element_count);
 }
 
 active_range<Entity> HandleManager::GetActiveEntities()
 {
-        if (entity_random_access_pools.m_mem_starts.size() == 0)
+        if (m_EntityRandomAccessPools.m_mem_starts.size() == 0)
                 return active_range<Entity>::SGetNullActiveRange();
 
-        Entity*                  data          = reinterpret_cast<Entity*>(entity_random_access_pools.m_mem_starts[0]);
-        size_t                   element_count = static_cast<size_t>(entity_random_access_pools.m_element_counts[0]);
-        NMemory::dynamic_bitset& isActives     = entity_random_access_pools.m_element_isactives[0];
+        Entity*                  data          = reinterpret_cast<Entity*>(m_EntityRandomAccessPools.m_mem_starts[0]);
+        size_t                   element_count = static_cast<size_t>(m_EntityRandomAccessPools.m_element_counts[0]);
+        NMemory::dynamic_bitset& isActives     = m_EntityRandomAccessPools.m_element_isactives[0];
         return active_range<Entity>(data, element_count, isActives);
 }
 

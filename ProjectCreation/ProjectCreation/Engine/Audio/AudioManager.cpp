@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <sstream>
 #include "../MathLibrary/MathLibrary.h"
+#include "../../Utility/MemoryLeakDetection.h"
 using namespace GW::AUDIO;
 
 AudioManager *AudioManager::instance;
@@ -56,7 +57,7 @@ void AudioManager::ActivateMusicAndPause(GW::AUDIO::GMusic * m, bool looping)
 void AudioManager::Initialize()
 {
         assert(!instance);
-        instance       = new AudioManager;
+        instance       = DBG_NEW AudioManager;
         GW::GReturn gr = (GW::AUDIO::CreateGAudio(&instance->m_SoundEngine));
         assert(G_SUCCESS(gr));
 }

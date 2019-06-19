@@ -37,6 +37,7 @@
 
 #include "../Engine/MathLibrary/ColorConstants.h"
 #include "DebugRender/debug_renderer.h"
+#include "../Utility/MemoryLeakDetection.h"
 
 void RenderSystem::CreateDeviceAndSwapChain()
 {
@@ -490,7 +491,7 @@ void RenderSystem::CreatePostProcessEffects(D3D11_TEXTURE2D_DESC* desc)
         }
         m_PostProcessChain.clear();
 
-        m_PostProcessChain.push_back(new Bloom);
+        m_PostProcessChain.push_back(DBG_NEW Bloom);
         m_PostProcessChain.front()->Initialize(m_Device, m_Context, desc);
 }
 

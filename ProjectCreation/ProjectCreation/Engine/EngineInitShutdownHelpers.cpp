@@ -9,7 +9,7 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
 {
         GEngine::Initialize();
 
-        SystemManager*    systemManager    = GEngine::Get()->GetSystemManager();
+        SystemManager* systemManager = GEngine::Get()->GetSystemManager();
         HandleManager* HandleManager = GEngine::Get()->GetHandleManager();
 
 
@@ -65,6 +65,8 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
 
 void EngineHelpers::ShutdownEngineSystemManagers()
 {
+        //ControllerSystem::Shutdown();
         AudioManager::Shutdown();
         GEngine::Shutdown();
+        delete GEngine::Get();
 }

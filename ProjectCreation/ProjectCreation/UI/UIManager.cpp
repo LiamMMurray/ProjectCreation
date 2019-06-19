@@ -11,7 +11,7 @@
 #include <Windows.h>
 
 #include "../Utility/Macros/DirectXMacros.h"
-
+#include "../Utility/MemoryLeakDetection.h"
 UIManager* UIManager::instance;
 
 using namespace DirectX;
@@ -299,7 +299,7 @@ void UIManager::Unpause()
 void UIManager::Initialize(native_handle_type hwnd)
 {
         assert(!instance);
-        instance = new UIManager;
+        instance = DBG_NEW UIManager;
 
         instance->m_RenderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 

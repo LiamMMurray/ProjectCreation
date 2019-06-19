@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <stack>
 #include <vector>
-
+#include "../../../Utility/MemoryLeakDetection.h"
 MazeGenerator::MazePoint MazeGenerator::GetRandomNeighbor(MazePoint point, unsigned rows, unsigned cols, bool** visited)
 {
         std::vector<MazePoint> neigh(4);
@@ -93,9 +93,9 @@ std::vector<MazeGenerator::MazePoint> MazeGenerator::GenerateMaze(unsigned int r
         std::stack<MazeGenerator::MazePoint> path;
 
 
-        bool** visited = new bool*[rows];
+        bool** visited = DBG_NEW bool*[rows];
         for (int i = 0; i < rows; ++i)
-                visited[i] = new bool[cols]{};
+                visited[i] = DBG_NEW bool[cols]{};
 
 
         visited[start.y][start.x] = true;
