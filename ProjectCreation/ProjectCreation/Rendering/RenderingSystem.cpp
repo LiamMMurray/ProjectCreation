@@ -612,11 +612,10 @@ void RenderSystem::RefreshMainCameraSettings()
 {
         using namespace DirectX;
 
-        CameraComponent* camera =
-            static_cast<CameraComponent*>(m_ComponentManager->GetComponent<CameraComponent>(m_MainCameraHandle));
-        auto& settings         = camera->m_Settings;
-        settings.m_AspectRatio = GetWindowAspectRatio();
-        float verticalFOV      = XMConvertToRadians(settings.m_HorizontalFOV / settings.m_AspectRatio);
+        CameraComponent* camera   = m_MainCameraHandle.Get<CameraComponent>();
+        auto&            settings = camera->m_Settings;
+        settings.m_AspectRatio    = GetWindowAspectRatio();
+        float verticalFOV         = XMConvertToRadians(settings.m_HorizontalFOV / settings.m_AspectRatio);
 
         m_CachedMainProjectionMatrix =
             DirectX::XMMatrixPerspectiveFovLH(verticalFOV, settings.m_AspectRatio, settings.m_NearClip, settings.m_FarClip);
@@ -641,9 +640,9 @@ void RenderSystem::OnPreUpdate(float deltaTime)
 
 
         /** Update Camera Info **/
-        CameraComponent*    mainCamera       = m_ComponentManager->GetComponent<CameraComponent>(m_MainCameraHandle);
-        EntityHandle        mainCameraEntity = mainCamera->GetOwner();
-        TransformComponent* mainTransform    = m_ComponentManager->GetComponent<TransformComponent>(mainCameraEntity);
+        CameraComponent*    mainCamera       = m_MainCameraHandle.Get<CameraComponent>();
+        EntityHandle        mainCameraEntity = mainCamera->GetParent();
+        TransformComponent* mainTransform    = mainCameraEntity.GetComponent<TransformComponent>();
 
         m_CachedMainInvViewMatrix        = mainTransform->transform.CreateMatrix();
         XMMATRIX view                    = XMMatrixInverse(nullptr, m_CachedMainInvViewMatrix);
@@ -660,69 +659,60 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         m_TransluscentDraws.clear();
         m_OpaqueDraws.clear();
         // Add all static meshes
-        if (!m_ComponentManager->ComponentsExist<StaticMeshComponent>())
+
+
+        for (auto& staticMeshComp : m_HandleManager->GetActiveComponents<StaticMeshComponent>())
         {
+                FDraw drawcall;
 
-                auto staticMeshCompItr = m_ComponentManager->GetActiveComponents<StaticMeshComponent>();
+                drawcall.meshType        = FDraw::EDrawType::Static;
+                drawcall.componentHandle = staticMeshComp.GetHandle();
 
-                for (auto itr = staticMeshCompItr.begin(); itr != staticMeshCompItr.end(); itr++)
+                StaticMesh*         staticMesh = m_ResourceManager->GetResource<StaticMesh>(staticMeshComp.m_StaticMeshHandle);
+                EntityHandle        entityHandle = staticMeshComp.GetParent();
+                TransformComponent* tcomp        = entityHandle.GetComponent<TransformComponent>();
+                Material*           mat          = m_ResourceManager->GetResource<Material>(staticMeshComp.m_MaterialHandle);
+
+                drawcall.meshResource   = staticMeshComp.m_StaticMeshHandle;
+                drawcall.materialHandle = staticMeshComp.m_MaterialHandle;
+                drawcall.mtx            = tcomp->transform.CreateMatrix();
+
+                if (mat->m_SurfaceProperties.textureFlags & SURFACE_FLAG_IS_TRANSLUSCENT)
                 {
-                        FDraw drawcall;
-                        drawcall.meshType        = FDraw::EDrawType::Static;
-                        drawcall.componentHandle = itr.data()->GetHandle();
-
-                        auto        staticMeshComp = static_cast<StaticMeshComponent*>(itr.data());
-                        StaticMesh* staticMesh = m_ResourceManager->GetResource<StaticMesh>(staticMeshComp->m_StaticMeshHandle);
-                        EntityHandle        entityHandle = staticMeshComp->GetOwner();
-                        TransformComponent* tcomp        = m_ComponentManager->GetComponent<TransformComponent>(entityHandle);
-                        Material*           mat = m_ResourceManager->GetResource<Material>(staticMeshComp->m_MaterialHandle);
-
-                        drawcall.meshResource   = staticMeshComp->m_StaticMeshHandle;
-                        drawcall.materialHandle = staticMeshComp->m_MaterialHandle;
-                        drawcall.mtx            = tcomp->transform.CreateMatrix();
-
-                        if (mat->m_SurfaceProperties.textureFlags & SURFACE_FLAG_IS_TRANSLUSCENT)
-                        {
-                                m_TransluscentDraws.emplace_back(std::move(drawcall));
-                        }
-                        else
-                        {
-                                m_OpaqueDraws.emplace_back(std::move(drawcall));
-                        }
+                        m_TransluscentDraws.emplace_back(std::move(drawcall));
+                }
+                else
+                {
+                        m_OpaqueDraws.emplace_back(std::move(drawcall));
                 }
         }
 
+
         // Add all skeletal meshes
-        if (!m_ComponentManager->ComponentsExist<SkeletalMeshComponent>())
+
+
+        for (auto& skelMeshComp : m_HandleManager->GetActiveComponents<SkeletalMeshComponent>())
         {
+                FDraw drawcall;
+                drawcall.meshType        = FDraw::EDrawType::Skeletal;
+                drawcall.componentHandle = skelMeshComp.GetHandle();
 
-                auto skelCompItr = m_ComponentManager->GetActiveComponents<SkeletalMeshComponent>();
+                SkeletalMesh*       skelMesh = m_ResourceManager->GetResource<SkeletalMesh>(skelMeshComp.m_SkeletalMeshHandle);
+                EntityHandle        entityHandle = skelMeshComp.GetParent();
+                TransformComponent* tcomp        = entityHandle.GetComponent<TransformComponent>();
+                Material*           mat          = m_ResourceManager->GetResource<Material>(skelMeshComp.m_MaterialHandle);
 
-                for (auto itr = skelCompItr.begin(); itr != skelCompItr.end(); itr++)
+                drawcall.meshResource   = skelMeshComp.m_SkeletalMeshHandle;
+                drawcall.materialHandle = skelMeshComp.m_MaterialHandle;
+                drawcall.mtx            = tcomp->transform.CreateMatrix();
+
+                if (mat->m_SurfaceProperties.textureFlags & SURFACE_FLAG_IS_TRANSLUSCENT)
                 {
-                        FDraw drawcall;
-                        drawcall.meshType        = FDraw::EDrawType::Skeletal;
-                        drawcall.componentHandle = itr.data()->GetHandle();
-
-                        auto          skelMeshComp = static_cast<SkeletalMeshComponent*>(itr.data());
-                        SkeletalMesh* skelMesh =
-                            m_ResourceManager->GetResource<SkeletalMesh>(skelMeshComp->m_SkeletalMeshHandle);
-                        EntityHandle        entityHandle = skelMeshComp->GetOwner();
-                        TransformComponent* tcomp        = m_ComponentManager->GetComponent<TransformComponent>(entityHandle);
-                        Material*           mat = m_ResourceManager->GetResource<Material>(skelMeshComp->m_MaterialHandle);
-
-                        drawcall.meshResource   = skelMeshComp->m_SkeletalMeshHandle;
-                        drawcall.materialHandle = skelMeshComp->m_MaterialHandle;
-                        drawcall.mtx            = tcomp->transform.CreateMatrix();
-
-                        if (mat->m_SurfaceProperties.textureFlags & SURFACE_FLAG_IS_TRANSLUSCENT)
-                        {
-                                m_TransluscentDraws.emplace_back(std::move(drawcall));
-                        }
-                        else
-                        {
-                                m_OpaqueDraws.emplace_back(std::move(drawcall));
-                        }
+                        m_TransluscentDraws.emplace_back(std::move(drawcall));
+                }
+                else
+                {
+                        m_OpaqueDraws.emplace_back(std::move(drawcall));
                 }
         }
 
@@ -785,27 +775,22 @@ void RenderSystem::OnUpdate(float deltaTime)
 
         /** Get Directional Light**/
         {
-                if (m_ComponentManager->ComponentsExist<DirectionalLightComponent>())
-                        return;
 
-                auto dirLightItr = m_ComponentManager->GetActiveComponents<DirectionalLightComponent>();
-
-                for (auto itr = dirLightItr.begin(); itr != dirLightItr.end(); itr++)
+                for (auto dirLightComp : m_HandleManager->GetActiveComponents<DirectionalLightComponent>())
                 {
 
-                        auto dirLightComp = static_cast<DirectionalLightComponent*>(itr.data());
                         XMStoreFloat3(&m_ConstantBuffer_SCENE.directionalLightDirection,
-                                      dirLightComp->m_LightRotation.GetForward());
+                                      dirLightComp.m_LightRotation.GetForward());
 
                         m_ConstantBuffer_SCENE.directionalLightColor =
-                            XMFLOAT3A(dirLightComp->m_LightColor.x * dirLightComp->m_LightColor.w,
-                                      dirLightComp->m_LightColor.y * dirLightComp->m_LightColor.w,
-                                      dirLightComp->m_LightColor.z * dirLightComp->m_LightColor.w);
+                            XMFLOAT3A(dirLightComp.m_LightColor.x * dirLightComp.m_LightColor.w,
+                                      dirLightComp.m_LightColor.y * dirLightComp.m_LightColor.w,
+                                      dirLightComp.m_LightColor.z * dirLightComp.m_LightColor.w);
 
                         m_ConstantBuffer_SCENE.ambientColor =
-                            XMFLOAT3A(dirLightComp->m_AmbientColor.x * dirLightComp->m_AmbientColor.w,
-                                      dirLightComp->m_AmbientColor.y * dirLightComp->m_AmbientColor.w,
-                                      dirLightComp->m_AmbientColor.z * dirLightComp->m_AmbientColor.w);
+                            XMFLOAT3A(dirLightComp.m_AmbientColor.x * dirLightComp.m_AmbientColor.w,
+                                      dirLightComp.m_AmbientColor.y * dirLightComp.m_AmbientColor.w,
+                                      dirLightComp.m_AmbientColor.z * dirLightComp.m_AmbientColor.w);
                 }
         }
         m_ConstantBuffer_SCENE.time         = (float)GEngine::Get()->GetTotalTime();
@@ -831,8 +816,7 @@ void RenderSystem::OnUpdate(float deltaTime)
                 {
                         SkeletalMesh* mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_OpaqueDraws[i].meshResource);
                         Material*     mat  = m_ResourceManager->GetResource<Material>(m_OpaqueDraws[i].materialHandle);
-                        SkeletalMeshComponent* meshComp =
-                            m_ComponentManager->GetComponent<SkeletalMeshComponent>(m_OpaqueDraws[i].componentHandle);
+                        SkeletalMeshComponent* meshComp = m_OpaqueDraws[i].componentHandle.Get<SkeletalMeshComponent>();
                         DrawSkeletalMesh(mesh, mat, &m_OpaqueDraws[i].mtx, &meshComp->m_Skeleton);
                 }
         }
@@ -851,8 +835,8 @@ void RenderSystem::OnUpdate(float deltaTime)
                 {
                         SkeletalMesh* mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_TransluscentDraws[i].meshResource);
                         Material*     mat  = m_ResourceManager->GetResource<Material>(m_TransluscentDraws[i].materialHandle);
-                        SkeletalMeshComponent* meshComp =
-                            m_ComponentManager->GetComponent<SkeletalMeshComponent>(m_TransluscentDraws[i].componentHandle);
+                        SkeletalMeshComponent*                     meshComp =
+                            m_TransluscentDraws[i].componentHandle.Get<SkeletalMeshComponent>();
                         DrawSkeletalMesh(mesh, mat, &m_TransluscentDraws[i].mtx, &meshComp->m_Skeleton);
                 }
         }
@@ -926,9 +910,8 @@ void RenderSystem::OnInitialize()
 {
         assert(m_WindowHandle);
 
-        m_ResourceManager  = GEngine::Get()->GetResourceManager();
-        m_EntityManager    = GEngine::Get()->GetEntityManager();
-        m_ComponentManager = GEngine::Get()->GetComponentManager();
+        m_ResourceManager = GEngine::Get()->GetResourceManager();
+        m_HandleManager   = GEngine::Get()->GetHandleManager();
 
         CreateDeviceAndSwapChain();
         D3D11_TEXTURE2D_DESC desc;

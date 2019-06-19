@@ -1,4 +1,4 @@
 #pragma once
-#include "ComponentManager.h"
-#include "EntityManager.h"
+#include "HandleManager.h"
 #include "SystemManager.h"
+#include "Component.h"

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "..//..//ECS/ECSTypes.h"
 #include "../MathLibrary/MathLibrary.h"
+#include "../../ECS/HandleManager.h"
 #include "PlayerControllerState.h"
 
 enum class E_TRANSITION_MODE

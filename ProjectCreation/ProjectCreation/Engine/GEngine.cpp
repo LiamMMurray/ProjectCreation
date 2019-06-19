@@ -1,6 +1,9 @@
 #include "GEngine.h"
 
-GEngine* GEngine::instance;
+GEngine*                           GEngine::instance       = 0;
+NMemory::memsize                   GEngine::gameMemorySize = 80000000;
+NMemory::NPools::RandomAccessPools GEngine::m_component_pools;
+NMemory::NPools::RandomAccessPools GEngine::m_entity_pools;
 
 void GEngine::SetGamePaused(bool val)
 {
@@ -17,16 +20,23 @@ void GEngine::SetGamePaused(bool val)
 
 void GEngine::Initialize()
 {
-        static GEngine engine;
-        instance = &engine;
+        instance = new GEngine;
 
-        instance->m_EntityManager    = new EntityManager;
-        instance->m_ComponentManager = new ComponentManager;
-        instance->m_SystemManager    = new SystemManager;
-        instance->m_ResourceManager  = new ResourceManager;
+        NMemory::GameMemory_Singleton::GameMemory_Start = NMemory::ReserveGameMemory(gameMemorySize);
+        assert(NMemory::GameMemory_Singleton::GameMemory_Start != 0);
+        NMemory::GameMemory_Singleton::GameMemory_Curr = NMemory::GameMemory_Singleton::GameMemory_Start;
+        NMemory::GameMemory_Singleton::GameMemory_Max  = NMemory::GameMemory_Singleton::GameMemory_Start + gameMemorySize;
 
-        instance->m_EntityManager->Initialize(instance->m_ComponentManager);
+
+        instance->m_HandleManager =
+            new HandleManager(m_component_pools, m_entity_pools, NMemory::GameMemory_Singleton::GameMemory_Curr);
+
+        
+        instance->m_SystemManager   = new SystemManager;
+        instance->m_ResourceManager = new ResourceManager;
+
         instance->m_SystemManager->Initialize();
+        instance->m_ResourceManager->Initialize();
 }
 
 void GEngine::Shutdown()
@@ -34,8 +44,7 @@ void GEngine::Shutdown()
         instance->m_SystemManager->Shutdown();
         instance->m_ResourceManager->Shutdown();
 
-        delete instance->m_EntityManager;
-        delete instance->m_ComponentManager;
+        delete instance->m_HandleManager;
         delete instance->m_SystemManager;
         delete instance->m_ResourceManager;
 }
@@ -51,14 +60,9 @@ void GEngine::Signal()
         m_XTime.Signal();
 }
 
-EntityManager* GEngine::GetEntityManager()
+HandleManager* GEngine::GetHandleManager()
 {
-        return m_EntityManager;
-}
-
-ComponentManager* GEngine::GetComponentManager()
-{
-        return m_ComponentManager;
+        return m_HandleManager;
 }
 
 SystemManager* GEngine::GetSystemManager()

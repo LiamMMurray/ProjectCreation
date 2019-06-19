@@ -1,6 +1,6 @@
 #pragma once
 #include <unordered_map>
-#include "../../ECS/ECS.h"
+#include "../../ECS/SystemManager.h"
 #include "CollisionGrid.h"
 #include "CollisionResult.h"
 #include "CollisionLibary.h"

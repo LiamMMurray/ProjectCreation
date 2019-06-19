@@ -95,7 +95,7 @@ void ControllerSystem::Initialize()
 void ControllerSystem::init()
 {
         m_SystemManager    = GEngine::Get()->GetSystemManager();
-        m_ComponentManager = GEngine::Get()->GetComponentManager();
+        m_HandleManager = GEngine::Get()->GetHandleManager();
         m_EntityManager    = GEngine::Get()->GetEntityManager();
 
         m_Controllers[E_CONTROLLERS::PLAYER] = new PlayerController;
@@ -104,18 +104,18 @@ void ControllerSystem::init()
 
         // Player entity setup
         {
-                auto eHandle = m_EntityManager->CreateEntity<BaseEntity>();
+                auto eHandle = m_EntityManager->CreateEntity();
 
 
-                GEngine::Get()->GetComponentManager()->AddComponent<TransformComponent>(eHandle);
-                GEngine::Get()->GetComponentManager()->AddComponent<CameraComponent>(eHandle);
+                GEngine::Get()->GetHandleManager()->AddComponent<TransformComponent>(eHandle);
+                GEngine::Get()->GetHandleManager()->AddComponent<CameraComponent>(eHandle);
 
-                auto tComp                   = GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(eHandle);
+                auto tComp                   = GEngine::Get()->GetHandleManager()->GetComponent<TransformComponent>(eHandle);
                 tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, -2.0f, 1.0f);
                 tComp->transform.rotation =
                     DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
 
-                auto cameraComp = GEngine::Get()->GetComponentManager()->GetComponent<CameraComponent>(eHandle);
+                auto cameraComp = GEngine::Get()->GetHandleManager()->GetComponent<CameraComponent>(eHandle);
                 cameraComp->m_Settings.m_HorizontalFOV = 90.0f;
 
                 GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->SetMainCameraComponent(cameraComp->GetHandle());
@@ -123,15 +123,15 @@ void ControllerSystem::init()
         }
 
         {
-                auto eHandle = m_EntityManager->CreateEntity<BaseEntity>();
+                auto eHandle = m_EntityManager->CreateEntity();
 
-                GEngine::Get()->GetComponentManager()->AddComponent<TransformComponent>(eHandle);
-                GEngine::Get()->GetComponentManager()->AddComponent<CameraComponent>(eHandle);
+                GEngine::Get()->GetHandleManager()->AddComponent<TransformComponent>(eHandle);
+                GEngine::Get()->GetHandleManager()->AddComponent<CameraComponent>(eHandle);
 
-                auto tComp                   = GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(eHandle);
+                auto tComp                   = GEngine::Get()->GetHandleManager()->GetComponent<TransformComponent>(eHandle);
                 tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.3f, -2.0f, 1.0f);
 
-                auto cameraComp = GEngine::Get()->GetComponentManager()->GetComponent<CameraComponent>(eHandle);
+                auto cameraComp = GEngine::Get()->GetHandleManager()->GetComponent<CameraComponent>(eHandle);
                 cameraComp->m_Settings.m_HorizontalFOV = 90.0f;
                 m_Controllers[E_CONTROLLERS::DEBUG]->Init(eHandle);
                 m_Controllers[E_CONTROLLERS::DEBUG]->SetEnabled(false);
@@ -168,7 +168,7 @@ void ControllerSystem::update(float delta)
 
                 auto cameraHandle =
                     GEngine::Get()
-                        ->GetComponentManager()
+                        ->GetHandleManager()
                         ->GetComponent<TransformComponent>(m_Controllers[m_CurrentController]->GetControlledEntity())
                         ->GetHandle();
                 GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->SetMainCameraComponent(cameraHandle);

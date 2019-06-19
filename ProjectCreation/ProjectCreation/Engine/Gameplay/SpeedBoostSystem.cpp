@@ -52,10 +52,10 @@ void SpeedBoostSystem::SpawnSpeedBoost(const TransformComponent* playerTC,
         ComponentHandle boostHandle;
         ComponentHandle transHandle;
         auto            entityHandle = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &boostHandle);
-        boostHandle                  = m_ComponentManager->AddComponent<SpeedboostComponent>(entityHandle);
+        boostHandle                  = m_HandleManager->AddComponent<SpeedboostComponent>(entityHandle);
 
-        SpeedboostComponent* gsc = m_ComponentManager->GetComponent<SpeedboostComponent>(boostHandle);
-        TransformComponent*  gtc = m_ComponentManager->GetComponent<TransformComponent>(entityHandle);
+        SpeedboostComponent* gsc = boostHandle.Get<SpeedboostComponent>();
+        TransformComponent*  gtc = entityHandle.GetComponent<TransformComponent>();
         RespawnSpeedBoost(gtc, gsc, playerTC, targetTC);
         gtc->transform.SetScale(0.0f);
         gsc->m_CurrentRadius = 0.0f;
@@ -68,98 +68,88 @@ void SpeedBoostSystem::OnPreUpdate(float deltaTime)
 void SpeedBoostSystem::OnUpdate(float deltaTime)
 {
 
-        TransformComponent* playerTransform =
-            m_ComponentManager->GetComponent<TransformComponent>(SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                                                     ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-                                                                     ->GetControlledEntity());
+        TransformComponent* playerTransform = (SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+                                                   ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
+                                                   ->GetControlledEntity())
+                                                  .GetComponent<TransformComponent>();
 
         GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_PlayerEffectRadius, deltaTime);
 
         ComponentHandle closestGoalTransformHandle = m_SystemManager->GetSystem<OrbitSystem>()->GetClosestGoalTransform();
 
 
-        int speedboostCount = 0;
-        if (!m_ComponentManager->ComponentsExist<SpeedboostComponent>())
+		int speedboostCount = 0;
+        for (auto& speedComp : m_HandleManager->GetActiveComponents<SpeedboostComponent>())
         {
+                speedboostCount++;
 
-                auto speedboostCompItr = m_ComponentManager->GetActiveComponents<SpeedboostComponent>();
+                TransformComponent* transComp = speedComp.GetParent().GetComponent<TransformComponent>();
 
-                for (auto itr = speedboostCompItr.begin(); itr != speedboostCompItr.end(); itr++)
+
+                float distanceSq =
+                    MathLibrary::CalulateDistanceSq(playerTransform->transform.translation, transComp->transform.translation);
+
+                if (speedComp.m_Lifetime < 0.0f || distanceSq > (m_MaxBoostDistance) * (m_MaxBoostDistance))
                 {
-                        speedboostCount++;
-
-                        SpeedboostComponent* speedComp = static_cast<SpeedboostComponent*>(itr.data());
-                        TransformComponent*  transComp =
-                            m_ComponentManager->GetComponent<TransformComponent>(itr.data()->GetOwner());
+                        speedComp.m_WantsRespawn = true;
+                        speedComp.m_TargetRadius = 0.0f;
+                }
 
 
-                        float distanceSq = MathLibrary::CalulateDistanceSq(playerTransform->transform.translation,
-                                                                           transComp->transform.translation);
-
-                        if (speedComp->m_Lifetime < 0.0f || distanceSq > (m_MaxBoostDistance) * (m_MaxBoostDistance))
+                if ((speedComp.m_WantsRespawn == false) && distanceSq < m_BoostRadius * 2.0f * m_BoostRadius)
+                {
+                        if (speedComp.m_Color == E_LIGHT_ORBS::RED_LIGHTS)
                         {
-                                speedComp->m_WantsRespawn = true;
-                                speedComp->m_TargetRadius = 0.0f;
+                                m_CurRedOrbs++;
+                                m_MaxRedOrbs--;
+                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->SetOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
                         }
 
-
-                        if ((speedComp->m_WantsRespawn == false) && distanceSq < m_BoostRadius * 2.0f * m_BoostRadius)
+                        if (speedComp.m_Color == E_LIGHT_ORBS::BLUE_LIGHTS)
                         {
-                                if (speedComp->m_Color == E_LIGHT_ORBS::RED_LIGHTS)
-                                {
-                                        m_CurRedOrbs++;
-                                        m_MaxRedOrbs--;
-                                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->SetOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
-                                }
-
-                                if (speedComp->m_Color == E_LIGHT_ORBS::BLUE_LIGHTS)
-                                {
-                                        m_CurBlueOrbs++;
-                                        m_MaxBlueOrbs--;
-                                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->SetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
-                                }
-                                if (speedComp->m_Color == E_LIGHT_ORBS::GREEN_LIGHTS)
-                                {
-                                        m_CurGreenOrbs++;
-                                        m_MaxGreenOrbs--;
-                                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->SetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
-                                }
-
-                                speedComp->m_WantsRespawn = true;
-                                speedComp->m_TargetRadius = 0.0f;
-                                m_PlayerEffectRadius += 1.0f;
-
-                                static_cast<PlayerController*>(SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                                                   ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER])
-                                    ->SpeedBoost(XMVectorZero());
+                                m_CurBlueOrbs++;
+                                m_MaxBlueOrbs--;
+                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->SetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
+                        }
+                        if (speedComp.m_Color == E_LIGHT_ORBS::GREEN_LIGHTS)
+                        {
+                                m_CurGreenOrbs++;
+                                m_MaxGreenOrbs--;
+                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->SetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
                         }
 
-                        TransformComponent* closestGoalTransform =
-                            m_ComponentManager->GetComponent<TransformComponent>(closestGoalTransformHandle);
+                        speedComp.m_WantsRespawn = true;
+                        speedComp.m_TargetRadius = 0.0f;
+                        m_PlayerEffectRadius += 1.0f;
 
-                        if (speedComp->m_CurrentRadius != speedComp->m_TargetRadius)
+                        static_cast<PlayerController*>(SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+                                                           ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER])
+                            ->SpeedBoost(XMVectorZero());
+                }
+
+                TransformComponent* closestGoalTransform = closestGoalTransformHandle.Get<TransformComponent>();
+
+                if (speedComp.m_CurrentRadius != speedComp.m_TargetRadius)
+                {
+                        speedComp.m_CurrentRadius = MathLibrary::MoveTowards(
+                            speedComp.m_CurrentRadius, speedComp.m_TargetRadius, m_BoostShrinkSpeed * deltaTime);
+                        transComp->transform.SetScale(speedComp.m_CurrentRadius);
+                }
+
+                speedComp.m_Lifetime -= deltaTime;
+                if (!playerTransform || !closestGoalTransform)
+                        continue;
+
+                if (speedComp.m_WantsRespawn)
+                {
+                        if (speedComp.m_CurrentRadius <= 0.0f)
                         {
-                                speedComp->m_CurrentRadius = MathLibrary::MoveTowards(
-                                    speedComp->m_CurrentRadius, speedComp->m_TargetRadius, m_BoostShrinkSpeed * deltaTime);
-                                transComp->transform.SetScale(speedComp->m_CurrentRadius);
-                        }
-
-                        speedComp->m_Lifetime -= deltaTime;
-                        if (!playerTransform || !closestGoalTransform)
-                                continue;
-
-                        if (speedComp->m_WantsRespawn)
-                        {
-                                if (speedComp->m_CurrentRadius <= 0.0f)
-                                {
-                                        RespawnSpeedBoost(transComp, speedComp, playerTransform, closestGoalTransform);
-                                }
+                                RespawnSpeedBoost(transComp, &speedComp, playerTransform, closestGoalTransform);
                         }
                 }
         }
 
-        TransformComponent* closestGoalTransform =
-            m_ComponentManager->GetComponent<TransformComponent>(closestGoalTransformHandle);
+        TransformComponent* closestGoalTransform = closestGoalTransformHandle.Get<TransformComponent>();
 
         if (closestGoalTransform != nullptr && speedboostCount < m_MaxSpeedBoosts)
         {
@@ -193,9 +183,8 @@ void SpeedBoostSystem::OnPostUpdate(float deltaTime)
 
 void SpeedBoostSystem::OnInitialize()
 {
-        m_EntityManager    = GEngine::Get()->GetEntityManager();
-        m_ComponentManager = GEngine::Get()->GetComponentManager();
-        m_SystemManager    = GEngine::Get()->GetSystemManager();
+        m_HandleManager = GEngine::Get()->GetHandleManager();
+        m_SystemManager = GEngine::Get()->GetSystemManager();
 
         // Red Light
         auto speedBoostMat01Handle = GEngine::Get()->GetResourceManager()->LoadMaterial("GlowSpeedboost01");
