@@ -1,9 +1,7 @@
 #include "GEngine.h"
 
-GEngine*                           GEngine::instance       = 0;
-NMemory::memsize                   GEngine::gameMemorySize = 80000000;
-NMemory::NPools::RandomAccessPools GEngine::m_component_pools;
-NMemory::NPools::RandomAccessPools GEngine::m_entity_pools;
+GEngine*         GEngine::instance        = 0;
+NMemory::memsize GEngine::s_PoolAllocSize = 80000000;
 
 void GEngine::SetGamePaused(bool val)
 {
@@ -22,16 +20,12 @@ void GEngine::Initialize()
 {
         instance = new GEngine;
 
-        NMemory::GameMemory_Singleton::GameMemory_Start = NMemory::ReserveGameMemory(gameMemorySize);
-        assert(NMemory::GameMemory_Singleton::GameMemory_Start != 0);
-        NMemory::GameMemory_Singleton::GameMemory_Curr = NMemory::GameMemory_Singleton::GameMemory_Start;
-        NMemory::GameMemory_Singleton::GameMemory_Max  = NMemory::GameMemory_Singleton::GameMemory_Start + gameMemorySize;
+        NMemory::ReserveGameMemory(instance->m_PoolMemory, s_PoolAllocSize);
 
 
-        instance->m_HandleManager =
-            new HandleManager(m_component_pools, m_entity_pools, NMemory::GameMemory_Singleton::GameMemory_Curr);
+        instance->m_HandleManager = new HandleManager(instance->m_ComponentPools, instance->m_EntityPools, instance->m_PoolMemory);
 
-        
+
         instance->m_SystemManager   = new SystemManager;
         instance->m_ResourceManager = new ResourceManager;
 

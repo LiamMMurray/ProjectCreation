@@ -20,16 +20,15 @@ namespace NMemory
         typedef std::unordered_multimap<type_index, index>                    entity_component_container;
         typedef std::pair<entity_component_container::iterator, entity_component_container::iterator> entity_components;
 
-        struct GameMemory_Singleton
+        struct PoolMemory
         {
-            public:
-                static byte* GameMemory_Start;
-                static byte* GameMemory_Curr;
-                static byte* GameMemory_Max;
+                byte* m_MemStart = 0;
+                byte* m_MemCurr  = 0;
+                byte* m_MemMax   = 0;
         };
 
 
         // Allocates memory on the system level
-        byte* ReserveGameMemory(memsize memsize);
-        void  FreeGameMemory();
+        void ReserveGameMemory(PoolMemory& poolMemory, memsize allocSize);
+        void FreeGameMemory(PoolMemory& poolMemory);
 } // namespace NMemory

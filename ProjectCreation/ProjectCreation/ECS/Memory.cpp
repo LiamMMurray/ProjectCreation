@@ -3,29 +3,29 @@
 #include <Windows.h>
 #include <assert.h>
 #include <malloc.h>
+#include "../Utility/MemoryLeakDetection.h"
+
 namespace NMemory
 {
-        byte* GameMemory_Singleton::GameMemory_Start = 0;
-        byte* GameMemory_Singleton::GameMemory_Curr  = 0;
-        byte* GameMemory_Singleton::GameMemory_Max   = 0;
-
-        byte* ReserveGameMemory(memsize memsize)
+        void ReserveGameMemory(PoolMemory& poolMemory, memsize allocSize)
         {
-                //LPVOID ptr = VirtualAlloc(0, memsize, MEM_RESERVE, PAGE_READWRITE);
-                //ptr        = VirtualAlloc(ptr, memsize, MEM_COMMIT, PAGE_READWRITE);
-                //return static_cast<byte*>(ptr);
-                return reinterpret_cast<byte*>(malloc(memsize));
+                // LPVOID ptr = VirtualAlloc(0, allocSize, MEM_RESERVE, PAGE_READWRITE);
+                // ptr        = VirtualAlloc(ptr, allocSize, MEM_COMMIT, PAGE_READWRITE);
+                // return static_cast<byte*>(ptr);
+                poolMemory.m_MemStart = reinterpret_cast<byte*>(malloc(allocSize));
+                poolMemory.m_MemCurr  = poolMemory.m_MemStart;
+                poolMemory.m_MemMax   = poolMemory.m_MemStart + allocSize;
         }
-        void FreeGameMemory()
+        void FreeGameMemory(PoolMemory& poolMemory)
         {
-                //int error = VirtualFree(GameMemory_Singleton::GameMemory_Start, 0, MEM_RELEASE);
+                // int error = VirtualFree(GameMemory_Singleton::GameMemory_Start, 0, MEM_RELEASE);
 
-                //if (error == 0)
+                // if (error == 0)
                 //{
                 //        auto error = GetLastError();
                 //        assert(false);
                 //}
                 // free(GameMemory_Singleton::GameMemory_Start);
-                free(GameMemory_Singleton::GameMemory_Start);
+                free(poolMemory.m_MemStart);
         }
 }; // namespace NMemory

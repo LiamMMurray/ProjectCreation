@@ -206,7 +206,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
         // Entity tests
 
-        auto testMeshHandle = HandleManager->CreateEntity();
+        //auto testMeshHandle = HandleManager->CreateEntity();
         // auto entity  = HandleManager->GetEntity(eHandle);
 
         // Debug camera entity setup

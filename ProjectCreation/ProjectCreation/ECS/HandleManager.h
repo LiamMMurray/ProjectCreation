@@ -33,12 +33,12 @@ struct HandleManager
         NMemory::index                      pool_count;
         NMemory::NPools::RandomAccessPools& component_random_access_pools;
         NMemory::NPools::RandomAccessPools& entity_random_access_pools;
-        NMemory::byte*&                     dynamic_memory;
+        NMemory::PoolMemory&                pool_memory;
         NMemory::NPools::pool_descs         pool_descs;
 
         HandleManager(NMemory::NPools::RandomAccessPools& componentRandomAccessPools,
                       NMemory::NPools::RandomAccessPools& entityRandomAccessPools,
-                      NMemory::byte*&                     dynamic_memory);
+                      NMemory::PoolMemory&                   pool_memory);
         ~HandleManager();
         template <typename T>
         T* GetComponent(ComponentHandle handle);
@@ -124,9 +124,9 @@ inline ComponentHandle HandleManager::AddComponent(EntityHandle parentHandle)
         if (component_random_access_pools.m_mem_starts.size() <= pool_index ||
             component_random_access_pools.m_element_capacities[pool_index] < T::SGetMaxElements())
         {
-                if (dynamic_memory + sizeof(T) * T::SGetMaxElements() >= NMemory::GameMemory_Singleton::GameMemory_Max)
+                if (pool_memory.m_MemCurr + sizeof(T) * T::SGetMaxElements() >= pool_memory.m_MemMax)
                         assert(false);
-                InsertPool(component_random_access_pools, {sizeof(T), T::SGetMaxElements()}, dynamic_memory, pool_index);
+                InsertPool(component_random_access_pools, {sizeof(T), T::SGetMaxElements()}, pool_memory.m_MemCurr, pool_index);
         }
         auto            allocation = Allocate(component_random_access_pools, pool_index);
         ComponentHandle componentHandle(pool_index, allocation.redirection_idx);

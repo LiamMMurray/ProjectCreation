@@ -11,13 +11,15 @@
 #include "XTime.h"
 class GEngine
 {
-        static NMemory::memsize                   gameMemorySize;
-        static NMemory::NPools::RandomAccessPools m_component_pools;
-        static NMemory::NPools::RandomAccessPools m_entity_pools;
 
-        HandleManager* m_HandleManager;
-        SystemManager*    m_SystemManager;
-        ResourceManager*  m_ResourceManager;
+        static NMemory::memsize            s_PoolAllocSize;
+        NMemory::PoolMemory                m_PoolMemory;
+        NMemory::NPools::RandomAccessPools m_ComponentPools;
+        NMemory::NPools::RandomAccessPools m_EntityPools;
+
+        HandleManager*   m_HandleManager;
+        SystemManager*   m_SystemManager;
+        ResourceManager* m_ResourceManager;
 
         XTime m_XTime;
 

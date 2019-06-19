@@ -4,12 +4,12 @@
 
 HandleManager::HandleManager(NMemory::NPools::RandomAccessPools& componentRandomAccessPools,
                              NMemory::NPools::RandomAccessPools& entityRandomAccessPools,
-                             NMemory::byte*&                      dynamicMemory) :
+                             NMemory::PoolMemory&                poolMemory) :
     component_random_access_pools(componentRandomAccessPools),
     entity_random_access_pools(entityRandomAccessPools),
-    dynamic_memory(dynamicMemory),
+    pool_memory(poolMemory),
     pool_count(TypeIndexFactory<IComponent>::GetTypeIndex<void>())
-// TypeIdCreator<IComponent>::GetUniqueTypeId<void>() gets one past the last pool's index since this is the only place this
+// TypeIndexFactory<IComponent>::GetTypeIndex<void>() gets one past the last pool's index since this is the only place this
 // function is called dynamically, and not statically.
 {
         ComponentHandle::handleContext = this;
@@ -31,9 +31,8 @@ EntityHandle HandleManager::CreateEntity(EntityHandle parentHandle)
         NMemory::type_index pool_index = 0;
         if (entity_random_access_pools.m_mem_starts.size() <= pool_index)
         {
-                assert(dynamic_memory + sizeof(Entity) * Entity::SGetMaxElements() <=
-                       NMemory::GameMemory_Singleton::GameMemory_Max);
-                InsertPool(entity_random_access_pools, {sizeof(Entity), Entity::SGetMaxElements()}, dynamic_memory, pool_index);
+                assert(pool_memory.m_MemCurr + sizeof(Entity) * Entity::SGetMaxElements() <= pool_memory.m_MemMax);
+                InsertPool(entity_random_access_pools, {sizeof(Entity), Entity::SGetMaxElements()}, pool_memory.m_MemCurr, pool_index);
         }
         auto         allocation   = Allocate(entity_random_access_pools, pool_index);
         EntityHandle entityHandle = allocation.redirection_idx;
@@ -176,6 +175,7 @@ void EntityHandle::Free()
 {
         this->FreeComponents();
         handleContext->FreeEntity(*this);
+        handleContext->ReleaseEntityHandle(*this);
 }
 
 bool EntityHandle::IsActive()
