@@ -59,10 +59,10 @@ void PlayerController::GatherInput()
                                 tempDir.x += 1.0f;
                         }
                 }
-                // Backward
-                if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
+                // Space bar is used for rhythm input
+                if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::DownFirst)
                 {
-                        tempDir.z -= 1.0f;
+                        spaceTimeStamp = GEngine::Get()->GetTotalTime();
                 }
 
                 m_CurrentInput = XMLoadFloat4(&tempDir);
@@ -147,25 +147,30 @@ void PlayerController::Init(EntityHandle h)
         }
 }
 
-void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color, float collisionTimeStamp)
+void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color, double collisionTimeStamp)
 {
-        const KeyCode keyCodes[]   = {KeyCode::R, KeyCode::Q, KeyCode::E, (KeyCode)-1};
+        const KeyCode keyCodes[]   = {KeyCode::LeftShift, KeyCode::Q, KeyCode::E, (KeyCode)-1};
         const char*   soundNames[] = {"whiteSpeedBoost", "whiteSpeedBoost", "whiteSpeedBoost", "whiteSpeedBoost"};
+		
         // Audio that will play on boost
         if ((int)keyCodes[color] == -1 || GCoreInput::GetKeyState(keyCodes[color]) == KeyState::Down)
         {
-                bool isPlaying;
-                mSpeedBoostSoundPool[currSpeedBoostIteration]->isSoundPlaying(isPlaying);
-                mSpeedBoostSoundPool[currSpeedBoostIteration]->Play();
-                DebugPrintSpeedBoostColor(color);
-                currentMaxSpeed = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
-                XMVECTOR currentInput =
-                    XMVector3Rotate(m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
-                if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
+                if ((spaceTimeStamp >= collisionTimeStamp && spaceTimeStamp < (collisionTimeStamp + rhythmThreshold)) ||
+                    (spaceTimeStamp <= collisionTimeStamp && spaceTimeStamp > (collisionTimeStamp - rhythmThreshold)))
                 {
-                        m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
-                        m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
-                        m_GroundState->AddSpeedBoost();
+                        bool isPlaying;
+                        mSpeedBoostSoundPool[currSpeedBoostIteration]->isSoundPlaying(isPlaying);
+                        mSpeedBoostSoundPool[currSpeedBoostIteration]->Play();
+                        DebugPrintSpeedBoostColor(color);
+                        currentMaxSpeed = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
+                        XMVECTOR currentInput =
+                            XMVector3Rotate(m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
+                        if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
+                        {
+                                m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
+                                m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
+                                m_GroundState->AddSpeedBoost();
+                        }
                 }
         }
         currSpeedBoostIteration++;
