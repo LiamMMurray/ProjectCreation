@@ -22,7 +22,7 @@ class SpeedBoostSystem : public ISystem
         unsigned int              randomOrbCount   = 0;
 
 		float                      flyTimer = 0.0f;
-		float                      flyCD = 1.0f;
+		float                      flyCD = 2.0f;
         std::vector<SplineCluster> m_SplineClusterSpawners;
 
         static constexpr int PathCount = 9;
