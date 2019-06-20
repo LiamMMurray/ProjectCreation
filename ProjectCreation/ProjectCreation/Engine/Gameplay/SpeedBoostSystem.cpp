@@ -178,43 +178,21 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
         // m_PlayerEffectRadius                       = 25.0f;
         ComponentHandle closestGoalTransformHandle = m_SystemManager->GetSystem<OrbitSystem>()->GetClosestGoalTransform();
-
         {
-                int speedboostCount = 0;
                 for (auto& speedComp : m_HandleManager->GetActiveComponents<SpeedboostComponent>())
                 {
-                        speedboostCount++;
-
                         TransformComponent* transComp = speedComp.GetParent().GetComponent<TransformComponent>();
                         // START: Move speed boosts with ai stuff here
 
                         // END: Move speed boosts with ai stuff here
                         float distSq = MathLibrary::CalulateDistanceSq(transComp->transform.translation,
                                                                        playerTransform->transform.translation);
-                        // onCD: cool down for speed boosts
-                        bool onCD = false;
 
-                        if (speedComp.m_Timer > 0)
-                        {
-                                onCD = true;
-                                speedComp.m_Timer -= deltaTime;
-                        }
 
                         float distanceSq = MathLibrary::CalulateDistanceSq(playerTransform->transform.translation,
                                                                            transComp->transform.translation);
 
                         float checkRadius = m_BoostRadius * 2.0f;
-                        if (!onCD && distanceSq < (checkRadius * checkRadius))
-                        {
-
-                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.m_Color);
-
-                                // speedComp->m_WantsRespawn = true;
-                                // speedComp->m_TargetRadius = 0.0f;
-                                // m_PlayerEffectRadius += 1.0f;
-                                speedComp.m_Timer = speedComp.m_CD;
-                                playerController->SpeedBoost(transComp->transform.translation, speedComp.m_Color);
-                        }
 
                         TransformComponent* closestGoalTransform = closestGoalTransformHandle.Get<TransformComponent>();
 
@@ -224,12 +202,20 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                     speedComp.m_CurrentRadius, speedComp.m_TargetRadius, m_BoostShrinkSpeed * deltaTime);
                                 transComp->transform.SetScale(speedComp.m_CurrentRadius);
                         }
+
+                        if (distanceSq < (checkRadius * checkRadius))
+                        {
+
+                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.m_Color);
+                                playerController->SpeedBoost(transComp->transform.translation, speedComp.m_Color);
+                        }
                 }
         }
 
+        int speedboostCount = 0;
         for (auto& spawnComp : m_HandleManager->GetActiveComponents<OrbRespawnComponent>())
         {
-
+                speedboostCount++;
                 SpeedboostComponent* speedComp = spawnComp.GetParent().GetComponent<SpeedboostComponent>();
                 TransformComponent*  transComp = spawnComp.GetParent().GetComponent<TransformComponent>();
 
@@ -241,21 +227,11 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         spawnComp.m_WantsRespawn  = true;
                         speedComp->m_TargetRadius = 0.0f;
                 }
-
-
                 if (spawnComp.m_WantsRespawn)
                 {
                         if (speedComp->m_CurrentRadius <= 0.0f)
                         {
-                                XMVECTOR pos = MathLibrary::GetRandomPointInRadius2D(playerTransform->transform.translation,
-                                                                                     m_MaxBoostDistance - 5.2f,
-                                                                                     m_MaxBoostDistance - 0.8f);
-
-                                spawnComp.m_Lifetime = MathLibrary::RandomFloatInRange(
-                                    m_BoostLifespan - m_BoostLifespanVariance, m_BoostLifespan + m_BoostLifespanVariance);
-                                transComp->transform.translation = pos;
-                                speedComp->m_TargetRadius        = m_BoostRadius;
-                                spawnComp.m_WantsRespawn         = false;
+                                spawnComp.GetParent().Free();
                         }
                 }
         }
@@ -270,7 +246,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                 for (auto& splineComp : m_HandleManager->GetActiveComponents<SpeedboostSplineComponent>())
                 {
-                        float                      distance =
+                        float distance =
                             MathLibrary::CalulateDistanceIgnoreY(playerTransform->transform.translation, splineComp.m_CurrPos);
 
                         if (distance < (checkRadius))
@@ -281,7 +257,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 playerController->SetUseGravity(false);
                                 flyTimer = flyCD;
                                 canFly   = true;
-                                // break;
+                                splineComp.GetParent().Free();
                         }
                 }
                 float closestDistance =
@@ -323,8 +299,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                                                      playerTransform->transform.translation);
                                 XMVECTOR point          = next + offset;
                                 dir                     = XMVector3Normalize(point - playerTransform->transform.translation);
-
-                                float strength = MathLibrary::clamp(distanceToLine * 3.0f, 0.5f, 8.0f);
+                                float targetY           = XMVectorGetY(point);
+                                float strength          = MathLibrary::clamp(distanceToLine * 3.0f, 0.5f, 8.0f);
                                 playerTransform->transform.translation += dir * strength * deltaTime;
                                 // playerController->AddCurrentVelocity(dir * 10.0f * deltaTime);
                         }
@@ -348,7 +324,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 }
         }
 
-        if (m_EnableRandomSpawns && randomOrbCount < m_MaxSpeedBoosts)
+        if (m_EnableRandomSpawns && speedboostCount < m_MaxSpeedBoosts)
         {
                 if (m_SpawnBoostTimer <= 0)
                 {
@@ -398,8 +374,8 @@ void SpeedBoostSystem::OnInitialize()
         std::random_shuffle(m_Paths.begin(), m_Paths.end());
 
         EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-            ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-            ->GetControlledEntity();
+                                        ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
+                                        ->GetControlledEntity();
 
         TransformComponent* playerTransform = playerEntity.GetComponent<TransformComponent>();
 

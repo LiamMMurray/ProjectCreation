@@ -133,7 +133,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 )
 {
         ENABLE_LEAK_DETECTION();
-        _CrtSetBreakAlloc(163);
+        //_CrtSetBreakAlloc(177);
         _WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
 		_CrtDumpMemoryLeaks();
@@ -228,12 +228,12 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
         // Test skeletal mesh setup
         {
-            // std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
-            // ComponentHandle          transformHandle;
-            // EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
-            //
-            // TransformComponent* transformComp = HandleManager->GetComponentHandle<TransformComponent>(transformHandle);
-            // transformComp->transform.SetScale(0.1f);
+             /*std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
+             ComponentHandle          transformHandle;
+             EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
+            
+             TransformComponent* transformComp = HandleManager->GetComponent<TransformComponent>(transformHandle);
+             transformComp->transform.SetScale(0.1f);*/
         }
 
         // Ground Plane

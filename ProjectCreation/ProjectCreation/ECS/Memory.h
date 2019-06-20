@@ -2,6 +2,10 @@
 #include <queue>
 #include <unordered_map>
 #include <vector>
+
+#define KB(x) ((size_t)(x) << 10)
+#define MB(x) ((size_t)(x) << 20)
+
 namespace NMemory
 {
         // todo forward declare typedefs (requires forward declaring std::containers)
