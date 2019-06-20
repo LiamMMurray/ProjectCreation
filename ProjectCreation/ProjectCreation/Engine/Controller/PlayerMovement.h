@@ -48,7 +48,7 @@ class PlayerController : public IController
 		// Boolean values for the light collection keys
 		// Names will most likely change later on
 
-		// Space will be input for red
+		// R will be input for red
         bool redInput = false;
 
 		// Q will be input for blue
@@ -57,12 +57,16 @@ class PlayerController : public IController
 		// E will be input for green
         bool greenInput = false;
 
+		// Space will be input for the rhythm system
+        double spaceTimeStamp = 0.0f;
+
+		float rhythmThreshold = 0.5f;
 
     public:
         PlayerController();
 
         virtual void Init(EntityHandle h) override;
-        void         SpeedBoost(DirectX::XMVECTOR boostPos, int color);
+        void         SpeedBoost(DirectX::XMVECTOR boostPos, int color, double collisionTimeStamp);
 
         inline void SetCurrentMaxSpeed(float val)
         {

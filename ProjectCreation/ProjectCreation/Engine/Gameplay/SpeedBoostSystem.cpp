@@ -84,6 +84,7 @@ EntityHandle SpeedBoostSystem::SpawnSpeedBoost(const DirectX::XMVECTOR& pos, int
         TransformComponent*  gtc = entityHandle.GetComponent<TransformComponent>();
 
         gtc->transform.translation = pos;
+
         gtc->transform.SetScale(0.0f);
         gsc->m_CurrentRadius = 0.0f;
         gsc->m_Color         = color;
@@ -213,7 +214,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 // speedComp->m_TargetRadius = 0.0f;
                                 // m_PlayerEffectRadius += 1.0f;
                                 speedComp.m_Timer = speedComp.m_CD;
-                                playerController->SpeedBoost(transComp->transform.translation, speedComp.m_Color);
+                                playerController->SpeedBoost(transComp->transform.translation, speedComp.m_Color, GEngine::Get()->GetTotalTime());
                         }
 
                         TransformComponent* closestGoalTransform = closestGoalTransformHandle.Get<TransformComponent>();

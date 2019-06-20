@@ -59,19 +59,19 @@ void ControllerSystem::OnPreUpdate(float deltaTime)
 
 void ControllerSystem::OnUpdate(float deltaTime)
 {
-        if (GCoreInput::GetKeyState(KeyCode::R) == KeyState::DownFirst)
+        if (GCoreInput::GetKeyState(KeyCode::One) == KeyState::DownFirst)
         {
                 IncreaseOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
                 std::cout << "Red Count: " << GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) << std::endl;
         }
 
-        if (GCoreInput::GetKeyState(KeyCode::B) == KeyState::DownFirst)
+        if (GCoreInput::GetKeyState(KeyCode::Two) == KeyState::DownFirst)
         {
                 IncreaseOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
                 std::cout << "Blue Count: " << GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) << std::endl;
         }
 
-        if (GCoreInput::GetKeyState(KeyCode::G) == KeyState::DownFirst)
+        if (GCoreInput::GetKeyState(KeyCode::Three) == KeyState::DownFirst)
         {
                 IncreaseOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
                 std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;

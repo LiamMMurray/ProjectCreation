@@ -34,62 +34,77 @@ void PlayerController::GatherInput()
                 // requestedDirection = MoveDirections::NO_DIRECTION;
                 XMFLOAT4 tempDir = {0.0f, 0.0f, 0.0f, 0.0f};
 
-                // Check Forward speed
-                if (GCoreInput::GetKeyState(KeyCode::W) == KeyState::Down)
+                /////////////////////////
+                // Movement input keys //
+                /////////////////////////
                 {
-                        tempDir.z += 1.0f;
+                        // Check Forward speed
+                        if (GCoreInput::GetKeyState(KeyCode::W) == KeyState::Down)
+                        {
+                                tempDir.z += 1.0f;
+                        }
+                        // Backward
+                        if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
+                        {
+                                tempDir.z -= 1.0f;
+                        }
+                        // Left
+                        if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
+                        {
+                                tempDir.x -= 1.0f;
+                        }
+                        // Right
+                        if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
+                        {
+                                tempDir.x += 1.0f;
+                        }
                 }
 
-                // Set blue input to true while Q is pressed
-                if (GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Down)
-                {
-                        blueInput = true;
-                }
+                ///////////////////////
+                // Rhythm input keys //
+                ///////////////////////
 
-                // Set blue input to false when Q is released
-                else if (GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Release)
                 {
-                        blueInput = false;
-                }
+                        // Set blue input to true while Q is pressed
+                        if (GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Down)
+                        {
+                                blueInput = true;
+                        }
 
-                // Set green input to true while E is pressed
-                if (GCoreInput::GetKeyState(KeyCode::E) == KeyState::Down)
-                {
-                        greenInput = true;
-                }
+                        // Set blue input to false when Q is released
+                        else if (GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Release)
+                        {
+                                blueInput = false;
+                        }
 
-                // Set green input to false when E is released
-                else if (GCoreInput::GetKeyState(KeyCode::E) == KeyState::Release)
-                {
-                        greenInput = false;
-                }
+                        // Set green input to true while E is pressed
+                        if (GCoreInput::GetKeyState(KeyCode::E) == KeyState::Down)
+                        {
+                                greenInput = true;
+                        }
 
-                // Set red input to true while E is pressed
-                if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Down)
-                {
-                        redInput = true;
-                }
+                        // Set green input to false when E is released
+                        else if (GCoreInput::GetKeyState(KeyCode::E) == KeyState::Release)
+                        {
+                                greenInput = false;
+                        }
 
-                // Set red input to false when E is released
-                else if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Release)
-                {
-                        redInput = false;
-                }
+                        // Set red input to true while E is pressed
+                        if (GCoreInput::GetKeyState(KeyCode::R) == KeyState::Down)
+                        {
+                                redInput = true;
+                        }
 
-                // Backward
-                if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
-                {
-                        tempDir.z -= 1.0f;
-                }
-                // Left
-                if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
-                {
-                        tempDir.x -= 1.0f;
-                }
-                // Right
-                if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
-                {
-                        tempDir.x += 1.0f;
+                        // Set red input to false when E is released
+                        else if (GCoreInput::GetKeyState(KeyCode::R) == KeyState::Release)
+                        {
+                                redInput = false;
+                        }
+
+                        if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::DownFirst)
+                        {
+                                spaceTimeStamp = GEngine::Get()->GetTotalTime();
+                        }
                 }
 
                 m_CurrentInput = XMLoadFloat4(&tempDir);
@@ -148,7 +163,7 @@ void PlayerController::Init(EntityHandle h)
         m_StateMachine.Init(this);
 }
 
-void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
+void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color, float collisionTimeStamp)
 {
 
         // Audio that will play on boost
@@ -156,6 +171,12 @@ void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
         boost->SetVolume(0.3f);
 
         bool isPlaying = false;
+
+        if (spaceTimeStamp >= collisionTimeStamp && spaceTimeStamp < (collisionTimeStamp + 0.5f)) 
+		{
+                ConsoleWindow::PrintMessage("Input matches rhythm!", "Player Movement");
+                spaceTimeStamp = 0.0f;
+		}
 
         switch (color)
         {
