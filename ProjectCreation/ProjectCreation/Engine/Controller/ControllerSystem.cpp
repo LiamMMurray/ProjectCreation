@@ -153,7 +153,10 @@ void ControllerSystem::OnShutdown()
         for (int i = 0; i < E_CONTROLLERS::COUNT; ++i)
         {
                 if (m_Controllers[i])
+                {
+                        m_Controllers[i]->Shutdown();
                         delete m_Controllers[i];
+                }
         }
 }
 

@@ -14,3 +14,6 @@ void IController::Init(EntityHandle handle)
 {
         SetControlledEntity(handle);
 }
+
+void IController::Shutdown()
+{}

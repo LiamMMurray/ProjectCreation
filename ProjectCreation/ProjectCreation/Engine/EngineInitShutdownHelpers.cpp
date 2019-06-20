@@ -8,6 +8,7 @@
 void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type handle)
 {
         GEngine::Initialize();
+        AudioManager::Initialize();
 
         SystemManager* systemManager = GEngine::Get()->GetSystemManager();
         HandleManager* HandleManager = GEngine::Get()->GetHandleManager();
@@ -59,8 +60,6 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
         }
 
         GCoreInput::InitializeInput((HWND)handle);
-
-        AudioManager::Initialize();
 }
 
 void EngineHelpers::ShutdownEngineSystemManagers()

@@ -12,13 +12,13 @@ class IController
         virtual void ProcessInput() = 0;
         virtual void ApplyInput()   = 0;
 
-
         EntityHandle m_ControlledEntityHandle;
 
         float cacheTime;
 
 
     public:
+        virtual ~IController() = default;
         inline void SetEnabled(bool val)
         {
                 m_Enabled = val;
@@ -32,7 +32,7 @@ class IController
         virtual void OnUpdate(float deltaTime);
 
         virtual void Init(EntityHandle handle);
-
+        virtual void Shutdown();
         inline void SetControlledEntity(EntityHandle handle)
         {
                 m_ControlledEntityHandle = handle;

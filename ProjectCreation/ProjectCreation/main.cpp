@@ -132,7 +132,8 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                    int       nCmdShow       // how the windows is shown. Legacy. Can ignore
 )
 {
-
+        ENABLE_LEAK_DETECTION();
+        _CrtSetBreakAlloc(163);
         _WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
 		_CrtDumpMemoryLeaks();
@@ -140,8 +141,11 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         return 0;
 }
 
+
+
 int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+
         std::srand(unsigned(std::time(0)));
 
         constexpr char appName[] = "Inanis";

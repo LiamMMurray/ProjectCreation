@@ -2,10 +2,10 @@
 #include "../../ECS/ECSTypes.h"
 #include "IController.h"
 
+#include "../ConsoleWindow/ConsoleWindow.h"
 #include "../MathLibrary/MathLibrary.h"
 #include "../Physics/PhysicsComponent.h"
 #include "PlayerControllerStateMachine.h"
-#include "../ConsoleWindow/ConsoleWindow.h"
 
 // Audio Includes
 #include <Interface/G_Audio/GMusic.h>
@@ -20,11 +20,10 @@ class PlayerController : public IController
         friend class PlayerControllerStateMachine;
 
     private:
-        ComponentHandle m_GoalComponent;
-        void            GatherInput() override;
-        void            ProcessInput() override;
-        void            ApplyInput() override;
-
+        ComponentHandle     m_GoalComponent;
+        void                GatherInput() override;
+        void                ProcessInput() override;
+        void                ApplyInput() override;
         TransformComponent* _cachedControlledTransformComponent;
 
         DirectX::XMFLOAT3 m_EulerAngles;
@@ -45,25 +44,18 @@ class PlayerController : public IController
         PlayerCinematicState* m_CinematicState;
         PlayerGroundState*    m_GroundState;
 
-		// Boolean values for the light collection keys
-		// Names will most likely change later on
+        // Boolean values for the light collection keys
+        // Names will most likely change later on
 
-		// R will be input for red
-        bool redInput = false;
+		static constexpr unsigned int MAX_SPEEDBOOST_SOUNDS = 10;
 
-		// Q will be input for blue
-        bool blueInput = false;
-
-		// E will be input for green
-        bool greenInput = false;
-
-		// Space will be input for the rhythm system
-        double spaceTimeStamp = 0.0f;
-
+		void DebugPrintSpeedBoostColor(int color);
 		float rhythmThreshold = 0.5f;
-
+        double spaceTimeStamp = 0.0f;
     public:
-        PlayerController();
+        GW::AUDIO::GSound* mSpeedBoostSoundPool[MAX_SPEEDBOOST_SOUNDS];
+        unsigned int       currSpeedBoostIteration = 0;
+        virtual void       Shutdown() override;
 
         virtual void Init(EntityHandle h) override;
         void         SpeedBoost(DirectX::XMVECTOR boostPos, int color, double collisionTimeStamp);

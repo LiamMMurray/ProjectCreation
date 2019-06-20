@@ -9,6 +9,7 @@ class PlayerGroundState : public IPlayerControllerState
         virtual void Enter() override;
         virtual void Update(float deltaTime) override;
         virtual void Exit() override;
+        virtual ~PlayerGroundState() = default;
 
         inline void AddSpeedBoost()
         {

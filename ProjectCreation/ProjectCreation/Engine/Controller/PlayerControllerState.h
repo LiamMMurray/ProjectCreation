@@ -14,6 +14,7 @@ class IPlayerControllerState : public IState
         virtual void Enter()                 = 0;
         virtual void Update(float deltaTime) = 0;
         virtual void Exit()                  = 0;
+        virtual ~IPlayerControllerState() = default;
 
         TransformComponent* _cachedTransformComponent;
         PlayerController*   _playerController;
