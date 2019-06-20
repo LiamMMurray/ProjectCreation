@@ -10,8 +10,8 @@ using namespace DirectX;
 
 void PlayerGroundState::Enter()
 {
-        auto playerTransformComponent =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(_playerController->GetControlledEntity());
+        TransformComponent* playerTransformComponent =
+            _playerController->GetControlledEntity().GetComponent<TransformComponent>();
 
         _playerController->SetEulerAngles(playerTransformComponent->transform.rotation.ToEulerAngles());
 }
@@ -39,7 +39,7 @@ void PlayerGroundState::Update(float deltaTime)
         // Convert to degrees due to precision errors using small radian values
         float rollDegrees = XMConvertToDegrees(eulerAngles.z);
         rollDegrees       = MathLibrary::clamp(rollDegrees, -rollLimit, rollLimit);
-        rollDegrees       = MathLibrary::lerp(rollDegrees, 0.0f, MathLibrary::clamp(deltaTime * rollLimit * 0.35f, 0.0f, 1.0f));
+        rollDegrees       = MathLibrary::lerp(rollDegrees, 0.0f, MathLibrary::clamp(deltaTime * rollLimit, 0.0f, 1.0f));
         eulerAngles.z     = XMConvertToRadians(rollDegrees);
         _cachedTransformComponent->transform.rotation = FQuaternion::FromEulerAngles(eulerAngles);
 

@@ -1,8 +1,8 @@
 #include "CollisionHelpers.h"
 #include "../GEngine.h"
 #include "CollisionComponents.h"
-#include "CollisionLibary.h"
 #include "CollisionGrid.h"
+#include "CollisionLibary.h"
 
 using namespace DirectX;
 using namespace std;
@@ -10,14 +10,13 @@ void Collision::CreateSphere(CollisionGrid*         grid,
                              const Shapes::FSphere& fSphere,
                              EntityHandle           entityH,
                              ComponentHandle*       sphereHandle,
-                             ComponentHandle*       aabbHAndle)
+                             ComponentHandle*       aabbHandle)
 {
         // create handle for shapes, the grid container will have aabb box as the main object to detect collision
 
-        ComponentHandle sHandle = COMPONENT_MANAGER->AddComponent<SphereComponent>(entityH);
-        ComponentHandle aHandle = COMPONENT_MANAGER->AddComponent<AABBComponent>(entityH);
-
-        SphereComponent* sComponent = COMPONENT_MANAGER->GetComponent<SphereComponent>(sHandle);
+        ComponentHandle  sHandle    = entityH.AddComponent<SphereComponent>();
+        ComponentHandle  aHandle    = entityH.AddComponent<AABBComponent>();
+        SphereComponent* sComponent = sHandle.Get<SphereComponent>();
         sComponent->sphere          = fSphere;
 
         // adding component handle and shap types in the grid container
@@ -28,11 +27,11 @@ void Collision::CreateSphere(CollisionGrid*         grid,
 
         int index = grid->ComputeHashBucketIndex(cellpos);
 
-		auto it = grid->m_Container.try_emplace(index, CollisionGrid::CellContainer());
+        auto it = grid->m_Container.try_emplace(index, CollisionGrid::CellContainer());
         it.first->second.m_Spheres.push_back(sHandle);
 
-        if (aabbHAndle)
-                *aabbHAndle = aHandle;
+        if (aabbHandle)
+                *aabbHandle = aHandle;
         if (sphereHandle)
                 *sphereHandle = sHandle;
 }
@@ -40,8 +39,8 @@ void Collision::CreateSphere(CollisionGrid*         grid,
 void Collision::CreateAABB(CollisionGrid* grid, const Shapes::FAabb& fAABB, EntityHandle entityH, ComponentHandle* aabbHandle)
 {
         // create handle for shapes, the grid container will have aabb box as the main object to detect collision
-        ComponentHandle aHandle    = COMPONENT_MANAGER->AddComponent<AABBComponent>(entityH);
-        AABBComponent*  aComponent = COMPONENT_MANAGER->GetComponent<AABBComponent>(aHandle);
+        ComponentHandle aHandle    = entityH.AddComponent<AABBComponent>();
+        AABBComponent*  aComponent = aHandle.Get<AABBComponent>();
         aComponent->aabb           = fAABB;
 
         // adding component handle and shap types in the grid container
@@ -67,12 +66,12 @@ void Collision::CreateCapsule(CollisionGrid*          grid,
 {
 
         // create handle for shapes, the grid container will have aabb box as the main object to detect collision
-        ComponentHandle cHandle = COMPONENT_MANAGER->AddComponent<CapsuleComponent>(entityH);
-        ComponentHandle aHandle = COMPONENT_MANAGER->AddComponent<AABBComponent>(entityH);
+        ComponentHandle cHandle = entityH.AddComponent<CapsuleComponent>();
+        ComponentHandle aHandle = entityH.AddComponent<AABBComponent>();
 
-        CapsuleComponent* sComponent = COMPONENT_MANAGER->GetComponent<CapsuleComponent>(cHandle);
+        CapsuleComponent* sComponent = cHandle.Get<CapsuleComponent>();
         sComponent->capsule          = fCapsule;
-        AABBComponent* aComponent    = COMPONENT_MANAGER->GetComponent<AABBComponent>(aHandle);
+        AABBComponent* aComponent    = aHandle.Get<AABBComponent>();
         aComponent->aabb             = CollisionLibary::CreateBoundingBoxFromCapsule(fCapsule);
 
 

@@ -24,6 +24,7 @@ using namespace DirectX;
 using namespace Shapes;
 using namespace Collision;
 using namespace debug_renderer;
+
 void PlayerController::GatherInput()
 {
 
@@ -39,15 +40,42 @@ void PlayerController::GatherInput()
                         tempDir.z += 1.0f;
                 }
 
+                // Set blue input to true while Q is pressed
                 if (GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Down)
                 {
-                        // tempDir.z += 1.0f;
+                        blueInput = true;
                 }
 
+                // Set blue input to false when Q is released
+                else if (GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Release)
+                {
+                        blueInput = false;
+                }
+
+                // Set green input to true while E is pressed
                 if (GCoreInput::GetKeyState(KeyCode::E) == KeyState::Down)
                 {
-                        // tempDir.z += 1.0f;
+                        greenInput = true;
                 }
+
+                // Set green input to false when E is released
+                else if (GCoreInput::GetKeyState(KeyCode::E) == KeyState::Release)
+                {
+                        greenInput = false;
+                }
+
+                // Set red input to true while E is pressed
+                if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Down)
+                {
+                        redInput = true;
+                }
+
+                // Set red input to false when E is released
+                else if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Release)
+                {
+                        redInput = false;
+                }
+
                 // Backward
                 if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
                 {
@@ -63,16 +91,6 @@ void PlayerController::GatherInput()
                 {
                         tempDir.x += 1.0f;
                 }
-                // Rise
-                if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Down)
-                {
-                        tempDir.y += 1.0f;
-                }
-                // Fall
-                if (GCoreInput::GetKeyState(KeyCode::Control) == KeyState::Down)
-                {
-                        tempDir.y -= 1.0f;
-                }
 
                 m_CurrentInput = XMLoadFloat4(&tempDir);
         }
@@ -80,8 +98,7 @@ void PlayerController::GatherInput()
 
 void PlayerController::ProcessInput()
 {
-        _cachedControlledTransformComponent =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+        _cachedControlledTransformComponent = m_ControlledEntityHandle.GetComponent<TransformComponent>();
 }
 
 void PlayerController::ApplyInput()
@@ -103,10 +120,10 @@ PlayerController::PlayerController()
 void PlayerController::Init(EntityHandle h)
 {
         IController::Init(h);
-        TransformComponent* transformComp =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+        ComponentHandle     tHandle = m_ControlledEntityHandle.GetComponentHandle<TransformComponent>();
+        TransformComponent* tComp   = tHandle.Get<TransformComponent>();
 
-        m_EulerAngles = transformComp->transform.rotation.ToEulerAngles();
+        m_EulerAngles = tComp->transform.rotation.ToEulerAngles();
 
         // Create any states and set their respective variables here
         m_CinematicState = m_StateMachine.CreateState<PlayerCinematicState>();
@@ -122,23 +139,109 @@ void PlayerController::Init(EntityHandle h)
         m_StateMachine.AddTransition(puzzleState, m_CinematicState, E_PLAYERSTATE_EVENT::TO_TRANSITION);
 
         // Request initial transition
-        FTransform target = transformComp->transform;
+        FTransform target = tComp->transform;
         target.rotation   = XMQuaternionIdentity();
-        RequestCinematicTransition(1, &transformComp->GetHandle(), &target, E_PLAYERSTATE_EVENT::TO_GROUND, 5.0f);
+
+        RequestCinematicTransition(1, &tHandle, &target, E_PLAYERSTATE_EVENT::TO_GROUND, 5.0f);
 
         // After you create the states, initialize the state machine. First created state is starting state
         m_StateMachine.Init(this);
 }
 
-void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos)
+void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
 {
-        currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
-        XMVECTOR currentInput = XMVector3Rotate(m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
-        if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
+
+        // Audio that will play on boost
+        auto boost = AudioManager::Get()->CreateSFX("whiteSpeedBoost");
+        boost->SetVolume(0.3f);
+
+        bool isPlaying = false;
+
+        switch (color)
         {
-                m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
-                m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
-                m_GroundState->AddSpeedBoost();
+                        // Red light collision
+                case 0:
+                        if (redInput == true)
+                        {
+                                if (boost->isSoundPlaying(isPlaying))
+                                {
+                                        boost->Play();
+                                        isPlaying = true;
+                                }
+                                ConsoleWindow::PrintMessage("Boosting on red light", "PlayerMovement");
+                                currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
+                                XMVECTOR currentInput = XMVector3Rotate(
+                                    m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
+                                if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
+                                {
+                                        m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
+                                        m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
+                                        m_GroundState->AddSpeedBoost();
+                                }
+                        }
+                        break;
+
+                        // Blue light collision
+                case 1:
+                        if (blueInput == true)
+                        {
+                                if (boost->isSoundPlaying(isPlaying))
+                                {
+                                        boost->Play();
+                                        isPlaying = true;
+                                }
+                                ConsoleWindow::PrintMessage("Boosting on blue light", "PlayerMovement");
+                                currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
+                                XMVECTOR currentInput = XMVector3Rotate(
+                                    m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
+                                if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
+                                {
+                                        m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
+                                        m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
+                                        m_GroundState->AddSpeedBoost();
+                                }
+                        }
+                        break;
+
+                        // Green light collision
+                case 2:
+                        if (greenInput == true)
+                        {
+                                if (boost->isSoundPlaying(isPlaying))
+                                {
+                                        boost->Play();
+                                        isPlaying = true;
+                                }
+                                ConsoleWindow::PrintMessage("Boosting on green light", "PlayerMovement");
+                                currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
+                                XMVECTOR currentInput = XMVector3Rotate(
+                                    m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
+                                if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
+                                {
+                                        m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
+                                        m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
+                                        m_GroundState->AddSpeedBoost();
+                                }
+                        }
+                        break;
+
+                        // White light collision
+                case 3:
+                        if (boost->isSoundPlaying(isPlaying))
+                        {
+                                boost->Play();
+                                isPlaying = true;
+                        }
+                        currentMaxSpeed = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
+                        XMVECTOR currentInput =
+                            XMVector3Rotate(m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
+                        if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
+                        {
+                                m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
+                                m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
+                                m_GroundState->AddSpeedBoost();
+                        }
+                        break;
         }
 }
 
@@ -169,8 +272,7 @@ void PlayerController::RequestCinematicTransition(int                    count,
                                                   float                  duration,
                                                   float                  delay)
 {
-        TransformComponent* transformComp =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+        TransformComponent* transformComp = m_ControlledEntityHandle.GetComponent<TransformComponent>();
 
         m_CinematicState->SetTransitionMode(E_TRANSITION_MODE::Simple);
         m_CinematicState->AddTransformTransitions(count, handles, targets);
@@ -190,8 +292,7 @@ void PlayerController::RequestCinematicTransitionLookAt(const ComponentHandle  l
                                                         float                  lookAtTransitionDuration,
                                                         float                  delay)
 {
-        TransformComponent* transformComp =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+        TransformComponent* transformComp = m_ControlledEntityHandle.GetComponent<TransformComponent>();
 
         m_CinematicState->SetTransitionMode(E_TRANSITION_MODE::LookAt);
         m_CinematicState->AddTransformTransitions(count, handles, targets);
@@ -219,12 +320,10 @@ void PlayerController::RequestPuzzleMode(ComponentHandle          goalHandle,
                 m_StateMachine.Transition(E_PLAYERSTATE_EVENT::TO_PUZZLE);
         else
         {
-                auto playerTransformComp =
-                    GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
-
-                GoalComponent*  goalComp = GEngine::Get()->GetComponentManager()->GetComponent<GoalComponent>(goalHandle);
-                ComponentHandle goalTransformHandle =
-                    GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(goalComp->GetOwner())->GetHandle();
+                TransformComponent* playerTransformComp = m_ControlledEntityHandle.GetComponent<TransformComponent>();
+                GoalComponent*      goalComp            = goalHandle.Get<GoalComponent>();
+                EntityHandle        goalCompParent      = goalComp->GetParent();
+                ComponentHandle     goalTransformHandle = goalCompParent.GetComponentHandle<TransformComponent>();
 
                 FSphere sphereInitial;
                 sphereInitial.center = goalComp->initialTransform.translation;

@@ -11,20 +11,20 @@
 #include <Windows.h>
 
 #include "../Utility/Macros/DirectXMacros.h"
-
+#include "../Utility/MemoryLeakDetection.h"
 UIManager* UIManager::instance;
 
 using namespace DirectX;
 // Adding UI
-void UIManager::AddSprite(ID3D11Device*                 device,
-                          ID3D11DeviceContext*          deviceContext,
-                          std::vector<SpriteComponent>& SpriteVector,
-                          const wchar_t*                FileName,
-                          float                         PositionX,
-                          float                         PositionY,
-                          float                         scaleX,
-                          float                         scaleY,
-                          bool                          enabled)
+void UIManager::AddSprite(ID3D11Device*        device,
+                          ID3D11DeviceContext* deviceContext,
+                          int                  category,
+                          const wchar_t*       FileName,
+                          float                PositionX,
+                          float                PositionY,
+                          float                scaleX,
+                          float                scaleY,
+                          bool                 enabled)
 {
 
         SpriteComponent cSprite;
@@ -64,7 +64,7 @@ void UIManager::AddSprite(ID3D11Device*                 device,
         cSprite.mRectangle.center  = XMVectorSet(PositionX, PositionY, 0.0f, 1.0f);
         cSprite.mRectangle.extents = XMVectorSet(scaleX * 0.5f, scaleY * 0.5f, 0.0f, 1.0f);
         // Push back to the vector
-        SpriteVector.emplace_back(cSprite);
+        m_AllSprites[category].emplace_back(cSprite);
 
         // Reset everything that needs to be
         Texture.Reset();
@@ -73,20 +73,19 @@ void UIManager::AddSprite(ID3D11Device*                 device,
 
 // Adds a sprite to the vector of text
 // Currently PositionX and PositionY are not used
-void UIManager::AddText(ID3D11Device*                 device,
-                        ID3D11DeviceContext*          deviceContext,
-                        std::vector<FontComponent>&   FontVector,
-                        std::vector<SpriteComponent>& SpriteVector,
-                        const wchar_t*                FileName,
-                        std::string                   TextDisplay,
-                        float                         scale,
-                        float                         PositionX,
-                        float                         PositionY,
-                        bool                          enabled,
-                        bool                          AddButton,
-                        bool                          bOverrideButtonDimensions,
-                        float                         buttonwidth,
-                        float                         buttonheight)
+void UIManager::AddText(ID3D11Device*        device,
+                        ID3D11DeviceContext* deviceContext,
+                        int                  category,
+                        const wchar_t*       FileName,
+                        std::string          TextDisplay,
+                        float                scale,
+                        float                PositionX,
+                        float                PositionY,
+                        bool                 enabled,
+                        bool                 AddButton,
+                        bool                 bOverrideButtonDimensions,
+                        float                buttonwidth,
+                        float                buttonheight)
 {
         FontComponent cFont;
 
@@ -108,12 +107,15 @@ void UIManager::AddText(ID3D11Device*                 device,
         cFont.mScreenOffset.x = PositionX;
         cFont.mScreenOffset.y = PositionY;
 
-        // Error C2280
-        // attempting to reference a deleted function
-        // C:\Program Files(x86)\Microsoft Visual Studio\2019\Preview\VC\Tools\MSVC\14.20.27508\include\xmemory0 819
-        // FIXED
-        // Making the vector array an array of pointers fixed this issue
-        FontVector.emplace_back(std::move(cFont));
+        // This was not the error, fixed by Jose
+        {
+                // Error C2280
+                // attempting to reference a deleted function
+                // C:\Program Files(x86)\Microsoft Visual Studio\2019\Preview\VC\Tools\MSVC\14.20.27508\include\xmemory0 819
+                // FIXED
+                // Making the vector array an array of pointers fixed this issue
+        }
+        m_AllFonts[category].emplace_back(std::move(cFont));
 
         float bWidth  = scale * aspectRatio;
         float bHeight = scale;
@@ -128,7 +130,7 @@ void UIManager::AddText(ID3D11Device*                 device,
         {
                 instance->AddSprite(device,
                                     deviceContext,
-                                    SpriteVector,
+                                    category,
                                     L"../Assets/2d/Sprite/Grey Box Test.dds",
                                     PositionX,
                                     PositionY,
@@ -188,9 +190,9 @@ void UIManager::OnScreenResize()
 void UIManager::MainTilteUnpause()
 {
         GEngine::Get()->SetGamePaused(false);
-        for (int i = 0; i < instance->m_MainSpriteFonts.size(); i++)
+        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu].size(); i++)
         {
-                instance->m_MainSpriteFonts[i].mEnabled = false;
+                instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][i].mEnabled = false;
         }
 }
 
@@ -210,36 +212,36 @@ void UIManager::Pause()
         }
 
         // Pause Menu Sprites
-        for (int i = 0; i < instance->m_PauseSprites.size(); i++)
+        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
         {
-                instance->m_PauseSprites[i].mEnabled = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
         }
         // Text
-        for (int i = 0; i < instance->m_PauseSpriteFonts.size(); i++)
+        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
         {
-                instance->m_PauseSpriteFonts[i].mEnabled = true;
+                instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
         }
 
         // Options Menu Sprites
-        for (int i = 0; i < instance->m_OptionsSprites.size(); i++)
+        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
         {
-                instance->m_OptionsSprites[i].mEnabled = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
         }
         // Text
-        for (int i = 0; i < instance->m_OptionsSpriteFonts.size(); i++)
+        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
         {
-                instance->m_OptionsSpriteFonts[i].mEnabled = false;
+                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
         }
 
         // Level Select Menu Sprites
-        for (int i = 0; i < instance->m_LevelSprites.size(); i++)
+        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu].size(); i++)
         {
-                instance->m_LevelSprites[i].mEnabled = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
         }
         // Text
-        for (int i = 0; i < instance->m_LevelSpriteFonts.size(); i++)
+        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu].size(); i++)
         {
-                instance->m_LevelSpriteFonts[i].mEnabled = false;
+                instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
         }
 }
 
@@ -259,36 +261,36 @@ void UIManager::Unpause()
         }
 
         // Pause Menu Sprites
-        for (int i = 0; i < instance->m_PauseSprites.size(); i++)
+        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
         {
-                instance->m_PauseSprites[i].mEnabled = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
         }
         // Text
-        for (int i = 0; i < instance->m_PauseSpriteFonts.size(); i++)
+        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
         {
-                instance->m_PauseSpriteFonts[i].mEnabled = false;
+                instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
         }
 
         // Options Menu Sprites
-        for (int i = 0; i < instance->m_OptionsSprites.size(); i++)
+        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
         {
-                instance->m_OptionsSprites[i].mEnabled = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
         }
         // Text
-        for (int i = 0; i < instance->m_OptionsSpriteFonts.size(); i++)
+        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
         {
-                instance->m_OptionsSpriteFonts[i].mEnabled = false;
+                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
         }
 
         // Level Select Menu Sprites
-        for (int i = 0; i < instance->m_LevelSprites.size(); i++)
+        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu].size(); i++)
         {
-                instance->m_LevelSprites[i].mEnabled = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
         }
         // Text
-        for (int i = 0; i < instance->m_LevelSpriteFonts.size(); i++)
+        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu].size(); i++)
         {
-                instance->m_LevelSpriteFonts[i].mEnabled = false;
+                instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
         }
 }
 
@@ -297,26 +299,33 @@ void UIManager::Unpause()
 void UIManager::Initialize(native_handle_type hwnd)
 {
         assert(!instance);
-
-
-        instance = new UIManager;
+        instance = DBG_NEW UIManager;
 
         instance->m_RenderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 
         instance->m_SpriteBatch = std::make_unique<DirectX::SpriteBatch>(instance->m_RenderSystem->m_Context);
         instance->m_States      = std::make_unique<DirectX::CommonStates>(instance->m_RenderSystem->m_Device);
 
-        instance->m_AllSprites.push_back(&instance->m_MainSprites);
-        instance->m_AllFonts.push_back(&instance->m_MainSpriteFonts);
+        // instance->m_AllSprites.push_back(&instance->m_MainSprites);
+        // instance->m_AllFonts.push_back(&instance->m_MainSpriteFonts);
+        //
+        // instance->m_AllSprites.push_back(&instance->m_PauseSprites);
+        // instance->m_AllFonts.push_back(&instance->m_PauseSpriteFonts);
+        //
+        // instance->m_AllSprites.push_back(&instance->m_OptionsSprites);
+        // instance->m_AllFonts.push_back(&instance->m_OptionsSpriteFonts);
+        //
+        // instance->m_AllSprites.push_back(&instance->m_LevelSprites);
+        // instance->m_AllFonts.push_back(&instance->m_LevelSpriteFonts);
+        for (int i = 0; i < E_MENU_CATEGORIES::COUNT; ++i)
+        {
+                instance->m_AllSprites.insert(std::make_pair(i, std::vector<SpriteComponent>()));
+        }
 
-        instance->m_AllSprites.push_back(&instance->m_PauseSprites);
-        instance->m_AllFonts.push_back(&instance->m_PauseSpriteFonts);
-
-        instance->m_AllSprites.push_back(&instance->m_OptionsSprites);
-        instance->m_AllFonts.push_back(&instance->m_OptionsSpriteFonts);
-
-        instance->m_AllSprites.push_back(&instance->m_LevelSprites);
-        instance->m_AllFonts.push_back(&instance->m_LevelSpriteFonts);
+        for (int i = 0; i < E_MENU_CATEGORIES::COUNT; ++i)
+        {
+                instance->m_AllFonts.insert(std::make_pair(i, std::vector<FontComponent>()));
+        }
 
         if (instance->m_InMenu)
         {
@@ -336,8 +345,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         // Main Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
-                          instance->m_MainSpriteFonts,
-                          instance->m_MainSprites,
+                          E_MENU_CATEGORIES::MainMenu,
                           L"../Assets/2d/Text/angel.spritefont",
                           "INANIS",
                           0.06f,
@@ -346,12 +354,12 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           false);
 
+		// "Press Spacebar, Q, and E to continue. . . "
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
-                          instance->m_MainSpriteFonts,
-                          instance->m_MainSprites,
+                          E_MENU_CATEGORIES::MainMenu,
                           L"../Assets/2d/Text/calibri.spritefont",
-                          "Press Spacebar to continue. . .",
+                          "Press Spacebar, Q, and E to continue. . .",
                           0.06f,
                           0.0f,
                           0.0f,
@@ -360,11 +368,11 @@ void UIManager::Initialize(native_handle_type hwnd)
 
 
         // Pause Menu
-        constexpr float pauseButtonWidth  = 0.3f;
-        constexpr float pauseButtonHeight = 0.08f;
+        constexpr float pauseButtonWidth  = 0.25f;
+        constexpr float pauseButtonHeight = 0.05f;
         instance->AddSprite(instance->m_RenderSystem->m_Device,
                             instance->m_RenderSystem->m_Context,
-                            instance->m_PauseSprites,
+                            E_MENU_CATEGORIES::PauseMenu,
                             L"../Assets/2d/Sprite/Grey Box Test.dds",
                             0.0f,
                             0.0f,
@@ -374,8 +382,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
-                          instance->m_PauseSpriteFonts,
-                          instance->m_PauseSprites,
+                          E_MENU_CATEGORIES::PauseMenu,
                           L"../Assets/2d/Text/angel.spritefont",
                           "INANIS",
                           0.06f,
@@ -386,11 +393,10 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
-                          instance->m_PauseSpriteFonts,
-                          instance->m_PauseSprites,
+                          E_MENU_CATEGORIES::PauseMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
                           "Resume",
-                          0.06f,
+                          0.05f,
                           0.0f,
                           -0.15f,
                           false,
@@ -401,11 +407,10 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
-                          instance->m_PauseSpriteFonts,
-                          instance->m_PauseSprites,
+                          E_MENU_CATEGORIES::PauseMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
                           "Levels",
-                          0.06f,
+                          0.05f,
                           0.0f,
                           -0.05f,
                           false,
@@ -416,11 +421,10 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
-                          instance->m_PauseSpriteFonts,
-                          instance->m_PauseSprites,
+                          E_MENU_CATEGORIES::PauseMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
                           "Options",
-                          0.06f,
+                          0.05f,
                           0.0f,
                           0.05f,
                           false,
@@ -431,13 +435,26 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
-                          instance->m_PauseSpriteFonts,
-                          instance->m_PauseSprites,
+                          E_MENU_CATEGORIES::PauseMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "Exit",
-                          0.06f,
+                          "Controls",
+                          0.05f,
                           0.0f,
                           0.15f,
+                          false,
+                          true,
+                          true,
+                          pauseButtonWidth,
+                          pauseButtonHeight);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::PauseMenu,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Exit",
+                          0.05f,
+                          0.0f,
+                          0.25f,
                           false,
                           true,
                           true,
@@ -447,11 +464,10 @@ void UIManager::Initialize(native_handle_type hwnd)
         // Options Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
-                          instance->m_OptionsSpriteFonts,
-                          instance->m_OptionsSprites,
+                          E_MENU_CATEGORIES::OptionsMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
                           "Back",
-                          0.06f,
+                          0.05f,
                           0.0f,
                           -0.15f,
                           false,
@@ -462,13 +478,12 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
-                          instance->m_OptionsSpriteFonts,
-                          instance->m_OptionsSprites,
+                          E_MENU_CATEGORIES::OptionsMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "Fullscreen: ",
-                          0.06f,
-                          0.1f,
-                          -0.05f,
+                          "Window Mode",
+                          0.04f,
+                          0.0f,
+                          0.0f,
                           false,
                           true,
                           true,
@@ -477,13 +492,12 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
-                          instance->m_OptionsSpriteFonts,
-                          instance->m_OptionsSprites,
+                          E_MENU_CATEGORIES::OptionsMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "Resolution: ",
-                          0.06f,
+                          "Resolution",
+                          0.04f,
+                          0.0f,
                           0.1f,
-                          0.05f,
                           false,
                           true,
                           true,
@@ -493,149 +507,142 @@ void UIManager::Initialize(native_handle_type hwnd)
         // Level Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
-                          instance->m_LevelSpriteFonts,
-                          instance->m_LevelSprites,
+                          E_MENU_CATEGORIES::LevelMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
                           "Back",
-                          0.06f,
+                          0.05f,
                           0.0f,
-                          0.2f,
+                          -0.15f,
                           false,
                           true,
                           true,
                           pauseButtonWidth,
                           pauseButtonHeight);
 
-        // Events
-        // Pause
-        // Background Image
-        instance->m_PauseSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                std::cout << "OnPress Event" << std::endl;
-                std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
-                std::cout << std::endl;
-        });
-
-        instance->m_PauseSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                std::cout << "OnPress Event2" << std::endl;
-                std::cout << "X: " << e->mouseX << "\t\t" << e->mouseY << std::endl;
-                std::cout << std::endl;
-        });
-
         // Resume Button
-        instance->m_PauseSprites[1].OnMouseDown.AddEventListener([](UIMouseEvent* e) { instance->Unpause(); });
+        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][1].OnMouseDown.AddEventListener(
+            [](UIMouseEvent* e) { instance->Unpause(); });
 
         // Level Select Button
-        instance->m_PauseSprites[2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Sprites
-                for (int i = 0; i < instance->m_PauseSprites.size(); i++)
+                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
                 {
                         if (i != 0)
                         {
-                                instance->m_PauseSprites[i].mEnabled = false;
+                                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
                         }
                 }
                 // Text
-                for (int i = 0; i < instance->m_PauseSpriteFonts.size(); i++)
+                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
                 {
-                        instance->m_PauseSpriteFonts[i].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
                 }
 
                 // Sprites
-                for (int i = 0; i < instance->m_LevelSprites.size(); i++)
+                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu].size(); i++)
                 {
-                        instance->m_LevelSprites[i].mEnabled = true;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = true;
                 }
                 // Text
-                for (int i = 0; i < instance->m_LevelSpriteFonts.size(); i++)
+                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu].size(); i++)
                 {
-                        instance->m_LevelSpriteFonts[i].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = true;
                 }
         });
 
         // Options Button
-        instance->m_PauseSprites[3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Sprites
-                for (int i = 0; i < instance->m_PauseSprites.size(); i++)
+                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
                 {
                         if (i != 0)
                         {
-                                instance->m_PauseSprites[i].mEnabled = false;
+                                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
                         }
                 }
                 // Text
-                for (int i = 0; i < instance->m_PauseSpriteFonts.size(); i++)
+                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
                 {
-                        instance->m_PauseSpriteFonts[i].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
                 }
 
                 // Sprites
-                for (int i = 0; i < instance->m_OptionsSprites.size(); i++)
+                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
                 {
-                        instance->m_OptionsSprites[i].mEnabled = true;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = true;
                 }
                 // Text
-                for (int i = 0; i < instance->m_OptionsSpriteFonts.size(); i++)
+                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
                 {
-                        instance->m_OptionsSpriteFonts[i].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = true;
                 }
         });
 
+        // Controls Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][4].OnMouseDown.AddEventListener([](UIMouseEvent* e) {});
+
         // Exit Button
-        instance->m_PauseSprites[4].OnMouseDown.AddEventListener([](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
+        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][5].OnMouseDown.AddEventListener(
+            [](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
 
         // Options
         // Back Button
-        instance->m_OptionsSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
 
                 // Disable all sprites for the options
-                for (int i = 0; i < instance->m_OptionsSprites.size(); i++)
+                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
                 {
-                        instance->m_OptionsSprites[i].mEnabled = false;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
                 }
                 // Disable all text for the options
-                for (int i = 0; i < instance->m_OptionsSpriteFonts.size(); i++)
+                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
                 {
-                        instance->m_OptionsSpriteFonts[i].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
                 }
 
                 // Enable all sprites for the background
-                for (int i = 1; i < instance->m_PauseSprites.size(); i++)
+                for (int i = 1; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
                 {
-                        instance->m_PauseSprites[i].mEnabled = true;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
                 }
                 // Enable all text for the background
-                for (int i = 0; i < instance->m_PauseSpriteFonts.size(); i++)
+                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
                 {
-                        instance->m_PauseSpriteFonts[i].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
                 }
+        });
+
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e){
+                
         });
 
         // Level Select
         // Back Button
-        instance->m_LevelSprites[0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
 
                 // Disable all sprites for the options
-                for (int i = 0; i < instance->m_LevelSprites.size(); i++)
+                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu].size(); i++)
                 {
-                        instance->m_LevelSprites[i].mEnabled = false;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
                 }
                 // Disable all text for the options
-                for (int i = 0; i < instance->m_LevelSpriteFonts.size(); i++)
+                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu].size(); i++)
                 {
-                        instance->m_LevelSpriteFonts[i].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
                 }
 
                 // Enable all sprites for the background
-                for (int i = 1; i < instance->m_PauseSprites.size(); i++)
+                for (int i = 1; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
                 {
-                        instance->m_PauseSprites[i].mEnabled = true;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
                 }
                 // Enable all text for the background
-                for (int i = 0; i < instance->m_PauseSpriteFonts.size(); i++)
+                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
                 {
-                        instance->m_PauseSpriteFonts[i].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
                 }
         });
 }
@@ -649,6 +656,7 @@ void UIManager::Update()
         instance->m_ScreenCenter = XMVectorSet(instance->m_ScreenSize.x * 0.5f, instance->m_ScreenSize.y * 0.5f, 0.0f, 1.0f);
         instance->m_TexelSize    = XMFLOAT2{1.0f / instance->m_ScreenSize.x, 1.0f / instance->m_ScreenSize.y};
 
+        float aspectRatio = instance->m_ScreenSize.x / instance->m_ScreenSize.y;
         if (instance->m_InMenu)
         {
                 ClipCursor(nullptr);
@@ -658,10 +666,12 @@ void UIManager::Update()
                 instance->UIClipCursor();
         }
 
-        // Pause / Unpause
-        if (instance->m_MainSpriteFonts[0].mEnabled)
+        // Pause & Unpause
+        if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled)
         {
-                if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::DownFirst)
+                if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Down &&
+                    GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Down &&
+                    GCoreInput::GetKeyState(KeyCode::E) == KeyState::Down)
                 {
                         instance->MainTilteUnpause();
                 }
@@ -681,8 +691,8 @@ void UIManager::Update()
                 }
         }
 
-        for (auto& vec : instance->m_AllSprites)
-                for (auto& sprite : *vec)
+        for (auto& it : instance->m_AllSprites)
+                for (auto& sprite : it.second)
                 {
                         if (sprite.mEnabled)
                         {
@@ -713,7 +723,7 @@ void UIManager::Update()
                                                     instance->m_ScreenCenter;
 
                                 XMVECTOR scale = XMVectorSet(sprite.mScaleX * instance->m_ScreenSize.x,
-                                                             sprite.mScaleY * instance->m_ScreenSize.y,
+                                                             aspectRatio * sprite.mScaleY * instance->m_ScreenSize.y,
                                                              0.0f,
                                                              1.0f);
 
@@ -725,8 +735,8 @@ void UIManager::Update()
                         }
                 }
 
-        for (auto& vec : instance->m_AllFonts)
-                for (auto& font : *vec)
+        for (auto& it : instance->m_AllFonts)
+                for (auto& font : it.second)
                 {
                         if (font.mEnabled)
                         {
@@ -740,7 +750,7 @@ void UIManager::Update()
                                                     instance->m_ScreenCenter;
 
                                 XMVECTOR scale = XMVectorSet(font.mScaleX * instance->m_ScreenSize.x,
-                                                             font.mScaleY * instance->m_ScreenSize.y,
+                                                             aspectRatio * font.mScaleY * instance->m_ScreenSize.y,
                                                              0.0f,
                                                              0.0f);
 
@@ -763,14 +773,14 @@ void UIManager::Shutdown()
         instance->m_SpriteBatch.reset();
         instance->m_background.Reset();
 
-        for (auto& vec : instance->m_AllSprites)
-                for (auto& sprite : *vec)
+        for (auto& it : instance->m_AllSprites)
+                for (auto& sprite : it.second)
                 {
                         SAFE_RELEASE(sprite.mTexture);
                 }
 
-        for (auto& vec : instance->m_AllFonts)
-                for (auto& font : *vec)
+        for (auto& it : instance->m_AllFonts)
+                for (auto& font : it.second)
                 {
                         SAFE_RELEASE(font.mTexture);
                         font.mSpriteFont.reset();

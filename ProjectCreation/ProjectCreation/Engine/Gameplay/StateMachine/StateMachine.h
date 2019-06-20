@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "../../../Utility/Hashing/PairHash.h"
+#include "../../../Utility/MemoryLeakDetection.h"
 #include "IState.h"
 
 class StateMachine
@@ -25,7 +26,7 @@ class StateMachine
         {
                 static_assert(std::is_base_of<IState, T>::value, "Created states must derive from IState");
 
-                T*      state           = new T();
+                T*      state           = DBG_NEW T();
                 IState* baseState       = static_cast<IState*>(state);
                 baseState->stateMachine = this;
                 m_States.push_back(state);

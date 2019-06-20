@@ -62,7 +62,7 @@ void AnimationSystem::calcTransforms(Animation::FJoint*          joints,
 
                 prevFrame++;
                 nextFrame++;
-        } 
+        }
 
         auto prevTime = animClip.frames[prevFrame].time;
         auto nextTime = animClip.frames[nextFrame].time;
@@ -86,8 +86,8 @@ void AnimationSystem::calcTransforms(Animation::FJoint*          joints,
                 MathLibrary::NormalizeValues(c, p);
 
                 joints[i].transform.rotation.data = XMQuaternionSlerp(joints[i].transform.rotation.data, outQuat, c);
-                joints[i].transform.translation       = XMVectorLerp(joints[i].transform.translation, outVec, c);
-                joints[i].transform.scale             = XMVectorLerp(joints[i].transform.scale, outScale, c);
+                joints[i].transform.translation   = XMVectorLerp(joints[i].transform.translation, outVec, c);
+                joints[i].transform.scale         = XMVectorLerp(joints[i].transform.scale, outScale, c);
         }
 }
 
@@ -96,24 +96,16 @@ void AnimationSystem::OnPreUpdate(float deltaTime)
 
 void AnimationSystem::OnUpdate(float deltaTime)
 {
-        // ITR_TODO
-        if (m_ComponentManager->ComponentsExist<AnimationComponent>())
-                return;
-
-        auto animCompItr = m_ComponentManager->GetActiveComponents<AnimationComponent>();
-
-        for (auto itr = animCompItr.begin(); itr != animCompItr.end(); itr++)
+        for (auto& animComp : m_HandleManager->GetActiveComponents<AnimationComponent>())
         {
-                auto animComp = static_cast<AnimationComponent*>(itr.data());
+                EntityHandle           ownerHandle = animComp.GetParent();
+                ComponentHandle        skelComp    = ownerHandle.GetComponentHandle<SkeletalMeshComponent>();
+                Animation::FSkeleton&  skel        = skelComp.Get<SkeletalMeshComponent>()->m_Skeleton;
 
-                EntityHandle           ownerHandle = animComp->GetOwner();
-                SkeletalMeshComponent* skelComp    = m_ComponentManager->GetComponent<SkeletalMeshComponent>(ownerHandle);
-                Animation::FSkeleton&  skel        = skelComp->m_Skeleton;
-
-                animComp->m_Time += deltaTime * 1.0f;
+                animComp.m_Time += deltaTime * 1.0f;
 
 
-                float normTime = (float)sin(animComp->m_Time / 5.f) * 0.5f + 0.5f;
+                float normTime = (float)sin(animComp.m_Time / 5.f) * 0.5f + 0.5f;
 
                 float w[3] = {};
 
@@ -128,26 +120,26 @@ void AnimationSystem::OnUpdate(float deltaTime)
                         w[1] = 1.0f - w[2];
                 }
 
-                animComp->SetWeights(3, w);
+                animComp.SetWeights(3, w);
 
-                int clipCount = (int)animComp->m_Clips.size();
+                int clipCount = (int)animComp.m_Clips.size();
 
                 int jointCount = (int)skel.jointTransforms.size();
 
                 std::vector<float> weights;
-                weights         = animComp->m_Weights;
+                weights         = animComp.m_Weights;
                 float sumWeight = 0.0f;
                 for (int currTrack = 0; currTrack < clipCount; ++currTrack)
                 {
-                        auto clip = m_ResourceManager->GetResource<AnimationClip>(animComp->m_Clips[currTrack]);
+                        auto clip = m_ResourceManager->GetResource<AnimationClip>(animComp.m_Clips[currTrack]);
                         calcTransforms(skel.jointTransforms.data(),
                                        jointCount,
-                                       animComp->m_Time,
+                                       animComp.m_Time,
                                        clip->m_AnimClip,
                                        sumWeight,
-                                       animComp->m_Weights[currTrack]);
+                                       animComp.m_Weights[currTrack]);
 
-                        sumWeight += animComp->m_Weights[currTrack];
+                        sumWeight += animComp.m_Weights[currTrack];
                 }
         }
 }
@@ -157,9 +149,8 @@ void AnimationSystem::OnPostUpdate(float deltaTime)
 
 void AnimationSystem::OnInitialize()
 {
-        m_ComponentManager = GEngine::Get()->GetComponentManager();
-        m_EntityManager    = GEngine::Get()->GetEntityManager();
-        m_ResourceManager  = GEngine::Get()->GetResourceManager();
+        m_HandleManager   = GEngine::Get()->GetHandleManager();
+        m_ResourceManager = GEngine::Get()->GetResourceManager();
 }
 
 void AnimationSystem::OnShutdown()
@@ -170,4 +161,3 @@ void AnimationSystem::OnResume()
 
 void AnimationSystem::OnSuspend()
 {}
-

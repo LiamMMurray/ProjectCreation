@@ -1,0 +1,7 @@
+// I, Joseph Gill, am renaming some audio clips from the Universal sound FX library our group was given
+// this document exists to make sure we credit the right files after renaming
+
+MAGIC_SPELL_Distinct_Thrust_Bright_Pad_Subtle_stereo = whiteSpeedBoost
+MAGIC_SPELL_Flame_01_mono = redPlanetSpawn
+MAGIC_SPELL_Dark_Pulse_Echo_Subtle_stereo = bluePlanetSpawn
+MAGIC_SPELL_Deep_Tone_Bubbling_Zaps_Subtle_stereo = greenPlanetSpawn

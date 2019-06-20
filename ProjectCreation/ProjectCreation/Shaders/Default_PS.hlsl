@@ -309,7 +309,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         float bandA        = saturate(dist / 0.1f - _playerRadius + 0.5f);
         float bandB        = saturate(dist / 0.1f - _playerRadius - 0.5f);
         float bandCombined = saturate(5.0f * (bandA - bandB));
-        // color *= (1 - mask);
+        color *= (1 - mask);
 
 
         float3 band = bandCombined * float3(0.85f, .8f, 0.4f) * 1.1f;
@@ -326,7 +326,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         veins                = saturate(pow(veins, 4.0f));
         float3 veinsEmissive = veins * 0.1f * float3(1.0f, 1.0f, 1.0f) * mask;
 
-        // clip((1 - bandA + veinsEmissive) < 0.01f ? -1 : 1);
+        clip((1 - bandA + veinsEmissive) < 0.01f ? -1 : 1);
 
         color += surface.emissiveColor + band + veinsEmissive;
 

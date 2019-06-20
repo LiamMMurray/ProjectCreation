@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../../ECS/ECS.h"
+#include "../../ECS/HandleManager.h"
 
 #include "../../Engine/ResourceManager/IResource.h"
 #include "../../Engine/Animation/AnimationContainers.h"

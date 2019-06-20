@@ -4,6 +4,7 @@
 #include <queue>
 #include <unordered_map>
 #include "../ErrorHandling/ErrorTypes.h"
+#include "../Utility/MemoryLeakDetection.h"
 #include "ECSTypes.h"
 #include "ISystem.h"
 
@@ -59,7 +60,7 @@ inline EResult SystemManager::CreateSystem(T** outSystem)
 
         assert(m_SystemsMap.find(typeID) == m_SystemsMap.end());
 
-        *outSystem   = new T();
+        *outSystem               = DBG_NEW T();
         ISystem* val = *outSystem;
         auto     it  = m_SystemsMap.insert(std::make_pair(typeID, val));
 

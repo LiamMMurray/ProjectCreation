@@ -18,13 +18,14 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
 
         /*** REFACTORING CODE START ***/
         ComponentHandle transHandle, transHandle2;
-        auto            entityH1   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle);
-        auto            goalHandle = m_ComponentManager->AddComponent<GoalComponent>(entityH1);
-        auto            goalComp   = m_ComponentManager->GetComponent<GoalComponent>(goalHandle);
-        auto            transComp  = m_ComponentManager->GetComponent<TransformComponent>(transHandle);
+
+		auto entityH1   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle);
+        auto            goalHandle = entityH1.AddComponent<GoalComponent>();
+        auto            goalComp   = goalHandle.Get<GoalComponent>();
+        auto            transComp  = transHandle.Get<TransformComponent>();
 
         auto entityH2   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle2);
-        auto transComp2 = m_ComponentManager->GetComponent<TransformComponent>(transHandle2);
+        auto transComp2 = transHandle2.Get<TransformComponent>();
 
         goalComp->collisionHandle = transHandle2;
         goalComp->goalTransform.SetScale(50.0f);
@@ -45,133 +46,171 @@ void OrbitSystem::OnUpdate(float deltaTime)
         PlayerController* playerController = (PlayerController*)SYSTEM_MANAGER->GetSystem<ControllerSystem>()
                                                  ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
 
-        TransformComponent* playerTransform =
-            m_ComponentManager->GetComponent<TransformComponent>(playerController->GetControlledEntity());
+        ComponentHandle playerTransformHandle =
+            playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
+        TransformComponent* playerTransform = playerTransformHandle.Get<TransformComponent>();
 
         double totalTime = GEngine::Get()->GetTotalTime();
 
-        m_ClosestGoalTransform = playerTransform->GetHandle();
+        m_ClosestGoalTransform = playerTransformHandle;
 
-        if (!m_ComponentManager->ComponentsExist<GoalComponent>())
+
+        TransformComponent* closestGoalTransform = nullptr;
+
+        for (auto& goalComp : m_HandleManager->GetActiveComponents<GoalComponent>())
         {
-                TransformComponent* closestGoalTransform = nullptr;
+                EntityHandle        goalParent  = goalComp.GetParent();
+                ComponentHandle     transHandle = goalParent.GetComponentHandle<TransformComponent>();
+                TransformComponent* transComp   = transHandle.Get<TransformComponent>();
 
-                auto goalCompItr = m_ComponentManager->GetActiveComponents<GoalComponent>();
-                for (auto itr = goalCompItr.begin(); itr != goalCompItr.end(); itr++)
+                float distancePrev = closestGoalTransform ?
+                                         MathLibrary::CalulateDistanceSq(closestGoalTransform->transform.translation,
+                                                                         playerTransform->transform.translation) :
+                                         FLT_MAX;
+
+                float distanceNew =
+                    MathLibrary::CalulateDistanceSq(transComp->transform.translation, playerTransform->transform.translation);
+
+                if (goalComp.goalState == E_GOAL_STATE::Idle && (closestGoalTransform == nullptr || distanceNew < distancePrev))
                 {
-                        TransformComponent* transComp =
-                            m_ComponentManager->GetComponent<TransformComponent>(itr.data()->GetOwner());
-
-                        GoalComponent* goalComp = (GoalComponent*)itr.data();
-
-                        float distancePrev = closestGoalTransform ?
-                                                 MathLibrary::CalulateDistanceSq(closestGoalTransform->transform.translation,
-                                                                                 playerTransform->transform.translation) :
-                                                 FLT_MAX;
-
-                        float distanceNew = MathLibrary::CalulateDistanceSq(transComp->transform.translation,
-                                                                            playerTransform->transform.translation);
-
-                        if (goalComp->goalState == E_GOAL_STATE::Idle &&
-                            (closestGoalTransform == nullptr || distanceNew < distancePrev))
-                        {
-                                m_ClosestGoalTransform = transComp->GetHandle();
-                        }
+                        m_ClosestGoalTransform = transHandle;
                 }
         }
 
         int goalCount = 0;
-        if (!m_ComponentManager->ComponentsExist<GoalComponent>())
+        for (auto& goalComp : m_HandleManager->GetActiveComponents<GoalComponent>())
         {
+                EntityHandle        goalParent      = goalComp.GetParent();
+                ComponentHandle     goalHandle      = goalParent.GetComponentHandle<GoalComponent>();
+                ComponentHandle     transHandle     = goalParent.GetComponentHandle<TransformComponent>();
+                TransformComponent* transComp       = transHandle.Get<TransformComponent>();
+                TransformComponent* transCompPuzzle = goalComp.collisionHandle.Get<TransformComponent>();
 
-                auto goalCompItr = m_ComponentManager->GetActiveComponents<GoalComponent>();
-                for (auto itr = goalCompItr.begin(); itr != goalCompItr.end(); itr++)
+                if (goalComp.goalState == E_GOAL_STATE::Spawning)
                 {
-                        TransformComponent* transComp =
-                            m_ComponentManager->GetComponent<TransformComponent>(itr.data()->GetOwner());
+                        float scale       = transComp->transform.GetRadius();
+                        float targetScale = goalComp.initialTransform.GetRadius();
+                        float newScale    = MathLibrary::MoveTowards(scale, targetScale, deltaTime * 0.25f);
+                        transComp->transform.SetScale(newScale);
 
-                        GoalComponent*      goalComp = (GoalComponent*)itr.data();
-                        TransformComponent* transCompPuzzle =
-                            m_ComponentManager->GetComponent<TransformComponent>(goalComp->collisionHandle);
+                        if (scale >= targetScale)
+                                goalComp.goalState = E_GOAL_STATE::Idle;
 
-                        if (goalComp->goalState == E_GOAL_STATE::Spawning)
-                        {
-                                float scale       = transComp->transform.GetRadius();
-                                float targetScale = goalComp->initialTransform.GetRadius();
-                                float newScale    = MathLibrary::MoveTowards(scale, targetScale, deltaTime*0.25f);
-                                transComp->transform.SetScale(newScale);
-
-                                if (scale >= targetScale)
-                                        goalComp->goalState = E_GOAL_STATE::Idle;
-
-                                return;
-                        }
-
-                        float time = float(totalTime / (1.0f + goalCount) + goalCount * 3.7792f);
-                        float x    = sin(time);
-                        float y    = cos(time);
-
-                        XMVECTOR offset1 = XMVectorSet(x, 0, y, 0.0f);
-
-                        goalComp->goalTransform.translation =
-                            XMVectorSet(0.0f, 1000.0f, 0.0f, 1.0f) + offset1 * 150.f * (goalCount + 1.0f);
-
-                        transCompPuzzle->transform = goalComp->goalTransform;
-
-                        float distanceSq = MathLibrary::CalulateDistanceSq(playerTransform->transform.translation,
-                                                                           transComp->transform.translation);
-
-                        if (goalComp->goalState == E_GOAL_STATE::Idle && distanceSq < 3.5f)
-                        {
-                                // goalComp->targetAlpha = 1.0f;
-                                // playerController->SetGoalComponent(goalComp->GetHandle());
-                                goalComp->goalState = E_GOAL_STATE::InitialTransition;
-                                playerController->RequestPuzzleMode(goalComp->GetHandle(), orbitCenter, true, 4.0f);
-                        }
-
-                        if (goalComp->goalState == E_GOAL_STATE::Done)
-                        {
-                                goalComp->targetAlpha = 1.0f;
-
-                                float dist          = MathLibrary::CalulateDistance(goalComp->initialTransform.translation,
-                                                                           goalComp->goalTransform.translation);
-                                float speed         = MathLibrary::lerp(goalComp->transitionInitialSpeed,
-                                                                goalComp->transitionFinalSpeed,
-                                                                std::min(1.0f, goalComp->currAlpha));
-                                goalComp->currAlpha = MathLibrary::MoveTowards(
-                                    goalComp->currAlpha, goalComp->targetAlpha, speed * deltaTime * 1.0f / dist);
-
-                                transComp->transform = FTransform::Lerp(
-                                    goalComp->initialTransform, goalComp->goalTransform, std::min(1.0f, goalComp->currAlpha));
-                        }
-
-                        goalCount++;
+                        return;
                 }
+
+                float time = float(totalTime / (1.0f + goalCount) + goalCount * 3.7792f);
+                float x    = sin(time);
+                float y    = cos(time);
+
+                XMVECTOR offset1 = XMVectorSet(x, 0, y, 0.0f);
+
+                goalComp.goalTransform.translation =
+                    XMVectorSet(0.0f, 1000.0f, 0.0f, 1.0f) + offset1 * 150.f * (goalCount + 1.0f);
+
+                transCompPuzzle->transform = goalComp.goalTransform;
+
+                float distanceSq =
+                    MathLibrary::CalulateDistanceSq(playerTransform->transform.translation, transComp->transform.translation);
+
+                if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 3.5f)
+                {
+                        // goalComp.targetAlpha = 1.0f;
+                        // playerController->SetGoalComponent(goalComp.GetHandle());
+                        goalComp.goalState = E_GOAL_STATE::InitialTransition;
+                        playerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
+                }
+
+                if (goalComp.goalState == E_GOAL_STATE::Done)
+                {
+                        goalComp.targetAlpha = 1.0f;
+
+                        float dist  = MathLibrary::CalulateDistance(goalComp.initialTransform.translation,
+                                                                   goalComp.goalTransform.translation);
+                        float speed = MathLibrary::lerp(
+                            goalComp.transitionInitialSpeed, goalComp.transitionFinalSpeed, std::min(1.0f, goalComp.currAlpha));
+                        goalComp.currAlpha =
+                            MathLibrary::MoveTowards(goalComp.currAlpha, goalComp.targetAlpha, speed * deltaTime * 1.0f / dist);
+
+                        transComp->transform = FTransform::Lerp(
+                            goalComp.initialTransform, goalComp.goalTransform, std::min(1.0f, goalComp.currAlpha));
+                }
+
+                goalCount++;
         }
 
         if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) >= 5)
         {
                 static bool done = false;
+
+                // play sfx when spawned
+                auto redSpawn = AudioManager::Get()->CreateSFX("redPlanetSpawn");
+                redSpawn->SetVolume(0.8f);
+
                 if (!done)
+                {
                         CreateGoal(0, GoalPositions[0]);
+                        redSpawn->Play();
+                }
+
                 done = true;
         }
 
         if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) >= 5)
         {
                 static bool done = false;
+
+                // play sfx when spawned
+                auto blueSpawn = AudioManager::Get()->CreateSFX("bluePlanetSpawn");
+                blueSpawn->SetVolume(0.8f);
+
                 if (!done)
+                {
                         CreateGoal(1, GoalPositions[1]);
+                        blueSpawn->Play();
+                }
+
+
                 done = true;
         }
 
         if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) >= 5)
         {
                 static bool done = false;
+
+                // play sfx when spawned
+                auto greenSpawn = AudioManager::Get()->CreateSFX("greenPlanetSpawn");
+                greenSpawn->SetVolume(0.8f);
+
                 if (!done)
+                {
                         CreateGoal(2, GoalPositions[2]);
+                        greenSpawn->Play();
+                }
                 done = true;
         }
+
+        //<Joseph's Temp Planet Change>
+
+        // for (int i = 0; i < 3; ++i)
+        // {
+        //         TransformComponent* tc  = m_HandleManager->GetComponentHandle<TransformComponent>(m_PlanetGoals[i]);
+        //         TransformComponent* tc2 = m_HandleManager->GetComponentHandle<TransformComponent>(m_PlanetOutlines[i]);
+        //
+        //         float distanceSq =
+        //             MathLibrary::CalulateDistanceSq(playerTransform->transform.translation, tc->transform.translation);
+        //
+        //         if (distanceSq < 1.2f)
+        //         {
+        //                 if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::DownFirst)
+        //                 {
+        //                         m_TargetTransforms[i] = &m_PlanetOutlines[i];
+        //                 }
+        //         }
+        //         TransformComponent* target = m_HandleManager->GetComponentHandle<TransformComponent>(*m_TargetTransforms[i]);
+        //
+        //         tc->transform = target->transform;
+        // }
 }
 
 void OrbitSystem::OnPostUpdate(float deltaTime)
@@ -179,8 +218,7 @@ void OrbitSystem::OnPostUpdate(float deltaTime)
 
 void OrbitSystem::OnInitialize()
 {
-        m_EntityManager    = GEngine::Get()->GetEntityManager();
-        m_ComponentManager = GEngine::Get()->GetComponentManager();
+        m_HandleManager = GEngine::Get()->GetHandleManager();
 
         ComponentHandle sunHandle, ring1Handle, ring2Handle, ring3Handle;
         EntityFactory::CreateStaticMeshEntity("Sphere01", "GlowMatSun", &sunHandle);
@@ -188,10 +226,10 @@ void OrbitSystem::OnInitialize()
         EntityFactory::CreateStaticMeshEntity("Ring02", "GlowMatRing", &ring2Handle);
         EntityFactory::CreateStaticMeshEntity("Ring03", "GlowMatRing", &ring3Handle);
 
-        auto sunTransform   = m_ComponentManager->GetComponent<TransformComponent>(sunHandle);
-        auto ring1Transform = m_ComponentManager->GetComponent<TransformComponent>(ring1Handle);
-        auto ring2Transform = m_ComponentManager->GetComponent<TransformComponent>(ring2Handle);
-        auto ring3Transform = m_ComponentManager->GetComponent<TransformComponent>(ring3Handle);
+        auto sunTransform   = sunHandle.Get<TransformComponent>();
+        auto ring1Transform = ring1Handle.Get<TransformComponent>();
+        auto ring2Transform = ring2Handle.Get<TransformComponent>();
+        auto ring3Transform = ring3Handle.Get<TransformComponent>();
 
         sunTransform->transform.translation = ring1Transform->transform.translation = ring2Transform->transform.translation =
             ring3Transform->transform.translation                                   = orbitCenter;
@@ -223,8 +261,7 @@ void OrbitSystem::OnInitialize()
 
         PlayerController* playerController = (PlayerController*)SYSTEM_MANAGER->GetSystem<ControllerSystem>()
                                                  ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
-        m_ClosestGoalTransform =
-            m_ComponentManager->GetComponent<TransformComponent>(playerController->GetControlledEntity())->GetHandle();
+        m_ClosestGoalTransform = playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
 }
 
 void OrbitSystem::OnShutdown()

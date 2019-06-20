@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-
+#include "../../Utility/MemoryLeakDetection.h"
 namespace Animation
 {
         struct FSkeleton;
@@ -160,7 +160,7 @@ ResourceContainer<T>* ResourceManager::GetResourceContainer()
 
         if (it == this->m_Containers.end())
         {
-                rc                     = new ResourceContainer<T>();
+                rc                     = DBG_NEW ResourceContainer<T>();
                 this->m_Containers[ID] = rc;
         }
         else

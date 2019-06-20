@@ -9,9 +9,8 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
 {
         GEngine::Initialize();
 
-        SystemManager*    systemManager    = GEngine::Get()->GetSystemManager();
-        EntityManager*    entityManager    = GEngine::Get()->GetEntityManager();
-        ComponentManager* componentManager = GEngine::Get()->GetComponentManager();
+        SystemManager* systemManager = GEngine::Get()->GetSystemManager();
+        HandleManager* HandleManager = GEngine::Get()->GetHandleManager();
 
 
         // Create Render System
@@ -66,6 +65,8 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
 
 void EngineHelpers::ShutdownEngineSystemManagers()
 {
+        //ControllerSystem::Shutdown();
         AudioManager::Shutdown();
         GEngine::Shutdown();
+        delete GEngine::Get();
 }

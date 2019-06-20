@@ -23,11 +23,10 @@ void DebugCameraController::GatherInput()
 {
         if (!IsEnabled())
         {
-                auto eHandle             = SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetCurrentController()->GetControlledEntity();
-                auto controllerTransform = GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(eHandle);
+                auto eHandle = SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetCurrentController()->GetControlledEntity();
+                auto controllerTransform = eHandle.GetComponent<TransformComponent>();
 
-                TransformComponent* myTransform =
-                    GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+                TransformComponent* myTransform = m_ControlledEntityHandle.GetComponent<TransformComponent>();
 
                 myTransform->transform = controllerTransform->transform;
                 GEngine::Get()->SetDebugMode(false);
@@ -98,8 +97,7 @@ void DebugCameraController::ApplyInput()
                 return;
 
         // Get the Transoform Component
-        TransformComponent* transformComp =
-            GEngine::Get()->GetComponentManager()->GetComponent<TransformComponent>(m_ControlledEntityHandle);
+        TransformComponent* transformComp = m_ControlledEntityHandle.GetComponent<TransformComponent>();
 
         // Get Delta Time
         float deltaTime = cacheTime; // GEngine::Get()->GetDeltaTime();

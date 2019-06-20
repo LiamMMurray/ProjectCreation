@@ -1,132 +1,184 @@
 #pragma once
-#include <unordered_map>
-#include <vector>
-#include "Handle.h"
-#include "Containers/Container.h"
+#include <assert.h>
+#include <algorithm>
+#include "../Utility/Hashing/SpookyHashV2.h"
+#include "../Utility/Range.h"
+#include "../Utility/TypeIndexFactory.h"
+#include "ComponentHandle.h"
+#include "IPoolElement.h"
+#include "Pools.h"
 
-template <typename T>
-class HandleManager
+namespace std
 {
-    public:
-        class iterator;
-
-    public:
-        // uint32_t  HandleId
-        // T* raw data pointer
-        std::vector<HandleData> m_HandleData;
-        std::vector<T*>         m_ObjectData;
-
-        Handle<T> GetHandle(T* object)
+        template <>
+        struct hash<ComponentHandle>
         {
-                uint32_t i = 0;
-                for (; i < m_ObjectData.size(); ++i)
+                size_t operator()(const ComponentHandle& h) const
                 {
-                        if (m_ObjectData[i] == nullptr)
-                        {
-                                m_ObjectData[i] = object;
-                                m_HandleData[i] = HandleData();
-
-                                Handle<T> out;
-                                out.m_Id         = i;
-                                out.m_HandleData = m_HandleData[i];
-                                return out;
-                        }
-                        else if (m_ObjectData[i] == object)
-                        {
-                                Handle<T> out;
-                                out.m_Id         = i;
-                                out.m_HandleData = m_HandleData[i];
-                        }
+                        return SpookyHash::Hash64(&h, sizeof(h), 0);
                 }
-                m_ObjectData.push_back(object);
-                m_HandleData.push_back(HandleData());
-                Handle<T> out;
-                out.m_Id         = i;
-                out.m_HandleData = m_HandleData[i];
-                return out;
-        }
-        T* GetObject(Handle<T> handle)
+        };
+        template <>
+        struct hash<EntityHandle>
         {
-                return m_ObjectData[handle.m_Id];
-        }
-        size_t size()
-        {
-                return m_HandleData.size();
-        }
-        iterator begin()
-        {
-                return iterator(*this);
-        }
-        iterator end()
-        {
-                return iterator(*this, m_HandleData.size());
-        }
-        T& operator[](uint32_t idx)
-        {
-                return *m_ObjectData[idx];
-        }
-};
+                size_t operator()(const EntityHandle& h) const
+                {
+                        return SpookyHash::Hash64(&h, sizeof(h), 0);
+                }
+        };
+} // namespace std
 
-template <typename T>
-class HandleManager<T>::iterator
+struct HandleManager
 {
-    private:
-        uint32_t          m_CurrentIndex;
-        HandleManager<T>& m_HandleManager;
+        NMemory::index                      m_PoolCount;
+        NMemory::NPools::RandomAccessPools& m_ComponentRandomAccessPools;
+        NMemory::NPools::RandomAccessPools& m_EntityRandomAccessPools;
+        NMemory::MemoryStack&               m_MemoryStack;
+        NMemory::NPools::pool_descs         m_PoolDescs;
 
-    public:
-        iterator(HandleManager<T>& handleManager, uint32_t idx = 0U);
-        iterator& operator++();
-        iterator  operator++(int);
-        bool      operator!=(const iterator& other) const;
-        T&        operator*();
-        T*        data();
+        HandleManager(NMemory::NPools::RandomAccessPools& componentRandomAccessPools,
+                      NMemory::NPools::RandomAccessPools& entityRandomAccessPools,
+                      NMemory::MemoryStack&               pool_memory);
+
+        ~HandleManager();
+
+        template <typename T>
+        T* GetComponent(ComponentHandle handle);
+
+        Entity* GetEntity(EntityHandle handle);
+
+        template <typename T>
+        ComponentHandle AddComponent(EntityHandle parentHandle);
+
+        EntityHandle CreateEntity(EntityHandle parentHandle = -1);
+
+        void FreeComponent(ComponentHandle handle);
+
+        void ReleaseComponentHandle(ComponentHandle handle);
+
+        void ReleaseEntityHandle(EntityHandle handle);
+
+        bool IsActive(ComponentHandle handle);
+
+        void SetIsActive(ComponentHandle handle, bool isActive);
+
+        void FreeEntity(EntityHandle handle);
+
+        bool IsActive(EntityHandle handle);
+
+        void SetIsActive(EntityHandle handle, bool isActive);
+
+        void Shutdown();
+
+        template <typename T>
+        range<T> GetComponents();
+
+        template <typename T>
+        active_range<T> GetActiveComponents();
+
+        range<Entity> GetEntities();
+
+        active_range<Entity> GetActiveEntities();
 };
 
 template <typename T>
-HandleManager<T>::iterator::iterator(HandleManager<T>& handleManager, uint32_t idx) :
-    m_HandleManager(handleManager),
-    m_CurrentIndex(idx){
-
-    };
+inline T* HandleManager::GetComponent(ComponentHandle handle)
+{
+        return reinterpret_cast<T*>(GetData(m_ComponentRandomAccessPools, handle.pool_index, handle.redirection_index));
+}
 
 template <typename T>
-typename bool HandleManager<T>::iterator::operator!=(const iterator& other) const
+inline range<T> HandleManager::GetComponents()
 {
-        return this->m_CurrentIndex != other.m_CurrentIndex;
-};
+        NMemory::type_index pool_index = T::SGetTypeIndex();
+        if (m_ComponentRandomAccessPools.m_mem_starts.size() <= pool_index)
+                return range<T>(0, 0);
+
+        T*     data          = reinterpret_cast<T*>(m_ComponentRandomAccessPools.m_mem_starts[pool_index]);
+        size_t element_count = static_cast<size_t>(m_ComponentRandomAccessPools.m_element_counts[pool_index]);
+        return range<T>(data, element_count);
+}
 
 template <typename T>
-typename T* HandleManager<T>::iterator::data()
+inline active_range<T> HandleManager::GetActiveComponents()
 {
-        return m_HandleManager.m_ObjectData[m_CurrentIndex];
-};
+        NMemory::type_index pool_index = T::SGetTypeIndex();
+        if (m_ComponentRandomAccessPools.m_mem_starts.size() <= pool_index)
+                return active_range<T>::SGetNullActiveRange();
+
+        T*                       data          = reinterpret_cast<T*>(m_ComponentRandomAccessPools.m_mem_starts[pool_index]);
+        size_t                   element_count = static_cast<size_t>(m_ComponentRandomAccessPools.m_element_counts[pool_index]);
+        NMemory::dynamic_bitset& isActives     = m_ComponentRandomAccessPools.m_element_isactives[pool_index];
+        return active_range<T>(data, element_count, isActives);
+}
 
 template <typename T>
-typename HandleManager<T>::iterator& HandleManager<T>::iterator::operator++()
+inline T* ComponentHandle::Get()
 {
-        m_CurrentIndex++;
-        while (m_CurrentIndex < m_HandleManager.size() && !m_HandleManager.m_ObjectData[m_CurrentIndex]->IsEnabled())
+        return (handleContext->GetComponent<T>(*this));
+}
+
+#include "Entity.h"
+template <typename T>
+inline ComponentHandle HandleManager::AddComponent(EntityHandle parentHandle)
+{
+        NMemory::type_index pool_index = T::SGetTypeIndex();
+        if (m_ComponentRandomAccessPools.m_mem_starts.size() <= pool_index ||
+            m_ComponentRandomAccessPools.m_element_capacities[pool_index] < T::SGetMaxElements())
         {
-                m_CurrentIndex++;
+                if (m_MemoryStack.m_MemCurr + sizeof(T) * T::SGetMaxElements() >= m_MemoryStack.m_MemMax)
+                        assert(false);
+                InsertPool(
+                    m_ComponentRandomAccessPools, {sizeof(T), T::SGetMaxElements()}, m_MemoryStack.m_MemCurr, pool_index);
         }
-        return *this;
-};
+        auto            allocation = Allocate(m_ComponentRandomAccessPools, pool_index);
+        ComponentHandle componentHandle(pool_index, allocation.redirection_idx);
+        T*              objectPtr = reinterpret_cast<T*>(allocation.objectPtr);
+        new (objectPtr) T();
+        objectPtr->m_pool_index               = componentHandle.pool_index;
+        objectPtr->m_redirection_index        = componentHandle.redirection_index;
+        objectPtr->m_parent_redirection_index = parentHandle.redirection_index;
+
+        Entity*        entities_mem_start = reinterpret_cast<Entity*>(m_EntityRandomAccessPools.m_mem_starts[0]);
+        NMemory::index parent_index       = m_EntityRandomAccessPools.m_redirection_indices[0][parentHandle.redirection_index];
+        Entity*        parent_mem         = entities_mem_start + parent_index;
+
+        parent_mem->m_OwnedComponents.emplace(componentHandle.pool_index, componentHandle.redirection_index);
+        return componentHandle;
+}
 
 template <typename T>
-typename HandleManager<T>::iterator HandleManager<T>::iterator::operator++(int)
+inline std::vector<ComponentHandle> EntityHandle::GetComponents()
 {
-        auto temp = *this;
-        m_CurrentIndex++;
-        while (m_CurrentIndex < m_HandleManager.size() && !m_HandleManager.m_ObjectData[m_CurrentIndex]->IsEnabled())
-        {
-                m_CurrentIndex++;
-        }
-        return temp;
-};
+        NMemory::type_index _type_index   = T::SGetTypeIndex();
+        size_t              element_count = this->Get()->m_OwnedComponents.count(_type_index);
+        if (element_count == 0)
+                return std::vector<ComponentHandle>();
+
+        auto                         kvs = this->Get()->m_OwnedComponents.equal_range(_type_index);
+        std::vector<ComponentHandle> out;
+        out.reserve(element_count);
+        std::for_each(kvs.first, kvs.second, [&](auto e) { out.push_back(ComponentHandle(_type_index, e.second)); });
+        return out;
+}
 
 template <typename T>
-typename T& HandleManager<T>::iterator::operator*()
+inline ComponentHandle EntityHandle::GetComponentHandle()
 {
-        return *m_HandleManager.m_ObjectData[m_CurrentIndex];
-};
+        NMemory::type_index _type_index = T::SGetTypeIndex();
+        auto                itr         = this->Get()->m_OwnedComponents.find(_type_index);
+        return ComponentHandle(itr->first, itr->second);
+}
+
+template <typename T>
+inline T* EntityHandle::GetComponent()
+{
+        return this->GetComponentHandle<T>().Get<T>();
+}
+
+template <typename T>
+inline ComponentHandle EntityHandle::AddComponent()
+{
+        ComponentHandle out = this->handleContext->AddComponent<T>(*this);
+        return out;
+}

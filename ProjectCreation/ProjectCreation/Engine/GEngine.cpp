@@ -1,6 +1,7 @@
 #include "GEngine.h"
-
-GEngine* GEngine::instance;
+#include "../Utility/MemoryLeakDetection.h"
+GEngine*         GEngine::instance        = 0;
+NMemory::memsize GEngine::s_PoolAllocSize = 80000000;
 
 void GEngine::SetGamePaused(bool val)
 {
@@ -17,25 +18,29 @@ void GEngine::SetGamePaused(bool val)
 
 void GEngine::Initialize()
 {
-        static GEngine engine;
-        instance = &engine;
+        instance = DBG_NEW GEngine;
 
-        instance->m_EntityManager    = new EntityManager;
-        instance->m_ComponentManager = new ComponentManager;
-        instance->m_SystemManager    = new SystemManager;
-        instance->m_ResourceManager  = new ResourceManager;
+        NMemory::ReserveGameMemory(instance->m_PoolMemory, s_PoolAllocSize);
 
-        instance->m_EntityManager->Initialize(instance->m_ComponentManager);
+
+        instance->m_HandleManager =
+            DBG_NEW HandleManager(instance->m_ComponentPools, instance->m_EntityPools, instance->m_PoolMemory);
+
+
+        instance->m_SystemManager   = DBG_NEW SystemManager;
+        instance->m_ResourceManager = DBG_NEW ResourceManager;
+
         instance->m_SystemManager->Initialize();
+        instance->m_ResourceManager->Initialize();
 }
 
 void GEngine::Shutdown()
 {
         instance->m_SystemManager->Shutdown();
         instance->m_ResourceManager->Shutdown();
+        instance->m_HandleManager->Shutdown();
 
-        delete instance->m_EntityManager;
-        delete instance->m_ComponentManager;
+        delete instance->m_HandleManager;
         delete instance->m_SystemManager;
         delete instance->m_ResourceManager;
 }
@@ -51,14 +56,9 @@ void GEngine::Signal()
         m_XTime.Signal();
 }
 
-EntityManager* GEngine::GetEntityManager()
+HandleManager* GEngine::GetHandleManager()
 {
-        return m_EntityManager;
-}
-
-ComponentManager* GEngine::GetComponentManager()
-{
-        return m_ComponentManager;
+        return m_HandleManager;
 }
 
 SystemManager* GEngine::GetSystemManager()

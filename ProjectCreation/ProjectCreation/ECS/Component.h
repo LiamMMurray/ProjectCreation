@@ -1,43 +1,66 @@
 #pragma once
 #include "IComponent.h"
-#include "Util.h"
+#include "Memory.h"
+#include "../Utility/TypeIndexFactory.h"
+#include "ComponentHandle.h"
 
 template <typename T>
 class Component : public IComponent
 {
     private:
-        static const ComponentTypeId m_TypeId;
+        static const NMemory::type_index s_type_index;
+        static NMemory::index            s_max_elements;
 
     public:
         Component();
-        void                         Init();
-        static const ComponentTypeId GetTypeId();
-        const ComponentTypeId        GetStaticTypeId() const;
+        ~Component();
+        const NMemory::type_index        GetTypeIndex() const;
+        static const NMemory::type_index SGetTypeIndex();
+        static void                      SSetMaxElements(NMemory::index max_elements);
+        static NMemory::index            SGetMaxElements();
+        ComponentHandle                  GetHandle();
 };
 template <class T>
-const ComponentTypeId Component<T>::m_TypeId = TypeUtility<IComponent>::GetUniqueTypeId<T>();
+const NMemory::type_index Component<T>::s_type_index = TypeIndexFactory<IComponent>::GetTypeIndex<T>();
+template <class T>
+NMemory::index Component<T>::s_max_elements = 5000;
 
 template <typename T>
 inline Component<T>::Component()
+{}
+
+template <typename T>
+inline Component<T>::~Component()
 {
-        static_assert(std::is_base_of<Component<T>, T>::value, "Components must derive from Component<T>");
+
 }
 
 template <typename T>
-inline void Component<T>::Init()
+inline const NMemory::type_index Component<T>::SGetTypeIndex()
 {
-        static_cast<T*>(this)->Init();
+        return s_type_index;
 }
 
 template <typename T>
-inline const ComponentTypeId Component<T>::GetTypeId()
+inline const NMemory::type_index Component<T>::GetTypeIndex() const
 {
-        static_assert(std::is_base_of<Component<T>, T>::value, "Components must derive from Component<T>");
-        return m_TypeId;
+        return s_type_index;
 }
 
 template <typename T>
-inline const ComponentTypeId Component<T>::GetStaticTypeId() const
+inline void Component<T>::SSetMaxElements(NMemory::index max_elements)
 {
-        return m_TypeId;
+        s_max_elements = max_elements;
+}
+
+template <typename T>
+inline NMemory::index Component<T>::SGetMaxElements()
+{
+        return s_max_elements;
+}
+
+template <typename T>
+inline ComponentHandle Component<T>::GetHandle()
+{
+        return ComponentHandle(m_pool_index, m_redirection_index);
 }
