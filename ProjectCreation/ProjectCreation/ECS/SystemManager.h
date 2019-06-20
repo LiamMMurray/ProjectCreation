@@ -37,7 +37,7 @@ class SystemManager
         template <typename T>
         T* GetSystem();
 
-        void FilterSystemQueue(int flags = 0);
+        void        FilterSystemQueue(int flags = 0);
         SystemQueue GetSystemQueue();
 
         void Initialize();
@@ -61,8 +61,8 @@ inline EResult SystemManager::CreateSystem(T** outSystem)
         assert(m_SystemsMap.find(typeID) == m_SystemsMap.end());
 
         *outSystem               = DBG_NEW T();
-        ISystem* val = *outSystem;
-        auto     it  = m_SystemsMap.insert(std::make_pair(typeID, val));
+        ISystem*             val = *outSystem;
+        auto                 it  = m_SystemsMap.insert(std::make_pair(typeID, val));
 
         EResult output;
         output.m_Flags = ERESULT_FLAG::SUCCESS;
@@ -87,6 +87,7 @@ inline void SystemManager::DestroySystem()
         assert(m_SystemsMap.find(typeID) == m_SystemsMap.end());
 
         system->OnShutdown();
+        delete system;
         m_SystemsMap.erase(typeID);
 }
 

@@ -12,4 +12,5 @@ class PlayerControllerStateMachine : public StateMachine
     public:
         void Update(float deltaTime, TransformComponent* transformComp);
         void Init(PlayerController* playerMovement);
+        virtual void Shutdown() override;
 };

@@ -27,7 +27,7 @@ void GEngine::Initialize()
             DBG_NEW HandleManager(instance->m_ComponentPools, instance->m_EntityPools, instance->m_PoolMemory);
 
 
-        instance->m_SystemManager   = DBG_NEW SystemManager;
+        instance->m_SystemManager   = DBG_NEW   SystemManager;
         instance->m_ResourceManager = DBG_NEW ResourceManager;
 
         instance->m_SystemManager->Initialize();
@@ -39,6 +39,7 @@ void GEngine::Shutdown()
         instance->m_SystemManager->Shutdown();
         instance->m_ResourceManager->Shutdown();
         instance->m_HandleManager->Shutdown();
+        NMemory::FreeGameMemory(instance->m_PoolMemory);
 
         delete instance->m_HandleManager;
         delete instance->m_SystemManager;

@@ -43,6 +43,7 @@ class AudioManager
                 m_MasterVolume;
         }
 
+		void _shutdown();
     public:
         static void          Initialize();
         static void          Shutdown();
