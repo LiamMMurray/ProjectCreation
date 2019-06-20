@@ -18,7 +18,7 @@ class AISystem : public ISystem
         XMVECTOR CalculateSeperation(AIComponent* boid);
 
         void CalculateAverage();
-        void AddBoid(float Position, float );
+        void AddBoid(XMVECTOR Position, XMVECTOR Velocity, XMVECTOR MaxVelocity, float SafeRadius);
 
     protected:
         // Inherited via ISystem

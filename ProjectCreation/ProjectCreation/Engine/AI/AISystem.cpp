@@ -71,12 +71,19 @@ void AISystem::CalculateAverage()
         m_AveragePosition /= m_Boids.size();
 }
 
-void AISystem::AddBoid(float Position, float )
+void AISystem::AddBoid(XMVECTOR Position, XMVECTOR Velocity, XMVECTOR MaxVelocity, float SafeRadius)
 {
-       //AIComponent* BoidAdd = new AIComponent();
-       //BoidAdd->m_Position  = Position;
-	   //
-       //m_Boids.push_back();
+       AIComponent* BoidAdd = new AIComponent();
+       BoidAdd->m_Position  = Position;
+       BoidAdd->m_Velocity  = Velocity;
+       if (XMVector3Less(MaxVelocity, Velocity))
+       {
+               MaxVelocity = Velocity;
+       }
+       BoidAdd->m_MaxVelocity = MaxVelocity;
+       BoidAdd->m_SafeRadius  = SafeRadius;
+	   
+       m_Boids.push_back(BoidAdd);
 };
 
 
