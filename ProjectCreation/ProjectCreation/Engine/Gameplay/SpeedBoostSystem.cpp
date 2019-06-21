@@ -34,63 +34,85 @@ std::default_random_engine            e1(r());
 std::uniform_real_distribution<float> uniform_dist(0.0f, 1.0f);
 
 
-void SpeedBoostSystem::SpawnRandomSpeedBoost()
+EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
 {
         EntityHandle controlledEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
                                             ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
                                             ->GetControlledEntity();
 
-        TransformComponent* playerTransform = controlledEntity.GetComponent<TransformComponent>();
+        TransformComponent* playerTransform  = controlledEntity.GetComponent<TransformComponent>();
+        XMFLOAT3            euler            = playerTransform->transform.rotation.ToEulerAngles();
+        euler.x                              = 0.0f;
+        FQuaternion quat                     = FQuaternion::FromEulerAngles(euler);
+        int         color                    = MathLibrary::GetRandomIntInRange(0, 4);
+        XMVECTOR    pos                      = MathLibrary::GetRandomPointInArc(playerTransform->transform.translation,
+                                                        quat.GetForward(),
+                                                        VectorConstants::Up,
+                                                        m_SpawnAngle,
+                                                        m_MinSpawnDistance,
+                                                        m_MaxSpawnDistance);
+        pos                                  = XMVectorSetY(pos, 0.0f);
+        auto entityH                         = SpawnLightOrb(pos, color);
+        auto speedBoostHandle                = entityH.AddComponent<SpeedboostComponent>();
+        auto speedboostComponent             = speedBoostHandle.Get<SpeedboostComponent>();
+        speedboostComponent->center          = pos;
+        speedboostComponent->collisionRadius = m_BoostRadius;
+        speedboostComponent->lifetime        = MathLibrary::RandomFloatInRange(m_BoostLifespan - m_BoostLifespanVariance,
+                                                                        m_BoostLifespan + m_BoostLifespanVariance);
+        speedboostComponent->decay           = 1.0f;
+        speedboostComponent->color           = color;
 
-        int      color = MathLibrary::GetRandomIntInRange(0, 4);
-        XMVECTOR pos =
-            MathLibrary::GetRandomPointInRadius2D(playerTransform->transform.translation, 0.5f, m_MaxBoostDistance - 0.5f);
-        auto entityH              = SpawnSpeedBoost(pos, color);
-        auto spawnCompH           = entityH.AddComponent<OrbRespawnComponent>();
-        auto spawnComp            = spawnCompH.Get<OrbRespawnComponent>();
-        spawnComp->m_WantsRespawn = false;
-        spawnComp->m_Lifetime     = MathLibrary::RandomFloatInRange(m_BoostLifespan - m_BoostLifespanVariance,
-                                                                m_BoostLifespan + m_BoostLifespanVariance);
-
-        ++randomOrbCount;
+        return entityH;
 }
 
-void SpeedBoostSystem::SpawnSplineSpeedBoost(const SplineCluster& cluster, unsigned int index, int color, bool tail, bool head)
+EntityHandle SpeedBoostSystem::SpawnSplineOrb(const SplineCluster& cluster, int clusterID, bool tail, bool head)
 {
-        auto entityH          = SpawnSpeedBoost(cluster.spawnQueue[index], color);
+        auto entityH          = SpawnLightOrb(cluster.spawnQueue[cluster.current], cluster.color);
         auto splineH          = entityH.AddComponent<SpeedboostSplineComponent>();
         auto splineComp       = splineH.Get<SpeedboostSplineComponent>();
         splineComp->bHead     = head;
         splineComp->bTail     = tail;
-        splineComp->m_CurrPos = cluster.spawnQueue[index];
-        splineComp->m_PrevPos = cluster.spawnQueue[index];
-        splineComp->m_NextPos = cluster.spawnQueue[index];
+        splineComp->m_CurrPos = cluster.spawnQueue[cluster.current];
+        splineComp->m_PrevPos = cluster.spawnQueue[cluster.current];
+        splineComp->m_NextPos = cluster.spawnQueue[cluster.current];
+        splineComp->clusterID = clusterID;
 
         if (!head)
-                splineComp->m_PrevPos = cluster.spawnQueue[index - 1];
+                splineComp->m_PrevPos = cluster.spawnQueue[cluster.current - 1];
 
         if (!tail)
-                splineComp->m_NextPos = cluster.spawnQueue[index + 1];
+                splineComp->m_NextPos = cluster.spawnQueue[cluster.current + 1];
+
+        return entityH;
 }
 
-EntityHandle SpeedBoostSystem::SpawnSpeedBoost(const DirectX::XMVECTOR& pos, int color)
+EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int color)
 {
-        ComponentHandle boostHandle;
+        ComponentHandle orbHandle;
         ComponentHandle transHandle;
-        auto            entityHandle = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &boostHandle);
-        boostHandle                  = m_HandleManager->AddComponent<SpeedboostComponent>(entityHandle);
+        auto            entityHandle = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &orbHandle);
+        orbHandle                    = m_HandleManager->AddComponent<OrbComponent>(entityHandle);
 
-        SpeedboostComponent* gsc = boostHandle.Get<SpeedboostComponent>();
-        TransformComponent*  gtc = entityHandle.GetComponent<TransformComponent>();
+        OrbComponent*       orbComp       = orbHandle.Get<OrbComponent>();
+        TransformComponent* transformComp = entityHandle.GetComponent<TransformComponent>();
 
-        gtc->transform.translation = pos;
-        gtc->transform.SetScale(0.0f);
-        gsc->m_CurrentRadius = 0.0f;
-        gsc->m_Color         = color;
-        gsc->m_TargetRadius  = m_BoostRadius;
+        transformComp->transform.translation = pos;
+        transformComp->transform.SetScale(0.0f);
+        orbComp->m_CurrentRadius = 0.0f;
+        orbComp->m_Color         = color;
+        orbComp->m_TargetRadius  = m_BoostRadius;
 
         return entityHandle;
 }
+
+void SpeedBoostSystem::RequestDestroySpeedboost(SpeedboostComponent* speedComp)
+{
+        auto orbComp            = speedComp->GetParent().GetComponent<OrbComponent>();
+        speedComp->lifetime     = -1.0f;
+        orbComp->m_WantsDestroy = true;
+        // speedComp->GetHandle().Free();
+}
+
 
 void SpeedBoostSystem::UpdateSpeedboostEvents()
 {
@@ -147,15 +169,16 @@ void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
                                         unsigned int             waveCount,
                                         float                    heightvar)
 {
-        m_SplineClusterSpawners.emplace_back(SplineCluster());
+        auto it = m_SplineClusterSpawners.emplace(std::make_pair(m_ClusterCounter, SplineCluster()));
 
         FGoodSpline spline(m_Paths[MathLibrary::GetRandomIntInRange(0, PathCount - 1)]);
         float       length   = spline.GetLength() * MathLibrary::CalulateDistance(start, end);
         int         segments = length / m_SplineLengthPerOrb;
-        m_SplineClusterSpawners.back().spawnQueue =
+        it.first->second.spawnQueue =
             SplineUtility::BakePointsFromSplineAndTransform(spline, start, end, width, segments, waveCount);
-        m_SplineClusterSpawners.back().color   = color;
-        m_SplineClusterSpawners.back().current = 0;
+        it.first->second.color   = color;
+        it.first->second.current = 0;
+        m_ClusterCounter++;
 }
 
 void SpeedBoostSystem::OnPreUpdate(float deltaTime)
@@ -176,60 +199,70 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
         GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_PlayerEffectRadius, deltaTime);
 
+        XMVECTOR flatPlayerForward;
+        {
+                XMFLOAT3 euler    = playerTransform->transform.rotation.ToEulerAngles();
+                euler.x           = 0.0f;
+                FQuaternion quat  = FQuaternion::FromEulerAngles(euler);
+                flatPlayerForward = quat.GetForward();
+        }
+
         // m_PlayerEffectRadius                       = 25.0f;
         ComponentHandle closestGoalTransformHandle = m_SystemManager->GetSystem<OrbitSystem>()->GetClosestGoalTransform();
+        int             speedboostCount            = 0;
         {
                 for (auto& speedComp : m_HandleManager->GetActiveComponents<SpeedboostComponent>())
                 {
-                        TransformComponent* transComp = speedComp.GetParent().GetComponent<TransformComponent>();
+                        speedboostCount++;
+
                         // START: Move speed boosts with ai stuff here
 
                         // END: Move speed boosts with ai stuff here
-                        float distSq = MathLibrary::CalulateDistanceSq(transComp->transform.translation,
-                                                                       playerTransform->transform.translation);
+                        XMVECTOR dir        = speedComp.center - playerTransform->transform.translation;
+                        float    distanceSq = MathLibrary::VectorDotProduct(dir, dir);
 
+                        float checkRadius = speedComp.collisionRadius;
 
-                        float distanceSq = MathLibrary::CalulateDistanceSq(playerTransform->transform.translation,
-                                                                           transComp->transform.translation);
-
-                        float checkRadius = m_BoostRadius * 2.0f;
-
-                        TransformComponent* closestGoalTransform = closestGoalTransformHandle.Get<TransformComponent>();
-
-                        if (speedComp.m_CurrentRadius != speedComp.m_TargetRadius)
+                        if (speedComp.lifetime > 0.0f && distanceSq < (checkRadius * checkRadius))
                         {
-                                speedComp.m_CurrentRadius = MathLibrary::MoveTowards(
-                                    speedComp.m_CurrentRadius, speedComp.m_TargetRadius, m_BoostShrinkSpeed * deltaTime);
-                                transComp->transform.SetScale(speedComp.m_CurrentRadius);
+                                if (playerController->SpeedBoost(speedComp.center, speedComp.color))
+                                {
+                                        RequestDestroySpeedboost(&speedComp);
+                                        break;
+                                }
                         }
 
-                        if (distanceSq < (checkRadius * checkRadius))
-                        {
+                        if (!m_EnableRandomSpawns)
+                                continue;
 
-                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.m_Color);
-                                playerController->SpeedBoost(transComp->transform.translation, speedComp.m_Color);
+                        speedComp.lifetime -= deltaTime * speedComp.decay;
+
+                        float angle = MathLibrary::CalculateAngleBetweenVectors(flatPlayerForward, dir);
+
+                        if (speedComp.lifetime <= 0.0f || distanceSq >= (m_DespawnDistance * m_DespawnDistance) ||
+                            angle > m_SpawnAngle)
+                        {
+                                RequestDestroySpeedboost(&speedComp);
+                                continue;
                         }
                 }
         }
 
-        int speedboostCount = 0;
-        for (auto& spawnComp : m_HandleManager->GetActiveComponents<OrbRespawnComponent>())
+        for (auto& spawnComp : m_HandleManager->GetActiveComponents<OrbComponent>())
         {
-                speedboostCount++;
-                SpeedboostComponent* speedComp = spawnComp.GetParent().GetComponent<SpeedboostComponent>();
-                TransformComponent*  transComp = spawnComp.GetParent().GetComponent<TransformComponent>();
+                TransformComponent* transComp = spawnComp.GetParent().GetComponent<TransformComponent>();
 
-                spawnComp.m_Lifetime -= deltaTime;
-                float distanceSq = MathLibrary::CalulateDistanceSqIgnoreY(playerTransform->transform.translation,
-                                                                          transComp->transform.translation);
-                if (spawnComp.m_Lifetime < 0.0f || distanceSq > (m_MaxBoostDistance) * (m_MaxBoostDistance))
+                if (spawnComp.m_CurrentRadius != spawnComp.m_TargetRadius)
                 {
-                        spawnComp.m_WantsRespawn  = true;
-                        speedComp->m_TargetRadius = 0.0f;
+                        spawnComp.m_CurrentRadius = MathLibrary::MoveTowards(
+                            spawnComp.m_CurrentRadius, spawnComp.m_TargetRadius, m_BoostShrinkSpeed * deltaTime);
+                        transComp->transform.SetScale(spawnComp.m_CurrentRadius);
                 }
-                if (spawnComp.m_WantsRespawn)
+
+                if (spawnComp.m_WantsDestroy)
                 {
-                        if (speedComp->m_CurrentRadius <= 0.0f)
+                        spawnComp.m_TargetRadius = 0.0f;
+                        if (spawnComp.m_CurrentRadius <= 0.0f)
                         {
                                 spawnComp.GetParent().Free();
                         }
@@ -257,7 +290,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 playerController->SetUseGravity(false);
                                 flyTimer = flyCD;
                                 canFly   = true;
-                                splineComp.GetParent().Free();
+                                // splineComp.GetParent().Free();
                         }
                 }
                 float closestDistance =
@@ -307,20 +340,16 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 }
         }
 
-        for (int i = 0; i < m_SplineClusterSpawners.size(); ++i)
+        for (auto& it : m_SplineClusterSpawners)
         {
-                if (m_SplineClusterSpawners[i].current < m_SplineClusterSpawners[i].spawnQueue.size())
+                if (it.second.current < it.second.spawnQueue.size())
                 {
-                        bool head = m_SplineClusterSpawners[i].current == 0;
-                        bool tail = m_SplineClusterSpawners[i].current == m_SplineClusterSpawners[i].spawnQueue.size() - 1;
+                        bool head = it.second.current == 0;
+                        bool tail = it.second.current == it.second.spawnQueue.size() - 1;
 
-                        SpawnSplineSpeedBoost(m_SplineClusterSpawners[i],
-                                              m_SplineClusterSpawners[i].current,
-                                              m_SplineClusterSpawners[i].color,
-                                              tail,
-                                              head);
+                        SpawnSplineOrb(it.second, it.first, tail, head);
 
-                        m_SplineClusterSpawners[i].current++;
+                        it.second.current++;
                 }
         }
 
@@ -329,7 +358,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 if (m_SpawnBoostTimer <= 0)
                 {
                         m_SpawnBoostTimer = m_SpawnBoostCD;
-                        SpawnRandomSpeedBoost();
+                        SpawnSpeedOrb();
                 }
                 else
                 {
@@ -379,8 +408,15 @@ void SpeedBoostSystem::OnInitialize()
 
         TransformComponent* playerTransform = playerEntity.GetComponent<TransformComponent>();
 
+        XMVECTOR pos    = playerTransform->transform.translation + 2.0f * VectorConstants::Forward;
+        auto     handle = SpawnLightOrb(pos, E_LIGHT_ORBS::WHITE_LIGHTS);
 
-        SpawnSpeedBoost(playerTransform->transform.translation + 2.0f * VectorConstants::Forward, E_LIGHT_ORBS::WHITE_LIGHTS);
+        auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
+        speedboostComponent->center          = pos;
+        speedboostComponent->collisionRadius = m_BoostRadius;
+        speedboostComponent->lifetime        = 1.0f;
+        speedboostComponent->decay           = 0.0f;
+        speedboostComponent->color           = E_LIGHT_ORBS::WHITE_LIGHTS;
         /*CreateRandomPath(playerTransform->transform.translation,
                          SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[0],
                          E_LIGHT_ORBS::BLUE_LIGHTS,

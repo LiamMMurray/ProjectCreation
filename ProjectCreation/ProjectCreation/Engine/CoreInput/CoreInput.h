@@ -100,7 +100,9 @@ enum class KeyCode
         Left  = 0x25,
         Up,
         Right,
-        Down
+        Down,
+		Any = -2,
+		None = -1
 };
 
 enum class MouseCode

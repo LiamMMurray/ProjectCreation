@@ -7,7 +7,9 @@
 class SpeedboostComponent : public Component<SpeedboostComponent>
 {
     public:
-        float m_TargetRadius;
-        float m_CurrentRadius;
-        int   m_Color;
+        int               color;
+        DirectX::XMVECTOR center;
+        float             collisionRadius;
+        float             lifetime;
+        float             decay;
 };

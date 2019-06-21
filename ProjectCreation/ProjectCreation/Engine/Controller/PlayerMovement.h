@@ -7,6 +7,8 @@
 #include "../Physics/PhysicsComponent.h"
 #include "PlayerControllerStateMachine.h"
 
+#include "..//CoreInput/CoreInput.h"
+#include "..//Gameplay/LightOrbColors.h"
 // Audio Includes
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
@@ -47,16 +49,23 @@ class PlayerController : public IController
         // Boolean values for the light collection keys
         // Names will most likely change later on
 
-		static constexpr unsigned int MAX_SPEEDBOOST_SOUNDS = 10;
+        static constexpr unsigned int MAX_SPEEDBOOST_SOUNDS = 10;
 
-		void DebugPrintSpeedBoostColor(int color);
+        void DebugPrintSpeedBoostColor(int color);
+
     public:
-        GW::AUDIO::GSound* mSpeedBoostSoundPool[MAX_SPEEDBOOST_SOUNDS];
-        unsigned int       currSpeedBoostIteration = 0;
-        virtual void       Shutdown() override;
+        virtual void Shutdown() override;
+
+        KeyCode            m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT]       = {KeyCode::R, KeyCode::Q, KeyCode::E, KeyCode::Any};
+        const char*        m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"whiteSpeedBoost",
+                                                               "whiteSpeedBoost",
+                                                               "whiteSpeedBoost",
+                                                               "whiteSpeedBoost"};
+        GW::AUDIO::GSound* m_SpeedBoostSoundPool[E_LIGHT_ORBS::COUNT][MAX_SPEEDBOOST_SOUNDS];
+        unsigned int       m_SpeedBoostPoolCounter[E_LIGHT_ORBS::COUNT] = {};
 
         virtual void Init(EntityHandle h) override;
-        void         SpeedBoost(DirectX::XMVECTOR boostPos, int color);
+        bool         SpeedBoost(DirectX::XMVECTOR boostPos, int color);
 
         inline void SetCurrentMaxSpeed(float val)
         {

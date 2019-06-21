@@ -2,9 +2,9 @@
 #include "../../ECS/Entity.h"
 #include "../CoreInput/CoreInput.h"
 #include "../GEngine.h"
-
 #include "../MathLibrary/MathLibrary.h"
 #include "../MathLibrary/Quaternion.h"
+#include "ControllerSystem.h"
 
 #include "..//Gameplay/GoalComponent.h"
 #include "../CollisionLibary/CollisionLibary.h"
@@ -131,22 +131,24 @@ void PlayerController::Init(EntityHandle h)
         m_StateMachine.Init(this);
 
         // Init sound pool
-        for (unsigned int i = 0; i < MAX_SPEEDBOOST_SOUNDS; ++i)
+        for (unsigned int color = 0; color < E_LIGHT_ORBS::COUNT; ++color)
         {
-                mSpeedBoostSoundPool[i] = AudioManager::Get()->CreateSFX("whiteSpeedBoost");
+                for (unsigned int i = 0; i < MAX_SPEEDBOOST_SOUNDS; ++i)
+                {
+                        m_SpeedBoostSoundPool[color][i] = AudioManager::Get()->CreateSFX(m_SpeedboostSoundNames[color]);
+                }
         }
 }
 
-void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
+bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
 {
-        const KeyCode keyCodes[]   = {KeyCode::R, KeyCode::Q, KeyCode::E, (KeyCode)-1};
-        const char*   soundNames[] = {"whiteSpeedBoost", "whiteSpeedBoost", "whiteSpeedBoost", "whiteSpeedBoost"};
         // Audio that will play on boost
-        if ((int)keyCodes[color] == -1 || GCoreInput::GetKeyState(keyCodes[color]) == KeyState::Down)
+        if ((int)m_ColorInputKeyCodes[color] < 0 || GCoreInput::GetKeyState(m_ColorInputKeyCodes[color]) == KeyState::Down)
         {
+                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(color);
                 bool isPlaying;
-                mSpeedBoostSoundPool[currSpeedBoostIteration]->isSoundPlaying(isPlaying);
-                mSpeedBoostSoundPool[currSpeedBoostIteration]->Play();
+                // m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->isSoundPlaying(isPlaying);
+                m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->Play();
                 DebugPrintSpeedBoostColor(color);
                 currentMaxSpeed = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
                 XMVECTOR currentInput =
@@ -157,9 +159,12 @@ void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                         m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
                         m_GroundState->AddSpeedBoost();
                 }
+                m_SpeedBoostPoolCounter[color]++;
+                m_SpeedBoostPoolCounter[color] %= MAX_SPEEDBOOST_SOUNDS;
+
+				return true;
         }
-        currSpeedBoostIteration++;
-        currSpeedBoostIteration %= MAX_SPEEDBOOST_SOUNDS;
+        return false;
 }
 
 void PlayerController::AddCurrentVelocity(DirectX::XMVECTOR val)
