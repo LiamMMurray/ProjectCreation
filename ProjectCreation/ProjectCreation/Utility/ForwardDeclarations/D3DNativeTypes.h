@@ -12,6 +12,7 @@ struct ID3D11UnorderedAccessView;
 struct ID3D11VertexShader;
 struct ID3D11PixelShader;
 struct ID3D11ComputeShader;
+struct ID3D11GeometryShader;
 struct D3D11_VIEWPORT;
 struct ID3D11InputLayout;
 struct ID3D11SamplerState;

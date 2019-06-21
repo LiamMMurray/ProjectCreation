@@ -56,6 +56,7 @@
     <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
+    <ClInclude Include="Engine\Particle Systems\EmitterComponent.h" />
     <ClInclude Include="Engine\MathLibrary\Maze\MazeGenerator.h" />
     <ClInclude Include="Engine\MathLibrary\Splines\SplineUtility.h" />
     <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
@@ -75,6 +76,9 @@
     <ClInclude Include="ECS\Handle.h" />
     <ClInclude Include="ECS\ISystem.h" />
     <ClInclude Include="ECS\SystemManager.h" />
+    <ClInclude Include="ECS\Util.h" />
+    <ClInclude Include="Engine\ResourceManager\ComputeShader.h" />
+    <ClInclude Include="Engine\ResourceManager\GeometryShader.h" />
     <ClInclude Include="Engine\XTime.h" />
     <ClInclude Include="Engine\Entities\TestEntities.h" />
     <ClInclude Include="ErrorHandling\ErrorTypes.h" />
@@ -90,6 +94,10 @@
     <ClInclude Include="Engine\MathLibrary\Transform.h" />
     <ClInclude Include="Engine\MathLibrary\Vector.h" />
     <ClInclude Include="UI\FontComponent.h" />
+    <ClInclude Include="Engine\Particle Systems\ParticleBufferSetup.h" />
+    <ClInclude Include="Engine\Particle Systems\ParticleData.h" />
+    <ClInclude Include="Engine\Particle Systems\ParticleManager.h" />
+    <ClInclude Include="Engine\Particle Systems\Pools.h" />
     <ClInclude Include="Rendering\Components\CameraComponent.h" />
     <ClInclude Include="Rendering\Components\DirectionalLightComponent.h" />
     <ClInclude Include="Rendering\Components\PointLightComponent.h" />
@@ -138,6 +146,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
+    <FxCompile Include="Shaders\ComputeShaderTesting_CS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Shaders\Debug_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -177,7 +191,17 @@
     <ClInclude Include="Shaders\PostProcessConstantBuffers.hlsl">
       <FileType>Document</FileType>
     </ClInclude>
+    <FxCompile Include="Shaders\GeometryShaderTesting_GS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Shaders\Glow_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shaders\PurePixelShader_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
@@ -186,6 +210,10 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\Geometry_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -215,6 +243,8 @@
     <ClCompile Include="Engine\Gameplay\SpeedBoostSystem.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\IState.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
+    <ClCompile Include="Engine\Particle Systems\ParticleData.cpp" />
+    <ClCompile Include="Engine\Particle Systems\ParticleManager.cpp" />
     <ClCompile Include="Engine\MathLibrary\Maze\MazeGenerator.cpp" />
     <ClCompile Include="Engine\MathLibrary\Splines\FGoodSpline.cpp" />
     <ClCompile Include="Engine\MathLibrary\Splines\SplineUtility.cpp" />
@@ -226,6 +256,8 @@
     <ClCompile Include="Engine\GEngine.cpp" />
     <ClCompile Include="ECS\ISystem.cpp" />
     <ClCompile Include="ECS\SystemManager.cpp" />
+    <ClCompile Include="Engine\ResourceManager\ComputeShader.cpp" />
+    <ClCompile Include="Engine\ResourceManager\GeometryShader.cpp" />
     <ClCompile Include="Engine\XTime.cpp" />
     <ClCompile Include="FileIO\FileIO.cpp" />
     <ClCompile Include="UI\FontComponent.cpp" />
@@ -234,6 +266,7 @@
     <ClCompile Include="Engine\MathLibrary\Quaternion.cpp" />
     <ClCompile Include="Engine\MathLibrary\Transform.cpp" />
     <ClCompile Include="Engine\MathLibrary\Vector.cpp" />
+    <ClCompile Include="Engine\Particle Systems\ParticleBufferSetup.cpp" />
     <ClCompile Include="Rendering\DebugRender\debug_renderer.cpp" />
     <ClCompile Include="Rendering\PostProcess\Bloom.cpp" />
     <ClCompile Include="Rendering\RenderingSystem.cpp" />

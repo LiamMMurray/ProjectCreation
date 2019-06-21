@@ -11,6 +11,8 @@
 #include <d3d11_1.h>
 
 #include "AnimationClip.h"
+#include "ComputeShader.h"
+#include "GeometryShader.h"
 #include "Material.h"
 #include "PixelShader.h"
 #include "SkeletalMesh.h"
@@ -34,11 +36,11 @@ ResourceHandle ResourceManager::LoadMaterial(const char* name)
                 EResult               result = FileIO::LoadMaterialDataFromFile(name, &materialData);
 
                 assert(result.m_Flags == ERESULT_FLAG::SUCCESS);
-                Material* resource                          = container->GetResource(outputHandle);
-                resource->m_VertexShaderHandle              = LoadVertexShader(materialData.vertexShader.data());
-                resource->m_PixelShaderHandle               = LoadPixelShader(materialData.pixelShader.data());
-                resource->m_SurfaceProperties               = materialData.surfaceProperties;
-                //resource->m_SurfaceProperties.emissiveColor = DirectX::XMFLOAT3(20.0f, 20.0f, 20.0f);
+                Material* resource             = container->GetResource(outputHandle);
+                resource->m_VertexShaderHandle = LoadVertexShader(materialData.vertexShader.data());
+                resource->m_PixelShaderHandle  = LoadPixelShader(materialData.pixelShader.data());
+                resource->m_SurfaceProperties  = materialData.surfaceProperties;
+                // resource->m_SurfaceProperties.emissiveColor = DirectX::XMFLOAT3(20.0f, 20.0f, 20.0f);
 
                 for (auto desc : materialData.textureDescs)
                 {
@@ -146,6 +148,69 @@ ResourceHandle ResourceManager::LoadPixelShader(const char* name)
         }
 
 
+        return outputHandle;
+}
+
+ResourceHandle ResourceManager::LoadComputeShader(const char* name)
+{
+        auto container = GetResourceContainer<ComputeShader>();
+        auto it        = container->m_NameTable.find(name);
+
+        ResourceHandle outputHandle;
+
+        if (it == container->m_NameTable.end())
+        {
+
+                if (it == container->m_NameTable.end())
+                {
+                        outputHandle               = container->CreateResource(name);
+                        RenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
+
+                        FileIO::FMaterialData materialData;
+                        ComputeShader*        resource = container->GetResource(outputHandle);
+
+                        FileIO::FShaderData shaderData;
+                        FileIO::LoadShaderDataFromFile(name, "_CS", &shaderData);
+
+                        renderSystem->m_Device->CreateComputeShader(
+                            shaderData.bytes.data(), shaderData.bytes.size(), nullptr, &resource->m_ComputerShader);
+                }
+                else
+                {
+                        outputHandle = it->second;
+                }
+        }
+        return outputHandle;
+}
+
+ResourceHandle ResourceManager::LoadGeometryShader(const char* name)
+{
+        auto container = GetResourceContainer<GeometryShader>();
+        auto it        = container->m_NameTable.find(name);
+
+        ResourceHandle outputHandle;
+
+        if (it == container->m_NameTable.end())
+        {
+
+                if (it == container->m_NameTable.end())
+                {
+                        outputHandle               = container->CreateResource(name);
+                        RenderSystem* renderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
+
+                        FileIO::FMaterialData materialData;
+                        GeometryShader*       resource = container->GetResource(outputHandle);
+
+                        FileIO::FShaderData shaderData;
+                        FileIO::LoadShaderDataFromFile(name, "_GS", &shaderData);
+
+                        renderSystem->m_Device->CreateGeometryShader(shaderData.bytes.data(), shaderData.bytes.size(), nullptr, &resource->m_GeometryShader);
+                }
+                else
+                {
+                        outputHandle = it->second;
+                }
+        }
         return outputHandle;
 }
 
