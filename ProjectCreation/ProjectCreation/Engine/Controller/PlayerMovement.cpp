@@ -149,15 +149,15 @@ void PlayerController::Init(EntityHandle h)
 
 void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color, double collisionTimeStamp)
 {
-        const KeyCode keyCodes[]   = {KeyCode::LeftShift, KeyCode::Q, KeyCode::E, (KeyCode)-1};
+        const KeyCode keyCodes[]   = {KeyCode::Space, KeyCode::Q, KeyCode::E, (KeyCode)-1};
         const char*   soundNames[] = {"whiteSpeedBoost", "whiteSpeedBoost", "whiteSpeedBoost", "whiteSpeedBoost"};
 		
         // Audio that will play on boost
         if ((int)keyCodes[color] == -1 || GCoreInput::GetKeyState(keyCodes[color]) == KeyState::Down)
         {
-                if ((spaceTimeStamp >= collisionTimeStamp && spaceTimeStamp < (collisionTimeStamp + rhythmThreshold)) ||
-                    (spaceTimeStamp <= collisionTimeStamp && spaceTimeStamp > (collisionTimeStamp - rhythmThreshold)))
-                {
+               // if ((spaceTimeStamp >= collisionTimeStamp && spaceTimeStamp < (collisionTimeStamp + rhythmThreshold)) ||
+               //     (spaceTimeStamp <= collisionTimeStamp && spaceTimeStamp > (collisionTimeStamp - rhythmThreshold)))
+               // {
                         bool isPlaying;
                         mSpeedBoostSoundPool[currSpeedBoostIteration]->isSoundPlaying(isPlaying);
                         mSpeedBoostSoundPool[currSpeedBoostIteration]->Play();
@@ -171,7 +171,7 @@ void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color, double 
                                 m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
                                 m_GroundState->AddSpeedBoost();
                         }
-                }
+               // }
         }
         currSpeedBoostIteration++;
         currSpeedBoostIteration %= MAX_SPEEDBOOST_SOUNDS;
