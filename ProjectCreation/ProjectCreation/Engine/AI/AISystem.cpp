@@ -89,14 +89,14 @@ void AISystem::AddBoid(XMVECTOR Position, XMVECTOR Velocity, XMVECTOR MaxVelocit
 
 void AISystem::OnInitialize()
 {
-        m_AlignmentStrength  = 0.0f;
-        m_CohesionStrength   = 0.0f;
-        m_SeperationStrength = 0.0f;
-
         m_AveragePosition = XMVectorZero();
         m_AverageForward  = XMVectorZero();
 
-        m_FlockRadius = 0.0f;
+        m_AlignmentStrength  = 0.0f;
+        m_CohesionStrength   = 0.0f;
+        m_SeperationStrength = 3.0f;
+
+        m_FlockRadius = 23.0f;
 }
 
 void AISystem::OnPreUpdate(float deltaTime)
