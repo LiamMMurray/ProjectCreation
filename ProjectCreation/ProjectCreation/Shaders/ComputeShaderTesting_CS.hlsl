@@ -10,10 +10,10 @@ struct FParticleGPU
 		
 };
 
+RWStructuredBuffer<FParticleGPU> ParticleBuffer : register(u0);
+
+
 [numthreads(10, 1, 1)]
-StructuredBuffer<ParticleGPU> ParticleBuffer : register(u0);
-
-
 void main(uint3 DTid : SV_DispatchThreadID)
 {
         ParticleBuffer[DTid.x].position += 0.25;
