@@ -1,36 +1,42 @@
 #pragma once
 #include "../../ECS/ECS.h"
+#include "../../Utility/ForwardDeclarations/D3DNativeTypes.h"
 #include "../ResourceManager/IResource.h"
-#include"../../Utility/ForwardDeclarations/D3DNativeTypes.h"
+#include "ParticleBufferSetup.h"
 #include "ParticleData.h"
 #include "Pools.h"
 class RenderSystem;
-class BufferSetup;
 class ComponentManager;
 class ParticleManager
 {
     private:
-        ParticleManager();
+        static constexpr unsigned int gMaxParticleCount = 100'000;
 
-        ComponentManager* m_ComponentManager;
-        EntityManager*    m_EntityManager;
+        static ParticleManager*    instance;
+        RenderSystem*              m_RenderSystem;
+        ParticleBuffer             m_ParticleBuffer;
+        ParticleBuffer             m_EmitterBuffer;
+        ResourceHandle             m_ComputeShaderHandle;
+        ResourceHandle             m_GeometryShaderHandle;
+        ResourceHandle             m_VertexShaderHandle;
+        ResourceHandle             m_PixelShaderHandle;
+        ParticleData::FParticleGPU* m_ParticleInfo;
+        ParticleData::FEmitterGPU*  m_EnitterInfo;
+        void                       UpdateResources(ID3D11Resource* resource);
+        void                       update(float deltaTime);
+        void                       init();
+        void                       shutdown();
 
-        static ParticleManager* instance;
-        RenderSystem*           m_RenderSystem;
-        BufferSetup*            m_BufferData;
-        ResourceHandle          m_ComputeShaderHandle;
-        ResourceHandle          m_GeometryShaderHandle;
-        ResourceHandle          m_VertexShaderHandle;
-        ResourceHandle          m_PixelShaderHandle;
-        ParticleData::FParticleGPU m_ParticleInfo;
-        void                    UpdateResources(ID3D11Resource* resource);
-        void                    update(float deltaTime);
-        void                    init();
-        void                    shutdown();
-
+        void ParticleBufferInit(ParticleBuffer*             particlesbuffer,
+			ParticleBuffer* emitterBuffer,
+                                ID3D11Device1*              device1,
+                                ParticleData::FParticleGPU* particleData,
+                                ParticleData::FEmitterGPU*  emitterData,
+                                unsigned int                         numParticles);
+        void ParticleBufferShutdown(ParticleBuffer* buffer);
     public:
-        EntityHandle                   CreateEmitter(ParticleData::FEmitterCPU & emitter);
-        void                           SetParticleInfo(ParticleData::FParticleGPU& particleInfo);
+        EntityHandle                   CreateEmitter(ParticleData::FEmitterCPU& emitter);
+        void                           SetParticleInfo(ParticleData::FParticleGPU* particleInfo);
         static void                    Initialize();
         static void                    Update(float deltaTime);
         static void                    Shutdown();

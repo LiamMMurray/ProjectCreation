@@ -79,6 +79,14 @@ DirectX::XMVECTOR MathLibrary::GetClosestPointFromLineClamped(DirectX::XMVECTOR 
         return output;
 }
 
+DirectX::XMVECTOR MathLibrary::GetClosestPointFromPlane(Shapes::FPlane plane, DirectX::XMVECTOR point)
+{
+        XMVECTOR output;
+        float    dotValue = MathLibrary::VectorDotProduct(plane.normal, (point - (plane.normal * XMVectorGetW(plane.normal))));
+        output            = point - (plane.normal * dotValue);
+        return output;
+}
+
 DirectX::XMVECTOR MathLibrary::GetClosestPointFromLine(DirectX::XMVECTOR startPoint,
                                                               DirectX::XMVECTOR endPoint,
                                                               DirectX::XMVECTOR point)

@@ -36,6 +36,11 @@ namespace ParticleData
         {
                 int   currentParticleCount;
                 float accumulatedTime;
+                bool              active;
+                DirectX::XMFLOAT4 position;
+                DirectX::XMFLOAT4   color;
+                DirectX::XMFLOAT2 uv;
+                DirectX::XMFLOAT3 velocity;
         };
 
         struct FParticleGPU
@@ -50,4 +55,4 @@ namespace ParticleData
         };
 
 
-} // namespace ParticleData
+}; // namespace ParticleData
