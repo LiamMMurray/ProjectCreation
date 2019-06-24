@@ -7,7 +7,7 @@ using namespace DirectX;
 class AIComponent : public Component<AIComponent>
 {
     public:
-        XMVECTOR m_Velocity    = XMVectorZero();
-        XMVECTOR m_MaxVelocity = XMVectorZero();
-        float    m_SafeRadius  = 0.0f;
+        XMVECTOR m_Velocity   = XMVectorZero();
+        float    m_MaxSpeed   = 1.0f;
+        float    m_SafeRadius = 0.5f;
 };

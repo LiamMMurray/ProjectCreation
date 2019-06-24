@@ -64,7 +64,7 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
 
 void EngineHelpers::ShutdownEngineSystemManagers()
 {
-        //ControllerSystem::Shutdown();
+        // ControllerSystem::Shutdown();
         AudioManager::Shutdown();
         GEngine::Shutdown();
         delete GEngine::Get();

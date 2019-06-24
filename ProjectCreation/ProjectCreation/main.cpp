@@ -43,6 +43,7 @@
 #include "Engine/GenericComponents/TransformComponent.h"
 #include "Engine/MathLibrary/MathLibrary.h"
 #include "Utility/MemoryLeakDetection.h"
+#include "Engine/AI/AISystem.h"
 
 #pragma comment(lib, "dbghelp")
 
@@ -259,18 +260,31 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         }
 
         // Create speedboost system
-        FSystemProperties sysInitProps;
+        {
+                FSystemProperties sysInitProps;
 
-        sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
-        sysInitProps.m_UpdateRate = 0.0f;
+                sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
+                sysInitProps.m_UpdateRate = 0.0f;
 
-        OrbitSystem* orbitSystem;
-        systemManager->CreateSystem<OrbitSystem>(&orbitSystem);
-        systemManager->RegisterSystem(&sysInitProps, orbitSystem);
+                OrbitSystem* orbitSystem;
+                systemManager->CreateSystem<OrbitSystem>(&orbitSystem);
+                systemManager->RegisterSystem(&sysInitProps, orbitSystem);
 
-        SpeedBoostSystem* speedBoostSystem;
-        systemManager->CreateSystem<SpeedBoostSystem>(&speedBoostSystem);
-        systemManager->RegisterSystem(&sysInitProps, speedBoostSystem);
+                SpeedBoostSystem* speedBoostSystem;
+                systemManager->CreateSystem<SpeedBoostSystem>(&speedBoostSystem);
+                systemManager->RegisterSystem(&sysInitProps, speedBoostSystem);
+        }
+
+	        // Create Animation System
+        {
+                FSystemProperties sysInitProps;
+                sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
+                sysInitProps.m_UpdateRate = 0.0f;
+
+                AISystem* aiSystem;
+                systemManager->CreateSystem<AISystem>(&aiSystem);
+                systemManager->RegisterSystem(&sysInitProps, aiSystem);
+        }
 
 
         GEngine::Get()->SetGamePaused(true);
