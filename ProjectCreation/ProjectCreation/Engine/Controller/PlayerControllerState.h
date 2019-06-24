@@ -2,9 +2,9 @@
 
 #include "..//Gameplay/StateMachine/IState.h"
 
-class TransformComponent;
-class PlayerController;
+#include "..//MathLibrary/Transform.h"
 
+class PlayerController;
 
 class IPlayerControllerState : public IState
 {
@@ -16,6 +16,6 @@ class IPlayerControllerState : public IState
         virtual void Exit()                  = 0;
         virtual ~IPlayerControllerState() = default;
 
-        TransformComponent* _cachedTransformComponent;
+        FTransform _cachedTransform;
         PlayerController*   _playerController;
 };

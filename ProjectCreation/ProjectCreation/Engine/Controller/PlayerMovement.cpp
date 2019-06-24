@@ -61,14 +61,14 @@ void PlayerController::GatherInput()
 
 void PlayerController::ProcessInput()
 {
-        _cachedControlledTransformComponent = m_ControlledEntityHandle.GetComponent<TransformComponent>();
+        _cachedControlledTransform = m_ControlledEntityHandle.GetComponent<TransformComponent>()->transform;
 }
 
 void PlayerController::ApplyInput()
 {
-        m_StateMachine.Update(cacheTime, _cachedControlledTransformComponent);
+        m_StateMachine.Update(cacheTime, _cachedControlledTransform);
         FSphere fSpherePlayer;
-        fSpherePlayer.center = _cachedControlledTransformComponent->transform.translation;
+        fSpherePlayer.center = _cachedControlledTransform.translation;
         fSpherePlayer.radius = 0.25f;
 
         debug_renderer::AddSphere(fSpherePlayer, 36, XMMatrixIdentity());
@@ -152,7 +152,7 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 DebugPrintSpeedBoostColor(color);
                 currentMaxSpeed = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
                 XMVECTOR currentInput =
-                    XMVector3Rotate(m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
+                    XMVector3Rotate(m_CurrentInput, _cachedControlledTransform.rotation.data);
                 if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
                 {
                         m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
@@ -162,7 +162,7 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 m_SpeedBoostPoolCounter[color]++;
                 m_SpeedBoostPoolCounter[color] %= MAX_SPEEDBOOST_SOUNDS;
 
-				return true;
+                return true;
         }
         return false;
 }

@@ -14,5 +14,8 @@ struct Material : public Resource<Material>
         FSurfaceProperties        m_SurfaceProperties;
         ResourceHandle            m_TextureHandles[int(ETexture2DType::COUNT)];
 
+		Material() = default;
+        virtual void Copy(IResource* other) override;
+
         virtual void Release() override;
 };

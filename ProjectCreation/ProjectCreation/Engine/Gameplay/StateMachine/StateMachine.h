@@ -34,8 +34,8 @@ class StateMachine
                 return state;
         }
 
-        inline void AddTransition(IState* start, IState* end, int event)
+        inline void AddTransition(IState* start, IState* end, int _event)
         {
-                m_TransitionTable.insert(std::make_pair(std::make_pair(start, event), end));
+                m_TransitionTable.insert(std::make_pair(std::make_pair(start, _event), end));
         }
 };

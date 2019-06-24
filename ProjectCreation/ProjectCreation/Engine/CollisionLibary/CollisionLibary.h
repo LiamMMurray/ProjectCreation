@@ -10,6 +10,8 @@ class CollisionLibary
                                                                             float             radius);
 
     public:
+        static bool PointInCapsule(const DirectX::XMVECTOR& point, const Shapes::FCapsule& capsule);
+
         static void CreateFrustum(Shapes::Frustum& frustum, DirectX::XMMATRIX view, DirectX::XMMATRIX projection);
         static Collision::FOverlapResult OverlapSphereToSphere(Shapes::FSphere& a, Shapes::FSphere& b, float offset = 0.01f);
         static Collision::FAdvancedCollisionResult SweepSphereToSphere(Shapes::FSphere& startA,
