@@ -47,6 +47,7 @@ EntityHandle HandleManager::CreateEntity(EntityHandle parentHandle)
 void HandleManager::FreeComponent(ComponentHandle handle)
 {
         NMemory::indices _adapter = {{handle.redirection_index}};
+        d_debug_deleted_components.push_back(std::make_pair((unsigned)handle.pool_index, (unsigned)handle.redirection_index));
         Free(m_ComponentRandomAccessPools, handle.pool_index, _adapter);
 }
 
@@ -197,7 +198,7 @@ void EntityHandle::FreeComponents()
 {
         for (auto& e : this->Get()->m_OwnedComponents)
         {
-                ComponentHandle(e.first, e.second).Free();
+                ComponentHandle(e).Free();
         }
 }
 
