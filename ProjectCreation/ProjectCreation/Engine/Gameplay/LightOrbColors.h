@@ -1,5 +1,9 @@
 #pragma once
 
+#include <DirectXColors.h>
+#include <DirectXMath.h>
+#include <DirectXPackedVector.h>
+
 struct E_LIGHT_ORBS
 {
         enum
@@ -10,4 +14,7 @@ struct E_LIGHT_ORBS
                 WHITE_LIGHTS,
                 COUNT
         };
+        
+		// BGRA colors
+        static const DirectX::PackedVector::XMCOLOR ORB_COLORS[E_LIGHT_ORBS::COUNT];
 };

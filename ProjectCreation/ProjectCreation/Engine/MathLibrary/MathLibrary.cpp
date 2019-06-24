@@ -269,7 +269,8 @@ DirectX::XMVECTOR MathLibrary::MoveTowards(const DirectX::XMVECTOR& a, const Dir
         XMVECTOR output;
         XMVECTOR delta = b - a;
         float    dist  = MathLibrary::CalulateVectorLength(delta);
-        output         = a + delta * (std::min(speed, fabsf(dist)), dist);
+        XMVECTOR dir   = XMVector3Normalize(delta);
+        output         = a + dir * std::min(speed, dist);
         return output;
 }
 

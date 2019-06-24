@@ -25,5 +25,6 @@ class GoalComponent : public Component<GoalComponent>
         float        targetAlpha            = 0.0f;
         float        transitionInitialSpeed = 300.0f;
         float        transitionFinalSpeed   = 800.0f;
-        E_GOAL_STATE goalState              = E_GOAL_STATE::Idle;
+        int          color;
+        E_GOAL_STATE goalState = E_GOAL_STATE::Idle;
 };

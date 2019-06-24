@@ -22,11 +22,11 @@ class PlayerController : public IController
         friend class PlayerControllerStateMachine;
 
     private:
-        ComponentHandle     m_GoalComponent;
-        void                GatherInput() override;
-        void                ProcessInput() override;
-        void                ApplyInput() override;
-        TransformComponent* _cachedControlledTransformComponent;
+        ComponentHandle m_GoalComponent;
+        void            GatherInput() override;
+        void            ProcessInput() override;
+        void            ApplyInput() override;
+        FTransform      _cachedControlledTransform;
 
         DirectX::XMFLOAT3 m_EulerAngles;
 
@@ -53,14 +53,26 @@ class PlayerController : public IController
 
         void DebugPrintSpeedBoostColor(int color);
 
+        DirectX::XMVECTOR mNextForward;
+
     public:
+        inline void SetNextForward(const DirectX::XMVECTOR& _val)
+        {
+                mNextForward = _val;
+        }
+
+        inline const DirectX::XMVECTOR& GetNextForward() const
+        {
+                return mNextForward;
+        }
+
         virtual void Shutdown() override;
 
-        KeyCode            m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT]       = {KeyCode::R, KeyCode::Q, KeyCode::E, KeyCode::Any};
+        KeyCode            m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT]   = {KeyCode::R, KeyCode::Q, KeyCode::E, KeyCode::Any};
         const char*        m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"whiteSpeedBoost",
-                                                               "whiteSpeedBoost",
-                                                               "whiteSpeedBoost",
-                                                               "whiteSpeedBoost"};
+                                                                   "whiteSpeedBoost",
+                                                                   "whiteSpeedBoost",
+                                                                   "whiteSpeedBoost"};
         GW::AUDIO::GSound* m_SpeedBoostSoundPool[E_LIGHT_ORBS::COUNT][MAX_SPEEDBOOST_SOUNDS];
         unsigned int       m_SpeedBoostPoolCounter[E_LIGHT_ORBS::COUNT] = {};
 

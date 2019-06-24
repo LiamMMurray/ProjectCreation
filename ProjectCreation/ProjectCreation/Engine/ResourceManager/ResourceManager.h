@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include "../../Utility/MemoryLeakDetection.h"
 namespace Animation
@@ -27,16 +28,8 @@ class ResourceContainer : public ResourceContainerBase
 
 
         std::vector<T>                                  m_Container;
-        std::unordered_map<ResourceHandle, T*>          m_ResourceTable;
+        std::unordered_set<ResourceHandle>              m_HandleSet;
         std::unordered_map<std::string, ResourceHandle> m_NameTable;
-
-        void UpdateHandles()
-        {
-                for (auto& resource : m_Container)
-                {
-                        m_ResourceTable[resource.GetHandle()] = &resource;
-                }
-        }
 
     public:
         virtual ~ResourceContainer() override
@@ -47,34 +40,40 @@ class ResourceContainer : public ResourceContainerBase
 
         T* GetResource(const ResourceHandle& handle)
         {
-                T* resource = m_ResourceTable[handle];
-                assert(resource && "Resource doesn't exist");
-                return m_ResourceTable[handle];
+                auto it = m_HandleSet.find(handle);
+                assert(it != m_HandleSet.end() && "Resource doesn't exist");
+                return &m_Container[handle.m_Data];
         }
 
-        T* DestroyResource(const ResourceHandle& handle)
+        void DestroyResource(const ResourceHandle& handle)
         {
-                T* resource = m_ResourceTable[handle];
-                assert(resource && "Resource doesn't exist");
-                m_ResourceTable.erase(handle);
+                auto it = m_HandleSet.find(handle);
+                assert(it != m_HandleSet.end() && "Resource doesn't exist");
+                Resource* resource  = GetResource(handle);
+                size_t    lastIndex = m_Container.size() - 1;
+                if (it->second != lastIndex)
+                {
+                        m_Container[it->second] = m_Container[lastIndex];
+                }
+
+
+                m_Container.erase(m_Container.end() - 1);
+                m_HandleSet.erase(handle);
                 m_NameTable.erase(resource->GetName());
-                UpdateHandles();
 
                 return resource;
         }
 
         T* AcquireResource(const ResourceHandle& handle)
         {
-                T* resource = m_ResourceTable[handle];
-                assert(resource && "Resource doesn't exist");
+                T* resource = GetResource(handle);
                 resource->AcquireHandle();
                 return resource;
         }
 
         uint16_t ReleaseResource(const ResourceHandle& handle)
         {
-                T* resource = m_ResourceTable[handle];
-                assert(resource && "Resource doesn't exist");
+                T*      resource = GetResource(handle);
                 int16_t refCount = resource->ReleaseHandle();
 
                 if (refCount <= 0)
@@ -85,22 +84,18 @@ class ResourceContainer : public ResourceContainerBase
 
         ResourceHandle CreateResource(std::string name)
         {
+                assert(m_NameTable.find(name) == m_NameTable.end());
+
                 ResourceHandle outHandle;
                 auto           dataOld = m_Container.data();
-                outHandle.m_Id         = (uint32_t)m_Container.size();
+                outHandle.m_Data       = (uint32_t)m_Container.size();
                 m_Container.emplace_back(T());
-                T& resource = m_Container.back();
+                size_t index    = m_Container.size() - 1;
+                T&     resource = m_Container.back();
                 resource.Init(name, outHandle);
-                auto dataNew = m_Container.data();
-
-                m_NameTable[name]          = outHandle;
-                m_ResourceTable[outHandle] = &resource;
-
-                if (dataOld != dataNew)
-                {
-                        UpdateHandles();
-                }
-
+                auto dataNew      = m_Container.data();
+                m_NameTable[name] = outHandle;
+                m_HandleSet.insert(outHandle);
                 return outHandle;
         }
 
@@ -127,6 +122,9 @@ class ResourceManager
         ResourceHandle LoadStaticMesh(const char* name);
         ResourceHandle LoadSkeletalMesh(const char* name);
         ResourceHandle LoadAnimationClip(const char* name, const Animation::FSkeleton* skeleton);
+
+        template <typename T>
+        ResourceHandle CopyResource(ResourceHandle, const char* name);
 
         void GetSRVs(unsigned int count, ResourceHandle* textureHandles, ID3D11ShaderResourceView** srvsOut);
 
@@ -168,6 +166,19 @@ ResourceContainer<T>* ResourceManager::GetResourceContainer()
 
         assert(rc != nullptr && "Failed to create ComponentContainer<T>");
         return rc;
+}
+
+template <typename T>
+inline ResourceHandle ResourceManager::CopyResource(ResourceHandle source, const char* name)
+{
+        ResourceContainer<T>* container      = GetResourceContainer<T>();
+        ResourceHandle        targetHandle   = container->CreateResource(name);
+        T*                    sourceResource = container->GetResource(source);
+        T*                    targetResource = container->GetResource(targetHandle);
+        targetResource->Copy(sourceResource);
+
+
+        return targetHandle;
 }
 
 template <typename T>

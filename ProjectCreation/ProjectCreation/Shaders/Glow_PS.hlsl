@@ -51,5 +51,5 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
 
         float3 color = _emissiveColor * modulation;
 
-        return float4(color * alpha, alpha);
+        return float4(color * alpha, saturate(alpha));
 }

@@ -24,9 +24,9 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
         auto goalComp   = goalHandle.Get<GoalComponent>();
         auto transComp  = transHandle.Get<TransformComponent>();
 
-        auto entityH2   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle2);
-        auto transComp2 = transHandle2.Get<TransformComponent>();
-
+        auto entityH2             = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle2);
+        auto transComp2           = transHandle2.Get<TransformComponent>();
+        goalComp->color           = color;
         goalComp->collisionHandle = transHandle2;
         goalComp->goalTransform.SetScale(50.0f);
         goalComp->initialTransform.SetScale(1.0f);
@@ -34,7 +34,16 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
         goalComp->goalState                    = E_GOAL_STATE::Spawning;
         transComp->transform                   = goalComp->initialTransform;
         transComp->transform.SetScale(0.0f);
-        transComp2->transform = goalComp->goalTransform;
+
+        float time = float(GEngine::Get()->GetTotalTime() / (1.0f + color) + color * 3.7792f);
+        float x    = sin(time);
+        float y    = cos(time);
+
+        XMVECTOR offset1 = XMVectorSet(x, 0, y, 0.0f);
+
+        goalComp->goalTransform.translation = orbitCenter + offset1 * 150.f * (color + 1.0f);
+        transComp2->transform               = goalComp->goalTransform;
+
         /*** REFACTORING CODE END ***/
 }
 
@@ -77,11 +86,10 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 }
         }
 
-        int goalCount = 0;
         for (auto& goalComp : m_HandleManager->GetActiveComponents<GoalComponent>())
         {
                 EntityHandle        goalParent      = goalComp.GetParent();
-                ComponentHandle     goalHandle      = goalParent.GetComponentHandle<GoalComponent>();
+                ComponentHandle     goalHandle      = goalComp.GetHandle();
                 ComponentHandle     transHandle     = goalParent.GetComponentHandle<TransformComponent>();
                 TransformComponent* transComp       = transHandle.Get<TransformComponent>();
                 TransformComponent* transCompPuzzle = goalComp.collisionHandle.Get<TransformComponent>();
@@ -99,14 +107,13 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         return;
                 }
 
-                float time = float(totalTime / (1.0f + goalCount) + goalCount * 3.7792f);
+                float time = float(totalTime / (1.0f + goalComp.color) + goalComp.color * 3.7792f);
                 float x    = sin(time);
                 float y    = cos(time);
 
                 XMVECTOR offset1 = XMVectorSet(x, 0, y, 0.0f);
 
-                goalComp.goalTransform.translation =
-                    XMVectorSet(0.0f, 1000.0f, 0.0f, 1.0f) + offset1 * 150.f * (goalCount + 1.0f);
+                goalComp.goalTransform.translation = orbitCenter + offset1 * 150.f * (goalComp.color + 1.0f);
 
                 transCompPuzzle->transform = goalComp.goalTransform;
 
@@ -135,8 +142,6 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         transComp->transform = FTransform::Lerp(
                             goalComp.initialTransform, goalComp.goalTransform, std::min(1.0f, goalComp.currAlpha));
                 }
-
-                goalCount++;
         }
 
         if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) >= 5)

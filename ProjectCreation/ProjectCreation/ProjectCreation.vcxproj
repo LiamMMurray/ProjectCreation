@@ -57,7 +57,6 @@
     <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\MathLibrary\Maze\MazeGenerator.h" />
-    <ClInclude Include="Engine\MathLibrary\Splines\SplineUtility.h" />
     <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
     <ClInclude Include="Engine\GenericComponents\TestComponents.h" />
     <ClInclude Include="Engine\GenericComponents\TransformComponent.h" />
@@ -211,13 +210,14 @@
     <ClCompile Include="Engine\Controller\PlayerPuzzleState.cpp" />
     <ClCompile Include="Engine\EngineInitShutdownHelpers.cpp" />
     <ClCompile Include="Engine\Entities\EntityFactory.cpp" />
+    <ClCompile Include="Engine\Gameplay\LightOrbColors.cpp" />
     <ClCompile Include="Engine\Gameplay\OrbitSystem.cpp" />
     <ClCompile Include="Engine\Gameplay\SpeedBoostSystem.cpp" />
+    <ClCompile Include="Engine\Gameplay\SplineCluster.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\IState.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
     <ClCompile Include="Engine\MathLibrary\Maze\MazeGenerator.cpp" />
     <ClCompile Include="Engine\MathLibrary\Splines\FGoodSpline.cpp" />
-    <ClCompile Include="Engine\MathLibrary\Splines\SplineUtility.cpp" />
     <ClCompile Include="Engine\Physics\PhysicsComponent.cpp" />
     <ClCompile Include="Engine\Controller\IController.cpp" />
     <ClCompile Include="Engine\Controller\PlayerMovement.cpp" />

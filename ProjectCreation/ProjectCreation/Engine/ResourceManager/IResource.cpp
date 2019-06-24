@@ -18,3 +18,8 @@ int16_t IResource::ReleaseHandle()
         --m_ReferenceCount;
         return m_ReferenceCount;
 }
+
+void IResource::Copy(IResource* other)
+{}
+
+
