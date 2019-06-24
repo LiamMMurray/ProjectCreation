@@ -1,10 +1,12 @@
 #include "AISystem.h"
+#include "../GenericComponents/TransformComponent.h"
+#include "../MathLibrary/MathLibrary.h"
 #include "AIComponent.h"
 
 XMVECTOR AISystem::CalculateAlignment(AIComponent* boid)
 {
         XMVECTOR temp = m_AverageForward / boid->m_MaxVelocity;
-        if (*XMVector3Length(temp).m128_f32 > 1) // Magnitude
+        if (MathLibrary::CalulateVectorLength(temp) > 1.0f) // Magnitude
         {
                 XMVector3Normalize(temp);
         }
@@ -13,8 +15,8 @@ XMVECTOR AISystem::CalculateAlignment(AIComponent* boid)
 
 XMVECTOR AISystem::CalculateCohesion(AIComponent* boid)
 {
-        XMVECTOR temp     = m_AveragePosition - boid->m_Position;
-        float    distance = *XMVector3Length(temp).m128_f32; // Magnitude
+        XMVECTOR temp     = m_AveragePosition - boid->GetParent().GetComponent<TransformComponent>()->transform.translation;
+        float    distance = MathLibrary::CalulateVectorLength(temp); // Magnitude
         XMVector3Normalize(temp);
 
         // Set the speed based on distance from the flock.
@@ -29,11 +31,14 @@ XMVECTOR AISystem::CalculateSeperation(AIComponent* boid)
 {
         XMVECTOR sum = XMVectorZero();
 
-        for (int i = 0; i < m_Boids.size(); i++)
+        for (auto& aiComp : m_HandleManager->GetActiveComponents<AIComponent>())
         {
-                XMVECTOR temp         = m_Boids[i]->m_Position - m_Boids[i]->m_Position;
-                float    distance     = *XMVector3Length(temp).m128_f32; // Magnitude
-                float    safeDistance = m_Boids[i]->m_SafeRadius + m_Boids[i]->m_SafeRadius;
+                XMVECTOR myPos    = boid->GetParent().GetComponent<TransformComponent>()->transform.translation;
+                XMVECTOR otherPos = aiComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
+
+                XMVECTOR temp         = myPos - otherPos;
+                float    distance     = MathLibrary::CalulateVectorLength(temp); // Magnitude
+                float    safeDistance = boid->m_SafeRadius + aiComp.m_SafeRadius;
 
                 // If a collision is likely...
                 if (distance < safeDistance)
@@ -45,7 +50,7 @@ XMVECTOR AISystem::CalculateSeperation(AIComponent* boid)
                 }
         }
 
-        if (*XMVector3Length(sum).m128_f32 > 1.0f) // Length
+        if (MathLibrary::CalulateVectorLength(sum) > 1.0f) // Length
         {
                 XMVector3Normalize(sum);
         }
@@ -68,25 +73,10 @@ void AISystem::CalculateAverage()
 
         for (auto& aiComp : m_HandleManager->GetActiveComponents<AIComponent>())
         {
-                m_AveragePosition += aiComp.m_Position;
+                m_AveragePosition += aiComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
         }
         m_AveragePosition /= boidCount;
 }
-
-void AISystem::AddBoid(XMVECTOR Position, XMVECTOR Velocity, XMVECTOR MaxVelocity, float SafeRadius)
-{
-        AIComponent* BoidAdd = new AIComponent();
-        BoidAdd->m_Position  = Position;
-        BoidAdd->m_Velocity  = Velocity;
-        if (XMVector3Less(MaxVelocity, Velocity))
-        {
-                MaxVelocity = Velocity;
-        }
-        BoidAdd->m_MaxVelocity = MaxVelocity;
-        BoidAdd->m_SafeRadius  = SafeRadius;
-
-        m_Boids.push_back(BoidAdd);
-};
 
 
 void AISystem::OnInitialize()
@@ -108,23 +98,30 @@ void AISystem::OnUpdate(float deltaTime)
 {
         CalculateAverage();
 
-        for (int i = 0; i < m_Boids.size(); i++)
+        for (auto& aiComp : m_HandleManager->GetActiveComponents<AIComponent>())
         {
-                XMVECTOR accel = CalculateAlignment(m_Boids[i]);
-                accel += CalculateCohesion(m_Boids[i]);
-                accel += CalculateSeperation(m_Boids[i]);
+                XMVECTOR accel = CalculateAlignment(&aiComp);
+                accel += CalculateCohesion(&aiComp);
+                accel += CalculateSeperation(&aiComp);
 
-                float accelMultiplier = *m_Boids[i]->m_MaxVelocity.m128_f32;
-                accel *= accelMultiplier * deltaTime;
+                accel *= aiComp.m_MaxVelocity * deltaTime;
 
-                m_Boids[i]->m_Velocity += accel;
+                aiComp.m_Velocity += accel;
 
-                if (m_Boids[i]->m_Velocity.m128_f32 > m_Boids[i]->m_MaxVelocity.m128_f32) // Magnitude
+                if (MathLibrary::CalulateVectorLength(aiComp.m_Velocity) >
+                    MathLibrary::CalulateVectorLength(aiComp.m_MaxVelocity)) // Magnitude
                 {
-                        XMVector3Normalize(m_Boids[i]->m_Velocity);
-                        m_Boids[i]->m_Velocity *= m_Boids[i]->m_MaxVelocity;
+                        XMVector3Normalize(aiComp.m_Velocity);
+                        aiComp.m_MaxVelocity *= aiComp.m_MaxVelocity;
                 }
-                m_Boids[i]->Update(deltaTime);
+        	
+        		if (MathLibrary::CalulateVectorLength(aiComp.m_Velocity * aiComp.m_MaxVelocity) >
+					MathLibrary::CalulateVectorLength(aiComp.m_MaxVelocity * aiComp.m_MaxVelocity))
+                {
+                        aiComp.m_Velocity = XMVector3Normalize(aiComp.m_Velocity);
+                        aiComp.m_Velocity *= aiComp.m_MaxVelocity;
+                }
+                aiComp.GetParent().GetComponent<TransformComponent>()->transform.translation += aiComp.m_Velocity * deltaTime;
         }
 }
 
@@ -132,12 +129,7 @@ void AISystem::OnPostUpdate(float deltaTime)
 {}
 
 void AISystem::OnShutdown()
-{
-        for (int i = 0; i < m_Boids.size(); i++)
-        {
-                delete m_Boids[i];
-        }
-}
+{}
 
 void AISystem::OnResume()
 {}

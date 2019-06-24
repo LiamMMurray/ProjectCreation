@@ -18,7 +18,6 @@ class AISystem : public ISystem
         XMVECTOR CalculateSeperation(AIComponent* boid);
 
         void CalculateAverage();
-        void AddBoid(XMVECTOR Position, XMVECTOR Velocity, XMVECTOR MaxVelocity, float SafeRadius);
 
     protected:
         // Inherited via ISystem
@@ -32,7 +31,6 @@ class AISystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
-
         float m_AlignmentStrength;
         float m_CohesionStrength;
         float m_SeperationStrength;
