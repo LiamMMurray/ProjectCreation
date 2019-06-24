@@ -11,7 +11,7 @@ class AISystem : public ISystem
 {
     private:
         HandleManager* m_HandleManager;
-        SystemManager*    m_SystemManager;
+        SystemManager* m_SystemManager;
 
         XMVECTOR CalculateAlignment(AIComponent* boid);
         XMVECTOR CalculateCohesion(AIComponent* boid);
@@ -32,7 +32,6 @@ class AISystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
-        std::vector<AIComponent*> m_Boids;
 
         float m_AlignmentStrength;
         float m_CohesionStrength;

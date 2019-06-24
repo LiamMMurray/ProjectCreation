@@ -27,7 +27,7 @@ XMVECTOR AISystem::CalculateCohesion(AIComponent* boid)
 
 XMVECTOR AISystem::CalculateSeperation(AIComponent* boid)
 {
-        XMVECTOR sum = {0, 0, 0};
+        XMVECTOR sum = XMVectorZero();
 
         for (int i = 0; i < m_Boids.size(); i++)
         {
@@ -58,32 +58,34 @@ void AISystem::CalculateAverage()
         m_AveragePosition = XMVectorZero();
         m_AverageForward  = XMVectorZero();
 
-        for (int i = 0; i < m_Boids.size(); i++)
+        int boidCount = 0;
+        for (auto& aiComp : m_HandleManager->GetActiveComponents<AIComponent>())
         {
-                m_AverageForward += m_Boids[i]->m_Velocity;
+                boidCount++;
+                m_AverageForward += aiComp.m_Velocity;
         }
-        m_AverageForward /= m_Boids.size();
+        m_AverageForward /= boidCount;
 
-        for (int i = 0; i < m_Boids.size(); i++)
+        for (auto& aiComp : m_HandleManager->GetActiveComponents<AIComponent>())
         {
-                m_AveragePosition += m_Boids[i]->m_Position;
+                m_AveragePosition += aiComp.m_Position;
         }
-        m_AveragePosition /= m_Boids.size();
+        m_AveragePosition /= boidCount;
 }
 
 void AISystem::AddBoid(XMVECTOR Position, XMVECTOR Velocity, XMVECTOR MaxVelocity, float SafeRadius)
 {
-       AIComponent* BoidAdd = new AIComponent();
-       BoidAdd->m_Position  = Position;
-       BoidAdd->m_Velocity  = Velocity;
-       if (XMVector3Less(MaxVelocity, Velocity))
-       {
-               MaxVelocity = Velocity;
-       }
-       BoidAdd->m_MaxVelocity = MaxVelocity;
-       BoidAdd->m_SafeRadius  = SafeRadius;
-	   
-       m_Boids.push_back(BoidAdd);
+        AIComponent* BoidAdd = new AIComponent();
+        BoidAdd->m_Position  = Position;
+        BoidAdd->m_Velocity  = Velocity;
+        if (XMVector3Less(MaxVelocity, Velocity))
+        {
+                MaxVelocity = Velocity;
+        }
+        BoidAdd->m_MaxVelocity = MaxVelocity;
+        BoidAdd->m_SafeRadius  = SafeRadius;
+
+        m_Boids.push_back(BoidAdd);
 };
 
 
@@ -94,7 +96,7 @@ void AISystem::OnInitialize()
 
         m_AlignmentStrength  = 0.0f;
         m_CohesionStrength   = 0.0f;
-        m_SeperationStrength = 3.0f;
+        m_SeperationStrength = 1.5f;
 
         m_FlockRadius = 23.0f;
 }
@@ -130,7 +132,12 @@ void AISystem::OnPostUpdate(float deltaTime)
 {}
 
 void AISystem::OnShutdown()
-{}
+{
+        for (int i = 0; i < m_Boids.size(); i++)
+        {
+                delete m_Boids[i];
+        }
+}
 
 void AISystem::OnResume()
 {}
