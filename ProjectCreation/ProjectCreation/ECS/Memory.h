@@ -2,9 +2,10 @@
 #include <queue>
 #include <unordered_map>
 #include <vector>
-
 #define KB(x) ((size_t)(x) << 10)
 #define MB(x) ((size_t)(x) << 20)
+
+struct ComponentHandle;
 
 namespace NMemory
 {
@@ -21,8 +22,6 @@ namespace NMemory
         typedef std::vector<index>                delete_requests;
         typedef std::priority_queue<index, type_indices, std::greater<index>> index_priority_queue;
         typedef size_t                                                        entity_index;
-        typedef std::unordered_multimap<type_index, index>                    entity_component_container;
-        typedef std::pair<entity_component_container::iterator, entity_component_container::iterator> entity_components;
 
         struct MemoryStack
         {
