@@ -132,7 +132,8 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
                    int       nCmdShow       // how the windows is shown. Legacy. Can ignore
 )
 {
-
+        ENABLE_LEAK_DETECTION();
+        //_CrtSetBreakAlloc(177);
         _WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
 		_CrtDumpMemoryLeaks();
@@ -140,8 +141,11 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         return 0;
 }
 
+
+
 int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+
         std::srand(unsigned(std::time(0)));
 
         constexpr char appName[] = "Inanis";
@@ -224,12 +228,12 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
         // Test skeletal mesh setup
         {
-            // std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
-            // ComponentHandle          transformHandle;
-            // EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
-            //
-            // TransformComponent* transformComp = HandleManager->GetComponentHandle<TransformComponent>(transformHandle);
-            // transformComp->transform.SetScale(0.1f);
+             /*std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
+             ComponentHandle          transformHandle;
+             EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
+            
+             TransformComponent* transformComp = HandleManager->GetComponent<TransformComponent>(transformHandle);
+             transformComp->transform.SetScale(0.1f);*/
         }
 
         // Ground Plane

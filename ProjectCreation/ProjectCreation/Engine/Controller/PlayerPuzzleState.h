@@ -16,7 +16,7 @@ class PlayerPuzzleState : public IPlayerControllerState
         virtual void Enter() override;
         virtual void Update(float deltaTime) override;
         virtual void Exit() override;
-
+        virtual ~PlayerPuzzleState() = default;
         inline void SetGoalDragSpeed(float val)
         {
                 goalDragMaxSpeed = val;

@@ -47,8 +47,9 @@ class ISystem
         virtual void OnSuspend()                   = 0;
 
     public:
-        template <typename T>
+        virtual ~ISystem() = default;
 
+        template <typename T>
         static SystemTypeId GetTypeID()
         {
                 static_assert(std::is_base_of<ISystem, T>::value, "Error. Template type must be subclass of ISystem");
@@ -57,12 +58,12 @@ class ISystem
                 return id;
         }
 
-		inline const FSystemProperties& GetSystemProperties() const
-		{
+        inline const FSystemProperties& GetSystemProperties() const
+        {
                 return m_Properties;
-		}
+        }
 
-		inline void SetSystemProperties(const FSystemProperties& val)
+        inline void SetSystemProperties(const FSystemProperties& val)
         {
                 m_Properties = val;
         }

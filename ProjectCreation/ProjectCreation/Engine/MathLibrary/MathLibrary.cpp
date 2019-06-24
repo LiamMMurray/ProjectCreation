@@ -60,8 +60,8 @@ void MathLibrary::TurnTo(DirectX::XMMATRIX& matrix, DirectX::XMVECTOR targetPosi
 }
 
 DirectX::XMVECTOR MathLibrary::GetClosestPointFromLineClamped(DirectX::XMVECTOR startPoint,
-                                                       DirectX::XMVECTOR endPoint,
-                                                       DirectX::XMVECTOR point)
+                                                              DirectX::XMVECTOR endPoint,
+                                                              DirectX::XMVECTOR point)
 {
         XMVECTOR output;
         XMVECTOR length       = XMVector3Normalize(endPoint - startPoint);
@@ -79,8 +79,8 @@ DirectX::XMVECTOR MathLibrary::GetClosestPointFromLineClamped(DirectX::XMVECTOR 
 }
 
 DirectX::XMVECTOR MathLibrary::GetClosestPointFromLine(DirectX::XMVECTOR startPoint,
-                                                              DirectX::XMVECTOR endPoint,
-                                                              DirectX::XMVECTOR point)
+                                                       DirectX::XMVECTOR endPoint,
+                                                       DirectX::XMVECTOR point)
 {
         XMVECTOR output;
         XMVECTOR length       = XMVector3Normalize(endPoint - startPoint);
@@ -142,8 +142,7 @@ float MathLibrary::CalulateVectorLength(DirectX::XMVECTOR vector)
 
 float MathLibrary::VectorDotProduct(DirectX::XMVECTOR m, DirectX::XMVECTOR n)
 {
-        return ((XMVectorGetX(m) * XMVectorGetX(n)) + (XMVectorGetY(m) * XMVectorGetY(n)) +
-                (XMVectorGetZ(m) * XMVectorGetZ(n)));
+        return (XMVectorGetX(XMVector3Dot(m, n)));
 }
 
 float MathLibrary::ManhattanDistance(Shapes::FAabb& a, Shapes::FAabb& b)
@@ -165,11 +164,31 @@ DirectX::XMVECTOR MathLibrary::GetRandomPointInRadius(const DirectX::XMVECTOR& c
         return vec;
 }
 
+DirectX::XMVECTOR MathLibrary::GetRandomPointInArc(const DirectX::XMVECTOR& center,
+                                                   const DirectX::XMVECTOR& forward,
+                                                   const DirectX::XMVECTOR& up,
+                                                   float                    maxAngle,
+                                                   float                    minDistance,
+                                                   float                    maxDistance)
+{
+        XMVECTOR dir  = forward;
+        XMVECTOR quat = XMQuaternionRotationAxis(up, RandomFloatInRange(-maxAngle, maxAngle));
+        dir           = XMVector3Rotate(dir, quat);
+        dir *= RandomFloatInRange(minDistance, maxDistance);
+
+        return dir + center;
+}
+
 DirectX::XMVECTOR MathLibrary::GetRandomPointInRadius2D(const DirectX::XMVECTOR& center, float innerRadius, float outerRadius)
 {
         XMVECTOR vec = GetRandomUnitVector2D();
         vec          = vec * innerRadius + vec * RandomFloatInRange(0.0f, outerRadius);
         return center + vec;
+}
+
+float MathLibrary::CalculateAngleBetweenVectors(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b)
+{
+        return XMVectorGetX(XMVector3AngleBetweenVectors(a, b));
 }
 
 float MathLibrary::GetRandomFloat()

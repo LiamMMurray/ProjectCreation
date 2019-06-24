@@ -1,8 +1,8 @@
 #include "AudioManager.h"
 #include <assert.h>
 #include <sstream>
-#include "../MathLibrary/MathLibrary.h"
 #include "../../Utility/MemoryLeakDetection.h"
+#include "../MathLibrary/MathLibrary.h"
 using namespace GW::AUDIO;
 
 AudioManager *AudioManager::instance;
@@ -48,23 +48,35 @@ void AudioManager::SetMasterVolume(float val)
         m_MasterVolume = val;
 }
 
-void AudioManager::ActivateMusicAndPause(GW::AUDIO::GMusic * m, bool looping)
+void AudioManager::ActivateMusicAndPause(GW::AUDIO::GMusic *m, bool looping)
 {
         m->StreamStart(looping);
         m->PauseStream();
 }
 
+void AudioManager::_shutdown()
+{
+
+        for (auto &it : m_LoadedMusic)
+        {
+                it.second->DecrementCount();
+        }
+        m_SoundEngine->DecrementCount();
+
+}
+
 void AudioManager::Initialize()
 {
         assert(!instance);
-        instance       = DBG_NEW AudioManager;
-        GW::GReturn gr = (GW::AUDIO::CreateGAudio(&instance->m_SoundEngine));
+        instance              = DBG_NEW AudioManager;
+        GW::GReturn        gr = (GW::AUDIO::CreateGAudio(&instance->m_SoundEngine));
         assert(G_SUCCESS(gr));
 }
 
 void AudioManager::Shutdown()
 {
         assert(instance);
+        instance->_shutdown();
         delete instance;
 }
 

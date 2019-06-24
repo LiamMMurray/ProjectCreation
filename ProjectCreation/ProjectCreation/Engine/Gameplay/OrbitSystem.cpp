@@ -19,10 +19,10 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
         /*** REFACTORING CODE START ***/
         ComponentHandle transHandle, transHandle2;
 
-		auto entityH1   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle);
-        auto            goalHandle = entityH1.AddComponent<GoalComponent>();
-        auto            goalComp   = goalHandle.Get<GoalComponent>();
-        auto            transComp  = transHandle.Get<TransformComponent>();
+        auto entityH1   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle);
+        auto goalHandle = entityH1.AddComponent<GoalComponent>();
+        auto goalComp   = goalHandle.Get<GoalComponent>();
+        auto transComp  = transHandle.Get<TransformComponent>();
 
         auto entityH2   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle2);
         auto transComp2 = transHandle2.Get<TransformComponent>();
@@ -143,12 +143,12 @@ void OrbitSystem::OnUpdate(float deltaTime)
         {
                 static bool done = false;
 
-                // play sfx when spawned
-                auto redSpawn = AudioManager::Get()->CreateSFX("redPlanetSpawn");
-                redSpawn->SetVolume(0.8f);
 
                 if (!done)
                 {
+                        // play sfx when spawned
+                        auto redSpawn = AudioManager::Get()->CreateSFX("redPlanetSpawn");
+                        redSpawn->SetVolume(0.8f);
                         CreateGoal(0, GoalPositions[0]);
                         redSpawn->Play();
                 }
@@ -160,13 +160,13 @@ void OrbitSystem::OnUpdate(float deltaTime)
         {
                 static bool done = false;
 
-                // play sfx when spawned
-                auto blueSpawn = AudioManager::Get()->CreateSFX("bluePlanetSpawn");
-                blueSpawn->SetVolume(0.8f);
 
                 if (!done)
                 {
                         CreateGoal(1, GoalPositions[1]);
+                        // play sfx when spawned
+                        auto blueSpawn = AudioManager::Get()->CreateSFX("bluePlanetSpawn");
+                        blueSpawn->SetVolume(0.8f);
                         blueSpawn->Play();
                 }
 
@@ -178,12 +178,12 @@ void OrbitSystem::OnUpdate(float deltaTime)
         {
                 static bool done = false;
 
-                // play sfx when spawned
-                auto greenSpawn = AudioManager::Get()->CreateSFX("greenPlanetSpawn");
-                greenSpawn->SetVolume(0.8f);
 
                 if (!done)
                 {
+                        // play sfx when spawned
+                        auto greenSpawn = AudioManager::Get()->CreateSFX("greenPlanetSpawn");
+                        greenSpawn->SetVolume(0.8f);
                         CreateGoal(2, GoalPositions[2]);
                         greenSpawn->Play();
                 }

@@ -1,9 +1,11 @@
 #pragma once
 #include "../../ECS/Component.h"
 
-class OrbRespawnComponent : public Component<OrbRespawnComponent>
+class OrbComponent : public Component<OrbComponent>
 {
     public:
-        bool  m_WantsRespawn = false;
-        float m_Lifetime;
+        bool  m_WantsDestroy = false;
+        float m_TargetRadius;
+        int   m_Color;
+        float m_CurrentRadius;
 };
