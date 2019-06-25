@@ -1,11 +1,6 @@
 #include "DefaultPixelIn.hlsl"
 #include "DefaultVertexIn.hlsl"
-
-cbuffer MVPBuffer : register(b0)
-{
-        matrix ViewProjection;
-        matrix World;
-};
+#include "MVPBuffer.hlsl"
 
 cbuffer SceneInfoBuffer : register(b1)
 {

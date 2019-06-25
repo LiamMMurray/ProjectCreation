@@ -34,10 +34,11 @@
 #include "Components/DirectionalLightComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Terrain/TerrainManager.h"
 
 #include "../Engine/MathLibrary/ColorConstants.h"
-#include "DebugRender/debug_renderer.h"
 #include "../Utility/MemoryLeakDetection.h"
+#include "DebugRender/debug_renderer.h"
 
 void RenderSystem::CreateDeviceAndSwapChain()
 {
@@ -672,6 +673,7 @@ void RenderSystem::OnPreUpdate(float deltaTime)
 
         XMStoreFloat3(&m_ConstantBuffer_SCENE.eyePosition, mainTransform->transform.translation);
         m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(m_CachedMainViewProjectionMatrix);
+        m_ConstantBuffer_MVP.Projection     = XMMatrixTranspose(m_CachedMainProjectionMatrix);
 
         /** Prepare draw calls **/
         m_TransluscentDraws.clear();
@@ -784,10 +786,10 @@ void RenderSystem::OnUpdate(float deltaTime)
         m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
         m_Context->RSSetViewports(1, &viewport);
 
-        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::SKINNED]);
-        m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         m_Context->VSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
         m_Context->PSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
+        m_Context->HSSetConstantBuffers(0, 2, m_BasePassConstantBuffers);
+        m_Context->DSSetConstantBuffers(0, 2, m_BasePassConstantBuffers);
 
         /** Get Directional Light**/
         {
@@ -818,6 +820,12 @@ void RenderSystem::OnUpdate(float deltaTime)
         float blendFactor[] = {0.75f, 0.75f, 0.75f, 1.0f};
         UINT  sampleMask    = 0xffffffff;
 
+        /*** Render Terrain Start ***/
+        TerrainManager::Update(deltaTime);
+        /*** Render Terrain End ***/
+
+        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::SKINNED]);
+        m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         /** Render opaque meshes **/
         m_Context->OMSetDepthStencilState(m_DepthStencilStates[E_DEPTH_STENCIL_STATE::BASE_PASS], 0);
         m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Opaque], 0, sampleMask);
@@ -853,8 +861,7 @@ void RenderSystem::OnUpdate(float deltaTime)
                 {
                         SkeletalMesh* mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_TransluscentDraws[i].meshResource);
                         Material*     mat  = m_ResourceManager->GetResource<Material>(m_TransluscentDraws[i].materialHandle);
-                        SkeletalMeshComponent*                     meshComp =
-                            m_TransluscentDraws[i].componentHandle.Get<SkeletalMeshComponent>();
+                        SkeletalMeshComponent* meshComp = m_TransluscentDraws[i].componentHandle.Get<SkeletalMeshComponent>();
                         DrawSkeletalMesh(mesh, mat, &m_TransluscentDraws[i].mtx, &meshComp->m_Skeleton);
                 }
         }
@@ -932,6 +939,7 @@ void RenderSystem::OnInitialize()
 
         // UI Manager Initialize
         UIManager::Initialize(m_WindowHandle);
+        TerrainManager::Initialize(this);
 }
 
 void RenderSystem::OnShutdown()
@@ -1010,6 +1018,8 @@ void RenderSystem::OnShutdown()
         }
         // UI Manager Shutdown
         UIManager::Shutdown();
+
+		TerrainManager::Shutdown();
 }
 
 void RenderSystem::OnResume()
