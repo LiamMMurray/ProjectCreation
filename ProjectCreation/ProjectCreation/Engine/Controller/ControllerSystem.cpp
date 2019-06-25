@@ -84,7 +84,7 @@ void ControllerSystem::OnUpdate(float deltaTime)
                 m_Controllers[m_CurrentController]->SetEnabled(true);
                 HandleManager*  handleManager    = GEngine::Get()->GetHandleManager();
                 EntityHandle    controllerHandle = m_Controllers[m_CurrentController]->GetControlledEntity();
-                ComponentHandle cameraHandle     = controllerHandle.GetComponentHandle<TransformComponent>();
+                ComponentHandle cameraHandle     = controllerHandle.GetComponentHandle<CameraComponent>();
                 RenderSystem*   renderSystem     = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 
                 renderSystem->SetMainCameraComponent(cameraHandle);

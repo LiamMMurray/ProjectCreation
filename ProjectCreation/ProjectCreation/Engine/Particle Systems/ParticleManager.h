@@ -10,30 +10,34 @@ class ComponentManager;
 class ParticleManager
 {
     private:
-        static constexpr unsigned int gMaxParticleCount = 100'000;
+        static ParticleManager* instance;
+        RenderSystem*           m_RenderSystem;
+        // Buffers
+        ParticleBuffer m_ParticleBuffer;
+        ParticleBuffer m_EmitterBuffer;
+        ParticleBuffer m_SegmentBuffer;
+        // Shader Handles
+        ResourceHandle               m_ComputeShaderHandle;
+        ResourceHandle               m_GeometryShaderHandle;
+        ResourceHandle               m_VertexShaderHandle;
+        ResourceHandle               m_PixelShaderHandle;
+        ID3D11InputLayout*           m_VertexInputLayout;
+        ParticleData::FParticleGPU*  m_ParticleInfo;
+        ParticleData::FEmitterGPU*   m_EnitterInfo;
+        ParticleData::FEmitterCPU*   m_EmitterCpuInfo;
+        ParticleData::FSegmentBuffer m_SegmentInfo;
+        void                         UpdateResources(ID3D11Resource* resource);
+        void                         update(float deltaTime);
+        void                         init();
+        void                         shutdown();
 
-        static ParticleManager*    instance;
-        RenderSystem*              m_RenderSystem;
-        ParticleBuffer             m_ParticleBuffer;
-        ParticleBuffer             m_EmitterBuffer;
-        ResourceHandle             m_ComputeShaderHandle;
-        ResourceHandle             m_GeometryShaderHandle;
-        ResourceHandle             m_VertexShaderHandle;
-        ResourceHandle             m_PixelShaderHandle;
-        ParticleData::FParticleGPU* m_ParticleInfo;
-        ParticleData::FEmitterGPU*  m_EnitterInfo;
-        void                       UpdateResources(ID3D11Resource* resource);
-        void                       update(float deltaTime);
-        void                       init();
-        void                       shutdown();
-
-        void ParticleBufferInit(ParticleBuffer*             particlesbuffer,
-			ParticleBuffer* emitterBuffer,
-                                ID3D11Device1*              device1,
-                                ParticleData::FParticleGPU* particleData,
-                                ParticleData::FEmitterGPU*  emitterData,
-                                unsigned int                         numParticles);
+        void ParticleBufferInit(ID3D11Device1*                device1,
+                                ParticleData::FParticleGPU*   particleData,
+                                ParticleData::FEmitterGPU*    emitterData,
+                                ParticleData::FSegmentBuffer* segmentData,
+                                unsigned int                  numParticles);
         void ParticleBufferShutdown(ParticleBuffer* buffer);
+
     public:
         EntityHandle                   CreateEmitter(ParticleData::FEmitterCPU& emitter);
         void                           SetParticleInfo(ParticleData::FParticleGPU* particleInfo);

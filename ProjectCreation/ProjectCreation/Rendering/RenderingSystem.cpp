@@ -329,20 +329,6 @@ void RenderSystem::CreateInputLayouts()
                                          shaderData.bytes.size(),
                                          &m_DefaultInputLayouts[E_INPUT_LAYOUT::DEBUG]);
 
-        // Vertex Shader for Geomatry Shader
-        D3D11_INPUT_ELEMENT_DESC vGeometryLayout[] = {
-            {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-            {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}};
-        er = FileIO::LoadShaderDataFromFile("Geometry", "_VS", &shaderData);
-
-        assert(er.m_Flags == ERESULT_FLAG::SUCCESS);
-
-        hr = m_Device->CreateInputLayout(vGeometryLayout,
-                                         ARRAYSIZE(vGeometryLayout),
-                                         shaderData.bytes.data(),
-                                         shaderData.bytes.size(),
-                                         &m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
-
         assert(SUCCEEDED(hr));
 }
 
@@ -600,7 +586,7 @@ void RenderSystem::DrawMesh(ID3D11Buffer*      vertexBuffer,
 void RenderSystem::DrawStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
 {
         using namespace DirectX;
-
+        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
         DrawMesh(mesh->m_VertexBuffer, mesh->m_IndexBuffer, mesh->m_IndexCount, sizeof(FVertex), material, mtx);
 }
 
@@ -639,6 +625,7 @@ void RenderSystem::DrawSkeletalMesh(SkeletalMesh*               mesh,
         UpdateConstantBuffer(m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::ANIM],
                              &m_ConstantBuffer_ANIM,
                              sizeof(m_ConstantBuffer_ANIM));
+        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::SKINNED]);
 
         DrawMesh(mesh->m_VertexBuffer, mesh->m_IndexBuffer, mesh->m_IndexCount, sizeof(FSkinnedVertex), material, mtx);
 }
@@ -801,8 +788,6 @@ void RenderSystem::OnUpdate(float deltaTime)
         m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
         m_Context->RSSetViewports(1, &viewport);
 
-        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::SKINNED]);
-        m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         m_Context->VSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
         m_Context->PSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
 
@@ -836,6 +821,7 @@ void RenderSystem::OnUpdate(float deltaTime)
         UINT  sampleMask    = 0xffffffff;
 
         /** Render opaque meshes **/
+        m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         m_Context->OMSetDepthStencilState(m_DepthStencilStates[E_DEPTH_STENCIL_STATE::BASE_PASS], 0);
         m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Opaque], 0, sampleMask);
         for (size_t i = 0, n = m_OpaqueDraws.size(); i < n; ++i)

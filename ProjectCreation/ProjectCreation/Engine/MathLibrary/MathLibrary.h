@@ -93,8 +93,6 @@ class MathLibrary
                 else
 
                 {
-
-
                         return false; // complex roots
                 }
         };

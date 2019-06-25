@@ -13,6 +13,8 @@ namespace ParticleData
                   DirectX::XMFLOAT3 velocity;
           };*/
 
+        static constexpr unsigned int gMaxParticleCount = 2 << 16;
+        static constexpr unsigned int gMaxEmitterCount  = 2 << 10;
 
         struct FEmitterCPU
         {
@@ -34,11 +36,11 @@ namespace ParticleData
 
         struct FEmitterGPU
         {
-                int   currentParticleCount;
-                float accumulatedTime;
+                int               currentParticleCount;
+                float             accumulatedTime; // life time
                 bool              active;
                 DirectX::XMFLOAT4 position;
-                DirectX::XMFLOAT4   color;
+                DirectX::XMFLOAT4 color;
                 DirectX::XMFLOAT2 uv;
                 DirectX::XMFLOAT3 velocity;
         };
@@ -52,6 +54,11 @@ namespace ParticleData
                 float             time;
                 bool              active;
                 int               index;
+        };
+
+        struct FSegmentBuffer
+        {
+                int index[gMaxEmitterCount];
         };
 
 
