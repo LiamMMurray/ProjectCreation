@@ -36,6 +36,7 @@
 #include "Components/DirectionalLightComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Terrain/TerrainManager.h"
 
 #include "../Engine/MathLibrary/ColorConstants.h"
 #include "../Utility/MemoryLeakDetection.h"
@@ -676,6 +677,7 @@ void RenderSystem::OnPreUpdate(float deltaTime)
 
         XMStoreFloat3(&m_ConstantBuffer_SCENE.eyePosition, mainTransform->transform.translation);
         m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(m_CachedMainViewProjectionMatrix);
+        m_ConstantBuffer_MVP.Projection     = XMMatrixTranspose(m_CachedMainProjectionMatrix);
 
         /** Prepare draw calls **/
         m_TransluscentDraws.clear();
@@ -790,6 +792,8 @@ void RenderSystem::OnUpdate(float deltaTime)
 
         m_Context->VSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
         m_Context->PSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
+        m_Context->HSSetConstantBuffers(0, 2, m_BasePassConstantBuffers);
+        m_Context->DSSetConstantBuffers(0, 2, m_BasePassConstantBuffers);
 
         /** Get Directional Light**/
         {
@@ -822,6 +826,12 @@ void RenderSystem::OnUpdate(float deltaTime)
         float blendFactor[] = {0.75f, 0.75f, 0.75f, 1.0f};
         UINT  sampleMask    = 0xffffffff;
 
+        /*** Render Terrain Start ***/
+        TerrainManager::Update(deltaTime);
+        /*** Render Terrain End ***/
+
+        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::SKINNED]);
+        m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         /** Render opaque meshes **/
         m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         m_Context->OMSetDepthStencilState(m_DepthStencilStates[E_DEPTH_STENCIL_STATE::BASE_PASS], 0);
@@ -938,6 +948,7 @@ void RenderSystem::OnInitialize()
 
         // UI Manager Initialize
         UIManager::Initialize(m_WindowHandle);
+        TerrainManager::Initialize(this);
         ParticleManager::Initialize();
 }
 
@@ -1017,6 +1028,8 @@ void RenderSystem::OnShutdown()
         }
         // UI Manager Shutdown
         UIManager::Shutdown();
+
+		TerrainManager::Shutdown();
 
         ParticleManager::Shutdown();
 }

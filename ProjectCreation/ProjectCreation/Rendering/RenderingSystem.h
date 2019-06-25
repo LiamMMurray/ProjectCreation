@@ -195,7 +195,7 @@ struct E_BLEND_STATE
         {
                 Opaque = 0,
                 Transluscent,
-				Additive,
+                Additive,
                 COUNT
         };
 };
@@ -214,7 +214,7 @@ struct E_DEPTH_STENCIL_STATE
         enum
         {
                 BASE_PASS,
-				TRANSLUSCENT,
+                TRANSLUSCENT,
                 COUNT
         };
 };
@@ -238,6 +238,7 @@ class RenderSystem : public ISystem
         friend class ResourceManager;
         friend class UIManager;
         friend class ParticleManager;
+        friend class TerrainManager;
 
         std::vector<FDraw> m_OpaqueDraws;
         std::vector<FDraw> m_TransluscentDraws;
