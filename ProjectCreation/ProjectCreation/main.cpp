@@ -311,7 +311,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
 
-                if (GetActiveWindow() != handle)
+                if (GetActiveWindow() != handle && GEngine::Get()->GetGamePaused() == false)
                 {
                         UIManager::instance->Pause();
                 }

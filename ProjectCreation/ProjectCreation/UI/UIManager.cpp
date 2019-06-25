@@ -202,8 +202,7 @@ void UIManager::Pause()
         GEngine::Get()->SetGamePaused(true);
         if (instance->m_InMenu)
         {
-                while (ShowCursor(TRUE) < 0)
-                        ;
+                while (ShowCursor(TRUE) < 0);
         }
         else
         {

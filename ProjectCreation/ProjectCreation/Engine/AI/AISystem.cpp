@@ -90,7 +90,7 @@ void AISystem::OnInitialize()
 
         m_AlignmentStrength  = 0.0f;
         m_CohesionStrength   = 0.03f;
-        m_SeperationStrength = 0.5f;
+        m_SeperationStrength = 0.3f;
 
         m_FlockRadius = 15.0f;
 }
