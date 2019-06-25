@@ -319,7 +319,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 {
                                         closestComp    = splineComp;
                                         closestCompPtr = &closestComp;
-                                        //break;
+                                        // break;
                                         if (playerController->GetUseGravity() == true ||
                                             closestComp.clusterID == splineComp.clusterID)
                                         {
@@ -464,17 +464,14 @@ void SpeedBoostSystem::OnInitialize()
         m_HandleManager   = GEngine::Get()->GetHandleManager();
         m_SystemManager   = GEngine::Get()->GetSystemManager();
         m_ResourceManager = GEngine::Get()->GetResourceManager();
-
-
         auto baseMatHandle = m_ResourceManager->LoadMaterial("GlowSpeedboostBase");
-
         for (int i = 0; i < E_LIGHT_ORBS::COUNT; ++i)
         {
                 auto handle = m_ResourceManager->CopyResource<Material>(baseMatHandle, speedboostMaterialNames[i].c_str());
                 auto mat    = m_ResourceManager->GetResource<Material>(handle);
                 speedboostMaterials[i] = handle;
                 XMStoreFloat3(&mat->m_SurfaceProperties.emissiveColor,
-                              2.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[i]));
+                             2.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[i]));
         }
 
         MazeGenerator mazeGenerator;

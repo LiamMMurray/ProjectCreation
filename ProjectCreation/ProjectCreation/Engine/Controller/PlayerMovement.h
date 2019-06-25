@@ -46,6 +46,9 @@ class PlayerController : public IController
         PlayerCinematicState* m_CinematicState;
         PlayerGroundState*    m_GroundState;
 
+		DirectX::XMVECTOR m_JumpForce;
+		DirectX::XMVECTOR m_PlayerGravity;
+
         // Boolean values for the light collection keys
         // Names will most likely change later on
 
@@ -68,11 +71,13 @@ class PlayerController : public IController
 
         virtual void Shutdown() override;
 
-        KeyCode            m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT]   = {KeyCode::R, KeyCode::Q, KeyCode::E, KeyCode::Any};
+        KeyCode            m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT]   = {KeyCode::L_Shift, KeyCode::Q, KeyCode::E, KeyCode::Any};
+
         const char*        m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"whiteSpeedBoost",
-                                                                   "whiteSpeedBoost",
-                                                                   "whiteSpeedBoost",
-                                                                   "whiteSpeedBoost"};
+																		  "whiteSpeedBoost",
+																		  "whiteSpeedBoost",
+																		  "whiteSpeedBoost"};
+
         GW::AUDIO::GSound* m_SpeedBoostSoundPool[E_LIGHT_ORBS::COUNT][MAX_SPEEDBOOST_SOUNDS];
         unsigned int       m_SpeedBoostPoolCounter[E_LIGHT_ORBS::COUNT] = {};
 
@@ -93,8 +98,8 @@ class PlayerController : public IController
         {
                 minMaxSpeed = val;
         };
-
-        inline float GetMinMaxSpeed() const
+				
+		inline float GetMinMaxSpeed() const
         {
                 return minMaxSpeed;
         }
@@ -159,6 +164,26 @@ class PlayerController : public IController
         inline DirectX::XMVECTOR GetCurrentForward() const
         {
                 return m_CurrentForward;
+        }
+
+        inline void SetJumpForce(DirectX::XMVECTOR val)
+        {
+                m_JumpForce = val;
+        }
+
+        inline DirectX::XMVECTOR GetJumpForce() const
+        {
+                return m_JumpForce;
+        }
+		
+		inline void SetPlayerGravity(DirectX::XMVECTOR val)
+        {
+                m_PlayerGravity = val;
+        }
+
+        inline DirectX::XMVECTOR GetPlayerGravity() const
+        {
+                return m_PlayerGravity;
         }
 
         inline void SetGoalComponent(ComponentHandle val)

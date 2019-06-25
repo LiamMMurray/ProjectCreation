@@ -1,8 +1,13 @@
 #pragma once
+
+//INCLUDES
 #include "../Controller/PlayerMovement.h"
 #define NOMINMAX
 #include <Windows.h>
 #include <iostream>
+
+// Pressing the L key will allow a message to be written out to the console window
+//#define DEBUG_LOG_CHECK(KEY) (GCoreInput::GetKeyState(KeyCode::KEY) == KeyState::DownFirst)
 
 class ConsoleWindow
 {
