@@ -119,6 +119,8 @@ class ResourceManager
         ResourceHandle LoadTexture2D(const char* name);
         ResourceHandle LoadVertexShader(const char* name);
         ResourceHandle LoadPixelShader(const char* name);
+        ResourceHandle LoadComputeShader(const char* name);
+        ResourceHandle LoadGeometryShader(const char* name);
         ResourceHandle LoadStaticMesh(const char* name);
         ResourceHandle LoadSkeletalMesh(const char* name);
         ResourceHandle LoadAnimationClip(const char* name, const Animation::FSkeleton* skeleton);

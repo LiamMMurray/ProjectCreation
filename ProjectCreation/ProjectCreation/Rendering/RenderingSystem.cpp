@@ -29,15 +29,17 @@
 #include "../Engine/GenericComponents/TransformComponent.h"
 #include "Vertex.h"
 
+#include "../Engine/Particle Systems/ParticleManager.h"
 #include "../UI/UIManager.h"
+
 #include "Components/CameraComponent.h"
 #include "Components/DirectionalLightComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 
 #include "../Engine/MathLibrary/ColorConstants.h"
-#include "DebugRender/debug_renderer.h"
 #include "../Utility/MemoryLeakDetection.h"
+#include "DebugRender/debug_renderer.h"
 
 void RenderSystem::CreateDeviceAndSwapChain()
 {
@@ -326,6 +328,7 @@ void RenderSystem::CreateInputLayouts()
                                          shaderData.bytes.data(),
                                          shaderData.bytes.size(),
                                          &m_DefaultInputLayouts[E_INPUT_LAYOUT::DEBUG]);
+
         assert(SUCCEEDED(hr));
 }
 
@@ -583,7 +586,7 @@ void RenderSystem::DrawMesh(ID3D11Buffer*      vertexBuffer,
 void RenderSystem::DrawStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
 {
         using namespace DirectX;
-
+        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
         DrawMesh(mesh->m_VertexBuffer, mesh->m_IndexBuffer, mesh->m_IndexCount, sizeof(FVertex), material, mtx);
 }
 
@@ -622,6 +625,7 @@ void RenderSystem::DrawSkeletalMesh(SkeletalMesh*               mesh,
         UpdateConstantBuffer(m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::ANIM],
                              &m_ConstantBuffer_ANIM,
                              sizeof(m_ConstantBuffer_ANIM));
+        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::SKINNED]);
 
         DrawMesh(mesh->m_VertexBuffer, mesh->m_IndexBuffer, mesh->m_IndexCount, sizeof(FSkinnedVertex), material, mtx);
 }
@@ -784,8 +788,6 @@ void RenderSystem::OnUpdate(float deltaTime)
         m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
         m_Context->RSSetViewports(1, &viewport);
 
-        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::SKINNED]);
-        m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         m_Context->VSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
         m_Context->PSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
 
@@ -809,7 +811,9 @@ void RenderSystem::OnUpdate(float deltaTime)
                                       dirLightComp.m_AmbientColor.z * dirLightComp.m_AmbientColor.w);
                 }
         }
+        m_ConstantBuffer_SCENE.aspectRatio  = m_BackBufferWidth / m_BackBufferHeight;
         m_ConstantBuffer_SCENE.time         = (float)GEngine::Get()->GetTotalTime();
+        m_ConstantBuffer_SCENE.deltaTime    = deltaTime;
         m_ConstantBuffer_SCENE.playerRadius = (float)GEngine::Get()->m_PlayerRadius;
         UpdateConstantBuffer(m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE],
                              &m_ConstantBuffer_SCENE,
@@ -819,6 +823,7 @@ void RenderSystem::OnUpdate(float deltaTime)
         UINT  sampleMask    = 0xffffffff;
 
         /** Render opaque meshes **/
+        m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         m_Context->OMSetDepthStencilState(m_DepthStencilStates[E_DEPTH_STENCIL_STATE::BASE_PASS], 0);
         m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Opaque], 0, sampleMask);
         for (size_t i = 0, n = m_OpaqueDraws.size(); i < n; ++i)
@@ -853,11 +858,12 @@ void RenderSystem::OnUpdate(float deltaTime)
                 {
                         SkeletalMesh* mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_TransluscentDraws[i].meshResource);
                         Material*     mat  = m_ResourceManager->GetResource<Material>(m_TransluscentDraws[i].materialHandle);
-                        SkeletalMeshComponent*                     meshComp =
-                            m_TransluscentDraws[i].componentHandle.Get<SkeletalMeshComponent>();
+                        SkeletalMeshComponent* meshComp = m_TransluscentDraws[i].componentHandle.Get<SkeletalMeshComponent>();
                         DrawSkeletalMesh(mesh, mat, &m_TransluscentDraws[i].mtx, &meshComp->m_Skeleton);
                 }
         }
+
+        ParticleManager::Update(deltaTime);
 
         // Set the backbuffer as render target
         m_Context->OMSetRenderTargets(1, &m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER], nullptr);
@@ -932,6 +938,7 @@ void RenderSystem::OnInitialize()
 
         // UI Manager Initialize
         UIManager::Initialize(m_WindowHandle);
+        ParticleManager::Initialize();
 }
 
 void RenderSystem::OnShutdown()
@@ -1010,6 +1017,8 @@ void RenderSystem::OnShutdown()
         }
         // UI Manager Shutdown
         UIManager::Shutdown();
+
+        ParticleManager::Shutdown();
 }
 
 void RenderSystem::OnResume()

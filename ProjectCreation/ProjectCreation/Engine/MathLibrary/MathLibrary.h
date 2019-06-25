@@ -36,6 +36,7 @@ class MathLibrary
         static DirectX::XMVECTOR GetClosestPointFromLineClamped(DirectX::XMVECTOR startPoint,
                                                                 DirectX::XMVECTOR endPoint,
                                                                 DirectX::XMVECTOR point);
+        static DirectX::XMVECTOR GetClosestPointFromPlane(Shapes::FPlane plane,DirectX::XMVECTOR point);
         static DirectX::XMVECTOR GetMidPointFromTwoVector(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateDistance(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateDistanceSq(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
@@ -67,8 +68,12 @@ class MathLibrary
         static DirectX::XMVECTOR GetRandomVectorInRange(float min, float max);
         static DirectX::XMVECTOR GetRandomUnitVector();
         static DirectX::XMVECTOR GetRandomUnitVector2D();
-
-        inline static float GetSign(float val)
+        static DirectX::XMFLOAT4 GetRandomColorInRange(DirectX::XMFLOAT2 red,
+                                                       DirectX::XMFLOAT2 green,
+                                                       DirectX::XMFLOAT2 blue,
+                                                       DirectX::XMFLOAT2 alpha);
+        static DirectX::XMFLOAT4 GetRandomColor();
+        inline static float      GetSign(float val)
         {
                 return (val == 0) ? 0.0f : (val > 0 ? 1.0f : -1.0f);
         }
@@ -96,8 +101,6 @@ class MathLibrary
                 else
 
                 {
-
-
                         return false; // complex roots
                 }
         };

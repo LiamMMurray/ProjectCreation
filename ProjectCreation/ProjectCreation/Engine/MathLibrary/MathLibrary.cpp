@@ -1,5 +1,6 @@
 #include "MathLibrary.h"
 #include <random>
+#include<assert.h>
 using namespace DirectX;
 using namespace std;
 
@@ -75,6 +76,14 @@ DirectX::XMVECTOR MathLibrary::GetClosestPointFromLineClamped(DirectX::XMVECTOR 
         output = XMVectorMin(output, maxv);
         output = XMVectorMax(output, minv);
 
+        return output;
+}
+
+DirectX::XMVECTOR MathLibrary::GetClosestPointFromPlane(Shapes::FPlane plane, DirectX::XMVECTOR point)
+{
+        XMVECTOR output;
+        float    dotValue = MathLibrary::VectorDotProduct(plane.normal, (point - (plane.normal * XMVectorGetW(plane.normal))));
+        output            = point - (plane.normal * dotValue);
         return output;
 }
 
@@ -252,6 +261,37 @@ DirectX::XMVECTOR MathLibrary::GetRandomUnitVector2D()
                 output = VectorConstants::Forward;
         }
         output = XMVector3Normalize(output);
+
+        return output;
+}
+
+DirectX::XMFLOAT4 MathLibrary::GetRandomColor()
+{
+	//color must be setted in between 0 and 1
+        DirectX::XMFLOAT4 output = {GetRandomFloatInRange(0.0f, 1.0f),
+                                    GetRandomFloatInRange(0.0f, 1.0f),
+                                    GetRandomFloatInRange(0.0f, 1.0f),
+                                    GetRandomFloatInRange(0.0f, 1.0f)};
+        return output;
+}
+
+DirectX::XMFLOAT4 MathLibrary::GetRandomColorInRange(DirectX::XMFLOAT2 red,
+                                                     DirectX::XMFLOAT2 green,
+                                                     DirectX::XMFLOAT2 blue,
+                                                     DirectX::XMFLOAT2 alpha)
+{
+        DirectX::XMFLOAT4 output;
+		//exception 
+		//The color value must be between 0 and 1
+        assert(red.x >= 0.0f && red.y <= 1.0f);
+        assert(green.x >= 0.0f && green.y <= 1.0f);
+        assert(blue.x >= 0.0f && blue.y <= 1.0f);
+        assert(alpha.x >= 0.0f && alpha.y <= 1.0f);
+
+        output.x = GetRandomFloatInRange(red.x, red.y); //red
+        output.y = GetRandomFloatInRange(green.x, green.y); //green
+        output.z = GetRandomFloatInRange(blue.x, blue.y); //blue
+        output.w = GetRandomFloatInRange(alpha.x, alpha.y); //alpha
 
         return output;
 }

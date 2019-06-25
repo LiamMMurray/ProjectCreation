@@ -237,6 +237,7 @@ class RenderSystem : public ISystem
 {
         friend class ResourceManager;
         friend class UIManager;
+        friend class ParticleManager;
 
         std::vector<FDraw> m_OpaqueDraws;
         std::vector<FDraw> m_TransluscentDraws;
