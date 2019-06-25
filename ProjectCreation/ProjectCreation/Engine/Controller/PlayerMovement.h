@@ -31,7 +31,7 @@ class PlayerController : public IController
         DirectX::XMFLOAT3 m_EulerAngles;
 
         float minMaxSpeed     = 1.0f;
-        float maxMaxSpeed     = 3.0f;
+        float maxMaxSpeed     = 2.0f;
         float currentMaxSpeed = minMaxSpeed;
 
         float acceleration   = 1.0;
@@ -71,7 +71,7 @@ class PlayerController : public IController
 
         virtual void Shutdown() override;
 
-        KeyCode            m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT]   = {KeyCode::L_Shift, KeyCode::Q, KeyCode::E, KeyCode::Any};
+        KeyCode            m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT]   = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
 
         const char*        m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"whiteSpeedBoost",
 																		  "whiteSpeedBoost",
