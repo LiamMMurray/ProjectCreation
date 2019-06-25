@@ -32,29 +32,42 @@ void PlayerController::GatherInput()
         if (IsEnabled())
         {
                 // requestedDirection = MoveDirections::NO_DIRECTION;
-                XMFLOAT4 tempDir = {0.0f, 0.0f, 0.0f, 0.0f};
+                XMFLOAT4 tempDir  = {0.0f, 0.0f, 0.0f, 0.0f};
+                //XMFLOAT4 tempJump = {0.0f, 0.0f, 0.0f, 0.0f};
 
-                // Check Forward speed
-                if (GCoreInput::GetKeyState(KeyCode::W) == KeyState::Down)
+                // Changing movement so that the player will always move forward
                 {
-                        tempDir.z += 1.0f;
-                }
-                // Backward
-                if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
-                {
-                        tempDir.z -= 1.0f;
-                }
-                // Left
-                if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
-                {
-                        tempDir.x -= 1.0f;
-                }
-                // Right
-                if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
-                {
-                        tempDir.x += 1.0f;
-                }
 
+                        // Check Forward speed
+                       // if (GCoreInput::GetKeyState(KeyCode::W) == KeyState::Down)
+                       // {
+                       //         tempDir.z += 1.0f;
+                       // }
+                       // // Backward
+                       // if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
+                       // {
+                       //         tempDir.z -= 1.0f;
+                       // }
+                       // // Left
+                       // if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
+                       // {
+                       //         tempDir.x -= 1.0f;
+                       // }
+                       // // Right
+                       // if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
+                       // {
+                       //         tempDir.x += 1.0f;
+                       // }
+                       // // Jump
+                       // if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::DownFirst)
+                       // {
+                       //         tempJump.y += 3.0f;
+                       // }
+					   //
+                       // m_JumpForce = XMLoadFloat4(&tempJump);
+                }
+							   
+                tempDir        = XMFLOAT4{0.0f, 0.0f, 2.0f, 0.0f};
                 m_CurrentInput = XMLoadFloat4(&tempDir);
         }
 }
@@ -150,9 +163,8 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 // m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->isSoundPlaying(isPlaying);
                 m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->Play();
                 DebugPrintSpeedBoostColor(color);
-                currentMaxSpeed = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
-                XMVECTOR currentInput =
-                    XMVector3Rotate(m_CurrentInput, _cachedControlledTransform.rotation.data);
+                currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
+                XMVECTOR currentInput = XMVector3Rotate(m_CurrentInput, _cachedControlledTransform.rotation.data);
                 if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
                 {
                         m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);

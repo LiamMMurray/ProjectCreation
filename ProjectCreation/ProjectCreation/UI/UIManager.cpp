@@ -358,7 +358,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
                           L"../Assets/2d/Text/calibri.spritefont",
-                          "Press Spacebar, Q, and E to continue. . .",
+                          "Press A, S, and D to continue. . .",
                           0.06f,
                           0.0f,
                           0.0f,
@@ -668,9 +668,12 @@ void UIManager::Update()
         // Pause & Unpause
         if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled)
         {
-                if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Down &&
-                    GCoreInput::GetKeyState(KeyCode::Q) == KeyState::Down &&
-                    GCoreInput::GetKeyState(KeyCode::E) == KeyState::Down)
+
+			// Joseph Updated the main menu ui to match to input keys
+			// Changed 'Space', 'Q', and 'E' to 'A', 'S', and 'D'
+                if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down &&
+                    GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down &&
+                    GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
                 {
                         instance->MainTilteUnpause();
                 }

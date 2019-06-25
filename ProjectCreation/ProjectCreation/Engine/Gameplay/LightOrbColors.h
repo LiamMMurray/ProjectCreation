@@ -14,7 +14,34 @@ struct E_LIGHT_ORBS
                 WHITE_LIGHTS,
                 COUNT
         };
-        
-		// BGRA colors
+
+        // BGRA colors
         static const DirectX::PackedVector::XMCOLOR ORB_COLORS[E_LIGHT_ORBS::COUNT];
 };
+
+// Red Color
+extern DirectX::PackedVector::XMCOLOR C_RED;
+
+// Green Color
+extern DirectX::PackedVector::XMCOLOR C_GREEN;
+
+// Blue Color
+extern DirectX::PackedVector::XMCOLOR C_BLUE;
+
+// Yellow Color
+extern DirectX::PackedVector::XMCOLOR C_YELLOW;
+
+// Cyan Color
+extern DirectX::PackedVector::XMCOLOR C_CYAN;
+
+// Magenta Color
+extern DirectX::PackedVector::XMCOLOR C_MAGENTA;
+
+// Orange Color
+extern DirectX::PackedVector::XMCOLOR C_ORANGE;
+
+// White Color
+extern DirectX::PackedVector::XMCOLOR C_WHITE;
+
+// Black Color
+extern DirectX::PackedVector::XMCOLOR C_BLACK;

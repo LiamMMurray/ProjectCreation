@@ -57,7 +57,7 @@ class SpeedBoostSystem : public ISystem
 
         float m_PlayerEffectRadius    = 0.0f;
         float m_SpawnBoostTimer       = 0.0f;
-        float m_SpawnBoostCD          = 0.2f;
+        float m_SpawnBoostCD          = 0.1f;
         float m_BoostLifespan         = 25.0f;
         float m_BoostLifespanVariance = 2.0f;
         float m_BoostShrinkSpeed      = m_BoostRadius;

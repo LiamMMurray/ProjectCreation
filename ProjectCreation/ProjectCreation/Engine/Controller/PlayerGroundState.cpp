@@ -14,11 +14,23 @@ void PlayerGroundState::Enter()
             _playerController->GetControlledEntity().GetComponent<TransformComponent>();
 
         _playerController->SetEulerAngles(playerTransformComponent->transform.rotation.ToEulerAngles());
+
+        // Sets the gravity vector for the player
+        //_playerController->SetPlayerGravity(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f));
 }
 
 void PlayerGroundState::Update(float deltaTime)
 {
         XMVECTOR currentVelocity = _playerController->GetCurrentVelocity();
+
+        currentVelocity += _playerController->GetJumpForce();
+        //currentVelocity += _playerController->GetPlayerGravity();
+
+        if (GCoreInput::GetKeyState(KeyCode::L) == KeyState::DownFirst) 
+		{
+                ConsoleWindow::PrintVector(currentVelocity, "Current Velocity");
+		}
+
         // Get Delta Time
         float totalTime = (float)GEngine::Get()->GetTotalTime();
 
@@ -44,6 +56,7 @@ void PlayerGroundState::Update(float deltaTime)
         _cachedTransform.rotation = FQuaternion::FromEulerAngles(eulerAngles);
 
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, yawDelta));
+        currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, yawDelta));
 
         // Get the Speed from the gathered input
         XMVECTOR currentInput = _playerController->GetCurrentInput();
@@ -96,12 +109,12 @@ void PlayerGroundState::Update(float deltaTime)
         XMVECTOR deltaVec = XMVector3Normalize(desiredVelocity - currentVelocity);
         currentVelocity   = currentVelocity + deltaVec * delta + m_ExtraYSpeed * VectorConstants::Up;
 
-		XMVECTOR actualVelocity = currentVelocity;
+        XMVECTOR actualVelocity = currentVelocity;
         if (bUseGravity)
         {
                 float currY   = XMVectorGetY(_cachedTransform.translation);
                 float sign    = MathLibrary::GetSign(currY);
-                float gravity = -sign * 100.0f * deltaTime;
+                float gravity = -sign * 50.0f * deltaTime;
                 // Calculate current velocity based on itself, the deltaVector, and delta
                 actualVelocity += gravity * VectorConstants::Up;
         }
@@ -125,7 +138,7 @@ void PlayerGroundState::Update(float deltaTime)
                 _cachedTransform.translation += offset;
                 float posY                   = XMVectorGetY(_cachedTransform.translation);
                 posY                         = std::max(posY, 0.0f);
-                _cachedTransform.translation = XMVectorSetY(_cachedTransform.translation,posY);
+                _cachedTransform.translation = XMVectorSetY(_cachedTransform.translation, posY);
         }
 
         _playerController->GetControlledEntity().GetComponent<TransformComponent>()->transform = _cachedTransform;

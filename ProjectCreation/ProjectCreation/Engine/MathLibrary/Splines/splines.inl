@@ -149,7 +149,7 @@ Point_t Spline<Point_t, Real_t>::
 
         // TODO: use buffers in attributes for better performances ?
         std::vector<Point_t> p_rec(k, Point_t());
-        for (int i = dec, j = 0; i < (dec + k); ++i, ++j)
+        for (int i = dec, j = 0; i < std::min((int)point.size(), (dec + k)); ++i, ++j)
                 p_rec[j] = point[i];
 
         std::vector<Real_t> node_rec(k + k - 2, (Real_t)0);
