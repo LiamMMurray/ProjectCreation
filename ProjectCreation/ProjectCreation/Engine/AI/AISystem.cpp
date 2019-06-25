@@ -1,4 +1,5 @@
 #include "AISystem.h"
+#include "../Controller/ControllerSystem.h"
 #include "../GEngine.h"
 #include "../GenericComponents/TransformComponent.h"
 #include "../MathLibrary/MathLibrary.h"
@@ -19,13 +20,17 @@ XMVECTOR AISystem::CalculateCohesion(AIComponent* boid)
         XMVECTOR temp     = m_AveragePosition - boid->GetParent().GetComponent<TransformComponent>()->transform.translation;
         float    distance = MathLibrary::CalulateVectorLength(temp); // Magnitude
         XMVector3Normalize(temp);
-
         // Set the speed based on distance from the flock.
-        if (distance < m_FlockRadius)
+        if (distance < m_PlayerRadius)
         {
-                temp *= distance / m_FlockRadius;
+                if (distance < m_FlockRadius)
+                {
+                        temp *= distance / m_FlockRadius;
+                }
+				return temp * m_CohesionStrength;
         }
-        return temp * m_CohesionStrength;
+        return XMVectorZero();
+
 }
 
 XMVECTOR AISystem::CalculateSeperation(AIComponent* boid)
@@ -72,16 +77,22 @@ void AISystem::CalculateAverage()
         }
         m_AverageForward /= boidCount;
 
-        for (auto& aiComp : m_HandleManager->GetActiveComponents<AIComponent>())
-        {
-                m_AveragePosition += aiComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
-        }
-        m_AveragePosition /= boidCount;
+        m_AveragePosition = m_PlayerEntity.GetComponent<TransformComponent>()->transform.translation;
+        /*
+       for (auto& aiComp : m_HandleManager->GetActiveComponents<AIComponent>())
+       {
+               m_AveragePosition += aiComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
+       }
+       m_AveragePosition /= boidCount;
+        */
 }
 
 
 void AISystem::OnInitialize()
 {
+        ControllerSystem* controllerSystem = GEngine::Get()->GetSystemManager()->GetSystem<ControllerSystem>();
+        m_PlayerEntity = controllerSystem->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]->GetControlledEntity();
+
         m_HandleManager = GEngine::Get()->GetHandleManager();
         m_SystemManager = GEngine::Get()->GetSystemManager();
 
@@ -89,10 +100,11 @@ void AISystem::OnInitialize()
         m_AverageForward  = XMVectorZero();
 
         m_AlignmentStrength  = 0.0f;
-        m_CohesionStrength   = 0.03f;
+        m_CohesionStrength   = 0.01f;
         m_SeperationStrength = 0.3f;
 
-        m_FlockRadius = 15.0f;
+        m_FlockRadius = 1.0f;
+        m_PlayerRadius = 3.0f;
 }
 
 void AISystem::OnPreUpdate(float deltaTime)
@@ -108,9 +120,7 @@ void AISystem::OnUpdate(float deltaTime)
                 accel += CalculateCohesion(&aiComp);
                 accel += CalculateSeperation(&aiComp);
 
-                float accelMultiplier = aiComp.m_MaxSpeed;
-                accel *= accelMultiplier * deltaTime;
-
+                accel *= aiComp.m_MaxSpeed * deltaTime;
                 aiComp.m_Velocity += accel;
 
                 if (MathLibrary::VectorDotProduct(aiComp.m_Velocity, aiComp.m_Velocity) >
@@ -120,8 +130,8 @@ void AISystem::OnUpdate(float deltaTime)
                         aiComp.m_MaxSpeed *= aiComp.m_MaxSpeed;
                 }
 
-                if (MathLibrary::CalulateVectorLength(aiComp.m_Velocity * aiComp.m_Velocity) > 
-					aiComp.m_MaxSpeed * aiComp.m_MaxSpeed)
+                if (MathLibrary::CalulateVectorLength(aiComp.m_Velocity * aiComp.m_Velocity) >
+                    aiComp.m_MaxSpeed * aiComp.m_MaxSpeed)
                 {
                         aiComp.m_Velocity = XMVector3Normalize(aiComp.m_Velocity);
                         aiComp.m_Velocity *= aiComp.m_MaxSpeed;

@@ -4,14 +4,16 @@
 #include <vector>
 #include "../../ECS/ECS.h"
 #include "AIComponent.h"
+#include "../Controller/PlayerMovement.h"
 
 using namespace DirectX;
 
 class AISystem : public ISystem
 {
     private:
-        HandleManager* m_HandleManager;
-        SystemManager* m_SystemManager;
+        HandleManager*    m_HandleManager;
+        SystemManager*    m_SystemManager;
+        EntityHandle      m_PlayerEntity;
 
         XMVECTOR CalculateAlignment(AIComponent* boid);
         XMVECTOR CalculateCohesion(AIComponent* boid);
@@ -39,4 +41,5 @@ class AISystem : public ISystem
         XMVECTOR m_AverageForward;
 
 		float m_FlockRadius;
+        float m_PlayerRadius;
 };
