@@ -10,6 +10,6 @@ float4 main(PS_INPUT input) : SV_TARGET
 {
 
         float4 output = input.color;
-        output        = float4(1.0f, 0.0f, 0.0f, 1.0f);
+        //output        = float4(5.0f, 0.0f, 0.0f, 1.0f);
         return output;
 }

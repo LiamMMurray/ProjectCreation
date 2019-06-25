@@ -45,19 +45,23 @@ void ParticleManager::update(float deltaTime)
         PixelShader*    pixelShader    = RESOURCE_MANAGER->GetResource<PixelShader>(m_PixelShaderHandle);
         GeometryShader* geometryShader = RESOURCE_MANAGER->GetResource<GeometryShader>(m_GeometryShaderHandle);
 
+        m_RenderSystem->UpdateConstantBuffer(
+            m_EmitterBuffer.m_StructuredBuffer, m_EnitterInfo, sizeof(ParticleData::FEmitterGPU) * 1);
+
         ID3D11ShaderResourceView* null[]{nullptr};
         m_RenderSystem->m_Context->VSSetShaderResources(0, 1, null);
-		//set input layout
+        // set input layout
         m_RenderSystem->m_Context->IASetInputLayout(nullptr);
         m_RenderSystem->m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
         // Set Compute Shaders
+        m_RenderSystem->m_Context->CSSetConstantBuffers(
+            1, 1, &m_RenderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE]);
         m_RenderSystem->m_Context->CSSetShader(computeShader->m_ComputerShader, nullptr, 0);
         m_RenderSystem->m_Context->CSSetUnorderedAccessViews(0, 1, &m_ParticleBuffer.m_UAV, 0);
         m_RenderSystem->m_Context->CSSetShaderResources(0, 1, &m_EmitterBuffer.m_StructuredView);
-        // m_RenderSystem->m_Context->UpdateSubresource()
         m_RenderSystem->m_Context->CSSetUnorderedAccessViews(1, 1, &m_SegmentBuffer.m_UAV, 0);
         // dispatch before setting UAV to null
-        m_RenderSystem->m_Context->Dispatch(1, 1, 1);
+        m_RenderSystem->m_Context->Dispatch(1000, 1, 1);
 
         // set compute shader's UAV to null after dispatch
         ID3D11UnorderedAccessView* nullUAV = NULL;
@@ -75,11 +79,24 @@ void ParticleManager::update(float deltaTime)
         m_RenderSystem->UpdateConstantBuffer(m_RenderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP],
                                              &m_RenderSystem->m_ConstantBuffer_MVP,
                                              sizeof(m_RenderSystem->m_ConstantBuffer_MVP));
+        m_RenderSystem->m_Context->GSSetConstantBuffers(
+            1, 1, &m_RenderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE]);
+
+        m_RenderSystem->UpdateConstantBuffer(m_RenderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP],
+                                             &m_RenderSystem->m_ConstantBuffer_MVP,
+                                             sizeof(m_RenderSystem->m_ConstantBuffer_MVP));
+
+        m_RenderSystem->m_Context->GSSetConstantBuffers(
+            1, 1, &m_RenderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE]);
+
+        m_RenderSystem->UpdateConstantBuffer(m_RenderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE],
+                                             &m_RenderSystem->m_ConstantBuffer_SCENE,
+                                             sizeof(m_RenderSystem->m_ConstantBuffer_SCENE));
 
         m_RenderSystem->m_Context->VSSetShader(vertexShader->m_VertexShader, 0, 0);
         m_RenderSystem->m_Context->PSSetShader(pixelShader->m_PixelShader, 0, 0);
         // draw call;
-        m_RenderSystem->m_Context->Draw(100, 0);
+        m_RenderSystem->m_Context->Draw(100000, 0);
 
         // reset srv null for geometry shader
 
@@ -94,15 +111,18 @@ void ParticleManager::update(float deltaTime)
 void ParticleManager::init()
 {
         // data set up //shoulde be ab;e to set the particle data somewhere else
-        m_EnitterInfo           = new FEmitterGPU;
-        m_EnitterInfo->active   = true;
-        m_EnitterInfo->color    = ColorConstants::Yellow;
-        m_EnitterInfo->position = {0.0f, 0.0f, 0.0f, 0.0f};
-        m_EnitterInfo->uv       = {0.0f, 0.0f};
-        m_EnitterInfo->velocity = {5.0f, 0.0f, 0.0f};
+        m_EnitterInfo                       = new FEmitterGPU;
+        m_EnitterInfo->currentParticleCount = 0;
+        m_EnitterInfo->active               = true;
+        m_EnitterInfo->color                = {10.0f, 10.0f, 0.0f, 1.0f};
+        m_EnitterInfo->position             = {0.0f, 0.0f, 0.0f, 0.0f};
+        m_EnitterInfo->uv                   = {0.0f, 0.0f};
+        m_EnitterInfo->minVelocity             = {-30.0f, -0.0f, -30.0f};
+        m_EnitterInfo->maxVelocity             = {30.0f, 20.0f, 30.0f};
+        m_EnitterInfo->accumulatedTime      = 10.0f;
 
         m_EmitterCpuInfo               = new FEmitterCPU;
-        m_EmitterCpuInfo->maxParticles = 100;
+        m_EmitterCpuInfo->maxParticles = 1000;
 
         m_SegmentInfo.index[0] = gMaxParticleCount;
         m_SegmentInfo.index[1] = m_EmitterCpuInfo->maxParticles + m_SegmentInfo.index[0];
@@ -128,7 +148,7 @@ void ParticleManager::init()
 
         assert(er.m_Flags == ERESULT_FLAG::SUCCESS);
 
-        //HRESULT hr = m_RenderSystem->m_Device->CreateInputLayout(
+        // HRESULT hr = m_RenderSystem->m_Device->CreateInputLayout(
         //    layout1, ARRAYSIZE(layout1), shaderData.bytes.data(), shaderData.bytes.size(), &m_VertexInputLayout);
 }
 
@@ -137,6 +157,7 @@ void ParticleManager::shutdown()
         ParticleBufferShutdown(&m_ParticleBuffer);
         ParticleBufferShutdown(&m_EmitterBuffer);
         ParticleBufferShutdown(&m_SegmentBuffer);
+
 
         delete m_EnitterInfo;
         delete m_EmitterCpuInfo;
@@ -158,11 +179,13 @@ void ParticleManager::ParticleBufferInit(ID3D11Device1*                device1,
         sbDesc.ByteWidth           = sizeof(FParticleGPU) * numParticles * 1;
         sbDesc.Usage               = D3D11_USAGE_DEFAULT;
 
+		particleData = new FParticleGPU[numParticles];
         D3D11_SUBRESOURCE_DATA rwData;
         rwData.pSysMem          = particleData; // not sure should pass in what type of data
         rwData.SysMemPitch      = 0;
         rwData.SysMemSlicePitch = 0;
-        HREFTYPE hr             = device1->CreateBuffer(&sbDesc, nullptr, &m_ParticleBuffer.m_StructuredBuffer);
+        HREFTYPE hr             = device1->CreateBuffer(&sbDesc, &rwData, &m_ParticleBuffer.m_StructuredBuffer);
+        delete particleData;
 
         D3D11_UNORDERED_ACCESS_VIEW_DESC sbUAVDesc;
 
@@ -200,11 +223,11 @@ void ParticleManager::ParticleBufferInit(ID3D11Device1*                device1,
 
         // CD3D11_BUFFER_DESC
         sbDesc.BindFlags           = D3D11_BIND_SHADER_RESOURCE;
-        sbDesc.CPUAccessFlags      = 0;
+        sbDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
         sbDesc.MiscFlags           = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
         sbDesc.StructureByteStride = sizeof(FEmitterGPU);
         sbDesc.ByteWidth           = sizeof(FEmitterGPU) * numParticles * 1;
-        sbDesc.Usage               = D3D11_USAGE_DEFAULT;
+        sbDesc.Usage               = D3D11_USAGE_DYNAMIC;
         // D3D11_SUBRESOURCE_DATA
         rwData.pSysMem          = emitterData;
         rwData.SysMemPitch      = 0;

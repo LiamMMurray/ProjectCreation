@@ -9,6 +9,12 @@ float InterleavedGradientNoise(float2 pos)
         return frac(magic.z * frac(dot(pos, magic.xy)));
 }
 
+float rand(in float time)
+{
+        float2 noise = (frac(sin(dot(float2(time,time), float2(12.9898, 78.233) * 2.0)) * 43758.5453));
+        return abs(noise.x + noise.y) * 0.5;
+}
+
 float rand_1_05(in float2 uv)
 {
     float2 noise = (frac(sin(dot(uv ,float2(12.9898,78.233)*2.0)) * 43758.5453));

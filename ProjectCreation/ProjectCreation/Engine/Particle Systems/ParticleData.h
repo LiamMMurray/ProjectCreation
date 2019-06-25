@@ -42,7 +42,8 @@ namespace ParticleData
                 DirectX::XMFLOAT4 position;
                 DirectX::XMFLOAT4 color;
                 DirectX::XMFLOAT2 uv;
-                DirectX::XMFLOAT3 velocity;
+                DirectX::XMFLOAT3 minVelocity;
+                DirectX::XMFLOAT3 maxVelocity;
         };
 
         struct FParticleGPU
@@ -51,7 +52,7 @@ namespace ParticleData
                 DirectX::XMFLOAT4 color;
                 DirectX::XMFLOAT3 velocity;
                 DirectX::XMFLOAT2 texture;
-                float             time;
+                float             time = 0.0f;
                 bool              active;
                 int               index;
         };

@@ -38,8 +38,8 @@
 #include "Components/StaticMeshComponent.h"
 
 #include "../Engine/MathLibrary/ColorConstants.h"
-#include "DebugRender/debug_renderer.h"
 #include "../Utility/MemoryLeakDetection.h"
+#include "DebugRender/debug_renderer.h"
 
 void RenderSystem::CreateDeviceAndSwapChain()
 {
@@ -811,7 +811,9 @@ void RenderSystem::OnUpdate(float deltaTime)
                                       dirLightComp.m_AmbientColor.z * dirLightComp.m_AmbientColor.w);
                 }
         }
+        m_ConstantBuffer_SCENE.aspectRatio  = m_BackBufferWidth / m_BackBufferHeight;
         m_ConstantBuffer_SCENE.time         = (float)GEngine::Get()->GetTotalTime();
+        m_ConstantBuffer_SCENE.deltaTime    = deltaTime;
         m_ConstantBuffer_SCENE.playerRadius = (float)GEngine::Get()->m_PlayerRadius;
         UpdateConstantBuffer(m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE],
                              &m_ConstantBuffer_SCENE,
@@ -856,8 +858,7 @@ void RenderSystem::OnUpdate(float deltaTime)
                 {
                         SkeletalMesh* mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_TransluscentDraws[i].meshResource);
                         Material*     mat  = m_ResourceManager->GetResource<Material>(m_TransluscentDraws[i].materialHandle);
-                        SkeletalMeshComponent*                     meshComp =
-                            m_TransluscentDraws[i].componentHandle.Get<SkeletalMeshComponent>();
+                        SkeletalMeshComponent* meshComp = m_TransluscentDraws[i].componentHandle.Get<SkeletalMeshComponent>();
                         DrawSkeletalMesh(mesh, mat, &m_TransluscentDraws[i].mtx, &meshComp->m_Skeleton);
                 }
         }
