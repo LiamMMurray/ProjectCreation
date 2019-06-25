@@ -31,3 +31,4 @@ struct ComponentHandle
 
         // EntityHandle GetParent();
 };
+typedef std::vector<ComponentHandle> entity_component_container;

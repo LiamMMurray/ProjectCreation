@@ -4,11 +4,10 @@
 #include "../../ECS/Component.h"
 
 using namespace DirectX;
-class AIComponent : public IComponent
+class AIComponent : public Component<AIComponent>
 {
     public:
-        XMVECTOR boidPosition           = XMVectorZero();
-        XMVECTOR boidVelocity           = XMVectorZero();
-        XMVECTOR boidMaxVelocity        = XMVectorZero();
-        float    boidSafeRadius         = 0.0f;
+        XMVECTOR m_Velocity   = XMVectorZero();
+        float    m_MaxSpeed   = 1.0f;
+        float    m_SafeRadius = 0.5f;
 };

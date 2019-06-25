@@ -3,22 +3,21 @@
 #include <DirectXMath.h>
 #include <vector>
 #include "../../ECS/ECS.h"
+#include "AIComponent.h"
 
 using namespace DirectX;
-
-class AIComponent;
 
 class AISystem : public ISystem
 {
     private:
         HandleManager* m_HandleManager;
-        SystemManager*    m_SystemManager;
+        SystemManager* m_SystemManager;
 
-        XMVECTOR calculateAlignment(AIComponent* boid);
-        XMVECTOR calculateCohesion(AIComponent* boid);
-        XMVECTOR calculateSeperation(AIComponent* boid);
+        XMVECTOR CalculateAlignment(AIComponent* boid);
+        XMVECTOR CalculateCohesion(AIComponent* boid);
+        XMVECTOR CalculateSeperation(AIComponent* boid);
 
-        void calculateAverage();
+        void CalculateAverage();
 
     protected:
         // Inherited via ISystem
@@ -32,9 +31,12 @@ class AISystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
-        std::vector<AIComponent*> m_boidVector;
+        float m_AlignmentStrength;
+        float m_CohesionStrength;
+        float m_SeperationStrength;
 
-        float boidAlignmentStrength  = 0.0f;
-        float boidCohesionStrength   = 0.0f;
-        float boidSeperationStrength = 0.0f;
+        XMVECTOR m_AveragePosition;
+        XMVECTOR m_AverageForward;
+
+		float m_FlockRadius;
 };

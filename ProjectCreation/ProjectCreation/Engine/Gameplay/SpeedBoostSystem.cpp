@@ -24,9 +24,9 @@
 #include "../MathLibrary/Maze/MazeGenerator.h"
 #include "../MathLibrary/Splines/FGoodSpline.h"
 
-#include "..//CollisionLibary/CollisionLibary.h"
-
 #include <limits>
+#include "..//CollisionLibary/CollisionLibary.h"
+#include "../AI/AIComponent.h"
 
 using namespace DirectX;
 
@@ -41,20 +41,21 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
                                             ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
                                             ->GetControlledEntity();
 
-        TransformComponent* playerTransform  = controlledEntity.GetComponent<TransformComponent>();
-        XMFLOAT3            euler            = playerTransform->transform.rotation.ToEulerAngles();
-        euler.x                              = 0.0f;
-        FQuaternion quat                     = FQuaternion::FromEulerAngles(euler);
-        int         color                    = MathLibrary::GetRandomIntInRange(0, 4);
-        XMVECTOR    pos                      = MathLibrary::GetRandomPointInArc(playerTransform->transform.translation,
+        TransformComponent* playerTransform = controlledEntity.GetComponent<TransformComponent>();
+        XMFLOAT3            euler           = playerTransform->transform.rotation.ToEulerAngles();
+        euler.x                             = 0.0f;
+        FQuaternion quat                    = FQuaternion::FromEulerAngles(euler);
+        int         color                   = MathLibrary::GetRandomIntInRange(0, 4);
+        XMVECTOR    pos                     = MathLibrary::GetRandomPointInArc(playerTransform->transform.translation,
                                                         quat.GetForward(),
                                                         VectorConstants::Up,
                                                         m_SpawnAngle,
                                                         m_MinSpawnDistance,
                                                         m_MaxSpawnDistance);
-        pos                                  = XMVectorSetY(pos, 0.0f);
-        auto entityH                         = SpawnLightOrb(pos, color);
-        auto speedBoostHandle                = entityH.AddComponent<SpeedboostComponent>();
+        pos                                 = XMVectorSetY(pos, 0.0f);
+        auto entityH                        = SpawnLightOrb(pos, color);
+        auto speedBoostHandle               = entityH.AddComponent<SpeedboostComponent>();
+        entityH.AddComponent<AIComponent>();
         auto speedboostComponent             = speedBoostHandle.Get<SpeedboostComponent>();
         speedboostComponent->center          = pos;
         speedboostComponent->collisionRadius = m_BoostRadius;
@@ -243,6 +244,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
         {
                 for (auto& speedComp : m_HandleManager->GetActiveComponents<SpeedboostComponent>())
                 {
+                        speedComp.center = speedComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
+
                         speedboostCount++;
 
                         // START: Move speed boosts with ai stuff here
@@ -273,6 +276,12 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         {
                                 RequestDestroySpeedboost(&speedComp);
                                 continue;
+                        }
+
+                        if (distanceSq < (checkRadius * checkRadius))
+                        {
+                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.color);
+                                playerController->SpeedBoost(speedComp.center, speedComp.color);
                         }
                 }
         }
