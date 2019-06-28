@@ -47,7 +47,8 @@ class ISystem
         virtual void OnSuspend()                   = 0;
 
     public:
-        virtual ~ISystem() = default;
+        virtual ~ISystem()
+        {} // = default;
 
         template <typename T>
         static SystemTypeId GetTypeID()
