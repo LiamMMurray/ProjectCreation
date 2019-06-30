@@ -17,14 +17,15 @@ class ParticleManager
         ParticleBuffer m_EmitterBuffer;
         ParticleBuffer m_SegmentBuffer;
         // Shader Handles
-        ResourceHandle               m_ComputeShaderHandle;
-        ResourceHandle               m_GeometryShaderHandle;
-        ResourceHandle               m_VertexShaderHandle;
-        ResourceHandle               m_PixelShaderHandle;
-        ID3D11InputLayout*           m_VertexInputLayout;
-        ParticleData::FParticleGPU*  m_ParticleInfo;
-        ParticleData::FEmitterGPU*   m_EnitterInfo;
-        ParticleData::FEmitterCPU*   m_EmitterCpuInfo;
+        ResourceHandle              m_ComputeShaderHandle;
+        ResourceHandle              m_GeometryShaderHandle;
+        ResourceHandle              m_VertexShaderHandle;
+        ResourceHandle              m_PixelShaderHandle;
+        ID3D11InputLayout*          m_VertexInputLayout;
+        ParticleData::FParticleGPU* m_ParticleInfo;
+        ParticleData::FEmitterGPU*  m_EnitterInfo;
+        ParticleData::FEmitterCPU*  m_EmitterCpuInfo;
+        // std::vector<FEmitterGPU>     m_Emitters;
         ParticleData::FSegmentBuffer m_SegmentInfo;
         void                         UpdateResources(ID3D11Resource* resource);
         void                         update(float deltaTime);
@@ -40,6 +41,7 @@ class ParticleManager
 
     public:
         EntityHandle                   CreateEmitter(ParticleData::FEmitterCPU& emitter);
+        void                           AddEmitter(ParticleData::FEmitterGPU& emitter);
         void                           SetParticleInfo(ParticleData::FParticleGPU* particleInfo);
         static void                    Initialize();
         static void                    Update(float deltaTime);

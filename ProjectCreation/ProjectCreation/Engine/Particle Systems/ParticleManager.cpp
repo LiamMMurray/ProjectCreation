@@ -28,8 +28,6 @@ void             ParticleManager::UpdateResources(ID3D11Resource* resource)
 
 void ParticleManager::update(float deltaTime)
 {
-        // update partilce data time
-        // m_ParticleInfo->time = deltaTime;
         // update emitter container
 
         // Build update list
@@ -112,17 +110,20 @@ void ParticleManager::init()
 {
         // data set up //shoulde be ab;e to set the particle data somewhere else
         m_EnitterInfo                       = new FEmitterGPU;
+        FEmitterGPU* emitterData            = new FEmitterGPU[];
+
         m_EnitterInfo->currentParticleCount = 0;
         m_EnitterInfo->active               = true;
         m_EnitterInfo->color                = {10.0f, 10.0f, 0.0f, 1.0f};
         m_EnitterInfo->position             = {0.0f, 0.0f, 0.0f, 0.0f};
         m_EnitterInfo->uv                   = {0.0f, 0.0f};
-        m_EnitterInfo->minVelocity             = {-30.0f, -0.0f, -30.0f};
-        m_EnitterInfo->maxVelocity             = {30.0f, 20.0f, 30.0f};
+        m_EnitterInfo->minVelocity          = {-30.0f, -0.0f, -30.0f};
+        m_EnitterInfo->maxVelocity          = {30.0f, 20.0f, 30.0f};
         m_EnitterInfo->accumulatedTime      = 10.0f;
 
         m_EmitterCpuInfo               = new FEmitterCPU;
         m_EmitterCpuInfo->maxParticles = 1000;
+
 
         m_SegmentInfo.index[0] = gMaxParticleCount;
         m_SegmentInfo.index[1] = m_EmitterCpuInfo->maxParticles + m_SegmentInfo.index[0];
@@ -179,7 +180,7 @@ void ParticleManager::ParticleBufferInit(ID3D11Device1*                device1,
         sbDesc.ByteWidth           = sizeof(FParticleGPU) * numParticles * 1;
         sbDesc.Usage               = D3D11_USAGE_DEFAULT;
 
-		particleData = new FParticleGPU[numParticles];
+        particleData = new FParticleGPU[numParticles];
         D3D11_SUBRESOURCE_DATA rwData;
         rwData.pSysMem          = particleData; // not sure should pass in what type of data
         rwData.SysMemPitch      = 0;
@@ -304,6 +305,11 @@ EntityHandle ParticleManager::CreateEmitter(ParticleData::FEmitterCPU& emitter)
         eComponent->mEmitterData     = emitter;
 
         return eHandle;
+}
+
+void ParticleManager::AddEmitter(ParticleData::FEmitterGPU& emitter)
+{
+        m_Emitters.push_back(emitter);
 }
 
 void ParticleManager::SetParticleInfo(ParticleData::FParticleGPU* particleInfo)

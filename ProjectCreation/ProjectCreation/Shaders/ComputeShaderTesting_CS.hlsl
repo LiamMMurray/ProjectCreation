@@ -72,6 +72,7 @@ RWStructuredBuffer<FSegmentBuffer> SegmentBuffer : register(u1);
         else
         {
                 ParticleBuffer[DTid.x].time -= _DeltaTime;
-                ParticleBuffer[DTid.x].position += 1.0f*float4(ParticleBuffer[DTid.x].velocity * _DeltaTime, 0.0f);
+                //ParticleBuffer[DTid.x].position += 1.0f*float4(ParticleBuffer[DTid.x].velocity * _DeltaTime, 0.0f);
+                ParticleBuffer[DTid.x].color.w -= 0.1f;
         }
 }
