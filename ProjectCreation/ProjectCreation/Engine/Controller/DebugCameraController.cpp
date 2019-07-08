@@ -120,7 +120,7 @@ void DebugCameraController::ApplyInput()
         constexpr float pitchLimit = XMConvertToRadians(90.0f);
         m_EulerAngles.x            = MathLibrary::clamp(m_EulerAngles.x, -pitchLimit, pitchLimit);
         constexpr float rollLimit  = XMConvertToRadians(20.0f);
-        m_EulerAngles.z = MathLibrary::lerp(m_EulerAngles.z, 0.0f, MathLibrary::clamp(deltaTime * rollLimit, 0.0f, 1.0f));
+        m_EulerAngles.z            = 0.0f;
 
         // Calculate offset
         XMVECTOR offset = XMVector3Rotate(m_CurrentInput * deltaTime, transformComp->transform.rotation.data);

@@ -1,13 +1,14 @@
-Texture2D   diffuseMap : register(t0);
-Texture2D   normalMap : register(t1);
-Texture2D   detailsMap : register(t2);
-Texture2D   normalMap2 : register(t3);
+Texture2D   diffuseMapA : register(t0);
+Texture2D   normalMapA : register(t1);
+Texture2D   diffuseMapB : register(t2);
+Texture2D   normalMapB : register(t3);
 TextureCube IBLDiffuse : register(t4);
 TextureCube IBLSpecular : register(t5);
 Texture2D   IBLIntegration : register(t6);
 Texture2D   Mask1 : register(t7);
 Texture2D   Mask2 : register(t8);
 Texture2D   Heightmap : register(t9);
+Texture2D   Roughness : register(t10);
 
 #include "Constants.hlsl"
 #include "Math.hlsl"
@@ -30,72 +31,62 @@ struct DomainOutput
 
 float4 main(DomainOutput pIn) : SV_TARGET
 {
-        float2 leftTex   = pIn.Tex + float2(-gTexelCellSpaceU, 0.0f);
-        float2 rightTex  = pIn.Tex + float2(gTexelCellSpaceU, 0.0f);
-        float2 bottomTex = pIn.Tex + float2(0.0f, gTexelCellSpaceV);
-        float2 topTex    = pIn.Tex + float2(0.0f, -gTexelCellSpaceV);
+        float2 leftTex   = pIn.Tex + float2(-gTexelSize, 0.0f);
+        float2 rightTex  = pIn.Tex + float2(gTexelSize, 0.0f);
+        float2 bottomTex = pIn.Tex + float2(0.0f, -gTexelSize);
+        float2 topTex    = pIn.Tex + float2(0.0f, +gTexelSize);
 
-        float leftY   = HeightMap.SampleLevel(sampleTypeWrap, leftTex, 0).r;
-        float rightY  = HeightMap.SampleLevel(sampleTypeWrap, rightTex, 0).r;
-        float bottomY = HeightMap.SampleLevel(sampleTypeWrap, bottomTex, 0).r;
-        float topY    = HeightMap.SampleLevel(sampleTypeWrap, topTex, 0).r;
+        float3 dpdx = ddx(pIn.PosWS);
+        float3 dpdy = ddy(pIn.PosWS);
+
+        float leftY   = 2625.f * HeightMap.SampleLevel(sampleTypeWrap, leftTex, 0).r;
+        float rightY  = 2625.f * HeightMap.SampleLevel(sampleTypeWrap, rightTex, 0).r;
+        float bottomY = 2625.f * HeightMap.SampleLevel(sampleTypeWrap, bottomTex, 0).r;
+        float topY    = 2625.f * HeightMap.SampleLevel(sampleTypeWrap, topTex, 0).r;
 
         float3 TangentWS  = normalize(float3(2.0f * gWorldCellSpace, rightY - leftY, 0.0f));
         float3 BinormalWS = normalize(float3(0.0f, bottomY - topY, -2.0f * gWorldCellSpace));
-        float3 NormalWS   = cross(TangentWS, BinormalWS);
+        float3 NormalWS   = normalize(cross(TangentWS, BinormalWS));
 
-        float3 viewWS = normalize(pIn.PosWS - _EyePosition);
+        float3 viewWS = -normalize(pIn.PosWS - _EyePosition);
         float3 normalSample;
 
+        float blendAlpha = saturate(dot(NormalWS, float3(0.0f, 1.0f, 0.0f)) + 0.05f);
+        blendAlpha       = pow(blendAlpha, 50.0f);
+        blendAlpha       = saturate(blendAlpha * 50.0f);
+
+        float3 diffuseA = diffuseMapA.Sample(sampleTypeWrap, pIn.Tex2).rgb;
+        float3 diffuseB = diffuseMapB.Sample(sampleTypeWrap, pIn.Tex2).rgb;
+
+        float3 normalA = normalMapA.Sample(sampleTypeWrap, pIn.Tex2).rgb;
+        float3 normalB = normalMapB.Sample(sampleTypeWrap, pIn.Tex2).rgb;
+
         SurfacePBR surface;
-        surface.diffuseColor = 1.0f;
-        surface.metallic     = 1.0f;
+        surface.diffuseColor = lerp(diffuseA, diffuseB, blendAlpha);
+        surface.metallic     = 0.0f;
 
         surface.ambient       = 1.0f;
         surface.emissiveColor = 0.0f;
 
-        float alpha = 1.f;
 
-        if (false)
         {
-                float4 diffuse = diffuseMap.Sample(sampleTypeWrap, pIn.Tex2);
-        }
-        surface.diffuseColor = saturate(surface.diffuseColor);
-
-        if (false)
-        {
-                surface.metallic *= detailsMap.Sample(sampleTypeWrap, pIn.Tex2).y;
-        }
-
-        if (false)
-        {
-                surface.roughness = lerp(0.0f, 1.0f, detailsMap.Sample(sampleTypeWrap, pIn.Tex2).x);
-        }
-        else
-        {
-                surface.roughness = 0.5f;
-        }
-        // Remapping roughness to prevent errors on normal distribution
-        surface.roughness = max(surface.roughness, 0.08f);
-        if (false)
-        {
-                surface.ambient *= detailsMap.Sample(sampleTypeWrap, pIn.Tex2).z;
-        }
-
-
-        if (false)
-        {
-                normalSample   = normalMap.Sample(sampleTypeWrap, pIn.Tex2).xyz * 2.f - 1.f;
+                normalSample   = lerp(normalA, normalB, blendAlpha)*2.0f - 1.0f;
                 normalSample.z = sqrt(1 - normalSample.x * normalSample.x - normalSample.y * normalSample.y);
+                normalSample   = normalize(normalSample);
                 surface.normal = TangentWS * normalSample.x + BinormalWS * normalSample.y + NormalWS * normalSample.z;
         }
-        else
-        {
-                surface.normal = NormalWS;
-        }
         surface.normal = normalize(surface.normal);
+        //return surface.normal.xyzz;
+        float alpha = 1.f;
 
-        float3 reflectionVector = reflect(viewWS, surface.normal);
+        float4 roughnessSample = Roughness.Sample(sampleTypeWrap, pIn.Tex2).rgba;
+        surface.roughness      = lerp(roughnessSample.r, roughnessSample.g, blendAlpha);
+        // Remapping roughness to prevent errors on normal distribution
+        surface.roughness = max(surface.roughness, 0.08f);
+
+		surface.ambient = lerp(roughnessSample.b, roughnessSample.a, blendAlpha);
+
+        float3 reflectionVector = reflect(-viewWS, surface.normal);
 
 
         float3 positionWS = pIn.PosWS;
@@ -115,7 +106,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
 
         // Environment mapping
         {
-                surface.ambient *= 0.2f;
+                surface.ambient *= 0.4f;
                 float3 N = surface.normal;
                 float3 V = -viewWS;
 

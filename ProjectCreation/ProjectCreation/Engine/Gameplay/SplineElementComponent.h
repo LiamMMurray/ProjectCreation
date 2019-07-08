@@ -6,10 +6,8 @@
 class SpeedboostSplineComponent : public Component<SpeedboostSplineComponent>
 {
     public:
-        DirectX::XMVECTOR m_NextPos;
-        DirectX::XMVECTOR m_CurrPos;
-        DirectX::XMVECTOR m_PrevPos;
-        int               clusterID;
-        bool              bTail = false;
-        bool              bHead = false;
+        int  index;
+        int  clusterID;
+        bool bTail = false;
+        bool bHead = false;
 };

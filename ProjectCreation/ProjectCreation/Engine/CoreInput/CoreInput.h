@@ -48,7 +48,7 @@ enum class KeyCode
         Control = 0x11,
         Tab     = 0x09,
         Esc     = 0x1B,
-		L_Shift = 0xA0,
+        Shift   = 0x10,
         A       = 0x41,
         B,
         C,

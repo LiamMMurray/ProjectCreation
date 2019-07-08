@@ -1,5 +1,6 @@
 #include "RenderingSystem.h"
 #include <iostream>
+#include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
 #include "../Engine/MathLibrary/MathLibrary.h"
 #include "../FileIO/FileIO.h"
@@ -139,7 +140,7 @@ void RenderSystem::CreateDeviceAndSwapChain()
         sd.SampleDesc.Count   = 1; // Don't use multi-sampling.
         sd.SampleDesc.Quality = 0;
         sd.BufferUsage        = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        sd.BufferCount        = 2;
+        sd.BufferCount        = 3;
         sd.SwapEffect         = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
         sd.Flags              = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; //| DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
@@ -270,6 +271,9 @@ void RenderSystem::CreateRasterizerStates()
 {
         CD3D11_RASTERIZER_DESC desc(D3D11_FILL_SOLID, D3D11_CULL_BACK, FALSE, 0, 0.f, 0.f, TRUE, FALSE, FALSE, FALSE);
         m_Device->CreateRasterizerState(&desc, &m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
+
+        desc.FillMode = D3D11_FILL_WIREFRAME;
+        m_Device->CreateRasterizerState(&desc, &m_DefaultRasterizerStates[E_RASTERIZER_STATE::WIREFRAME]);
 }
 
 void RenderSystem::CreateInputLayouts()
@@ -478,7 +482,7 @@ void RenderSystem::CreateBlendStates()
 
 void RenderSystem::CreateDepthStencilStates()
 {
-        CD3D11_DEPTH_STENCIL_DESC desc = CD3D11_DEPTH_STENCIL_DESC();
+        CD3D11_DEPTH_STENCIL_DESC desc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
         desc.DepthFunc                 = D3D11_COMPARISON_LESS_EQUAL;
         desc.DepthEnable               = true;
         m_Device->CreateDepthStencilState(&desc, &m_DepthStencilStates[E_DEPTH_STENCIL_STATE::BASE_PASS]);
@@ -669,6 +673,7 @@ void RenderSystem::OnPreUpdate(float deltaTime)
 
         m_CachedMainInvViewMatrix        = mainTransform->transform.CreateMatrix();
         XMMATRIX view                    = XMMatrixInverse(nullptr, m_CachedMainInvViewMatrix);
+        m_CachedMainViewMatrix           = view;
         m_CachedMainViewProjectionMatrix = view * m_CachedMainProjectionMatrix;
 
         mainCamera->_cachedView           = view;
@@ -787,7 +792,7 @@ void RenderSystem::OnUpdate(float deltaTime)
         viewport.TopLeftX = 0;
         viewport.TopLeftY = 0;
 
-        m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
+
         m_Context->RSSetViewports(1, &viewport);
 
         m_Context->VSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
@@ -826,16 +831,17 @@ void RenderSystem::OnUpdate(float deltaTime)
         float blendFactor[] = {0.75f, 0.75f, 0.75f, 1.0f};
         UINT  sampleMask    = 0xffffffff;
 
+        m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
+        if (GCoreInput::GetKeyState(KeyCode::Shift) == KeyState::Down)
+                m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::WIREFRAME]);
         /*** Render Terrain Start ***/
+        m_Context->OMSetDepthStencilState(m_DepthStencilStates[E_DEPTH_STENCIL_STATE::BASE_PASS], 0);
+        m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Opaque], 0, sampleMask);
         TerrainManager::Update(deltaTime);
         /*** Render Terrain End ***/
 
-        m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::SKINNED]);
         m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         /** Render opaque meshes **/
-        m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        m_Context->OMSetDepthStencilState(m_DepthStencilStates[E_DEPTH_STENCIL_STATE::BASE_PASS], 0);
-        m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Opaque], 0, sampleMask);
         for (size_t i = 0, n = m_OpaqueDraws.size(); i < n; ++i)
         {
                 if (m_OpaqueDraws[i].meshType == FDraw::EDrawType::Static)
@@ -872,6 +878,7 @@ void RenderSystem::OnUpdate(float deltaTime)
                         DrawSkeletalMesh(mesh, mat, &m_TransluscentDraws[i].mtx, &meshComp->m_Skeleton);
                 }
         }
+        m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
 
         ParticleManager::Update(deltaTime);
 
@@ -1029,7 +1036,7 @@ void RenderSystem::OnShutdown()
         // UI Manager Shutdown
         UIManager::Shutdown();
 
-		TerrainManager::Shutdown();
+        TerrainManager::Shutdown();
 
         ParticleManager::Shutdown();
 }

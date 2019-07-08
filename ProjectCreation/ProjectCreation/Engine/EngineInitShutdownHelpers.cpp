@@ -1,10 +1,10 @@
 #include "EngineInitShutdownHelpers.h"
 
+#include "..///Engine/GenericComponents/TransformSystem.h"
 #include "../Engine/Animation/AnimationSystem.h"
 #include "../Engine/Controller/ControllerSystem.h"
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/Physics/PhysicsSystem.h"
-
 
 void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type handle)
 {
@@ -58,6 +58,17 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
                 ControllerSystem* controllerSystem;
                 systemManager->CreateSystem<ControllerSystem>(&controllerSystem);
                 systemManager->RegisterSystem(&sysInitProps, controllerSystem);
+        }
+
+        // Create Transform System
+        {
+                FSystemProperties sysInitProps;
+                sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::LOW;
+                sysInitProps.m_UpdateRate = 0.0f;
+
+                TransformSystem* transformSystem;
+                systemManager->CreateSystem<TransformSystem>(&transformSystem);
+                systemManager->RegisterSystem(&sysInitProps, transformSystem);
         }
 
         GCoreInput::InitializeInput((HWND)handle);

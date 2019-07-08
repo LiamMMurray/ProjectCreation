@@ -49,12 +49,12 @@
     <ClInclude Include="Engine\Gameplay\OrbitSystem.h" />
     <ClInclude Include="Engine\Gameplay\OrbRespawnComponent.h" />
     <ClInclude Include="Engine\Gameplay\SpeedboostComponent.h" />
-    <ClInclude Include="Engine\Gameplay\SpeedboostSplineComponent.h" />
     <ClInclude Include="Engine\Gameplay\SplineCluster.h" />
     <ClInclude Include="Engine\Gameplay\SplineElementComponent.h" />
     <ClInclude Include="Engine\Gameplay\SpeedBoostSystem.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
+    <ClInclude Include="Engine\GenericComponents\TransformSystem.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\Particle Systems\EmitterComponent.h" />
     <ClInclude Include="Engine\MathLibrary\Maze\MazeGenerator.h" />
@@ -204,6 +204,18 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
+    <FxCompile Include="Shaders\Ocean_DS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\Ocean_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Shaders\PurePixelShader_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -277,6 +289,7 @@
     <ClCompile Include="Engine\Gameplay\SplineCluster.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\IState.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
+    <ClCompile Include="Engine\GenericComponents\TransformSystem.cpp" />
     <ClCompile Include="Engine\Particle Systems\ParticleData.cpp" />
     <ClCompile Include="Engine\Particle Systems\ParticleManager.cpp" />
     <ClCompile Include="Engine\MathLibrary\Maze\MazeGenerator.cpp" />

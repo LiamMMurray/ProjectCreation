@@ -64,7 +64,7 @@ float GeometryTermSmith(float3 N, float3 V, float3 L, float roughness)
 float3 IBL(SurfacePBR surface, float3 viewWS, float3 specColor, float3 IBLDiffuse, float3 IBLSpecular, float2 IBLIntegration)
 {
         float3 N = surface.normal;
-        float3 V = -viewWS;
+        float3 V = viewWS;
 
         float3 F  = FresnelSchlickEnvironment(N, V, specColor, surface.roughness);
         float3 kD = 1.f - F;
@@ -80,7 +80,7 @@ float3 PBR(SurfacePBR surface, float3 lightDir, float3 viewWS, float3 specColor)
 {
         float3 N = surface.normal;
         float3 L = lightDir;
-        float3 V = -viewWS;
+        float3 V = viewWS;
         float3 H = normalize(L + V);
 
         // Cook-Torrance FGD/4nlnv

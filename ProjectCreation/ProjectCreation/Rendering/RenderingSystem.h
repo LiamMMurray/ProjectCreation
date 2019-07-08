@@ -167,6 +167,7 @@ struct E_RASTERIZER_STATE
         enum
         {
                 DEFAULT = 0,
+                WIREFRAME,
                 COUNT
         };
 };
@@ -308,6 +309,7 @@ class RenderSystem : public ISystem
         HandleManager*   m_HandleManager;
 
         DirectX::XMMATRIX m_CachedMainProjectionMatrix;
+        DirectX::XMMATRIX m_CachedMainViewMatrix;
         DirectX::XMMATRIX m_CachedMainViewProjectionMatrix;
         DirectX::XMMATRIX m_CachedMainInvProjectionMatrix;
         DirectX::XMMATRIX m_CachedMainInvViewMatrix;
