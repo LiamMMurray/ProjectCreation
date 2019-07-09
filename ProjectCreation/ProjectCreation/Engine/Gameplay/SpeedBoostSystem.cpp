@@ -264,6 +264,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         {
                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.color);
                                 playerController->SpeedBoost(center, speedComp.color);
+                                RequestDestroySpeedboost(&speedComp);
                         }
                 }
         }

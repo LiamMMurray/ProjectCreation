@@ -51,10 +51,14 @@ void PlayerGroundState::Update(float deltaTime)
         constexpr float pitchLimit   = XMConvertToRadians(90.0f);
         constexpr float rollLimit    = 20.0f;
 
+		float pitchDelta = eulerAngles.x;
         eulerAngles.x += GCoreInput::GetMouseY() * angularSpeed;
+        pitchDelta = eulerAngles.x - pitchDelta;
+
         float yawDelta = eulerAngles.y;
         eulerAngles.y += GCoreInput::GetMouseX() * angularSpeed;
         yawDelta = eulerAngles.y - yawDelta;
+
         eulerAngles.z += GCoreInput::GetMouseX() * angularSpeed;
 
         eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
@@ -68,6 +72,9 @@ void PlayerGroundState::Update(float deltaTime)
 
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, yawDelta));
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, yawDelta));
+
+        currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, pitchDelta));
+        currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, pitchDelta));
 
         // Get the Speed from the gathered input
         XMVECTOR currentInput = _playerController->GetCurrentInput();
