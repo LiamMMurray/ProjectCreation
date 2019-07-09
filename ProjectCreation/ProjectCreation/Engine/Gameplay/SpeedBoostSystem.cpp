@@ -443,7 +443,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 }
                 else
                 {
-                        playerController->SetUseGravity(true);
+                        //playerController->SetUseGravity(true);
                         bIsLatchedToSpline = false;
                 }
         }
