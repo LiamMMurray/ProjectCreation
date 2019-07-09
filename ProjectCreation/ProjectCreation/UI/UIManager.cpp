@@ -293,6 +293,14 @@ void UIManager::Unpause()
         }
 }
 
+RECT UIManager::AdjustResolution()
+{
+        RECT desktop;
+		const HWND hDesktop = GetDesktopWindow();
+        GetWindowRect(hDesktop, &desktop);                     // set the size
+        return desktop;
+}
+
 
 // Core Function
 void UIManager::Initialize(native_handle_type hwnd)
@@ -715,10 +723,11 @@ void UIManager::Update()
                 }
         }
 
-        if (instance->m_FirstFull == true)
+		//Sets the game fullscreen on startup
+		if (instance->m_FirstFull == true)
         {
                 instance->m_RenderSystem->SetFullscreen(true);
-                instance->m_FirstFull = false;
+                instance->m_FirstFull    = false;
                 instance->m_IsFullscreen = true;
         }
 

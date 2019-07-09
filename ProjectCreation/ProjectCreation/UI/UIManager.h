@@ -71,6 +71,8 @@ class UIManager
         void MainTilteUnpause();
         void Pause();
         void Unpause();
+        RECT AdjustResolution();
+
 
 
         void        UIClipCursor();

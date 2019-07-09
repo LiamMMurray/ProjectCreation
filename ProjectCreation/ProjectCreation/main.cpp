@@ -171,7 +171,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         // register window class
         RegisterClassEx(&winInfo);
 
-        RECT wr = {0, 0, 1920, 1080};                       // set the size
+        RECT wr = {0, 0, 1600, 900};                       // set the size
         AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE); // adjust the size
 
         int posX = GetSystemMetrics(SM_CXSCREEN) / 2 - (wr.right - wr.left) / 2;
@@ -315,6 +315,14 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 if (GetActiveWindow() != handle && GEngine::Get()->GetGamePaused() == false)
                 {
                         UIManager::instance->Pause();
+                }
+
+                if (GCoreInput::GetKeyState(KeyCode::Z) == KeyState::DownFirst)
+                {
+                        wr = UIManager::instance->AdjustResolution();
+                       //DEVMODE dMode;
+                       //ChangeDisplaySettings();
+                        AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE); // adjust the size
                 }
 
                 {
