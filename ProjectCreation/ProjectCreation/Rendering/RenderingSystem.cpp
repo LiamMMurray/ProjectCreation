@@ -159,7 +159,7 @@ void RenderSystem::CreateDeviceAndSwapChain()
         ID3D11Debug* debug = nullptr;
         hr                 = m_Device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&debug));
         assert(SUCCEEDED(hr));
-        debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+        //debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
         debug->Release();
 #endif
 

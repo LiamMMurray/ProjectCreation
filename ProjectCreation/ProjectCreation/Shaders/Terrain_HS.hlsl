@@ -34,25 +34,36 @@ float GetPostProjectionSphereExtent(float3 Origin, float Diameter)
 float2 eyeToScreen(float4 p)
 {
         float4 r = mul(p, Projection);
-        r.xy /= r.w;             // project
-        r.xy = r.xy * 0.5 + 0.5; // to NDC
+        r.xy /= r.w;                                            // project
+        r.xy = r.xy * 0.5 + 0.5;                                // to NDC
         r.xy *= float2(screenDimensions.x, screenDimensions.y); // to pixels
         return r.xy;
 }
 
 float CalculateTessellationFactor(float3 Control0, float3 Control1)
 {
+        float3 w0 = mul(float4(Control0, 1.0), World).xyz;
+        float3 w1 = mul(float4(Control1, 1.0), World).xyz;
+
+        float3 wC   = (w0 + w1) / 2;
+        float  dist = distance(_EyePosition, wC);
+
+        float alpha = saturate(3.0f * dist / gScale);
+
+        return lerp(100.0f, 8.0f, alpha);
+
+
         float tileSize = cellSizeWorld;
 
-        float3 center  = (Control0 + Control1) / 2;
+        float3 center = (Control0 + Control1) / 2;
         float4 v0     = mul(float4(center, 1.0), WorldView);
 
         float4 v1 = v0 + float4(tileSize, 0.0f, 0.0f, 0.0f);
 
-		float2 s0 = eyeToScreen(v0);
-		float2 s1 = eyeToScreen(v1);
+        float2 s0 = eyeToScreen(v0);
+        float2 s1 = eyeToScreen(v1);
 
-		float d = distance(s0, s1);
+        float d = distance(s0, s1);
 
         return clamp(d / triangleSize, 1.0f, 64);
 }
