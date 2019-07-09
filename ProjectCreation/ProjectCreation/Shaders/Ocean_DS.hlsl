@@ -18,7 +18,7 @@ static Wave  waves[NUM_WAVES] = {{normalize(float2(1.0f, 2.0f)), 2.5f, 32.0f},
                                 {normalize(float2(-1.0f, 0.0f)), 2.2f, 40.0f},
                                 {normalize(float2(-2.0f, -1.0f)), 2.5f, 340.0f},
                                 {normalize(float2(0.5f, 0.5f)), 3.5f, 160.0f},
-                                {normalize(float2(1.9f, 2.3f)), 35.50f, 100.0f}};
+                                {normalize(float2(1.9f, 2.3f)), 7.50f, 100.0f}};
 static float steepness        = 1.0;
 static float speed            = 0.5f;
 
