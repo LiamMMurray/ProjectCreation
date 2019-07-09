@@ -364,7 +364,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.1f,
                           true,
                           false);
-
+        /*
         // (Spacebar, Q, and E)"
         //instance->AddText(instance->m_RenderSystem->m_Device,
         //                  instance->m_RenderSystem->m_Context,
@@ -376,7 +376,6 @@ void UIManager::Initialize(native_handle_type hwnd)
         //                  0.2f,
         //                  true,
         //                  false);
-
 
         // Pause Menu
         constexpr float pauseButtonWidth  = 0.25f;

@@ -171,7 +171,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         // register window class
         RegisterClassEx(&winInfo);
 
-        RECT wr = {0, 0, 1280, 720};                       // set the size
+        RECT wr = {0, 0, 1920, 1080};                       // set the size
         AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE); // adjust the size
 
         int posX = GetSystemMetrics(SM_CXSCREEN) / 2 - (wr.right - wr.left) / 2;
