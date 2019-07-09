@@ -498,7 +498,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "Window Mode",
+                          "Windowed",
                           0.04f,
                           0.0f,
                           0.0f,
@@ -515,12 +515,35 @@ void UIManager::Initialize(native_handle_type hwnd)
                           "Resolution",
                           0.04f,
                           0.0f,
-                          0.1f,
+                          0.2f,
                           false,
                           true,
                           true,
                           pauseButtonWidth,
                           pauseButtonHeight);
+
+		//Options Submenu
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::OptionsSubmenu,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Off",
+                          0.04f,
+                          0.0f,
+                          0.08f,
+                          false,
+                          false);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::OptionsSubmenu,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "On",
+                          0.04f,
+                          0.0f,
+                          0.08f,
+                          false,
+                          false);
 
         // Level Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -595,6 +618,17 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = true;
                 }
+
+				if (instance->m_IsFullscreen == false)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = false; // Off
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = true; // On
+                }
+                else
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = true; // Off
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
+                }
         });
 
         // Controls Button
@@ -630,6 +664,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
                 }
+
+                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = false;  // Off
+                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
         });
 
 		//Window Mode
@@ -637,11 +674,16 @@ void UIManager::Initialize(native_handle_type hwnd)
         	
             if (instance->m_IsFullscreen == false)
             {
-                    instance->m_IsFullscreen = true;
+                    instance->m_IsFullscreen                                              = true;
+                    instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled   = true;  // Off
+                    instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled   = false; // On
             }
             else
             {
-                    instance->m_IsFullscreen = false;
+                    instance->m_IsFullscreen                                              = false;
+                    instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled   = false; // Off
+                    instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled   = true;  // On
+
             }
             instance->m_RenderSystem->SetFullscreen(instance->m_IsFullscreen);
 

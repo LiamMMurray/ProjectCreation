@@ -22,6 +22,7 @@ struct E_MENU_CATEGORIES
                 MainMenu,
                 PauseMenu,
                 OptionsMenu,
+				OptionsSubmenu,
                 LevelMenu,
                 COUNT
         };
