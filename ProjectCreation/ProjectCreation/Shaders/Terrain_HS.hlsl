@@ -27,15 +27,34 @@ struct HullConstantDataOut
 
 float GetPostProjectionSphereExtent(float3 Origin, float Diameter)
 {
-        float4 ClipPos = mul(float4(Origin, 1.0), ViewProjection);
-        return abs((Diameter * Projection[1][1]) / ClipPos.w);
+        float4 ClipPos = mul(float4(Origin, 1.0f), Projection);
+        return abs((Diameter * Projection[0][0]) / ClipPos.w);
+}
+
+float2 eyeToScreen(float4 p)
+{
+        float4 r = mul(p, Projection);
+        r.xy /= r.w;             // project
+        r.xy = r.xy * 0.5 + 0.5; // to NDC
+        r.xy *= float2(screenDimensions.x, screenDimensions.y); // to pixels
+        return r.xy;
 }
 
 float CalculateTessellationFactor(float3 Control0, float3 Control1)
 {
-        float  e0 = distance(Control0, Control1);
-        float3 m0 = (Control0 + Control1) / 2;
-        return max(1, _TesselationFactor * GetPostProjectionSphereExtent(m0, e0));
+        float tileSize = cellSizeWorld;
+
+        float3 center  = (Control0 + Control1) / 2;
+        float4 v0     = mul(float4(center, 1.0), WorldView);
+
+        float4 v1 = v0 + float4(tileSize, 0.0f, 0.0f, 0.0f);
+
+		float2 s0 = eyeToScreen(v0);
+		float2 s1 = eyeToScreen(v1);
+
+		float d = distance(s0, s1);
+
+        return clamp(d / triangleSize, 1.0f, 64);
 }
 
 // Patch Constant Function

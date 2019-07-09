@@ -9,8 +9,8 @@
 
 EntityHandle EntityFactory::CreateDummyTransformEntity(ComponentHandle* outTransformHandle)
 {
-        auto handleManager = GEngine::Get()->GetHandleManager();
-        auto resourceManager  = GEngine::Get()->GetResourceManager();
+        auto handleManager   = GEngine::Get()->GetHandleManager();
+        auto resourceManager = GEngine::Get()->GetResourceManager();
 
         auto outEntityHandle = handleManager->CreateEntity();
 
@@ -25,21 +25,23 @@ EntityHandle EntityFactory::CreateDummyTransformEntity(ComponentHandle* outTrans
 EntityHandle EntityFactory::CreateStaticMeshEntity(const char*      staticMeshName,
                                                    const char*      materialName,
                                                    ComponentHandle* outTransformHandle,
-                                                   ComponentHandle* outStaticMeshHandle)
+                                                   ComponentHandle* outStaticMeshHandle,
+                                                   bool             wrapping)
 {
-        auto HandleManager = GEngine::Get()->GetHandleManager();
-        auto resourceManager  = GEngine::Get()->GetResourceManager();
+        auto HandleManager   = GEngine::Get()->GetHandleManager();
+        auto resourceManager = GEngine::Get()->GetResourceManager();
 
         auto outEntityHandle = HandleManager->CreateEntity();
 
         auto tCompHandle = outEntityHandle.AddComponent<TransformComponent>();
         auto tComp       = tCompHandle.Get<TransformComponent>();
+        tComp->wrapping  = wrapping;
 
-        auto sMeshCompHandle = HandleManager->AddComponent<StaticMeshComponent>(outEntityHandle);
-        NMemory::type_index index               = StaticMeshComponent::SGetTypeIndex();
-        auto meshComp                = sMeshCompHandle.Get<StaticMeshComponent>();
-        meshComp->m_MaterialHandle   = resourceManager->LoadMaterial(materialName);
-        meshComp->m_StaticMeshHandle = resourceManager->LoadStaticMesh(staticMeshName);
+        auto                sMeshCompHandle = HandleManager->AddComponent<StaticMeshComponent>(outEntityHandle);
+        NMemory::type_index index           = StaticMeshComponent::SGetTypeIndex();
+        auto                meshComp        = sMeshCompHandle.Get<StaticMeshComponent>();
+        meshComp->m_MaterialHandle          = resourceManager->LoadMaterial(materialName);
+        meshComp->m_StaticMeshHandle        = resourceManager->LoadStaticMesh(staticMeshName);
 
         if (outTransformHandle)
                 *outTransformHandle = tCompHandle;
@@ -58,8 +60,8 @@ EntityHandle EntityFactory::CreateSkeletalMeshEntity(const char*              sk
                                                      ComponentHandle*         outSkeletalMeshHandle,
                                                      ComponentHandle*         outAnimCompHandle)
 {
-        auto HandleManager = GEngine::Get()->GetHandleManager();
-        auto resourceManager  = GEngine::Get()->GetResourceManager();
+        auto HandleManager   = GEngine::Get()->GetHandleManager();
+        auto resourceManager = GEngine::Get()->GetResourceManager();
 
         size_t animCount = animNames.size();
 

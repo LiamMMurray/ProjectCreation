@@ -24,7 +24,7 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
         auto goalComp   = goalHandle.Get<GoalComponent>();
         auto transComp  = transHandle.Get<TransformComponent>();
 
-        auto entityH2             = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle2);
+        auto entityH2 = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle2, nullptr, false);
         auto transComp2           = transHandle2.Get<TransformComponent>();
         goalComp->color           = color;
         goalComp->collisionHandle = transHandle2;
@@ -124,7 +124,8 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 {
                         // goalComp.targetAlpha = 1.0f;
                         // playerController->SetGoalComponent(goalComp.GetHandle());
-                        goalComp.goalState = E_GOAL_STATE::InitialTransition;
+                        goalComp.goalState  = E_GOAL_STATE::InitialTransition;
+                        transComp->wrapping = false;
                         playerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
                 }
 
@@ -204,10 +205,10 @@ void OrbitSystem::OnInitialize()
         m_HandleManager = GEngine::Get()->GetHandleManager();
 
         ComponentHandle sunHandle, ring1Handle, ring2Handle, ring3Handle;
-        EntityFactory::CreateStaticMeshEntity("Sphere01", "GlowMatSun", &sunHandle);
-        EntityFactory::CreateStaticMeshEntity("Ring01", "GlowMatRing", &ring1Handle);
-        EntityFactory::CreateStaticMeshEntity("Ring02", "GlowMatRing", &ring2Handle);
-        EntityFactory::CreateStaticMeshEntity("Ring03", "GlowMatRing", &ring3Handle);
+        EntityFactory::CreateStaticMeshEntity("Sphere01", "GlowMatSun", &sunHandle, nullptr, false);
+        EntityFactory::CreateStaticMeshEntity("Ring01", "GlowMatRing", &ring1Handle, nullptr, false);
+        EntityFactory::CreateStaticMeshEntity("Ring02", "GlowMatRing", &ring2Handle, nullptr, false);
+        EntityFactory::CreateStaticMeshEntity("Ring03", "GlowMatRing", &ring3Handle, nullptr, false);
 
         auto sunTransform   = sunHandle.Get<TransformComponent>();
         auto ring1Transform = ring1Handle.Get<TransformComponent>();

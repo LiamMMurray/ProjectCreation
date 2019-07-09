@@ -39,7 +39,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         float mask2        = Mask1.Sample(sampleTypeWrap, pIn.Tex * float2(2.0f, 3.0f) + float2(_Time * 1.5f, _Time * 0.8f)).r;
         float maskFresnel  = 1.0f - saturate(pow(fresnel * 1.2f, 4.0f));
         float mask         = 1.0f - saturate(pow(mask1 * mask2, 2.0f) * 20.0f);
-        float alpha        = min(lerp(1.0f + mask1, mask, maskFresnel) * saturate(pow(fresnel, 2.0f)), 1.1f);
+        float alpha        = min(lerp(1.0f + mask1, mask, maskFresnel) * saturate(pow(fresnel, 2.0f)), 1.0f);
         // return maskFresnel;
         // return mask;
         // mask = (1.0f - mask);

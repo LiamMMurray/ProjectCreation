@@ -13,12 +13,16 @@ cbuffer SceneInfoBuffer : register(b1)
 
 cbuffer TerrainInfoBuffer : register(b4)
 {
+        matrix WorldView;
         float4 gWorldFrustumPlanes[6];
         float  gTexScale;
-        float _TesselationFactor;
-        float  gTexelCellSpaceU;
-        float  gTexelCellSpaceV;
+        float  gTexelSize;
+        float  gScale;
         float  gWorldCellSpace;
+        float2 screenDimensions;
+        float  triangleSize;
+        float  cellSizeWorld;
+        // float  gWaterLevel;
 };
 
 Texture2D HeightMap : register(t9);
