@@ -16,6 +16,7 @@
 class TransformComponent;
 class ResourceManager;
 class SpeedboostComponent;
+class SpeedboostSplineComponent;
 
 class SpeedBoostSystem : public ISystem
 {
@@ -41,6 +42,7 @@ class SpeedBoostSystem : public ISystem
         EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
 
         void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
+        void RequestDestroySplineOrb(SpeedboostSplineComponent* speedComp);
 
         ComponentHandle latchedSplineHandle;
         bool            bIsLatchedToSpline;
@@ -57,10 +59,14 @@ class SpeedBoostSystem : public ISystem
                               unsigned int             waveCount = 5,
                               float                    heightvar = 1.6f);
 
+        void DestroySpline(int SplineID, int curr);
+
         float m_PlayerEffectRadius    = 200.0f;
         float m_SpawnBoostTimer       = 0.0f;
         float m_SpawnBoostCD          = 0.1f;
-        float m_SplineSpawnCD          = 0.05f;
+        float m_DestorySplineOrbCD    = 0.1f;
+        float m_DestorySplineOrbTimer = 0.0f;
+        float m_SplineSpawnCD         = 0.05f;
         float m_BoostLifespan         = 25.0f;
         float m_BoostLifespanVariance = 2.0f;
         float m_BoostShrinkSpeed      = m_BoostRadius;

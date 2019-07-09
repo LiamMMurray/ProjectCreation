@@ -72,8 +72,10 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
         cluster.BakeNextPointOnSpline(prev, curr, next);
 
         cluster.pointPositions.push_back(curr);
-        auto entityH      = SpawnLightOrb(curr, cluster.color);
-        auto splineH      = entityH.AddComponent<SpeedboostSplineComponent>();
+        auto entityH = SpawnLightOrb(curr, cluster.color);
+        auto splineH = entityH.AddComponent<SpeedboostSplineComponent>();
+
+        cluster.splineComponentList.push_back((splineH));
         auto splineComp   = splineH.Get<SpeedboostSplineComponent>();
         splineComp->bHead = head;
         splineComp->bTail = tail;
@@ -112,6 +114,22 @@ void SpeedBoostSystem::RequestDestroySpeedboost(SpeedboostComponent* speedComp)
         // speedComp->GetHandle().Free();
 }
 
+void SpeedBoostSystem::RequestDestroySplineOrb(SpeedboostSplineComponent* speedComp)
+{
+        auto orbComp            = speedComp->GetParent().GetComponent<OrbComponent>();
+        orbComp->m_WantsDestroy = true;
+        speedComp->GetHandle().SetIsActive(false);
+
+        SpeedboostSplineComponent* latchedSpline = latchedSplineHandle.Get<SpeedboostSplineComponent>();
+
+        if (latchedSpline == speedComp)
+        {
+                bIsLatchedToSpline = false;
+        }
+
+        // speedComp->GetHandle().Free();
+}
+
 void SpeedBoostSystem::UpdateSpeedboostEvents()
 {
         ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
@@ -136,7 +154,7 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
 
         auto orbitSystem = SYSTEM_MANAGER->GetSystem<OrbitSystem>();
 
-		XMVECTOR start = XMVectorZero();
+        XMVECTOR start = XMVectorZero();
 
 
         static bool goals[4] = {};
@@ -149,7 +167,7 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                                 if (count >= 5)
                                 {
                                         start = playerTransform->transform.translation +
-                                                         2.0f * playerTransform->transform.GetForward();
+                                                2.0f * playerTransform->transform.GetForward();
 
                                         XMVECTOR dir = orbitSystem->GoalPositions[i] - start;
 
@@ -180,21 +198,31 @@ void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
         float      distance = MathLibrary::CalulateVectorLength(dir);
         XMVECTOR   scale    = XMVectorSet(width, 1.0f, distance, 1.0f);
         FTransform transform;
-        transform.translation        = start;
-        transform.rotation           = FQuaternion::LookAt(XMVector3Normalize(dir));
-        transform.scale              = scale;
-        it.first->second.transform   = transform.CreateMatrix();
-        it.first->second.segments    = length / m_SplineLengthPerOrb;
-        it.first->second.spiralCount = waveCount;
-        it.first->second.maxHeight   = heightvar;
-        it.first->second.color       = color;
-        it.first->second.current     = 0;
+        transform.translation          = start;
+        transform.rotation             = FQuaternion::LookAt(XMVector3Normalize(dir));
+        transform.scale                = scale;
+        it.first->second.transform     = transform.CreateMatrix();
+        it.first->second.segments      = length / m_SplineLengthPerOrb;
+        it.first->second.spiralCount   = waveCount;
+        it.first->second.maxHeight     = heightvar;
+        it.first->second.color         = color;
+        it.first->second.current       = 0;
+        it.first->second.shouldDestroy = false;
         it.first->second.spawnTimer = it.first->second.spawnCD = m_SplineSpawnCD;
         XMVECTOR dummy;
         it.first->second.BakeNextPointOnSpline(dummy, dummy, dummy);
         it.first->second.current = 0;
         m_ClusterCounter++;
 }
+
+void SpeedBoostSystem::DestroySpline(int SplineID, int start)
+{
+        SplineCluster& toDelete = m_SplineClusterSpawners.at(SplineID);
+        toDelete.shouldDestroy  = true;
+        toDelete.current        = start;
+        toDelete.deleteIndex    = 0;
+}
+
 
 void SpeedBoostSystem::OnPreUpdate(float deltaTime)
 {}
@@ -310,14 +338,14 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 }
                 for (auto& splineComp : m_HandleManager->GetActiveComponents<SpeedboostSplineComponent>())
                 {
-                        int                        index             = splineComp.index;
-                        int                        clusterID         = splineComp.clusterID;
+                        int index     = splineComp.index;
+                        int clusterID = splineComp.clusterID;
 
                         auto clusterIt = m_SplineClusterSpawners.find(clusterID);
 
 
                         XMVECTOR pos = splineComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
-						clusterIt->second.pointPositions[index] = pos;
+                        clusterIt->second.pointPositions[index] = pos;
 
                         float distance = MathLibrary::CalulateDistance(playerTransform->transform.translation, pos);
 
@@ -439,32 +467,71 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         {
                                 playerController->SetUseGravity(true);
                                 bIsLatchedToSpline = false;
+
+                                DestroySpline(latchedSplineComp->clusterID, latchedSplineComp->index);
                         }
                 }
                 else
                 {
-                        //playerController->SetUseGravity(true);
+                        playerController->SetUseGravity(true);
                         bIsLatchedToSpline = false;
                 }
         }
 
-        for (auto& it : m_SplineClusterSpawners)
+        for (auto it = m_SplineClusterSpawners.begin(); it != m_SplineClusterSpawners.end();)
         {
-                if (it.second.current <= it.second.segments)
+                if (it->second.shouldDestroy == false)
                 {
-                        if (it.second.spawnTimer <= 0.0f)
+                        if (it->second.current <= it->second.segments)
                         {
-                                it.second.spawnTimer = it.second.spawnCD;
-                                bool head            = it.second.current <= 1;
-                                bool tail            = it.second.current == it.second.segments;
+                                if (it->second.spawnTimer <= 0.0f)
+                                {
+                                        it->second.spawnTimer = it->second.spawnCD;
+                                        bool head             = it->second.current <= 1;
+                                        bool tail             = it->second.current == it->second.segments;
 
-                                SpawnSplineOrb(it.second, it.first, tail, head);
-                        }
-                        else
-                        {
-                                it.second.spawnTimer -= deltaTime;
+                                        SpawnSplineOrb(it->second, it->first, tail, head);
+                                }
+                                else
+                                {
+                                        it->second.spawnTimer -= deltaTime;
+                                }
                         }
                 }
+                else
+                {
+                        size_t size = it->second.splineComponentList.size();
+                        int    next = it->second.current + it->second.deleteIndex;
+                        int    prev = it->second.current - it->second.deleteIndex;
+
+                        bool done = true;
+
+                        if (next < size)
+                        {
+                                SpeedboostSplineComponent* comp =
+                                    it->second.splineComponentList[next].Get<SpeedboostSplineComponent>();
+                                RequestDestroySplineOrb(comp);
+                                done = false;
+                        }
+
+                        if (prev >= 0 && prev != next)
+                        {
+                                SpeedboostSplineComponent* comp =
+                                    it->second.splineComponentList[prev].Get<SpeedboostSplineComponent>();
+                                RequestDestroySplineOrb(comp);
+                                done = false;
+                        }
+
+                        it->second.deleteIndex++;
+                        if (done)
+                        {
+                                int id = it->first;
+                                ++it;
+                                m_SplineClusterSpawners.erase(id);
+                                continue;
+                        }
+                }
+                ++it;
         }
 
         if (m_EnableRandomSpawns && speedboostCount < m_MaxSpeedBoosts)
