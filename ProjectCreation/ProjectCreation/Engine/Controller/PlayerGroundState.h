@@ -16,7 +16,7 @@ class PlayerGroundState : public IPlayerControllerState
                 m_SpeedboostTimer = m_SpeedboostDuration;
         }
 
-        bool  bUseGravity                 = true;
+        bool  bUseGravity                 = false;
         float m_SpeedboostTimer           = 0.0f;
         float m_SpeedboostDuration        = 3.0f;
         float m_SpeedboostTransitionSpeed = 1.0f;

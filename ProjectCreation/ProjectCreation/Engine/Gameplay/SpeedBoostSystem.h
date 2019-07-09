@@ -42,7 +42,6 @@ class SpeedBoostSystem : public ISystem
 
         void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
 
-
         bool m_EnableRandomSpawns = false;
 
         void               UpdateSpeedboostEvents();

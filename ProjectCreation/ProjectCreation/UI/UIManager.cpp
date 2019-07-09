@@ -366,16 +366,16 @@ void UIManager::Initialize(native_handle_type hwnd)
                           false);
 
         // (Spacebar, Q, and E)"
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          L"../Assets/2d/Text/calibri.spritefont",
-                          "(Spacebar, Q, and E)",
-                          0.06f,
-                          0.0f,
-                          0.2f,
-                          true,
-                          false);
+        //instance->AddText(instance->m_RenderSystem->m_Device,
+        //                  instance->m_RenderSystem->m_Context,
+        //                  E_MENU_CATEGORIES::MainMenu,
+        //                  L"../Assets/2d/Text/calibri.spritefont",
+        //                  "(Spacebar, Q, and E)",
+        //                  0.06f,
+        //                  0.0f,
+        //                  0.2f,
+        //                  true,
+        //                  false);
 
 
         // Pause Menu

@@ -21,7 +21,7 @@ void PlayerCinematicState::Enter()
         m_InitTransforms.resize(n);
         for (size_t i = 0; i < n; ++i)
         {
-                auto transformComp = m_TransformComponents[i].Get<TransformComponent>();
+                auto transformComp  = m_TransformComponents[i].Get<TransformComponent>();
                 m_InitTransforms[i] = transformComp->transform;
         }
 
@@ -53,6 +53,11 @@ void PlayerCinematicState::Update(float deltaTime)
                         UpdateLookAt(deltaTime);
                         break;
                 }
+                case E_TRANSITION_MODE::Reveal:
+                {
+                        UpdateReveal(deltaTime);
+                        break;
+                }
                 default:
                 {
                         assert(false && "invalid transition mode requested");
@@ -70,7 +75,7 @@ void PlayerCinematicState::UpdateSimple(float deltaTime)
         size_t n = m_TransformComponents.size();
         for (size_t i = 0; i < n; ++i)
         {
-                FTransform currentTransform;
+                FTransform          currentTransform;
                 TransformComponent* transformComp = m_TransformComponents[i].Get<TransformComponent>();
 
                 currentTransform = FTransform::Lerp(m_InitTransforms[i], m_EndTransforms[i], std::min(1.0f, m_currAlpha));
@@ -103,6 +108,17 @@ void PlayerCinematicState::UpdateLookAt(float deltaTime)
 
         playerTransformComponent->transform.rotation =
             FQuaternion::Lerp(_playerInitialLookAtRot, desiredRotation, std::min(1.0f, m_lookAtAlpha));
+}
+
+void PlayerCinematicState::UpdateReveal(float deltaTime)
+{
+        m_RevealRadius += 1.0f;
+        GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_RevealRadius, deltaTime);
+        if (GEngine::Get()->m_PlayerRadius >= 250.0f)
+        {
+                _playerController->SetCollectedPlanetCount(0);
+                m_currAlpha = 1.0f;
+        }
 }
 
 void PlayerCinematicState::Exit()

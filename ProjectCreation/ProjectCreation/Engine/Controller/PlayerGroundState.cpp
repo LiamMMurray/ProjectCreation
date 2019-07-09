@@ -21,15 +21,26 @@ void PlayerGroundState::Enter()
 
 void PlayerGroundState::Update(float deltaTime)
 {
+        // Dev Cheat to test Reveal
+        if (GCoreInput::GetKeyState(KeyCode::N) == KeyState::DownFirst)
+        {
+                _playerController->SetCollectedPlanetCount(3);
+        }
+        // Check if the player has collected the three planets
+        if (_playerController->GetCollectedPlanetCount() >= 3)
+        {
+                _playerController->RequestCinematicReveal();
+        }
+
         XMVECTOR currentVelocity = _playerController->GetCurrentVelocity();
 
         currentVelocity += _playerController->GetJumpForce();
-        //currentVelocity += _playerController->GetPlayerGravity();
+        // currentVelocity += _playerController->GetPlayerGravity();
 
-        if (GCoreInput::GetKeyState(KeyCode::L) == KeyState::DownFirst) 
-		{
+        if (GCoreInput::GetKeyState(KeyCode::L) == KeyState::DownFirst)
+        {
                 ConsoleWindow::PrintVector(currentVelocity, "Current Velocity");
-		}
+        }
 
         // Get Delta Time
         float totalTime = (float)GEngine::Get()->GetTotalTime();

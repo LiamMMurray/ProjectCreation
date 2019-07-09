@@ -130,7 +130,6 @@ void SpeedBoostSystem::RequestDestroySpeedboost(SpeedboostComponent* speedComp)
         // speedComp->GetHandle().Free();
 }
 
-
 void SpeedBoostSystem::UpdateSpeedboostEvents()
 {
         ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
@@ -155,6 +154,9 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
 
         auto orbitSystem = SYSTEM_MANAGER->GetSystem<OrbitSystem>();
 
+		XMVECTOR start = XMVectorZero();
+
+
         static bool goals[4] = {};
         {
                 for (int i = 0; i < 3; ++i)
@@ -164,7 +166,7 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                                 int count = controllerSystem->GetOrbCount(i);
                                 if (count >= 5)
                                 {
-                                        XMVECTOR start = playerTransform->transform.translation +
+                                        start = playerTransform->transform.translation +
                                                          2.0f * playerTransform->transform.GetForward();
 
                                         XMVECTOR dir = orbitSystem->GoalPositions[i] - start;
@@ -228,7 +230,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
         auto playerController = static_cast<PlayerController*>(
             SYSTEM_MANAGER->GetSystem<ControllerSystem>()->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]);
 
-        GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_PlayerEffectRadius, deltaTime);
+        // GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_PlayerEffectRadius, deltaTime);
 
         XMVECTOR flatPlayerForward;
         {
@@ -470,9 +472,9 @@ void SpeedBoostSystem::OnPostUpdate(float deltaTime)
 
 void SpeedBoostSystem::OnInitialize()
 {
-        m_HandleManager   = GEngine::Get()->GetHandleManager();
-        m_SystemManager   = GEngine::Get()->GetSystemManager();
-        m_ResourceManager = GEngine::Get()->GetResourceManager();
+        m_HandleManager    = GEngine::Get()->GetHandleManager();
+        m_SystemManager    = GEngine::Get()->GetSystemManager();
+        m_ResourceManager  = GEngine::Get()->GetResourceManager();
         auto baseMatHandle = m_ResourceManager->LoadMaterial("GlowSpeedboostBase");
         for (int i = 0; i < E_LIGHT_ORBS::COUNT; ++i)
         {
@@ -480,7 +482,7 @@ void SpeedBoostSystem::OnInitialize()
                 auto mat    = m_ResourceManager->GetResource<Material>(handle);
                 speedboostMaterials[i] = handle;
                 XMStoreFloat3(&mat->m_SurfaceProperties.emissiveColor,
-                             2.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[i]));
+                              2.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[i]));
         }
 
         MazeGenerator mazeGenerator;

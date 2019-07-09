@@ -11,8 +11,8 @@ class OrbitSystem : public ISystem
     private:
         HandleManager* m_HandleManager;
 
-        const char* materialNames[3] = {"GlowMatPlanet01", "GlowMatPlanet02", "GlowMatPlanet03"};
-        int         m_Stage          = 0;
+        const char* materialNames[3]       = {"GlowMatPlanet01", "GlowMatPlanet02", "GlowMatPlanet03"};
+        int         m_Stage                = 0;
         void        CreateGoal(int color, DirectX::XMVECTOR position);
 
         DirectX::XMVECTORF32 orbitCenter = {0.0f, 1000.0f, 0.0f, 1.0f};
