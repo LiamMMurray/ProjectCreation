@@ -624,8 +624,19 @@ void UIManager::Initialize(native_handle_type hwnd)
                 }
         });
 
-        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e){
-                
+		//Window Mode
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e){ 
+        	
+            if (instance->m_IsFullscreen == false)
+            {
+                    instance->m_IsFullscreen = true;
+            }
+            else
+            {
+                    instance->m_IsFullscreen = false;
+            }
+            instance->m_RenderSystem->SetFullscreen(instance->m_IsFullscreen);
+
         });
 
         // Level Select
@@ -702,6 +713,13 @@ void UIManager::Update()
                                 instance->Unpause();
                         }
                 }
+        }
+
+        if (instance->m_FirstFull == true)
+        {
+                instance->m_RenderSystem->SetFullscreen(true);
+                instance->m_FirstFull = false;
+                instance->m_IsFullscreen = true;
         }
 
         for (auto& it : instance->m_AllSprites)
