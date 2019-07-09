@@ -22,7 +22,7 @@ cbuffer TerrainInfoBuffer : register(b4)
         float2 screenDimensions;
         float  triangleSize;
         float  cellSizeWorld;
-        // float  gWaterLevel;
+        float  gTerrainAlpha;
 };
 
 Texture2D HeightMap : register(t9);

@@ -39,10 +39,10 @@ float4 main(DomainOutput pIn) : SV_TARGET
         float3 dpdx = ddx(pIn.PosWS);
         float3 dpdy = ddy(pIn.PosWS);
 
-        float leftY   = 2625.f * HeightMap.SampleLevel(sampleTypeWrap, leftTex, 0).r;
-        float rightY  = 2625.f * HeightMap.SampleLevel(sampleTypeWrap, rightTex, 0).r;
-        float bottomY = 2625.f * HeightMap.SampleLevel(sampleTypeWrap, bottomTex, 0).r;
-        float topY    = 2625.f * HeightMap.SampleLevel(sampleTypeWrap, topTex, 0).r;
+        float leftY   = gTerrainAlpha * 2625.f * HeightMap.SampleLevel(sampleTypeWrap, leftTex, 0).r;
+        float rightY  = gTerrainAlpha * 2625.f * HeightMap.SampleLevel(sampleTypeWrap, rightTex, 0).r;
+        float bottomY = gTerrainAlpha * 2625.f * HeightMap.SampleLevel(sampleTypeWrap, bottomTex, 0).r;
+        float topY    = gTerrainAlpha * 2625.f * HeightMap.SampleLevel(sampleTypeWrap, topTex, 0).r;
 
         float3 TangentWS  = normalize(float3(2.0f * gWorldCellSpace, rightY - leftY, 0.0f));
         float3 BinormalWS = normalize(float3(0.0f, bottomY - topY, -2.0f * gWorldCellSpace));
@@ -70,13 +70,13 @@ float4 main(DomainOutput pIn) : SV_TARGET
 
 
         {
-                normalSample   = lerp(normalA, normalB, blendAlpha)*2.0f - 1.0f;
+                normalSample   = lerp(normalA, normalB, blendAlpha) * 2.0f - 1.0f;
                 normalSample.z = sqrt(1 - normalSample.x * normalSample.x - normalSample.y * normalSample.y);
                 normalSample   = normalize(normalSample);
                 surface.normal = TangentWS * normalSample.x + BinormalWS * normalSample.y + NormalWS * normalSample.z;
         }
         surface.normal = normalize(surface.normal);
-        //return surface.normal.xyzz;
+        // return surface.normal.xyzz;
         float alpha = 1.f;
 
         float4 roughnessSample = Roughness.Sample(sampleTypeWrap, pIn.Tex2).rgba;
@@ -84,7 +84,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
         // Remapping roughness to prevent errors on normal distribution
         surface.roughness = max(surface.roughness, 0.08f);
 
-		surface.ambient = lerp(roughnessSample.b, roughnessSample.a, blendAlpha);
+        surface.ambient = lerp(roughnessSample.b, roughnessSample.a, blendAlpha);
 
         float3 reflectionVector = reflect(-viewWS, surface.normal);
 
@@ -117,7 +117,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
                 color += IBL(surface, viewWS, specColor, diffuse, specular, integration);
         }
 
-        return float4(color, 1.0f);
+        //return float4(color, 1.0f);
 
         float maskA     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 45.0f + _Time * 0.01f * float2(1.0f, 0.0f)).z;
         float maskB     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 40.0f + _Time * 0.01f * float2(-1.0f, 0.0f)).z;
@@ -146,7 +146,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
 
         clip((1 - bandA + veinsEmissive) < 0.01f ? -1 : 1);
 
-        color += surface.emissiveColor + band + veinsEmissive;
+        color += surface.emissiveColor + band;
 
         return float4(color, 1.0f);
 }

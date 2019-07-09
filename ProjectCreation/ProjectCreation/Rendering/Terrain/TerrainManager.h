@@ -1,8 +1,8 @@
 #pragma once
 
 #include <DirectXMath.h>
-#include "..//..//Utility/ForwardDeclarations/D3DNativeTypes.h"
 #include "..//..//Engine/ResourceManager/IResource.h"
+#include "..//..//Utility/ForwardDeclarations/D3DNativeTypes.h"
 class RenderSystem;
 
 struct ID3D11HullShader;
@@ -21,6 +21,8 @@ struct CTerrainInfoBuffer
         DirectX::XMFLOAT2 gScreenDimensions;
         float             gTriangleSize;
         float             gCellSizeWorld;
+        float             gTerrainAlpha;
+        DirectX::XMFLOAT3 padding;
 };
 
 struct TerrainVertex
@@ -82,8 +84,8 @@ class TerrainManager
 
         ResourceHandle mTextureHandles[6];
 
-        float scale = 0.02f;
-        float groundOffset = 1.0f;
+        float scale        = 0.06f;
+        float groundOffset = 3.0f;
 
         DirectX::XMMATRIX TerrainMatrix;
         DirectX::XMMATRIX InverseTerrainMatrix;
