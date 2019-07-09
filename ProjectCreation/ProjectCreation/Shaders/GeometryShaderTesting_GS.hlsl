@@ -1,6 +1,7 @@
 struct FParticleGPU
 {
         float4 position;
+        float4 prevPos;
         float4 color;
         float3 velocity;
         float2 uv;

@@ -5,6 +5,7 @@ static const unsigned int gMaxParticleCount = 2 << 16;
 struct FParticleGPU
 {
         float4 position;
+        float4 prevPos;
         float4 color;
         float3 velocity;
         float2 uv;
@@ -46,14 +47,15 @@ StructuredBuffer<FEmitterGPU>      EmitterBuffer : register(t0);
 RWStructuredBuffer<FSegmentBuffer> SegmentBuffer : register(u1);
 
 [numthreads(100, 1, 1)] void main(uint3 DTid
-                                     : SV_DispatchThreadID) {
+                                  : SV_DispatchThreadID) {
         int id = DTid.x;
 
         if (ParticleBuffer[id].time <= 0.0f)
         {
                 ParticleBuffer[id].time = EmitterBuffer[0].accumulatedTime;
+                float4 startPos         = EmitterBuffer[0].position;
 
-                float alphaA = rand(_Time * id/0.1f);
+                float alphaA = rand(_Time * id / 0.1f);
                 float alphaB = rand(alphaA);
                 float alphaC = rand(alphaB);
 
@@ -66,13 +68,17 @@ RWStructuredBuffer<FSegmentBuffer> SegmentBuffer : register(u1);
 
                 ParticleBuffer[id].color = EmitterBuffer[0].color;
 
-                ParticleBuffer[id].position =
-                    float4(_EyePosition + ParticleBuffer[id].velocity * 1.0f, 1.0f); // EmitterBuffer[0].position;
+                ParticleBuffer[id].position = float4(_EyePosition + ParticleBuffer[id].velocity * 1.0f, 1.0f);
+        }
+        else if (ParticleBuffer[id].time <=  5.0f) // change color in a certain, also to keep the previous color for a certain amount of time
+        {
+                ParticleBuffer[DTid.x].color = float4(1.0f, 1.0f, 1.0f, 1.0f);
+                ParticleBuffer[DTid.x].color.w -= (_Time / 10.0f);
         }
         else
         {
                 ParticleBuffer[DTid.x].time -= _DeltaTime;
-                //ParticleBuffer[DTid.x].position += 1.0f*float4(ParticleBuffer[DTid.x].velocity * _DeltaTime, 0.0f);
-                ParticleBuffer[DTid.x].color.w -= 0.1f;
+               
+                // ParticleBuffer[DTid.x].position += 1.0f*float4(ParticleBuffer[DTid.x].velocity * _DeltaTime, 0.0f);
         }
 }

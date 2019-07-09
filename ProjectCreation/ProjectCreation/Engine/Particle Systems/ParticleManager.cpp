@@ -110,7 +110,6 @@ void ParticleManager::init()
 {
         // data set up //shoulde be ab;e to set the particle data somewhere else
         m_EnitterInfo                       = new FEmitterGPU;
-        FEmitterGPU* emitterData            = new FEmitterGPU[];
 
         m_EnitterInfo->currentParticleCount = 0;
         m_EnitterInfo->active               = true;
@@ -119,7 +118,7 @@ void ParticleManager::init()
         m_EnitterInfo->uv                   = {0.0f, 0.0f};
         m_EnitterInfo->minVelocity          = {-30.0f, -0.0f, -30.0f};
         m_EnitterInfo->maxVelocity          = {30.0f, 20.0f, 30.0f};
-        m_EnitterInfo->accumulatedTime      = 10.0f;
+        m_EnitterInfo->accumulatedTime      = 15.0f;
 
         m_EmitterCpuInfo               = new FEmitterCPU;
         m_EmitterCpuInfo->maxParticles = 1000;
@@ -309,7 +308,7 @@ EntityHandle ParticleManager::CreateEmitter(ParticleData::FEmitterCPU& emitter)
 
 void ParticleManager::AddEmitter(ParticleData::FEmitterGPU& emitter)
 {
-        m_Emitters.push_back(emitter);
+        //m_Emitters.push_back(emitter);
 }
 
 void ParticleManager::SetParticleInfo(ParticleData::FParticleGPU* particleInfo)

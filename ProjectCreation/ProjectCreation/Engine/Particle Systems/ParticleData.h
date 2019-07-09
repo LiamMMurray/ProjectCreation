@@ -49,6 +49,7 @@ namespace ParticleData
         struct FParticleGPU
         {
                 DirectX::XMFLOAT4 position;
+                DirectX::XMFLOAT4 prevPos;
                 DirectX::XMFLOAT4 color;
                 DirectX::XMFLOAT3 velocity;
                 DirectX::XMFLOAT2 texture;
