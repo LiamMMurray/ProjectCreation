@@ -6,6 +6,7 @@ struct alignas(16) CTransformBuffer
 {
         DirectX::XMMATRIX ViewProjection;
         DirectX::XMMATRIX World;
+        DirectX::XMMATRIX Projection;
 };
 
 struct alignas(16) CSceneInfoBuffer

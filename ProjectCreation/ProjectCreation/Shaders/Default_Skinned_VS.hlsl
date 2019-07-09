@@ -1,5 +1,5 @@
 #include "DefaultPixelIn.hlsl"
-
+#include "MVPBuffer.hlsl"
 
 Texture2D Mask1 : register(t7);
 Texture2D Mask2 : register(t8);
@@ -17,11 +17,6 @@ struct INPUT_VERTEX
         float4 Weights : WEIGHTS;
 };
 
-cbuffer MVPBuffer : register(b0)
-{
-        matrix ViewProjection;
-        matrix World;
-};
 
 cbuffer AnimationBuffer : register(b3)
 {

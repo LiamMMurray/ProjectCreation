@@ -11,7 +11,8 @@ namespace EntityFactory
         EntityHandle CreateStaticMeshEntity(const char*      staticMeshName,
                                             const char*      materialName,
                                             ComponentHandle* outTransformHandle  = nullptr,
-                                            ComponentHandle* outStaticMeshHandle = nullptr);
+                                            ComponentHandle* outStaticMeshHandle = nullptr,
+                                            bool             wrapping            = true);
 
         EntityHandle CreateSkeletalMeshEntity(const char*              skeletalMeshName,
                                               const char*              materialName,

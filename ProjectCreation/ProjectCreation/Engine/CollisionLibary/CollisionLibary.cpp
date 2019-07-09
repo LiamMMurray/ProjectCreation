@@ -29,6 +29,17 @@ FContactPoint CollisionLibary::CalculateSphereToSphereContactPoint(DirectX::XMVE
         return output;
 }
 
+bool CollisionLibary::PointInCapsule(const DirectX::XMVECTOR& point, const Shapes::FCapsule& capsule)
+{
+        XMVECTOR p        = MathLibrary::GetClosestPointFromLineClamped(capsule.startPoint, capsule.endPoint, point);
+        float    distance = MathLibrary::CalulateDistance(p, point);
+
+        if (distance <= capsule.radius)
+                return true;
+
+        return false;
+}
+
 void CollisionLibary::CreateFrustum(Shapes::Frustum& frustum, DirectX::XMMATRIX view, DirectX::XMMATRIX projection)
 {
         std::array<XMVECTOR, 8> points;

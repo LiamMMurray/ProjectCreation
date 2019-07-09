@@ -1,8 +1,4 @@
-cbuffer MVPBuffer : register(b0)
-{
-        matrix ViewProjection;
-        matrix World;
-};
+#include "MVPBuffer.hlsl"
 
 struct INPUT_PIXEL
 {

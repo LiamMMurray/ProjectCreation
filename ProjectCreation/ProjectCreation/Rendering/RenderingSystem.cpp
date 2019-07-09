@@ -1,5 +1,6 @@
 #include "RenderingSystem.h"
 #include <iostream>
+#include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
 #include "../Engine/MathLibrary/MathLibrary.h"
 #include "../FileIO/FileIO.h"
@@ -36,6 +37,7 @@
 #include "Components/DirectionalLightComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Terrain/TerrainManager.h"
 
 #include "../Engine/MathLibrary/ColorConstants.h"
 #include "../Utility/MemoryLeakDetection.h"
@@ -138,7 +140,7 @@ void RenderSystem::CreateDeviceAndSwapChain()
         sd.SampleDesc.Count   = 1; // Don't use multi-sampling.
         sd.SampleDesc.Quality = 0;
         sd.BufferUsage        = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        sd.BufferCount        = 2;
+        sd.BufferCount        = 3;
         sd.SwapEffect         = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
         sd.Flags              = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; //| DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
@@ -157,7 +159,7 @@ void RenderSystem::CreateDeviceAndSwapChain()
         ID3D11Debug* debug = nullptr;
         hr                 = m_Device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&debug));
         assert(SUCCEEDED(hr));
-        debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+        //debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
         debug->Release();
 #endif
 
@@ -269,6 +271,9 @@ void RenderSystem::CreateRasterizerStates()
 {
         CD3D11_RASTERIZER_DESC desc(D3D11_FILL_SOLID, D3D11_CULL_BACK, FALSE, 0, 0.f, 0.f, TRUE, FALSE, FALSE, FALSE);
         m_Device->CreateRasterizerState(&desc, &m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
+
+        desc.FillMode = D3D11_FILL_WIREFRAME;
+        m_Device->CreateRasterizerState(&desc, &m_DefaultRasterizerStates[E_RASTERIZER_STATE::WIREFRAME]);
 }
 
 void RenderSystem::CreateInputLayouts()
@@ -477,7 +482,7 @@ void RenderSystem::CreateBlendStates()
 
 void RenderSystem::CreateDepthStencilStates()
 {
-        CD3D11_DEPTH_STENCIL_DESC desc = CD3D11_DEPTH_STENCIL_DESC();
+        CD3D11_DEPTH_STENCIL_DESC desc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
         desc.DepthFunc                 = D3D11_COMPARISON_LESS_EQUAL;
         desc.DepthEnable               = true;
         m_Device->CreateDepthStencilState(&desc, &m_DepthStencilStates[E_DEPTH_STENCIL_STATE::BASE_PASS]);
@@ -668,6 +673,7 @@ void RenderSystem::OnPreUpdate(float deltaTime)
 
         m_CachedMainInvViewMatrix        = mainTransform->transform.CreateMatrix();
         XMMATRIX view                    = XMMatrixInverse(nullptr, m_CachedMainInvViewMatrix);
+        m_CachedMainViewMatrix           = view;
         m_CachedMainViewProjectionMatrix = view * m_CachedMainProjectionMatrix;
 
         mainCamera->_cachedView           = view;
@@ -676,6 +682,7 @@ void RenderSystem::OnPreUpdate(float deltaTime)
 
         XMStoreFloat3(&m_ConstantBuffer_SCENE.eyePosition, mainTransform->transform.translation);
         m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(m_CachedMainViewProjectionMatrix);
+        m_ConstantBuffer_MVP.Projection     = XMMatrixTranspose(m_CachedMainProjectionMatrix);
 
         /** Prepare draw calls **/
         m_TransluscentDraws.clear();
@@ -785,11 +792,13 @@ void RenderSystem::OnUpdate(float deltaTime)
         viewport.TopLeftX = 0;
         viewport.TopLeftY = 0;
 
-        m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
+
         m_Context->RSSetViewports(1, &viewport);
 
         m_Context->VSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
         m_Context->PSSetConstantBuffers(0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, m_BasePassConstantBuffers);
+        m_Context->HSSetConstantBuffers(0, 2, m_BasePassConstantBuffers);
+        m_Context->DSSetConstantBuffers(0, 2, m_BasePassConstantBuffers);
 
         /** Get Directional Light**/
         {
@@ -822,10 +831,17 @@ void RenderSystem::OnUpdate(float deltaTime)
         float blendFactor[] = {0.75f, 0.75f, 0.75f, 1.0f};
         UINT  sampleMask    = 0xffffffff;
 
-        /** Render opaque meshes **/
-        m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
+        if (GCoreInput::GetKeyState(KeyCode::Shift) == KeyState::Down)
+                m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::WIREFRAME]);
+        /*** Render Terrain Start ***/
         m_Context->OMSetDepthStencilState(m_DepthStencilStates[E_DEPTH_STENCIL_STATE::BASE_PASS], 0);
         m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Opaque], 0, sampleMask);
+        TerrainManager::Update(deltaTime);
+        /*** Render Terrain End ***/
+
+        m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        /** Render opaque meshes **/
         for (size_t i = 0, n = m_OpaqueDraws.size(); i < n; ++i)
         {
                 if (m_OpaqueDraws[i].meshType == FDraw::EDrawType::Static)
@@ -862,6 +878,7 @@ void RenderSystem::OnUpdate(float deltaTime)
                         DrawSkeletalMesh(mesh, mat, &m_TransluscentDraws[i].mtx, &meshComp->m_Skeleton);
                 }
         }
+        m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
 
         ParticleManager::Update(deltaTime);
 
@@ -938,6 +955,7 @@ void RenderSystem::OnInitialize()
 
         // UI Manager Initialize
         UIManager::Initialize(m_WindowHandle);
+        TerrainManager::Initialize(this);
         ParticleManager::Initialize();
 }
 
@@ -1017,6 +1035,8 @@ void RenderSystem::OnShutdown()
         }
         // UI Manager Shutdown
         UIManager::Shutdown();
+
+        TerrainManager::Shutdown();
 
         ParticleManager::Shutdown();
 }

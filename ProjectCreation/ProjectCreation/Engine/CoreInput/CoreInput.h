@@ -48,7 +48,7 @@ enum class KeyCode
         Control = 0x11,
         Tab     = 0x09,
         Esc     = 0x1B,
-		LeftShift = 0xA0,
+        Shift   = 0x10,
         A       = 0x41,
         B,
         C,
@@ -101,7 +101,9 @@ enum class KeyCode
         Left  = 0x25,
         Up,
         Right,
-        Down
+        Down,
+		Any = -2,
+		None = -1
 };
 
 enum class MouseCode

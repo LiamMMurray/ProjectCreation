@@ -7,48 +7,43 @@
 
 #include "../../ECS/HandleManager.h"
 #include "../../ECS/SystemManager.h"
+#include "..//ResourceManager/IResource.h"
 
 #include "LightOrbColors.h"
 #include "SpeedboostComponent.h"
 #include "SplineCluster.h"
 
 class TransformComponent;
+class ResourceManager;
 class SpeedboostComponent;
 
 class SpeedBoostSystem : public ISystem
 {
     private:
-        HandleManager* m_HandleManager;
-        SystemManager*    m_SystemManager;
+        HandleManager*   m_HandleManager;
+        SystemManager*   m_SystemManager;
+        ResourceManager* m_ResourceManager;
 
-        static constexpr uint32_t m_MaxSpeedBoosts = 30;
-        unsigned int              randomOrbCount   = 0;
+        static constexpr uint32_t m_MaxSpeedBoosts = 10;
 
-		float                      flyTimer = 0.0f;
-		float                      flyCD = 2.0f;
-        std::vector<SplineCluster> m_SplineClusterSpawners;
+        std::unordered_map<int, SplineCluster> m_SplineClusterSpawners;
+        int                                    m_ClusterCounter = 0;
 
         static constexpr int PathCount = 9;
 
         std::vector<std::vector<DirectX::XMVECTOR>> m_Paths;
 
-        const char* materialNames[4] = {"GlowSpeedboost02", "GlowSpeedboost01", "GlowSpeedboost03", "GlowSpeedboost04"};
+        ResourceHandle speedboostMaterials[E_LIGHT_ORBS::COUNT]  = {};
+        std::string speedboostMaterialNames[E_LIGHT_ORBS::COUNT] = {"SpeedboostR", "SpeedboostG", "SpeedboostB", "SpeedboostW"};
 
-        void         SpawnRandomSpeedBoost();
-        void         SpawnSplineSpeedBoost(const SplineCluster& cluster,
-                                           unsigned int         index,
-                                           int                  color,
-                                           bool                 tail = false,
-                                           bool                 head = false);
-        EntityHandle SpawnSpeedBoost(const DirectX::XMVECTOR& pos, int color);
+        EntityHandle SpawnSpeedOrb();
+        EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
+        EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
 
-        float m_PlayerEffectRadius    = 0.0f;
-        float m_SpawnBoostTimer       = 0.0f;
-        float m_SpawnBoostCD          = 0.2f;
-        float m_BoostLifespan         = 8.0f;
-        float m_BoostLifespanVariance = 2.0f;
-        float m_BoostShrinkSpeed      = m_BoostRadius;
-        float m_SplineLengthPerOrb    = 0.8f;
+        void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
+
+        ComponentHandle latchedSplineHandle;
+        bool            bIsLatchedToSpline;
 
         bool m_EnableRandomSpawns = false;
 
@@ -58,9 +53,31 @@ class SpeedBoostSystem : public ISystem
         void CreateRandomPath(const DirectX::XMVECTOR& start,
                               const DirectX::XMVECTOR& end,
                               int                      color,
-                              float                    width     = 3.0f,
-                              unsigned int             waveCount = 2,
-                              float                    heightvar = 0.3f);
+                              float                    width     = 50.0f,
+                              unsigned int             waveCount = 5,
+                              float                    heightvar = 1.6f);
+
+        float m_PlayerEffectRadius    = 200.0f;
+        float m_SpawnBoostTimer       = 0.0f;
+        float m_SpawnBoostCD          = 0.1f;
+        float m_SplineSpawnCD          = 0.05f;
+        float m_BoostLifespan         = 25.0f;
+        float m_BoostLifespanVariance = 2.0f;
+        float m_BoostShrinkSpeed      = m_BoostRadius;
+
+        static constexpr float m_SplineLengthPerOrb       = 1.5f;
+        static constexpr float m_SplineLatchRadius        = 0.2f;
+        static constexpr float m_SplineFallRadius         = 0.3f;
+        static constexpr float m_MaxSpawnDistance         = 15.0f;
+        static constexpr float m_MinSpawnDistance         = 1.0f;
+        static constexpr float m_SpawnAngle               = DirectX::XMConvertToRadians(110.0f);
+        static constexpr float m_DespawnDistanceOffset    = 5.0f;
+        static constexpr float m_BoostRadius              = 0.1f;
+        static constexpr float m_PullSearchRadius         = 1.0f;
+        static constexpr float m_SplineAttractionForceMin = 0.0f;
+        static constexpr float m_SplineAttractionForceMax = 1.5f;
+        static constexpr float m_SplineHeightOffset       = 0.06f;
+
 
     protected:
         // Inherited via ISystem
@@ -73,6 +90,4 @@ class SpeedBoostSystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
-        static constexpr float m_MaxBoostDistance = 5.0f;
-        static constexpr float m_BoostRadius      = 0.03f;
 };

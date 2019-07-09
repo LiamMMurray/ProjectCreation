@@ -167,6 +167,7 @@ struct E_RASTERIZER_STATE
         enum
         {
                 DEFAULT = 0,
+                WIREFRAME,
                 COUNT
         };
 };
@@ -195,7 +196,7 @@ struct E_BLEND_STATE
         {
                 Opaque = 0,
                 Transluscent,
-				Additive,
+                Additive,
                 COUNT
         };
 };
@@ -214,7 +215,7 @@ struct E_DEPTH_STENCIL_STATE
         enum
         {
                 BASE_PASS,
-				TRANSLUSCENT,
+                TRANSLUSCENT,
                 COUNT
         };
 };
@@ -238,6 +239,7 @@ class RenderSystem : public ISystem
         friend class ResourceManager;
         friend class UIManager;
         friend class ParticleManager;
+        friend class TerrainManager;
 
         std::vector<FDraw> m_OpaqueDraws;
         std::vector<FDraw> m_TransluscentDraws;
@@ -307,6 +309,7 @@ class RenderSystem : public ISystem
         HandleManager*   m_HandleManager;
 
         DirectX::XMMATRIX m_CachedMainProjectionMatrix;
+        DirectX::XMMATRIX m_CachedMainViewMatrix;
         DirectX::XMMATRIX m_CachedMainViewProjectionMatrix;
         DirectX::XMMATRIX m_CachedMainInvProjectionMatrix;
         DirectX::XMMATRIX m_CachedMainInvViewMatrix;

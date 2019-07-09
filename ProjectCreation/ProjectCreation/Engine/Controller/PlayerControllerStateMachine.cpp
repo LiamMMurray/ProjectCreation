@@ -1,10 +1,10 @@
 #include "PlayerControllerStateMachine.h"
 #include "PlayerControllerState.h"
 
-void PlayerControllerStateMachine::Update(float deltaTime, TransformComponent* transformComp)
+void PlayerControllerStateMachine::Update(float deltaTime, FTransform transform)
 {
         IPlayerControllerState* pcState    = static_cast<IPlayerControllerState*>(m_Current);
-        pcState->_cachedTransformComponent = transformComp;
+        pcState->_cachedTransform       = transform;
 
         __super::Update(deltaTime);
 }

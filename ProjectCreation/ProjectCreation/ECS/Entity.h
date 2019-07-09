@@ -3,7 +3,7 @@
 #include <vector>
 #include <unordered_set>
 #include "IPoolElement.h"
-
+#include "ComponentHandle.h"
 
 struct Entity : IPoolElement
 {
@@ -12,7 +12,7 @@ struct Entity : IPoolElement
         static void           SSetMaxElements(NMemory::index max_elements);
         static NMemory::index SGetMaxElements();
 
-        NMemory::entity_component_container m_OwnedComponents;
+        entity_component_container m_OwnedComponents;
 
 		~Entity();
 };

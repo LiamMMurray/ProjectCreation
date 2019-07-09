@@ -1,6 +1,6 @@
 #include "MathLibrary.h"
+#include <assert.h>
 #include <random>
-#include<assert.h>
 using namespace DirectX;
 using namespace std;
 
@@ -12,6 +12,19 @@ uniform_real_distribution<float> distribution(0.0f, 1.0f);
 float MathLibrary::RandomFloatInRange(float min, float max)
 {
         return distribution(generator) * (max - min) + min;
+}
+
+DirectX::XMVECTOR MathLibrary::WrapPosition(const DirectX::XMVECTOR& pos,
+                                            const DirectX::XMVECTOR& min,
+                                            const DirectX::XMVECTOR& max)
+{
+        float y = XMVectorGetY(pos);
+
+        XMVECTOR firstMod  = XMVectorMod(pos - min, max - min);
+        XMVECTOR secondMod = XMVectorMod(max - min + firstMod, max - min);
+        XMVECTOR output    = min + secondMod;
+        output             = XMVectorSetY(output, y);
+        return XMVectorSetW(output, 1.0f);
 }
 
 void MathLibrary::OrthoNormalize(DirectX::XMVECTOR normal, DirectX::XMVECTOR& tangent)
@@ -61,8 +74,8 @@ void MathLibrary::TurnTo(DirectX::XMMATRIX& matrix, DirectX::XMVECTOR targetPosi
 }
 
 DirectX::XMVECTOR MathLibrary::GetClosestPointFromLineClamped(DirectX::XMVECTOR startPoint,
-                                                       DirectX::XMVECTOR endPoint,
-                                                       DirectX::XMVECTOR point)
+                                                              DirectX::XMVECTOR endPoint,
+                                                              DirectX::XMVECTOR point)
 {
         XMVECTOR output;
         XMVECTOR length       = XMVector3Normalize(endPoint - startPoint);
@@ -88,8 +101,8 @@ DirectX::XMVECTOR MathLibrary::GetClosestPointFromPlane(Shapes::FPlane plane, Di
 }
 
 DirectX::XMVECTOR MathLibrary::GetClosestPointFromLine(DirectX::XMVECTOR startPoint,
-                                                              DirectX::XMVECTOR endPoint,
-                                                              DirectX::XMVECTOR point)
+                                                       DirectX::XMVECTOR endPoint,
+                                                       DirectX::XMVECTOR point)
 {
         XMVECTOR output;
         XMVECTOR length       = XMVector3Normalize(endPoint - startPoint);
@@ -151,8 +164,7 @@ float MathLibrary::CalulateVectorLength(DirectX::XMVECTOR vector)
 
 float MathLibrary::VectorDotProduct(DirectX::XMVECTOR m, DirectX::XMVECTOR n)
 {
-        return ((XMVectorGetX(m) * XMVectorGetX(n)) + (XMVectorGetY(m) * XMVectorGetY(n)) +
-                (XMVectorGetZ(m) * XMVectorGetZ(n)));
+        return (XMVectorGetX(XMVector3Dot(m, n)));
 }
 
 float MathLibrary::ManhattanDistance(Shapes::FAabb& a, Shapes::FAabb& b)
@@ -174,11 +186,31 @@ DirectX::XMVECTOR MathLibrary::GetRandomPointInRadius(const DirectX::XMVECTOR& c
         return vec;
 }
 
+DirectX::XMVECTOR MathLibrary::GetRandomPointInArc(const DirectX::XMVECTOR& center,
+                                                   const DirectX::XMVECTOR& forward,
+                                                   const DirectX::XMVECTOR& up,
+                                                   float                    maxAngle,
+                                                   float                    minDistance,
+                                                   float                    maxDistance)
+{
+        XMVECTOR dir  = forward;
+        XMVECTOR quat = XMQuaternionRotationAxis(up, RandomFloatInRange(-maxAngle, maxAngle));
+        dir           = XMVector3Rotate(dir, quat);
+        dir *= RandomFloatInRange(minDistance, maxDistance);
+
+        return dir + center;
+}
+
 DirectX::XMVECTOR MathLibrary::GetRandomPointInRadius2D(const DirectX::XMVECTOR& center, float innerRadius, float outerRadius)
 {
         XMVECTOR vec = GetRandomUnitVector2D();
         vec          = vec * innerRadius + vec * RandomFloatInRange(0.0f, outerRadius);
         return center + vec;
+}
+
+float MathLibrary::CalculateAngleBetweenVectors(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b)
+{
+        return XMVectorGetX(XMVector3AngleBetweenVectors(a, b));
 }
 
 float MathLibrary::GetRandomFloat()
@@ -248,7 +280,7 @@ DirectX::XMVECTOR MathLibrary::GetRandomUnitVector2D()
 
 DirectX::XMFLOAT4 MathLibrary::GetRandomColor()
 {
-	//color must be setted in between 0 and 1
+        // color must be setted in between 0 and 1
         DirectX::XMFLOAT4 output = {GetRandomFloatInRange(0.0f, 1.0f),
                                     GetRandomFloatInRange(0.0f, 1.0f),
                                     GetRandomFloatInRange(0.0f, 1.0f),
@@ -262,17 +294,17 @@ DirectX::XMFLOAT4 MathLibrary::GetRandomColorInRange(DirectX::XMFLOAT2 red,
                                                      DirectX::XMFLOAT2 alpha)
 {
         DirectX::XMFLOAT4 output;
-		//exception 
-		//The color value must be between 0 and 1
+        // exception
+        // The color value must be between 0 and 1
         assert(red.x >= 0.0f && red.y <= 1.0f);
         assert(green.x >= 0.0f && green.y <= 1.0f);
         assert(blue.x >= 0.0f && blue.y <= 1.0f);
         assert(alpha.x >= 0.0f && alpha.y <= 1.0f);
 
-        output.x = GetRandomFloatInRange(red.x, red.y); //red
-        output.y = GetRandomFloatInRange(green.x, green.y); //green
-        output.z = GetRandomFloatInRange(blue.x, blue.y); //blue
-        output.w = GetRandomFloatInRange(alpha.x, alpha.y); //alpha
+        output.x = GetRandomFloatInRange(red.x, red.y);     // red
+        output.y = GetRandomFloatInRange(green.x, green.y); // green
+        output.z = GetRandomFloatInRange(blue.x, blue.y);   // blue
+        output.w = GetRandomFloatInRange(alpha.x, alpha.y); // alpha
 
         return output;
 }
@@ -290,7 +322,8 @@ DirectX::XMVECTOR MathLibrary::MoveTowards(const DirectX::XMVECTOR& a, const Dir
         XMVECTOR output;
         XMVECTOR delta = b - a;
         float    dist  = MathLibrary::CalulateVectorLength(delta);
-        output         = a + delta * (std::min(speed, fabsf(dist)), dist);
+        XMVECTOR dir   = XMVector3Normalize(delta);
+        output         = a + dir * std::min(speed, dist);
         return output;
 }
 

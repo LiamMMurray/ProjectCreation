@@ -19,6 +19,8 @@ class Component : public IComponent
         static void                      SSetMaxElements(NMemory::index max_elements);
         static NMemory::index            SGetMaxElements();
         ComponentHandle                  GetHandle();
+        void                             SetIsActive(bool isActive);
+        bool                             IsActive();
 };
 template <class T>
 const NMemory::type_index Component<T>::s_type_index = TypeIndexFactory<IComponent>::GetTypeIndex<T>();
@@ -63,4 +65,16 @@ template <typename T>
 inline ComponentHandle Component<T>::GetHandle()
 {
         return ComponentHandle(m_pool_index, m_redirection_index);
+}
+
+template <typename T>
+inline void Component<T>::SetIsActive(bool isActive)
+{
+        this->GetHandle().SetIsActive(isActive);
+}
+
+template <typename T>
+inline bool Component<T>::IsActive()
+{
+        return this->GetHandle().IsActive();
 }

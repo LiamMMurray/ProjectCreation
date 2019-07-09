@@ -1,7 +1,7 @@
 #include "GEngine.h"
 #include "../Utility/MemoryLeakDetection.h"
 GEngine*         GEngine::instance        = 0;
-NMemory::memsize GEngine::s_PoolAllocSize = 80000000;
+NMemory::memsize GEngine::s_PoolAllocSize = MB(64);
 
 void GEngine::SetGamePaused(bool val)
 {

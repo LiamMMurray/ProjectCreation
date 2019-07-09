@@ -30,11 +30,12 @@ namespace std
 
 struct HandleManager
 {
-        NMemory::index                      m_PoolCount;
-        NMemory::NPools::RandomAccessPools& m_ComponentRandomAccessPools;
-        NMemory::NPools::RandomAccessPools& m_EntityRandomAccessPools;
-        NMemory::MemoryStack&               m_MemoryStack;
-        NMemory::NPools::pool_descs         m_PoolDescs;
+        NMemory::index                             m_PoolCount;
+        NMemory::NPools::RandomAccessPools&        m_ComponentRandomAccessPools;
+        NMemory::NPools::RandomAccessPools&        m_EntityRandomAccessPools;
+        NMemory::MemoryStack&                      m_MemoryStack;
+        NMemory::NPools::pool_descs                m_PoolDescs;
+        std::vector<std::pair<unsigned, unsigned>> d_debug_deleted_components;
 
         HandleManager(NMemory::NPools::RandomAccessPools& componentRandomAccessPools,
                       NMemory::NPools::RandomAccessPools& entityRandomAccessPools,
@@ -143,22 +144,29 @@ inline ComponentHandle HandleManager::AddComponent(EntityHandle parentHandle)
         NMemory::index parent_index       = m_EntityRandomAccessPools.m_redirection_indices[0][parentHandle.redirection_index];
         Entity*        parent_mem         = entities_mem_start + parent_index;
 
-        parent_mem->m_OwnedComponents.emplace(componentHandle.pool_index, componentHandle.redirection_index);
+        // parent_mem->m_OwnedComponents.emplace(componentHandle.pool_index, componentHandle.redirection_index);
+        parent_mem->m_OwnedComponents.push_back({componentHandle.pool_index, componentHandle.redirection_index});
+
         return componentHandle;
 }
 
 template <typename T>
 inline std::vector<ComponentHandle> EntityHandle::GetComponents()
 {
-        NMemory::type_index _type_index   = T::SGetTypeIndex();
-        size_t              element_count = this->Get()->m_OwnedComponents.count(_type_index);
-        if (element_count == 0)
-                return std::vector<ComponentHandle>();
-
-        auto                         kvs = this->Get()->m_OwnedComponents.equal_range(_type_index);
+        NMemory::type_index _type_index = T::SGetTypeIndex();
+        // size_t              element_count = this->Get()->m_OwnedComponents.count(_type_index);
         std::vector<ComponentHandle> out;
-        out.reserve(element_count);
-        std::for_each(kvs.first, kvs.second, [&](auto e) { out.push_back(ComponentHandle(_type_index, e.second)); });
+        auto                         chs = this->Get()->m_OwnedComponents;
+        for (auto e : chs)
+        {
+                if (chs.pool_index == _type_index)
+                        out.push_back(e);
+        }
+
+        // auto                         kvs = this->Get()->m_OwnedComponents.equal_range(_type_index);
+        // std::vector<ComponentHandle> out;
+        // out.reserve(element_count);
+        // std::for_each(kvs.first, kvs.second, [&](auto e) { out.push_back(ComponentHandle(_type_index, e.second)); });
         return out;
 }
 
@@ -166,8 +174,16 @@ template <typename T>
 inline ComponentHandle EntityHandle::GetComponentHandle()
 {
         NMemory::type_index _type_index = T::SGetTypeIndex();
-        auto                itr         = this->Get()->m_OwnedComponents.find(_type_index);
-        return ComponentHandle(itr->first, itr->second);
+        // assert(this->Get()->m_OwnedComponents.find(_type_index) != this->Get()->m_OwnedComponents.end()) auto itr =
+        //    this->Get()->m_OwnedComponents.find(_type_index);
+
+        // return ComponentHandle(itr->first, itr->second);
+        auto chs = this->Get()->m_OwnedComponents;
+        for (auto e : chs)
+        {
+                if (e.pool_index == _type_index)
+                        return e;
+        }
 }
 
 template <typename T>

@@ -6,4 +6,6 @@ class TransformComponent : public Component<TransformComponent>
 {
     public:
         FTransform transform;
+
+        bool wrapping = true;
 };

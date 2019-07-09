@@ -119,6 +119,7 @@ void ControllerSystem::OnInitialize()
                 eHandle.AddComponent<CameraComponent>();
 
                 auto tComp                   = eHandle.GetComponent<TransformComponent>();
+                tComp->wrapping              = false;
                 tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
                 tComp->transform.rotation =
                     DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
@@ -138,7 +139,7 @@ void ControllerSystem::OnInitialize()
 
                 auto tComp                   = eHandle.GetComponent<TransformComponent>();
                 tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-
+                tComp->wrapping                        = false;
                 auto cameraComp                        = cHandle.Get<CameraComponent>();
                 cameraComp->m_Settings.m_HorizontalFOV = 90.0f;
                 m_Controllers[E_CONTROLLERS::DEBUG]->Init(eHandle);

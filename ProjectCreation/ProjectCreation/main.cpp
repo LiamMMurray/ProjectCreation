@@ -40,6 +40,7 @@
 #include "Engine/Gameplay/SpeedBoostSystem.h"
 #include "Rendering/Components/DirectionalLightComponent.h"
 
+#include "Engine/AI/AISystem.h"
 #include "Engine/GenericComponents/TransformComponent.h"
 #include "Engine/MathLibrary/MathLibrary.h"
 #include "Utility/MemoryLeakDetection.h"
@@ -133,14 +134,13 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 )
 {
         ENABLE_LEAK_DETECTION();
-        _CrtSetBreakAlloc(163);
+        //_CrtSetBreakAlloc(177);
         _WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
-		_CrtDumpMemoryLeaks();
+        _CrtDumpMemoryLeaks();
 
         return 0;
 }
-
 
 
 int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -203,45 +203,45 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         g_Running = true;
         MSG msg;
         ZeroMemory(&msg, sizeof(msg));
-        PlayerController pMovement ;
+        PlayerController pMovement;
 
 
         // Sound tests
 
-		// Joseph found a sfx track for speed boosts and is replacing the old music with it for testing <06/19/19>
-        auto boop  = AudioManager::Get()->CreateSFX("whiteSpeedBoost");
+        // Joseph found a sfx track for speed boosts and is replacing the old music with it for testing <06/19/19>
+        auto boop = AudioManager::Get()->CreateSFX("whiteSpeedBoost");
         boop->SetVolume(0.1f);
-		
-		// Joseph found an underwater abience music track and is replacing the old music with it for testing <06/19/19>
-        //auto music = AudioManager::Get()->LoadMusic("extreme");
+
+        // Joseph found an underwater abience music track and is replacing the old music with it for testing <06/19/19>
+        // auto music = AudioManager::Get()->LoadMusic("extreme");
         auto music = AudioManager::Get()->LoadMusic("AMBIENCE_Under_Water_Active_loop_stereo");
         AudioManager::Get()->ActivateMusicAndPause(music, true);
 
-		music->ResumeStream();
+        music->ResumeStream();
 
         // Entity tests
 
-        //auto testMeshHandle = HandleManager->CreateEntity();
+        // auto testMeshHandle = HandleManager->CreateEntity();
         // auto entity  = HandleManager->GetEntity(eHandle);
 
         // Debug camera entity setup
 
         // Test skeletal mesh setup
         {
-            // std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
-            // ComponentHandle          transformHandle;
-            // EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
-            //
-            // TransformComponent* transformComp = HandleManager->GetComponentHandle<TransformComponent>(transformHandle);
-            // transformComp->transform.SetScale(0.1f);
+            /*std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
+            ComponentHandle          transformHandle;
+            EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
+           
+            TransformComponent* transformComp = HandleManager->GetComponent<TransformComponent>(transformHandle);
+            transformComp->transform.SetScale(0.1f);*/
         }
 
         // Ground Plane
         {
-                ComponentHandle tHandle;
-                EntityFactory::CreateStaticMeshEntity("GroundPlane01", "GroundMaterial01", &tHandle);
-                TransformComponent* tComp    = tHandle.Get<TransformComponent>();
-                tComp->transform.translation = XMVectorSetY(tComp->transform.translation, -0.5f);
+            // ComponentHandle tHandle;
+            // EntityFactory::CreateStaticMeshEntity("GroundPlane01", "GroundMaterial01", &tHandle, nullptr, false);
+            // TransformComponent* tComp    = tHandle.Get<TransformComponent>();
+            // tComp->transform.translation = XMVectorSetY(tComp->transform.translation, -0.0f);
         }
 
         // Directional Light setup
@@ -253,24 +253,37 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
                 auto dirComp = dirLightEntityHandle.GetComponent<DirectionalLightComponent>();
                 dirComp->m_LightRotation =
-                    XMQuaternionRotationRollPitchYaw(XMConvertToRadians(45.0f), XMConvertToRadians(120.0f), 0.0f);
-                dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.8f, 1.0f, 0.4f);
+                    XMQuaternionRotationRollPitchYaw(XMConvertToRadians(20.0f), XMConvertToRadians(70.0f), 0.0f);
+                dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.8f, 1.0f, 2.0f);
                 dirComp->m_AmbientColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f);
         }
 
         // Create speedboost system
-        FSystemProperties sysInitProps;
+        {
+                FSystemProperties sysInitProps;
 
-        sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
-        sysInitProps.m_UpdateRate = 0.0f;
+                sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
+                sysInitProps.m_UpdateRate = 0.0f;
 
-        OrbitSystem* orbitSystem;
-        systemManager->CreateSystem<OrbitSystem>(&orbitSystem);
-        systemManager->RegisterSystem(&sysInitProps, orbitSystem);
+                OrbitSystem* orbitSystem;
+                systemManager->CreateSystem<OrbitSystem>(&orbitSystem);
+                systemManager->RegisterSystem(&sysInitProps, orbitSystem);
 
-        SpeedBoostSystem* speedBoostSystem;
-        systemManager->CreateSystem<SpeedBoostSystem>(&speedBoostSystem);
-        systemManager->RegisterSystem(&sysInitProps, speedBoostSystem);
+                SpeedBoostSystem* speedBoostSystem;
+                systemManager->CreateSystem<SpeedBoostSystem>(&speedBoostSystem);
+                systemManager->RegisterSystem(&sysInitProps, speedBoostSystem);
+        }
+
+        // Create Animation System
+        {
+                FSystemProperties sysInitProps;
+                sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
+                sysInitProps.m_UpdateRate = 0.0f;
+
+                AISystem* aiSystem;
+                systemManager->CreateSystem<AISystem>(&aiSystem);
+                systemManager->RegisterSystem(&sysInitProps, aiSystem);
+        }
 
 
         GEngine::Get()->SetGamePaused(true);
@@ -297,12 +310,12 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
 
-                if (GetActiveWindow() != handle)
+                if (GetActiveWindow() != handle && GEngine::Get()->GetGamePaused() == false)
                 {
                         UIManager::instance->Pause();
                 }
 
-				{
+                {
                         static DWORD frameCount = 0;
                         ++frameCount;
                         static DWORD framesPast = frameCount;

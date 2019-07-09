@@ -7,6 +7,8 @@
 #include "../Physics/PhysicsComponent.h"
 #include "PlayerControllerStateMachine.h"
 
+#include "..//CoreInput/CoreInput.h"
+#include "..//Gameplay/LightOrbColors.h"
 // Audio Includes
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
@@ -20,16 +22,16 @@ class PlayerController : public IController
         friend class PlayerControllerStateMachine;
 
     private:
-        ComponentHandle     m_GoalComponent;
-        void                GatherInput() override;
-        void                ProcessInput() override;
-        void                ApplyInput() override;
-        TransformComponent* _cachedControlledTransformComponent;
+        ComponentHandle m_GoalComponent;
+        void            GatherInput() override;
+        void            ProcessInput() override;
+        void            ApplyInput() override;
+        FTransform      _cachedControlledTransform;
 
         DirectX::XMFLOAT3 m_EulerAngles;
 
         float minMaxSpeed     = 1.0f;
-        float maxMaxSpeed     = 3.0f;
+        float maxMaxSpeed     = 2.0f;
         float currentMaxSpeed = minMaxSpeed;
 
         float acceleration   = 1.0;
@@ -44,21 +46,43 @@ class PlayerController : public IController
         PlayerCinematicState* m_CinematicState;
         PlayerGroundState*    m_GroundState;
 
+		DirectX::XMVECTOR m_JumpForce;
+		DirectX::XMVECTOR m_PlayerGravity;
+
         // Boolean values for the light collection keys
         // Names will most likely change later on
 
-		static constexpr unsigned int MAX_SPEEDBOOST_SOUNDS = 10;
+        static constexpr unsigned int MAX_SPEEDBOOST_SOUNDS = 10;
 
-		void DebugPrintSpeedBoostColor(int color);
-		float rhythmThreshold = 0.5f;
-        double spaceTimeStamp = 0.0f;
+        void DebugPrintSpeedBoostColor(int color);
+
+        DirectX::XMVECTOR mNextForward;
+
     public:
-        GW::AUDIO::GSound* mSpeedBoostSoundPool[MAX_SPEEDBOOST_SOUNDS];
-        unsigned int       currSpeedBoostIteration = 0;
-        virtual void       Shutdown() override;
+        inline void SetNextForward(const DirectX::XMVECTOR& _val)
+        {
+                mNextForward = _val;
+        }
+
+        inline const DirectX::XMVECTOR& GetNextForward() const
+        {
+                return mNextForward;
+        }
+
+        virtual void Shutdown() override;
+
+        KeyCode            m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT]   = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
+
+        const char*        m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"whiteSpeedBoost",
+																		  "whiteSpeedBoost",
+																		  "whiteSpeedBoost",
+																		  "whiteSpeedBoost"};
+
+        GW::AUDIO::GSound* m_SpeedBoostSoundPool[E_LIGHT_ORBS::COUNT][MAX_SPEEDBOOST_SOUNDS];
+        unsigned int       m_SpeedBoostPoolCounter[E_LIGHT_ORBS::COUNT] = {};
 
         virtual void Init(EntityHandle h) override;
-        void         SpeedBoost(DirectX::XMVECTOR boostPos, int color, double collisionTimeStamp);
+        bool         SpeedBoost(DirectX::XMVECTOR boostPos, int color);
 
         inline void SetCurrentMaxSpeed(float val)
         {
@@ -74,8 +98,8 @@ class PlayerController : public IController
         {
                 minMaxSpeed = val;
         };
-
-        inline float GetMinMaxSpeed() const
+				
+		inline float GetMinMaxSpeed() const
         {
                 return minMaxSpeed;
         }
@@ -140,6 +164,26 @@ class PlayerController : public IController
         inline DirectX::XMVECTOR GetCurrentForward() const
         {
                 return m_CurrentForward;
+        }
+
+        inline void SetJumpForce(DirectX::XMVECTOR val)
+        {
+                m_JumpForce = val;
+        }
+
+        inline DirectX::XMVECTOR GetJumpForce() const
+        {
+                return m_JumpForce;
+        }
+		
+		inline void SetPlayerGravity(DirectX::XMVECTOR val)
+        {
+                m_PlayerGravity = val;
+        }
+
+        inline DirectX::XMVECTOR GetPlayerGravity() const
+        {
+                return m_PlayerGravity;
         }
 
         inline void SetGoalComponent(ComponentHandle val)

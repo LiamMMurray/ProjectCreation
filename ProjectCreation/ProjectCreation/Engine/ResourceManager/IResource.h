@@ -18,14 +18,16 @@ class IResource
         ResourceHandle AcquireHandle();
         int16_t        ReleaseHandle();
         virtual void   Release() = 0;
+        virtual void   Copy(IResource* other);
+
     public:
         ResourceHandle GetHandle();
 
         void Init(std::string name, ResourceHandle handle)
         {
                 m_Handle = handle;
-				m_Name = name;
-		}
+                m_Name   = name;
+        }
 
         inline std::string GetName() const
         {

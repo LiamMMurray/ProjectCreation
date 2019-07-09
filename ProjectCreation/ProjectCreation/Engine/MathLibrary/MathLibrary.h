@@ -24,6 +24,22 @@ class MathLibrary
         {
                 return val - (max - min) * floor(val / (max - min));
         }
+
+		/* wrap x -> [0,max) */
+        static double wrapMax(double x, double max)
+        {
+                /* integer math: `(max + x % max) % max` */
+                return fmod(max + fmod(x, max), max);
+        }
+        /* wrap x -> [min,max) */
+        static double wrapMinMax(double x, double min, double max)
+        {
+                return min + wrapMax(x - min, max - min);
+        }
+
+        static DirectX::XMVECTOR WrapPosition(const DirectX::XMVECTOR& pos,
+                                       const DirectX::XMVECTOR& min,
+                                       const DirectX::XMVECTOR& max);
         // Matrix Function
         static void              OrthoNormalize(DirectX::XMVECTOR normal, DirectX::XMVECTOR& tangent);
         static DirectX::XMMATRIX LookAt(DirectX::XMVECTOR vPos, DirectX::XMVECTOR tPos, DirectX::XMVECTOR up);
@@ -36,7 +52,7 @@ class MathLibrary
         static DirectX::XMVECTOR GetClosestPointFromLineClamped(DirectX::XMVECTOR startPoint,
                                                                 DirectX::XMVECTOR endPoint,
                                                                 DirectX::XMVECTOR point);
-        static DirectX::XMVECTOR GetClosestPointFromPlane(Shapes::FPlane plane,DirectX::XMVECTOR point);
+        static DirectX::XMVECTOR GetClosestPointFromPlane(Shapes::FPlane plane, DirectX::XMVECTOR point);
         static DirectX::XMVECTOR GetMidPointFromTwoVector(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateDistance(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
         static float             CalulateDistanceSq(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
@@ -47,9 +63,17 @@ class MathLibrary
         static float             ManhattanDistance(Shapes::FAabb& a, Shapes::FAabb& b);
         // Get random values
         static DirectX::XMVECTOR GetRandomPointInRadius(const DirectX::XMVECTOR& center, float innerRadius, float outerRadius);
+        static DirectX::XMVECTOR GetRandomPointInArc(const DirectX::XMVECTOR& center,
+                                                     const DirectX::XMVECTOR& forward,
+                                                     const DirectX::XMVECTOR& up,
+                                                     float                    maxAngle,
+                                                     float                    minDistance,
+                                                     float                    maxDistance);
         static DirectX::XMVECTOR GetRandomPointInRadius2D(const DirectX::XMVECTOR& center,
                                                           float                    innerRadius,
                                                           float                    outerRadius);
+
+        static float CalculateAngleBetweenVectors(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b);
 
         static float             GetRandomFloat();
         static float             GetRandomFloatInRange(float min, float max);

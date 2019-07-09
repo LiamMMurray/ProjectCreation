@@ -14,11 +14,23 @@ void PlayerGroundState::Enter()
             _playerController->GetControlledEntity().GetComponent<TransformComponent>();
 
         _playerController->SetEulerAngles(playerTransformComponent->transform.rotation.ToEulerAngles());
+
+        // Sets the gravity vector for the player
+        //_playerController->SetPlayerGravity(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f));
 }
 
 void PlayerGroundState::Update(float deltaTime)
 {
         XMVECTOR currentVelocity = _playerController->GetCurrentVelocity();
+
+        currentVelocity += _playerController->GetJumpForce();
+        //currentVelocity += _playerController->GetPlayerGravity();
+
+        if (GCoreInput::GetKeyState(KeyCode::L) == KeyState::DownFirst) 
+		{
+                ConsoleWindow::PrintVector(currentVelocity, "Current Velocity");
+		}
+
         // Get Delta Time
         float totalTime = (float)GEngine::Get()->GetTotalTime();
 
@@ -37,21 +49,42 @@ void PlayerGroundState::Update(float deltaTime)
         eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
 
         // Convert to degrees due to precision errors using small radian values
-        float rollDegrees = XMConvertToDegrees(eulerAngles.z);
-        rollDegrees       = MathLibrary::clamp(rollDegrees, -rollLimit, rollLimit);
-        rollDegrees       = MathLibrary::lerp(rollDegrees, 0.0f, MathLibrary::clamp(deltaTime * rollLimit, 0.0f, 1.0f));
-        eulerAngles.z     = XMConvertToRadians(rollDegrees);
-        _cachedTransformComponent->transform.rotation = FQuaternion::FromEulerAngles(eulerAngles);
+        float rollDegrees         = XMConvertToDegrees(eulerAngles.z);
+        rollDegrees               = MathLibrary::clamp(rollDegrees, -rollLimit, rollLimit);
+        rollDegrees               = MathLibrary::lerp(rollDegrees, 0.0f, MathLibrary::clamp(deltaTime * rollLimit, 0.0f, 1.0f));
+        eulerAngles.z             = XMConvertToRadians(rollDegrees);
+        _cachedTransform.rotation = FQuaternion::FromEulerAngles(eulerAngles);
 
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, yawDelta));
+        currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, yawDelta));
 
         // Get the Speed from the gathered input
         XMVECTOR currentInput = _playerController->GetCurrentInput();
-        currentInput          = XMVector3Rotate(currentInput, _cachedTransformComponent->transform.rotation.data);
-        if (bUseGravity)
+        currentInput          = XMVector3Rotate(currentInput, _cachedTransform.rotation.data);
         {
-                currentInput =
-                    XMVector3Normalize(XMVectorSetY(currentInput, 0.0f)) * XMVectorGetX(XMVector3Length(currentInput));
+                XMVECTOR dir = VectorConstants::Up;
+
+                if (bUseGravity == false)
+                {
+                        float delta =
+                            MathLibrary::CalulateDistance(_playerController->GetNextForward(), _cachedTransform.GetRight());
+
+
+                        if (delta > 0.001f)
+                        {
+                                dir = XMVector3Normalize(
+                                    XMVector3Cross(_playerController->GetNextForward(), _cachedTransform.GetRight()));
+                        }
+                        else
+                        {
+                                dir = XMVector3Normalize(
+                                    XMVector3Cross(_playerController->GetNextForward(), _cachedTransform.GetForward()));
+                        }
+                }
+
+                float dot = MathLibrary::VectorDotProduct(currentInput, dir);
+                currentInput -= dir * dot;
+                currentInput = XMVector3Normalize(currentInput);
         }
         // Normalize the gathered input to determine the desired direction
         XMVECTOR desiredDir = XMVector3Normalize(currentInput);
@@ -75,20 +108,15 @@ void PlayerGroundState::Update(float deltaTime)
         // Normalize the difference of the desired velocity and the current velocity
         XMVECTOR deltaVec = XMVector3Normalize(desiredVelocity - currentVelocity);
         currentVelocity   = currentVelocity + deltaVec * delta + m_ExtraYSpeed * VectorConstants::Up;
+
+        XMVECTOR actualVelocity = currentVelocity;
         if (bUseGravity)
         {
-                float currY   = XMVectorGetY(_cachedTransformComponent->transform.translation);
+                float currY   = XMVectorGetY(_cachedTransform.translation);
                 float sign    = MathLibrary::GetSign(currY);
-                float gravity = -sign * 10.0f * deltaTime;
+                float gravity = -sign * 200.0f * deltaTime;
                 // Calculate current velocity based on itself, the deltaVector, and delta
-                currentVelocity += gravity * VectorConstants::Up;
-                float velY = XMVectorGetY(currentVelocity);
-                if (sign > 0)
-                        velY = std::max(velY * deltaTime, -currY) / deltaTime;
-                else if (sign < 0)
-                        velY = std::min(velY * deltaTime, -currY) / deltaTime;
-
-                currentVelocity = XMVectorSetY(currentVelocity, velY);
+                actualVelocity += gravity * VectorConstants::Up;
         }
 
         if (m_SpeedboostTimer > 0.0f)
@@ -104,10 +132,16 @@ void PlayerGroundState::Update(float deltaTime)
         }
 
 
-        // Calculate offset
-        XMVECTOR offset = currentVelocity * deltaTime;
-        _cachedTransformComponent->transform.translation += offset;
+        // Process offset
+        {
+                XMVECTOR offset = actualVelocity * deltaTime;
+                _cachedTransform.translation += offset;
+                float posY                   = XMVectorGetY(_cachedTransform.translation);
+                posY                         = std::max(posY, 0.0f);
+                _cachedTransform.translation = XMVectorSetY(_cachedTransform.translation, posY);
+        }
 
+        _playerController->GetControlledEntity().GetComponent<TransformComponent>()->transform = _cachedTransform;
 
         _playerController->SetCurrentVelocity(currentVelocity);
         _playerController->SetEulerAngles(eulerAngles);

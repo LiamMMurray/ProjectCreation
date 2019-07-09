@@ -2,9 +2,9 @@
 #include "../../ECS/Entity.h"
 #include "../CoreInput/CoreInput.h"
 #include "../GEngine.h"
-
 #include "../MathLibrary/MathLibrary.h"
 #include "../MathLibrary/Quaternion.h"
+#include "ControllerSystem.h"
 
 #include "..//Gameplay/GoalComponent.h"
 #include "../CollisionLibary/CollisionLibary.h"
@@ -32,53 +32,56 @@ void PlayerController::GatherInput()
         if (IsEnabled())
         {
                 // requestedDirection = MoveDirections::NO_DIRECTION;
-                XMFLOAT4 tempDir = {0.0f, 0.0f, 0.0f, 0.0f};
+                XMFLOAT4 tempDir  = {0.0f, 0.0f, 0.0f, 0.0f};
+                //XMFLOAT4 tempJump = {0.0f, 0.0f, 0.0f, 0.0f};
 
-                /////////////////////////
-                // Movement input keys //
-                /////////////////////////
+                // Changing movement so that the player will always move forward
                 {
+
                         // Check Forward speed
-                        if (GCoreInput::GetKeyState(KeyCode::W) == KeyState::Down)
-                        {
-                                tempDir.z += 1.0f;
-                        }
-                        // Backward
-                        if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
-                        {
-                                tempDir.z -= 1.0f;
-                        }
-                        // Left
-                        if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
-                        {
-                                tempDir.x -= 1.0f;
-                        }
-                        // Right
-                        if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
-                        {
-                                tempDir.x += 1.0f;
-                        }
+                       // if (GCoreInput::GetKeyState(KeyCode::W) == KeyState::Down)
+                       // {
+                       //         tempDir.z += 1.0f;
+                       // }
+                       // // Backward
+                       // if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
+                       // {
+                       //         tempDir.z -= 1.0f;
+                       // }
+                       // // Left
+                       // if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
+                       // {
+                       //         tempDir.x -= 1.0f;
+                       // }
+                       // // Right
+                       // if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
+                       // {
+                       //         tempDir.x += 1.0f;
+                       // }
+                       // // Jump
+                       // if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::DownFirst)
+                       // {
+                       //         tempJump.y += 3.0f;
+                       // }
+					   //
+                       // m_JumpForce = XMLoadFloat4(&tempJump);
                 }
-                // Space bar is used for rhythm input
-                if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::DownFirst)
-                {
-                        spaceTimeStamp = GEngine::Get()->GetTotalTime();
-                }
-
+							   
+                tempDir        = XMFLOAT4{0.0f, 0.0f, 2.0f, 0.0f};
                 m_CurrentInput = XMLoadFloat4(&tempDir);
         }
 }
 
 void PlayerController::ProcessInput()
 {
-        _cachedControlledTransformComponent = m_ControlledEntityHandle.GetComponent<TransformComponent>();
+        _cachedControlledTransform = m_ControlledEntityHandle.GetComponent<TransformComponent>()->transform;
 }
 
 void PlayerController::ApplyInput()
 {
-        m_StateMachine.Update(cacheTime, _cachedControlledTransformComponent);
+        m_StateMachine.Update(cacheTime, _cachedControlledTransform);
         FSphere fSpherePlayer;
-        fSpherePlayer.center = _cachedControlledTransformComponent->transform.translation;
+        fSpherePlayer.center = _cachedControlledTransform.translation;
         fSpherePlayer.radius = 0.25f;
 
         debug_renderer::AddSphere(fSpherePlayer, 36, XMMatrixIdentity());
@@ -141,40 +144,39 @@ void PlayerController::Init(EntityHandle h)
         m_StateMachine.Init(this);
 
         // Init sound pool
-        for (unsigned int i = 0; i < MAX_SPEEDBOOST_SOUNDS; ++i)
+        for (unsigned int color = 0; color < E_LIGHT_ORBS::COUNT; ++color)
         {
-                mSpeedBoostSoundPool[i] = AudioManager::Get()->CreateSFX("whiteSpeedBoost");
+                for (unsigned int i = 0; i < MAX_SPEEDBOOST_SOUNDS; ++i)
+                {
+                        m_SpeedBoostSoundPool[color][i] = AudioManager::Get()->CreateSFX(m_SpeedboostSoundNames[color]);
+                }
         }
 }
 
-void PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color, double collisionTimeStamp)
+bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
 {
-        const KeyCode keyCodes[]   = {KeyCode::Space, KeyCode::Q, KeyCode::E, (KeyCode)-1};
-        const char*   soundNames[] = {"whiteSpeedBoost", "whiteSpeedBoost", "whiteSpeedBoost", "whiteSpeedBoost"};
-		
         // Audio that will play on boost
-        if ((int)keyCodes[color] == -1 || GCoreInput::GetKeyState(keyCodes[color]) == KeyState::Down)
+        if ((int)m_ColorInputKeyCodes[color] < 0 || GCoreInput::GetKeyState(m_ColorInputKeyCodes[color]) == KeyState::Down)
         {
-               // if ((spaceTimeStamp >= collisionTimeStamp && spaceTimeStamp < (collisionTimeStamp + rhythmThreshold)) ||
-               //     (spaceTimeStamp <= collisionTimeStamp && spaceTimeStamp > (collisionTimeStamp - rhythmThreshold)))
-               // {
-                        bool isPlaying;
-                        mSpeedBoostSoundPool[currSpeedBoostIteration]->isSoundPlaying(isPlaying);
-                        mSpeedBoostSoundPool[currSpeedBoostIteration]->Play();
-                        DebugPrintSpeedBoostColor(color);
-                        currentMaxSpeed = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
-                        XMVECTOR currentInput =
-                            XMVector3Rotate(m_CurrentInput, _cachedControlledTransformComponent->transform.rotation.data);
-                        if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
-                        {
-                                m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
-                                m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
-                                m_GroundState->AddSpeedBoost();
-                        }
-               // }
+                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(color);
+                bool isPlaying;
+                // m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->isSoundPlaying(isPlaying);
+                m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->Play();
+                DebugPrintSpeedBoostColor(color);
+                currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
+                XMVECTOR currentInput = XMVector3Rotate(m_CurrentInput, _cachedControlledTransform.rotation.data);
+                if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
+                {
+                        m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
+                        m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
+                        m_GroundState->AddSpeedBoost();
+                }
+                m_SpeedBoostPoolCounter[color]++;
+                m_SpeedBoostPoolCounter[color] %= MAX_SPEEDBOOST_SOUNDS;
+
+                return true;
         }
-        currSpeedBoostIteration++;
-        currSpeedBoostIteration %= MAX_SPEEDBOOST_SOUNDS;
+        return false;
 }
 
 void PlayerController::AddCurrentVelocity(DirectX::XMVECTOR val)
