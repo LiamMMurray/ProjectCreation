@@ -159,7 +159,7 @@ void RenderSystem::CreateDeviceAndSwapChain()
         ID3D11Debug* debug = nullptr;
         hr                 = m_Device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&debug));
         assert(SUCCEEDED(hr));
-        //debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+        // debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
         debug->Release();
 #endif
 
@@ -191,15 +191,10 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
 
         m_Context->OMSetRenderTargets(0, 0, 0);
 
-        IDXGIOutput* pOutput;
-        m_Swapchain->GetContainingOutput(&pOutput);
-
-        // pOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, 0, &num, s)
 
         // Preserve the existing buffer count and format.
         // Automatically choose the width and height to match the client rect for HWNDs.
         hr = m_Swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
-        pOutput->Release();
 
         // Perform error handling here!
         assert(SUCCEEDED(hr));

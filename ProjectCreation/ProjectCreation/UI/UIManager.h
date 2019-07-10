@@ -73,6 +73,7 @@ class UIManager
         void Pause();
         void Unpause();
         void AdjustResolution(HWND window);
+        void SupportedResolutions();	//Creates the supported resolutions for the game
 
 
 
@@ -93,6 +94,7 @@ class UIManager
         RECT                                             m_fullscreenRect;
         Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_background;
         POINT                                            m_Cursor;
+        std::vector<DXGI_MODE_DESC> resDescriptors;
 
         RenderSystem* m_RenderSystem;
 

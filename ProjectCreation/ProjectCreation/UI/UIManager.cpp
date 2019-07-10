@@ -310,6 +310,27 @@ void UIManager::AdjustResolution(HWND window)
         }
 }
 
+void UIManager::SupportedResolutions()
+{
+        IDXGIOutput* pOutput;
+        UINT         num;
+        instance->m_RenderSystem->m_Swapchain->GetContainingOutput(&pOutput);
+
+        pOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, 0, &num, nullptr);
+
+        instance->resDescriptors.resize(num);
+        pOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, 0, &num, instance->resDescriptors.data());
+        pOutput->Release();
+
+		for (auto i = 0; i < instance->resDescriptors.size(); i++)
+		{
+            if (instance->resDescriptors[i].Scaling != DXGI_MODE_SCALING_UNSPECIFIED)
+			{
+                        instance->resDescriptors.erase(instance->resDescriptors.begin() + i);
+			}
+		}
+}
+
 // Core Function
 void UIManager::Initialize(native_handle_type hwnd)
 {
@@ -321,17 +342,6 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->m_SpriteBatch = std::make_unique<DirectX::SpriteBatch>(instance->m_RenderSystem->m_Context);
         instance->m_States      = std::make_unique<DirectX::CommonStates>(instance->m_RenderSystem->m_Device);
 
-        // instance->m_AllSprites.push_back(&instance->m_MainSprites);
-        // instance->m_AllFonts.push_back(&instance->m_MainSpriteFonts);
-        //
-        // instance->m_AllSprites.push_back(&instance->m_PauseSprites);
-        // instance->m_AllFonts.push_back(&instance->m_PauseSpriteFonts);
-        //
-        // instance->m_AllSprites.push_back(&instance->m_OptionsSprites);
-        // instance->m_AllFonts.push_back(&instance->m_OptionsSpriteFonts);
-        //
-        // instance->m_AllSprites.push_back(&instance->m_LevelSprites);
-        // instance->m_AllFonts.push_back(&instance->m_LevelSpriteFonts);
         for (int i = 0; i < E_MENU_CATEGORIES::COUNT; ++i)
         {
                 instance->m_AllSprites.insert(std::make_pair(i, std::vector<SpriteComponent>()));
@@ -356,6 +366,9 @@ void UIManager::Initialize(native_handle_type hwnd)
         }
 
         instance->m_WindowHandle = hwnd;
+
+        // Create supported resolutions
+        instance->SupportedResolutions();
 
         // Main Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -567,7 +580,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           pauseButtonWidth,
                           pauseButtonHeight);
-
+		
         // Resume Button
         instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][1].OnMouseDown.AddEventListener(
             [](UIMouseEvent* e) { instance->Unpause(); });
