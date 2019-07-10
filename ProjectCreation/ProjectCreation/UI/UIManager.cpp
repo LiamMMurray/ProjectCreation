@@ -293,14 +293,22 @@ void UIManager::Unpause()
         }
 }
 
-RECT UIManager::AdjustResolution()
+void UIManager::AdjustResolution(HWND window)
 {
-        RECT desktop;
-		const HWND hDesktop = GetDesktopWindow();
-        GetWindowRect(hDesktop, &desktop);                     // set the size
-        return desktop;
-}
+        if (instance->m_AdjustedScreen == false)
+        {
+                instance->m_AdjustedScreen = true;
 
+			//Resizes the window
+                RECT       desktop;
+                const HWND hDesktop = GetDesktopWindow();
+                GetWindowRect(hDesktop, &desktop); // set the size
+                ::SetWindowPos(window, 0, 0, 0, desktop.right, desktop.bottom, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+				
+			//Center the window
+                MoveWindow(window, 0, 0, desktop.right, desktop.bottom, true);
+        }
+}
 
 // Core Function
 void UIManager::Initialize(native_handle_type hwnd)

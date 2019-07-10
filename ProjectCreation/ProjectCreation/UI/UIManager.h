@@ -72,7 +72,7 @@ class UIManager
         void MainTilteUnpause();
         void Pause();
         void Unpause();
-        RECT AdjustResolution();
+        void AdjustResolution(HWND window);
 
 
 
@@ -86,6 +86,8 @@ class UIManager
         bool                                             m_IsFullscreen = false;
         bool                                             m_FirstFull = true;	//Turns false when the game is put to fullscreen on launch
         bool                                             m_InMenu       = false;
+        bool                                             m_AdjustedScreen = false;
+
         std::unique_ptr<DirectX::SpriteBatch>            m_SpriteBatch;
         std::unique_ptr<DirectX::CommonStates>           m_States;
         RECT                                             m_fullscreenRect;

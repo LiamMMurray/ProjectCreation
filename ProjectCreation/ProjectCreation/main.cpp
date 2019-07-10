@@ -317,14 +317,8 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                         UIManager::instance->Pause();
                 }
 
-                //if (GCoreInput::GetKeyState(KeyCode::Z) == KeyState::DownFirst)
-                //{
-                //        wr = UIManager::instance->AdjustResolution();
-                //       //DEVMODE dMode;
-                //       //ChangeDisplaySettings();
-                //        AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE); // adjust the size
-                //}
-
+                UIManager::instance->AdjustResolution(handle);
+				
                 {
                         static DWORD frameCount = 0;
                         ++frameCount;
