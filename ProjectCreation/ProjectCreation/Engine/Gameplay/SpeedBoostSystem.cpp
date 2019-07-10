@@ -465,10 +465,29 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         }
                         else
                         {
+                                // Player has fallen off the spline
                                 playerController->SetUseGravity(true);
                                 bIsLatchedToSpline = false;
 
+                                // Destroy the old spline
                                 DestroySpline(latchedSplineComp->clusterID, latchedSplineComp->index);
+
+                                int splineID = latchedSplineComp->clusterID;
+                                int goalIndex = m_SplineClusterSpawners.at(splineID).color;
+
+                                // Start of the new spline
+                                XMVECTOR start =
+                                    playerTransform->transform.translation + 2.0f * playerTransform->transform.GetForward();
+
+                                // Direction of the new spline
+                                XMVECTOR dir = SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] - start;
+
+                                // End point of the new spline
+                                XMVECTOR end = SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] -
+                                               2.0f * XMVector3Normalize(dir);
+
+                                // Finish creation of new spline
+                                CreateRandomPath(start, end, goalIndex);
                         }
                 }
                 else
