@@ -382,7 +382,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           false);
 
-		// "Press Spacebar, Q, and E to continue. . . "
+		// "Press A, S, and D to continue. . . "
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
