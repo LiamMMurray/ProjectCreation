@@ -180,8 +180,8 @@ void TerrainManager::_update(float deltaTime)
         TerrainMatrix.r[3]   = correctedTerrainPos;
         InverseTerrainMatrix = DirectX::XMMatrixInverse(nullptr, TerrainMatrix);
 
-        GEngine::Get()->m_TerrainAlpha += deltaTime * 0.04f;
-        GEngine::Get()->m_TerrainAlpha = std::min(1.0f, GEngine::Get()->m_TerrainAlpha);
+        //GEngine::Get()->m_TerrainAlpha += deltaTime * 0.04f;
+        //GEngine::Get()->m_TerrainAlpha = std::min(1.0f, GEngine::Get()->m_TerrainAlpha);
 
         UINT stride = sizeof(TerrainVertex);
         UINT offset = 0;

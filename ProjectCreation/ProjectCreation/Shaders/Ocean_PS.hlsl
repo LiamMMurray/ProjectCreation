@@ -22,7 +22,7 @@ float3 PBROcean(SurfacePBR surface, float3 lightDir, float3 viewWS, float3 specC
 {
         float3 N = surface.normal;
         float3 L = lightDir;
-        float3 V = lerp(viewWS, reflect(-lightDir, surface.normal), 0.5f);
+        float3 V = lerp(viewWS, reflect(-lightDir, surface.normal), 0.3f);
         float3 H = normalize(L + V);
 
         // Cook-Torrance FGD/4nlnv
@@ -48,6 +48,9 @@ struct DomainOutput
         float4 Pos : SV_POSITION;
         // TODO: change/add other stuff
         float3 PosWS : POSITION;
+        float3 NormalWS : NORMAL;
+        float3 BinormalWS : BINORMAL;
+        float3 TangentWS : TANGENT;
         float2 Tex : TEXCOORD0;
         float2 Tex2 : TEXCOORD1;
         float  linearDepth : DEPTH;
@@ -57,9 +60,9 @@ struct DomainOutput
 float4 main(DomainOutput pIn) : SV_TARGET
 {
 
-        float3 TangentWS  = float3(1.0f, 0.0f, 0.0f);
-        float3 BinormalWS = float3(0.0f, 0.0f, 1.0f);
-        float3 NormalWS   = float3(0.0f, 1.0f, 0.0f);
+        float3 TangentWS  = pIn.TangentWS;
+        float3 BinormalWS = pIn.BinormalWS;
+        float3 NormalWS   = pIn.NormalWS;
 
         float3 viewWS = -normalize(pIn.PosWS - _EyePosition);
         float3 normalSample;
@@ -74,7 +77,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
 
         SurfacePBR surface;
         surface.diffuseColor =
-            0.8f * lerp(float3(0.0f, 0.8f, 0.6f), float3(0.0f, 0.2f, 0.4f), 1.0f - saturate((pIn.PosWS.y + 0.1f) / 0.6f));
+            0.8f * lerp(float3(0.0f, 0.8f, 0.6f), float3(0.0f, 0.2f, 0.4f), 1.0f - saturate((pIn.PosWS.y - 0.9f) / 0.6f));
 
         surface.metallic = 1.0f;
 
@@ -85,14 +88,16 @@ float4 main(DomainOutput pIn) : SV_TARGET
         {
                 normalSample   = 2.0f * ((normalA + normalB) * 2.0f - 1.0f);
                 surface.normal = NormalWS;
-                surface.normal.xy += 1.5f * normalSample.xy;
+                surface.normal.xy += 0.2f * (normalSample.x * TangentWS + normalSample.y * BinormalWS);
+                //surface.normal.xy += 1.5f * (normalSample.xy);
         }
         surface.normal = normalize(surface.normal);
+        // surface.normal = float3(0.0f, 1.0f, 0.0f);
         // surface.normal = float3(0.0f, 1.0f, 0.0f);
         // return surface.normal.xyzz;
         float alpha = 1.f;
         // Remapping roughness to prevent errors on normal distribution
-        surface.roughness = 0.2f;
+        surface.roughness = 0.4f;
         surface.roughness = max(surface.roughness, 0.08f);
 
         // surface.ambient = lerp(roughnessSample.b, roughnessSample.a, blendAlpha);
@@ -119,7 +124,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
         // Environment mapping
 
         {
-                surface.ambient *= 0.8f;
+                surface.ambient *= 1.0f;
                 float3 N = surface.normal;
                 float3 V = -viewWS;
 
@@ -130,7 +135,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
                 color += IBL(surface, viewWS, specColor, diffuse, specular, integration);
         }
 
-        //return float4(color, 1.0f);
+        // return float4(color, 1.0f);
 
         float maskA     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 45.0f + _Time * 0.01f * float2(1.0f, 0.0f)).z;
         float maskB     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 40.0f + _Time * 0.01f * float2(-1.0f, 0.0f)).z;
