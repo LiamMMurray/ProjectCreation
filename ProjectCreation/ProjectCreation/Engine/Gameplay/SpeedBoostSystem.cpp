@@ -238,6 +238,29 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
         auto playerController = static_cast<PlayerController*>(
             SYSTEM_MANAGER->GetSystem<ControllerSystem>()->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]);
 
+        static float targetTerrain     = 0.0f;
+        GEngine::Get()->m_TerrainAlpha = MathLibrary::lerp(GEngine::Get()->m_TerrainAlpha, targetTerrain, deltaTime * 0.1f);
+
+        if (GCoreInput::GetKeyState(KeyCode::T) == KeyState::DownFirst)
+        {
+                targetTerrain = 1.0f;
+        }
+
+        // Debug Testing CHEAT to spawn a white spline that will carry player to origin
+        if (GCoreInput::GetKeyState(KeyCode::J) == KeyState::DownFirst)
+        {
+                XMVECTOR start = playerTransform->transform.translation + 2.0f * playerTransform->transform.GetForward();
+
+                // Direction of the new spline
+                XMVECTOR dir = XMVectorZero() - start;
+
+                // End point of the new spline
+                XMVECTOR end = XMVectorZero() - 2.0f * XMVector3Normalize(dir);
+
+                CreateRandomPath(start, end, 3);
+        }
+
+
         // GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_PlayerEffectRadius, deltaTime);
 
         XMVECTOR flatPlayerForward;
@@ -472,7 +495,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 // Destroy the old spline
                                 DestroySpline(latchedSplineComp->clusterID, latchedSplineComp->index);
 
-                                int splineID = latchedSplineComp->clusterID;
+                                int splineID  = latchedSplineComp->clusterID;
                                 int goalIndex = m_SplineClusterSpawners.at(splineID).color;
 
                                 // Start of the new spline

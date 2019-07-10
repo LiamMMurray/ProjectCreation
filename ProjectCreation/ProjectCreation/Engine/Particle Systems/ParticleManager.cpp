@@ -96,7 +96,8 @@ void ParticleManager::update(float deltaTime)
         m_RenderSystem->m_Context->VSSetShader(vertexShader->m_VertexShader, 0, 0);
         m_RenderSystem->m_Context->PSSetShader(pixelShader->m_PixelShader, 0, 0);
         // draw call;
-        m_RenderSystem->m_Context->Draw(100000, 0);
+	//TODO: uncomment after showing Audio Students
+        //m_RenderSystem->m_Context->Draw(100000, 0);
 
         // reset srv null for geometry shader
 

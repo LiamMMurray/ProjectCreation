@@ -217,7 +217,7 @@ class PlayerController : public IController
         {
                 m_EulerAngles = val;
         }
-
+		
         void SetUseGravity(bool val);
         bool GetUseGravity();
         void SetYExtraSpeed(float val);
