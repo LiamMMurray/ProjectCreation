@@ -2,16 +2,7 @@
 #include "DefaultVertexIn.hlsl"
 #include "MVPBuffer.hlsl"
 
-cbuffer SceneInfoBuffer : register(b1)
-{
-        float3 _EyePosition;
-        float  _Time;
-        float3 _DirectionalLightDirection;
-        float  _playerRadius;
-        float3 _DirectionalLightColor;
-        // float pad
-        float3 _AmbientColor;
-};
+#include "SceneBuffer.hlsl"
 
 INPUT_PIXEL main(INPUT_VERTEX vIn)
 {

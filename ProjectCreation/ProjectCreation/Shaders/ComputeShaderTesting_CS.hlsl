@@ -1,4 +1,5 @@
 #include "Math.hlsl"
+#include "SceneBuffer.hlsl"
 
 static const unsigned int gMaxEmitterCount  = 2 << 10;
 static const unsigned int gMaxParticleCount = 2 << 16;
@@ -14,17 +15,6 @@ struct FParticleGPU
         int    index;
 };
 
-cbuffer SceneInfoBuffer : register(b1)
-{
-        float3 _EyePosition;
-        float  _Time;
-        float3 _DirectionalLightDirection;
-        float  _playerRadius;
-        float3 _DirectionalLightColor;
-        // float pad
-        float3 _AmbientColor;
-        float  _DeltaTime;
-};
 
 struct FEmitterGPU
 {
@@ -32,7 +22,8 @@ struct FEmitterGPU
         float  accumulatedTime;
         bool   active;
         float4 position;
-        float4 color;
+        float4 initialColor;
+        float4 finalColor;
         float2 uv;
         float3 minInitialVelocity;
         float3 maxInitialVelocity;
@@ -45,11 +36,14 @@ struct FSegmentBuffer
 RWStructuredBuffer<FParticleGPU>   ParticleBuffer : register(u0);
 StructuredBuffer<FEmitterGPU>      EmitterBuffer : register(t0);
 RWStructuredBuffer<FSegmentBuffer> SegmentBuffer : register(u1);
+RWTexture2D<float2>                tex : register(u2);
+// Texture2D                         tex2d : register(t0);
 
-[numthreads(100, 1, 1)] void main(uint3 DTid
+[numthreads(100, 1, 1)] 
+void main(uint3 DTid
                                   : SV_DispatchThreadID) {
         int id = DTid.x;
-
+        // tex[id]  = float2(id / 1024.0f, 0, 1);
         if (ParticleBuffer[id].time <= 0.0f)
         {
                 ParticleBuffer[id].time = EmitterBuffer[0].accumulatedTime;
@@ -66,19 +60,22 @@ RWStructuredBuffer<FSegmentBuffer> SegmentBuffer : register(u1);
                 ParticleBuffer[id].velocity.z =
                     lerp(EmitterBuffer[0].minInitialVelocity.z, EmitterBuffer[0].maxInitialVelocity.z, alphaC);
 
-                ParticleBuffer[id].color = EmitterBuffer[0].color;
+                ParticleBuffer[id].uv    = EmitterBuffer[0].uv;
+                ParticleBuffer[id].color = EmitterBuffer[0].initialColor;
 
                 ParticleBuffer[id].position = float4(_EyePosition + ParticleBuffer[id].velocity * 1.0f, 1.0f);
         }
-        else if (ParticleBuffer[id].time <=  5.0f) // change color in a certain, also to keep the previous color for a certain amount of time
-        {
-                ParticleBuffer[DTid.x].color = float4(1.0f, 1.0f, 1.0f, 1.0f);
-                ParticleBuffer[DTid.x].color.w -= (_Time / 10.0f);
-        }
         else
         {
+				float alpha              = 1.0f - ParticleBuffer[id].time / EmitterBuffer[0].accumulatedTime;
+                ParticleBuffer[id].color = lerp(EmitterBuffer[0].initialColor, EmitterBuffer[0].finalColor, alpha);
+
                 ParticleBuffer[DTid.x].time -= _DeltaTime;
-               
                 // ParticleBuffer[DTid.x].position += 1.0f*float4(ParticleBuffer[DTid.x].velocity * _DeltaTime, 0.0f);
+                float3 Min = float3(-0.5f * _Scale, 0.0f, -0.5f * _Scale);
+                // Min        = float3(-10.0f, 0.0f, -10.0f);
+                float3 Max = -Min;
+                ParticleBuffer[id].position.xyz =
+                    WrapPosition(ParticleBuffer[id].position.xyz, _EyePosition + Min, _EyePosition + Max);
         }
 }

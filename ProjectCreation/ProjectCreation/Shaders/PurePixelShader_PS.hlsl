@@ -6,13 +6,14 @@ struct PS_INPUT
         float4 color : COLOR;
 };
 
-Texture2D<float> tex;
+Texture2D tex : register (t0);
+SamplerState     objSamplerState : register(s0);
 
 float4 main(PS_INPUT input) : SV_TARGET
 {
 
         float4 output = input.color;
-        output        = tex.Sample(TextureSampler, input);
-        //output        = float4(5.0f, 0.0f, 0.0f, 1.0f);
+		output        = tex.Sample(objSamplerState, input.uv);
+        
         return output;
 }

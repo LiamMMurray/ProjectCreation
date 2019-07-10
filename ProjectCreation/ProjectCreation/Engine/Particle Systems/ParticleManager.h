@@ -21,6 +21,8 @@ class ParticleManager
         ResourceHandle              m_GeometryShaderHandle;
         ResourceHandle              m_VertexShaderHandle;
         ResourceHandle              m_PixelShaderHandle;
+        ResourceHandle              m_TextureHandle;
+
         ID3D11InputLayout*          m_VertexInputLayout;
         ParticleData::FParticleGPU* m_ParticleInfo;
         ParticleData::FEmitterGPU*  m_EnitterInfo;

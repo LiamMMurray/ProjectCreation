@@ -39,3 +39,16 @@ float3 WrapPos(float3 pos, float3 min, float3 max)
 {
         return pos - (max - min) * floor(pos / (max - min));
 }
+
+float3 WrapPosition(float3 position, float3 Min, float3 Max)
+{
+        float3 output;
+        float3 firstMod;
+        float3 secondMod;
+
+        firstMod.xz  = fmod(position.xz - Min.xz, Max.xz - Min.xz);
+        secondMod.xz = fmod(Max.xz - Min.xz + firstMod.xz, Max.xz - Min.xz);
+        output.xz    = Min.xz + secondMod.xz;
+        output.y     = position.y;
+        return output;
+}

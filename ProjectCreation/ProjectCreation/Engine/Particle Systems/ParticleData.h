@@ -40,7 +40,8 @@ namespace ParticleData
                 float             accumulatedTime; // life time
                 bool              active;
                 DirectX::XMFLOAT4 position;
-                DirectX::XMFLOAT4 color;
+                DirectX::XMFLOAT4 initialColor;
+                DirectX::XMFLOAT4 finalColor;
                 DirectX::XMFLOAT2 uv;
                 DirectX::XMFLOAT3 minVelocity;
                 DirectX::XMFLOAT3 maxVelocity;

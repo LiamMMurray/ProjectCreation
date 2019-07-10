@@ -5,12 +5,16 @@
 #include "../../Rendering/RenderingSystem.h"
 #include "../../Rendering/Vertex.h"
 #include "../../Utility/Macros/DirectXMacros.h"
+#include "..//..//Engine/GEngine.h"
 #include "../GEngine.h"
 #include "../MathLibrary/ColorConstants.h"
 #include "../ResourceManager/ComputeShader.h"
 #include "../ResourceManager/GeometryShader.h"
 #include "../ResourceManager/PixelShader.h"
+#include "../ResourceManager/ResourceManager.h"
+#include "../ResourceManager/Texture2D.h"
 #include "../ResourceManager/VertexShader.h"
+#include"../../Rendering/Terrain/TerrainManager.h"
 #include "EmitterComponent.h"
 #include "ParticleBufferSetup.h"
 using namespace ParticleData;
@@ -42,6 +46,7 @@ void ParticleManager::update(float deltaTime)
         VertexShader*   vertexShader   = RESOURCE_MANAGER->GetResource<VertexShader>(m_VertexShaderHandle);
         PixelShader*    pixelShader    = RESOURCE_MANAGER->GetResource<PixelShader>(m_PixelShaderHandle);
         GeometryShader* geometryShader = RESOURCE_MANAGER->GetResource<GeometryShader>(m_GeometryShaderHandle);
+        Texture2D*      texture        = RESOURCE_MANAGER->GetResource<Texture2D>(m_TextureHandle);
 
         m_RenderSystem->UpdateConstantBuffer(
             m_EmitterBuffer.m_StructuredBuffer, m_EnitterInfo, sizeof(ParticleData::FEmitterGPU) * 1);
@@ -58,6 +63,7 @@ void ParticleManager::update(float deltaTime)
         m_RenderSystem->m_Context->CSSetUnorderedAccessViews(0, 1, &m_ParticleBuffer.m_UAV, 0);
         m_RenderSystem->m_Context->CSSetShaderResources(0, 1, &m_EmitterBuffer.m_StructuredView);
         m_RenderSystem->m_Context->CSSetUnorderedAccessViews(1, 1, &m_SegmentBuffer.m_UAV, 0);
+        //m_RenderSystem->m_Context->CSSetShaderResources(0, 1, &texture->m_SRV);
         // dispatch before setting UAV to null
         m_RenderSystem->m_Context->Dispatch(1000, 1, 1);
 
@@ -93,6 +99,8 @@ void ParticleManager::update(float deltaTime)
 
         m_RenderSystem->m_Context->VSSetShader(vertexShader->m_VertexShader, 0, 0);
         m_RenderSystem->m_Context->PSSetShader(pixelShader->m_PixelShader, 0, 0);
+        m_RenderSystem->m_Context->PSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_RenderSystem->m_DefaultSamplerStates);
+        m_RenderSystem->m_Context->PSSetShaderResources(0, 1, &texture->m_SRV);
         // draw call;
         m_RenderSystem->m_Context->Draw(100000, 0);
 
@@ -108,12 +116,15 @@ void ParticleManager::update(float deltaTime)
 
 void ParticleManager::init()
 {
+
+
         // data set up //shoulde be ab;e to set the particle data somewhere else
-        m_EnitterInfo                       = new FEmitterGPU;
+        m_EnitterInfo = new FEmitterGPU;
 
         m_EnitterInfo->currentParticleCount = 0;
         m_EnitterInfo->active               = true;
-        m_EnitterInfo->color                = {10.0f, 10.0f, 0.0f, 1.0f};
+        m_EnitterInfo->initialColor                = {10.0f, 10.0f, 0.0f, 1.0f};
+        m_EnitterInfo->finalColor                = {1.0f, 1.0f, 1.0f, 1.0f};
         m_EnitterInfo->position             = {0.0f, 0.0f, 0.0f, 0.0f};
         m_EnitterInfo->uv                   = {0.0f, 0.0f};
         m_EnitterInfo->minVelocity          = {-30.0f, -0.0f, -30.0f};
@@ -135,6 +146,9 @@ void ParticleManager::init()
         m_PixelShaderHandle    = RESOURCE_MANAGER->LoadPixelShader("PurePixelShader");
         m_VertexShaderHandle   = RESOURCE_MANAGER->LoadVertexShader("PureVertexShader");
         m_GeometryShaderHandle = RESOURCE_MANAGER->LoadGeometryShader("GeometryShaderTesting");
+        m_TextureHandle        = RESOURCE_MANAGER->LoadTexture2D("Teddy_D");
+
+
 
         D3D11_INPUT_ELEMENT_DESC layout1[] = {
             //{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -308,7 +322,7 @@ EntityHandle ParticleManager::CreateEmitter(ParticleData::FEmitterCPU& emitter)
 
 void ParticleManager::AddEmitter(ParticleData::FEmitterGPU& emitter)
 {
-        //m_Emitters.push_back(emitter);
+        // m_Emitters.push_back(emitter);
 }
 
 void ParticleManager::SetParticleInfo(ParticleData::FParticleGPU* particleInfo)

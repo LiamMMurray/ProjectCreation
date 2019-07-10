@@ -683,6 +683,8 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         XMStoreFloat3(&m_ConstantBuffer_SCENE.eyePosition, mainTransform->transform.translation);
         m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(m_CachedMainViewProjectionMatrix);
         m_ConstantBuffer_MVP.Projection     = XMMatrixTranspose(m_CachedMainProjectionMatrix);
+        // get scale
+        m_ConstantBuffer_SCENE.scale = TerrainManager::Get()->GetScale();
 
         /** Prepare draw calls **/
         m_TransluscentDraws.clear();
