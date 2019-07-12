@@ -84,6 +84,7 @@ class SpeedBoostSystem : public ISystem
         static constexpr float m_SplineAttractionForceMax = 1.5f;
         static constexpr float m_SplineHeightOffset       = 0.06f;
 
+	
 
     protected:
         // Inherited via ISystem
