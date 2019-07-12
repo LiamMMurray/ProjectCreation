@@ -75,9 +75,9 @@ class PlayerController : public IController
 
         KeyCode m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT] = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
 
-        const char* m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"whiteSpeedBoost",
-                                                                   "whiteSpeedBoost",
-                                                                   "whiteSpeedBoost",
+        const char* m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"PianoC",
+                                                                   "PianoE",
+                                                                   "PianoF#",
                                                                    "whiteSpeedBoost"};
 
         GW::AUDIO::GSound* m_SpeedBoostSoundPool[E_LIGHT_ORBS::COUNT][MAX_SPEEDBOOST_SOUNDS];
