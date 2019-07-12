@@ -202,7 +202,8 @@ void UIManager::Pause()
         GEngine::Get()->SetGamePaused(true);
         if (instance->m_InMenu)
         {
-                while (ShowCursor(TRUE) < 0);
+                while (ShowCursor(TRUE) < 0)
+                        ;
         }
         else
         {
@@ -293,21 +294,47 @@ void UIManager::Unpause()
         }
 }
 
-void UIManager::AdjustResolution(HWND window)
+void UIManager::CheckResolution()
+{
+        // Resizes the window
+        RECT       desktop;
+        const HWND hDesktop = GetDesktopWindow();
+        GetWindowRect(hDesktop, &desktop); // set the size
+
+		for (int i = 0; i < instance->resDescriptors.size(); i++)
+		{
+                if (instance->resDescriptors[i].Width == desktop.right 
+					&& instance->resDescriptors[i].Height == desktop.bottom)
+				{
+				            instance->m_Resolution = i;
+				}
+		}
+}
+
+void UIManager::StartupResAdjust(HWND window)
 {
         if (instance->m_AdjustedScreen == false)
         {
                 instance->m_AdjustedScreen = true;
+                instance->m_window         = window;
 
-			//Resizes the window
+                // Resizes the window
                 RECT       desktop;
                 const HWND hDesktop = GetDesktopWindow();
                 GetWindowRect(hDesktop, &desktop); // set the size
                 ::SetWindowPos(window, 0, 0, 0, desktop.right, desktop.bottom, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-				
-			//Center the window
+
+                // Center the window
                 MoveWindow(window, 0, 0, desktop.right, desktop.bottom, true);
         }
+}
+
+void UIManager::AdjustResolution(HWND window, int wWidth, int wHeight)
+{
+        ::SetWindowPos(window, 0, 0, 0, wWidth, wHeight, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+
+        // Center the window
+        MoveWindow(window, 0, 0, wWidth, wHeight, true);
 }
 
 void UIManager::SupportedResolutions()
@@ -322,13 +349,13 @@ void UIManager::SupportedResolutions()
         pOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, 0, &num, instance->resDescriptors.data());
         pOutput->Release();
 
-		for (auto i = 0; i < instance->resDescriptors.size(); i++)
-		{
-            if (instance->resDescriptors[i].Scaling != DXGI_MODE_SCALING_UNSPECIFIED)
-			{
+        for (auto i = 0; i < instance->resDescriptors.size(); i++)
+        {
+                if (instance->resDescriptors[i].Scaling != DXGI_MODE_SCALING_UNSPECIFIED)
+                {
                         instance->resDescriptors.erase(instance->resDescriptors.begin() + i);
-			}
-		}
+                }
+        }
 }
 
 // Core Function
@@ -382,7 +409,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           false);
 
-		// "Press A, S, and D to continue. . . "
+        // "Press A, S, and D to continue. . . "
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
@@ -393,9 +420,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.1f,
                           true,
                           false);
-        
+
         // (Spacebar, Q, and E)"
-        //instance->AddText(instance->m_RenderSystem->m_Device,
+        // instance->AddText(instance->m_RenderSystem->m_Device,
         //                  instance->m_RenderSystem->m_Context,
         //                  E_MENU_CATEGORIES::MainMenu,
         //                  L"../Assets/2d/Text/calibri.spritefont",
@@ -543,7 +570,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           pauseButtonWidth,
                           pauseButtonHeight);
 
-		//Options Submenu
+        // Options Submenu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
@@ -566,6 +593,43 @@ void UIManager::Initialize(native_handle_type hwnd)
                           false,
                           false);
 
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::OptionsSubmenu,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "<",
+                          0.04f,
+                          -0.12f,
+                          0.3f,
+                          false,
+                          true);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::OptionsSubmenu,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          ">",
+                          0.04f,
+                          0.12f,
+                          0.3f,
+                          false,
+                          true);
+
+        for (auto i = 0; i < instance->resDescriptors.size(); i++)
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  L"../Assets/2d/Text/myfile.spritefont",
+                                  std::to_string(instance->resDescriptors[i].Width) + "x" +
+                                      std::to_string(instance->resDescriptors[i].Height),
+                                  0.04f,
+                                  0.0f,
+                                  0.3f,
+                                  false,
+                                  false);
+        }
+
         // Level Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
@@ -580,163 +644,237 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           pauseButtonWidth,
                           pauseButtonHeight);
-		
-        // Resume Button
-        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][1].OnMouseDown.AddEventListener(
-            [](UIMouseEvent* e) { instance->Unpause(); });
+        // Pause Menu
+        {
+                // Resume Button
+                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][1].OnMouseDown.AddEventListener(
+                    [](UIMouseEvent* e) { instance->Unpause(); });
 
-        // Level Select Button
-        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                // Sprites
-                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
-                {
-                        if (i != 0)
+                // Level Select Button
+                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                        // Sprites
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
                         {
-                                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
+                                if (i != 0)
+                                {
+                                        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
+                                }
                         }
-                }
-                // Text
-                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
-                }
-
-                // Sprites
-                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu].size(); i++)
-                {
-                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = true;
-                }
-                // Text
-                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu].size(); i++)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = true;
-                }
-        });
-
-        // Options Button
-        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                // Sprites
-                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
-                {
-                        if (i != 0)
+                        // Text
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
                         {
-                                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
+                                instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
                         }
-                }
-                // Text
-                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
-                }
 
-                // Sprites
-                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
-                {
-                        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = true;
-                }
-                // Text
-                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = true;
-                }
+                        // Sprites
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu].size(); i++)
+                        {
+                                instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = true;
+                        }
+                        // Text
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = true;
+                        }
+                });
 
-				if (instance->m_IsFullscreen == false)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = false; // Off
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = true; // On
-                }
-                else
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = true; // Off
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
-                }
-        });
+                // Options Button
+                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                        // Sprites
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                        {
+                                if (i != 0)
+                                {
+                                        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
+                                }
+                        }
+                        // Text
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
+                        }
 
-        // Controls Button
-        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][4].OnMouseDown.AddEventListener([](UIMouseEvent* e) {});
+                        // Sprites
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
+                        {
+                                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = true;
+                        }
+                        // Text
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = true;
+                        }
 
-        // Exit Button
-        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][5].OnMouseDown.AddEventListener(
-            [](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
+                        // Sprites
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                        {
+                                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = true;
+                        }
+                        // Text
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = true;
+                        }
+
+                        if (instance->m_IsFullscreen == false)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = false; // Off
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = true;  // On
+                        }
+                        else
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = true;  // Off
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
+                        }
+
+                        for (int i = 4; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                        {   
+                        	instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                        }
+                        instance->CheckResolution();
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->m_Resolution + 4].mEnabled = true;
+						
+                });
+
+                // Controls Button
+                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][4].OnMouseDown.AddEventListener([](UIMouseEvent* e) {});
+
+                // Exit Button
+                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][5].OnMouseDown.AddEventListener(
+                    [](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
+        }
 
         // Options
-        // Back Button
-        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                // Back button to go from the options menu to the pause menu
+        {
+                // Back Button
+                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                        // Back button to go from the options menu to the pause menu
 
-                // Disable all sprites for the options
-                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
-                {
-                        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
-                }
-                // Disable all text for the options
-                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
-                }
+                        // Disable all sprites for the options
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
+                        {
+                                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
+                        }
+                        // Disable all text for the options
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
+                        }
 
-                // Enable all sprites for the background
-                for (int i = 1; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
-                {
-                        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
-                }
-                // Enable all text for the background
-                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
-                }
+                        // Enable all sprites for the background
+                        for (int i = 1; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                        {
+                                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
+                        }
+                        // Enable all text for the background
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
+                        }
 
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = false;  // Off
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
-        });
+                        // Disable all sprites for the options submenu
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                        {
+                                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                        }
+                        // Disable all text for the options submenu
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                        }
+                });
 
-		//Window Mode
-        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e){ 
-        	
-            if (instance->m_IsFullscreen == false)
-            {
-                    instance->m_IsFullscreen                                              = true;
-                    instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled   = true;  // Off
-                    instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled   = false; // On
-            }
-            else
-            {
-                    instance->m_IsFullscreen                                              = false;
-                    instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled   = false; // Off
-                    instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled   = true;  // On
+                // Window Mode
+                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                        if (instance->m_IsFullscreen == false)
+                        {
+                                instance->m_IsFullscreen                                            = true;
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = true;  // Off
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
+                        }
+                        else
+                        {
+                                instance->m_IsFullscreen                                            = false;
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = false; // Off
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = true;  // On
+                        }
+                        instance->m_RenderSystem->SetFullscreen(instance->m_IsFullscreen);
+                });
 
-            }
-            instance->m_RenderSystem->SetFullscreen(instance->m_IsFullscreen);
+                // Left Resolution Button
+                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                        if (instance->m_Resolution - 1 <= 0)
+						{
+                                instance->m_Resolution = 8;
+						}
+                        else
+                        {
+                                instance->m_Resolution--;
+                        }
+                        
+                        for (int i = 4; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                        }
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->m_Resolution + 4].mEnabled = true;
+					//Change Resolution HERE
+                        instance->AdjustResolution(instance->m_window,
+                                                   instance->resDescriptors[instance->m_Resolution].Width,
+                                                   instance->resDescriptors[instance->m_Resolution].Height);
+                });
 
-        });
+                // Right Resolution Button
+                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                        if (instance->m_Resolution + 1 >= 9)
+                        {
+                                instance->m_Resolution = 0;
+                        }
+                        else
+                        {
+                                instance->m_Resolution++;
+                        }
+
+                        for (int i = 4; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                        }
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->m_Resolution + 4].mEnabled = true;
+                        // Change Resolution HERE
+                        instance->AdjustResolution(instance->m_window,
+                                                   instance->resDescriptors[instance->m_Resolution].Width,
+                                                   instance->resDescriptors[instance->m_Resolution].Height);
+                });
+        }
 
         // Level Select
-        // Back Button
-        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                // Back button to go from the options menu to the pause menu
+        {
+                // Back Button
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                        // Back button to go from the options menu to the pause menu
 
-                // Disable all sprites for the options
-                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu].size(); i++)
-                {
-                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
-                }
-                // Disable all text for the options
-                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu].size(); i++)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
-                }
+                        // Disable all sprites for the options
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu].size(); i++)
+                        {
+                                instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
+                        }
+                        // Disable all text for the options
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
+                        }
 
-                // Enable all sprites for the background
-                for (int i = 1; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
-                {
-                        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
-                }
-                // Enable all text for the background
-                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
-                }
-        });
+                        // Enable all sprites for the background
+                        for (int i = 1; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                        {
+                                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
+                        }
+                        // Enable all text for the background
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
+                        }
+                });
+        }
 }
 
 void UIManager::Update()
@@ -762,8 +900,8 @@ void UIManager::Update()
         if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled)
         {
 
-			// Joseph Updated the main menu ui to match to input keys
-			// Changed 'Space', 'Q', and 'E' to 'A', 'S', and 'D'
+                // Joseph Updated the main menu ui to match to input keys
+                // Changed 'Space', 'Q', and 'E' to 'A', 'S', and 'D'
                 if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down &&
                     GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down &&
                     GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
@@ -786,13 +924,13 @@ void UIManager::Update()
                 }
         }
 
-		//Sets the game fullscreen on startup
-		if (instance->m_FirstFull == true)
-        {
-                instance->m_RenderSystem->SetFullscreen(true);
-                instance->m_FirstFull    = false;
-                instance->m_IsFullscreen = true;
-        }
+        // Sets the game fullscreen on startup
+        //if (instance->m_FirstFull == true)
+        //{
+        //        instance->m_RenderSystem->SetFullscreen(true);
+        //        instance->m_FirstFull    = false;
+        //        instance->m_IsFullscreen = true;
+        //}
 
         for (auto& it : instance->m_AllSprites)
                 for (auto& sprite : it.second)

@@ -72,7 +72,9 @@ class UIManager
         void MainTilteUnpause();
         void Pause();
         void Unpause();
-        void AdjustResolution(HWND window);
+        void CheckResolution();
+        void StartupResAdjust(HWND window);
+        void AdjustResolution(HWND window, int wWidth, int wHeight);
         void SupportedResolutions();	//Creates the supported resolutions for the game
 
 
@@ -88,6 +90,7 @@ class UIManager
         bool                                             m_FirstFull = true;	//Turns false when the game is put to fullscreen on launch
         bool                                             m_InMenu       = false;
         bool                                             m_AdjustedScreen = false;
+        int                                              m_Resolution; // 0-7 Representing the resDescriptors resolutions
 
         std::unique_ptr<DirectX::SpriteBatch>            m_SpriteBatch;
         std::unique_ptr<DirectX::CommonStates>           m_States;
@@ -97,6 +100,7 @@ class UIManager
         std::vector<DXGI_MODE_DESC> resDescriptors;
 
         RenderSystem* m_RenderSystem;
+        HWND          m_window;
 
         DirectX::XMFLOAT2 m_TexelSize;
         DirectX::XMFLOAT2 m_ScreenSize;
