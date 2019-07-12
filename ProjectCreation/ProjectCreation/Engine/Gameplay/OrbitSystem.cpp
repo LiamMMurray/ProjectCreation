@@ -147,7 +147,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 }
         }
 
-        if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) >= 5)
+        if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) >= 3)
         {
                 static bool done = false;
 
@@ -164,7 +164,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 done = true;
         }
 
-        if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) >= 5)
+        if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) >= 3)
         {
                 static bool done = false;
 
@@ -182,7 +182,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 done = true;
         }
 
-        if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) >= 5)
+        if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) >= 3)
         {
                 static bool done = false;
 

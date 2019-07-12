@@ -113,8 +113,8 @@ void PlayerCinematicState::UpdateLookAt(float deltaTime)
 void PlayerCinematicState::UpdateReveal(float deltaTime)
 {
         m_RevealRadius += 1.0f;
-        GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_RevealRadius, deltaTime);
-        if (GEngine::Get()->m_PlayerRadius >= 1000.0f)
+        GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_RevealRadius, deltaTime * 15.0f);
+        if (GEngine::Get()->m_PlayerRadius >= 500)
         {
                 _playerController->SetCollectedPlanetCount(0);
                 m_currAlpha = 1.0f;

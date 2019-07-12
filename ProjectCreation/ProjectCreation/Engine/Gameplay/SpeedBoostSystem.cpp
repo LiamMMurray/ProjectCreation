@@ -164,7 +164,7 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                         if (!goals[i])
                         {
                                 int count = controllerSystem->GetOrbCount(i);
-                                if (count >= 5)
+                                if (count >= 3)
                                 {
                                         start = playerTransform->transform.translation +
                                                 2.0f * playerTransform->transform.GetForward();
@@ -366,6 +366,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         auto clusterIt = m_SplineClusterSpawners.find(clusterID);
 
+					int splineColor = m_SplineClusterSpawners.at(clusterID).color;
 
                         XMVECTOR pos = splineComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
                         clusterIt->second.pointPositions[index] = pos;
@@ -374,7 +375,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         if (distance < (checkRadius))
                         {
-                                if (bIsLatchedToSpline == false || prevDistance > distance)
+                                if (bIsLatchedToSpline == false || prevDistance > distance && (GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[splineColor]) == KeyState::Down))
                                 {
                                         bIsLatchedToSpline  = true;
                                         latchedSplineHandle = splineComp.GetHandle();
@@ -498,19 +499,21 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 int splineID  = latchedSplineComp->clusterID;
                                 int goalIndex = m_SplineClusterSpawners.at(splineID).color;
 
-                                // Start of the new spline
-                                XMVECTOR start =
-                                    playerTransform->transform.translation + 2.0f * playerTransform->transform.GetForward();
+                                 // Start of the new spline
+                                 XMVECTOR start =
+                                     playerTransform->transform.translation + 2.0f * playerTransform->transform.GetForward();
+								 
+                                 // Direction of the new spline
+                                 XMVECTOR dir = SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] - start;
+								 
+                                 // End point of the new spline
+                                 XMVECTOR end = SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] -
+                                                2.0f * XMVector3Normalize(dir);
+								 
+                                 // Finish creation of new spline
+                                 CreateRandomPath(start, end, goalIndex);
 
-                                // Direction of the new spline
-                                XMVECTOR dir = SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] - start;
-
-                                // End point of the new spline
-                                XMVECTOR end = SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] -
-                                               2.0f * XMVector3Normalize(dir);
-
-                                // Finish creation of new spline
-                                CreateRandomPath(start, end, goalIndex);
+							
                         }
                 }
                 else
