@@ -76,6 +76,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
                 surface.normal = TangentWS * normalSample.x + BinormalWS * normalSample.y + NormalWS * normalSample.z;
         }
         surface.normal = normalize(surface.normal);
+        surface.normal = NormalWS;
         // return surface.normal.xyzz;
         float alpha = 1.f;
 
@@ -117,7 +118,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
                 color += IBL(surface, viewWS, specColor, diffuse, specular, integration);
         }
 
-        //return float4(color, 1.0f);
+        return float4(color, 1.0f);
 
         float maskA     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 45.0f + _Time * 0.01f * float2(1.0f, 0.0f)).z;
         float maskB     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 40.0f + _Time * 0.01f * float2(-1.0f, 0.0f)).z;

@@ -10,13 +10,15 @@ struct Wave
         float  waveLength;
 };
 
-#define NUM_WAVES 5
+#define NUM_WAVES 7
 
-static Wave  waves[NUM_WAVES] = {{normalize(float2(1.0f, 2.0f)), 3.5f, 200.0f},
-                                {normalize(float2(-2.0f, 1.0f)), 3.5f, 180.0f},
-                                {normalize(float2(-2.0f, 1.0f)), 3.0f, 30.0f},
-                                {normalize(float2(-2.0f, 2.0f)), 4.0f, 35.0f},
-                                {normalize(float2(2.0f, -2.0f)), 0.5f, 8.0f}};
+static Wave  waves[NUM_WAVES] = {{normalize(float2(1.0f, 2.0f)), 2.5f, 200.0f},
+                                {normalize(float2(2.0f, 1.0f)), 3.5f, 180.0f},
+                                {normalize(float2(-2.0f, 1.0f)), 2.0f, 80.0f},
+                                {normalize(float2(-2.0f, 2.0f)), 2.2f, 90.0f},
+                                {normalize(float2(-1.0f, 2.0f)), 1.5f, 30.0f},
+                                {normalize(float2(2.0f, -1.0f)), 1.3f, 35.0f},
+                                {normalize(float2(2.0f, -2.0f)), 0.5f, 16.0f}};
 static float steepness        = 1.2;
 static float speed            = 0.7f;
 
@@ -54,9 +56,9 @@ DomainOutput CalcGerstnerWaveOffset(float3 v)
         DomainOutput output = (DomainOutput)0;
         float        scale  = gScale / 8000.0f;
         output.PosWS        = v;
-        output.BinormalWS   = float3(0.0f, 0.0f, 1.0f);
+        output.BinormalWS   = float3(1.0f, 0.0f, 0.0f);
         output.NormalWS     = float3(0.0f, 1.0f, 0.0f);
-        output.TangentWS    = float3(1.0f, 0.0f, 1.0f);
+        output.TangentWS    = float3(0.0f, 0.0f, 1.0f);
         [unroll] for (int i = 0; i < NUM_WAVES; i++)
         {
                 Wave  wave = waves[i];
@@ -68,24 +70,26 @@ DomainOutput CalcGerstnerWaveOffset(float3 v)
                 float s = sin(rad);
                 float c = cos(rad);
 
+                float wa = wi * wave.amplitude * scale;
+
                 output.PosWS.y += (s + 1.0f) * wave.amplitude * scale;
                 output.PosWS.xz += (c + 1.0f) * wave.amplitude * scale * Qi * wave.dir;
 
-                output.NormalWS.xz -= wave.dir * wi * wave.amplitude * scale * c;
-                output.NormalWS.y -= wi * wave.amplitude * scale * s;//
+                //output.NormalWS.xz -= wave.dir * wa * c;
+                //output.NormalWS.y -= wa * s; //
 
-                output.TangentWS.x -= Qi * wave.dir.y * wave.dir.x * wi * wave.amplitude * scale * c;
-                output.TangentWS.z -= Qi * wave.dir.y * wave.dir.y * wi * wave.amplitude * scale * c;
-                output.TangentWS.y += wave.dir.y * wave.amplitude * scale * c;
+                output.TangentWS.z -= Qi * wave.dir.y * wave.dir.x * wa * c;
+                output.TangentWS.x -= Qi * wave.dir.y * wave.dir.y * wa * c;
+                output.TangentWS.y += wave.dir.y * wa * c;
 
-                output.BinormalWS.x -= Qi * wave.dir.x * wave.dir.x * wi * wave.amplitude * scale * c;
-                output.BinormalWS.z -= Qi * wave.dir.y * wave.dir.x * wi * wave.amplitude * scale * c;
-                output.BinormalWS.y += wave.dir.x * wave.amplitude * scale * c;	
+                output.BinormalWS.z -= Qi * wave.dir.x * wave.dir.x * wa * c;
+                output.BinormalWS.x -= Qi * wave.dir.y * wave.dir.x * wa * c;
+                output.BinormalWS.y += wave.dir.x * wa * c;
         }
 
         output.BinormalWS = normalize(output.BinormalWS);
         output.TangentWS  = normalize(output.TangentWS);
-        output.NormalWS   = normalize(output.NormalWS);
+        output.NormalWS   = normalize(cross(output.TangentWS, output.BinormalWS));
 
         return output;
 }
