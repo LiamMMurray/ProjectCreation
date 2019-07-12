@@ -45,6 +45,7 @@ namespace ParticleData
                 DirectX::XMFLOAT2 uv;
                 DirectX::XMFLOAT3 minVelocity;
                 DirectX::XMFLOAT3 maxVelocity;
+                DirectX::XMFLOAT2 scale; // min sclae and max scale
         };
 
         struct FParticleGPU
@@ -57,6 +58,7 @@ namespace ParticleData
                 float             time = 0.0f;
                 bool              active;
                 int               index;
+                float             scale;
         };
 
         struct FSegmentBuffer
@@ -64,5 +66,8 @@ namespace ParticleData
                 int index[gMaxEmitterCount];
         };
 
-
+		struct FTextureInfo
+		{
+                int textureIndex;
+		};
 }; // namespace ParticleData

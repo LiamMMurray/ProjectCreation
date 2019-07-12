@@ -6,14 +6,21 @@ struct PS_INPUT
         float4 color : COLOR;
 };
 
-Texture2D tex : register (t0);
-SamplerState     objSamplerState : register(s0);
+cbuffer TextureInfo : register(b0)
+{
+
+};
+Texture2D    tex1 : register(t0);
+SamplerState objSamplerState : register(s0);
 
 float4 main(PS_INPUT input) : SV_TARGET
 {
 
         float4 output = input.color;
-		output        = tex.Sample(objSamplerState, input.uv);
-        
+        output        = tex1.Sample(objSamplerState, input.uv);
+		//Transparency
+        output.a      *= 0.5;
+        clip(output.a > 0.1);
+
         return output;
 }

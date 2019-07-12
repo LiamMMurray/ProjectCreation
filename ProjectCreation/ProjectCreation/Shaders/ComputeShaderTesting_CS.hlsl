@@ -13,6 +13,7 @@ struct FParticleGPU
         float  time;
         bool   active;
         int    index;
+        float  scale;
 };
 
 
@@ -27,6 +28,7 @@ struct FEmitterGPU
         float2 uv;
         float3 minInitialVelocity;
         float3 maxInitialVelocity;
+        float2  particleScale;
 };
 
 struct FSegmentBuffer
@@ -49,6 +51,8 @@ void main(uint3 DTid
                 ParticleBuffer[id].time = EmitterBuffer[0].accumulatedTime;
                 float4 startPos         = EmitterBuffer[0].position;
 
+				ParticleBuffer[id].prevPos = startPos;
+
                 float alphaA = rand(_Time * id / 0.1f);
                 float alphaB = rand(alphaA);
                 float alphaC = rand(alphaB);
@@ -63,13 +67,14 @@ void main(uint3 DTid
                 ParticleBuffer[id].uv    = EmitterBuffer[0].uv;
                 ParticleBuffer[id].color = EmitterBuffer[0].initialColor;
 
-                ParticleBuffer[id].position = float4(_EyePosition + ParticleBuffer[id].velocity * 1.0f, 1.0f);
+                //ParticleBuffer[id].position = float4(_EyePosition + ParticleBuffer[id].velocity * 1.0f, 1.0f);
+                ParticleBuffer[id].position;
         }
         else
         {
 				float alpha              = 1.0f - ParticleBuffer[id].time / EmitterBuffer[0].accumulatedTime;
                 ParticleBuffer[id].color = lerp(EmitterBuffer[0].initialColor, EmitterBuffer[0].finalColor, alpha);
-
+                ParticleBuffer[id].color.w = alpha;
                 ParticleBuffer[DTid.x].time -= _DeltaTime;
                 // ParticleBuffer[DTid.x].position += 1.0f*float4(ParticleBuffer[DTid.x].velocity * _DeltaTime, 0.0f);
                 float3 Min = float3(-0.5f * _Scale, 0.0f, -0.5f * _Scale);
