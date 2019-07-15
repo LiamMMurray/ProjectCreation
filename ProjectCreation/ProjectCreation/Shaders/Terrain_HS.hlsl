@@ -50,7 +50,7 @@ float CalculateTessellationFactor(float3 Control0, float3 Control1)
 
         float alpha = saturate(3.0f * dist / gScale);
 
-        return lerp(64.0f, 8.0f, alpha);
+        return lerp(64.0f, 4.0f, alpha);
 
 
         float tileSize = cellSizeWorld;

@@ -31,8 +31,9 @@ class GEngine
         bool m_WantsGameExit = false;
 
     public:
-        float m_PlayerRadius = 0.0f;
-        float m_TerrainAlpha = 0.0f;
+        float        m_PlayerRadius = 0.0f;
+        float        m_TerrainAlpha = 0.0f;
+        EntityHandle m_SunHandle;
 
         void        SetGamePaused(bool val);
         inline bool GetGamePaused()

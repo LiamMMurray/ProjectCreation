@@ -76,9 +76,7 @@ class TerrainManager
 
         unsigned int patchQuadCount;
         unsigned int patchSquareDimensions;
-        unsigned int patchCells = 32
-			
-			;
+        unsigned int patchCells = 16;
         unsigned int textureDimensions;
 
         unsigned int intermediateMipLevel = 3;

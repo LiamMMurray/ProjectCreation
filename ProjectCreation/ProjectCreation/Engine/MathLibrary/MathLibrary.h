@@ -25,7 +25,7 @@ class MathLibrary
                 return val - (max - min) * floor(val / (max - min));
         }
 
-		/* wrap x -> [0,max) */
+        /* wrap x -> [0,max) */
         static double wrapMax(double x, double max)
         {
                 /* integer math: `(max + x % max) % max` */
@@ -38,8 +38,8 @@ class MathLibrary
         }
 
         static DirectX::XMVECTOR WrapPosition(const DirectX::XMVECTOR& pos,
-                                       const DirectX::XMVECTOR& min,
-                                       const DirectX::XMVECTOR& max);
+                                              const DirectX::XMVECTOR& min,
+                                              const DirectX::XMVECTOR& max);
         // Matrix Function
         static void              OrthoNormalize(DirectX::XMVECTOR normal, DirectX::XMVECTOR& tangent);
         static DirectX::XMMATRIX LookAt(DirectX::XMVECTOR vPos, DirectX::XMVECTOR tPos, DirectX::XMVECTOR up);
@@ -120,6 +120,13 @@ class MathLibrary
                         return false; // complex roots
                 }
         };
+
+        static DirectX::XMFLOAT3 NormalizeEulerAngles(const DirectX::XMFLOAT3& euler);
+
+        static float NormalizeAngle(float a0);
+        static float ShortestAngle(float a0, float a1);
+        static float LerpAngle(float a0, float a1, float t);
+        static float MoveTowardsAngle(float a0, float a1, float speed);
 
         static float             MoveTowards(const float a, const float b, const float speed);
         static DirectX::XMVECTOR MoveTowards(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b, const float speed);

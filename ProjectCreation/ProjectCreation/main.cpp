@@ -234,6 +234,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
             EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
            
 
+
             TransformComponent* transformComp = HandleManager->GetComponent<TransformComponent>(transformHandle);
             transformComp->transform.SetScale(0.1f);*/
         }
@@ -255,9 +256,11 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
                 auto dirComp = dirLightEntityHandle.GetComponent<DirectionalLightComponent>();
                 dirComp->m_LightRotation =
-                    XMQuaternionRotationRollPitchYaw(XMConvertToRadians(20.0f), XMConvertToRadians(70.0f), 0.0f);
-                dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.8f, 1.0f, 2.0f);
-                dirComp->m_AmbientColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f);
+                    XMQuaternionRotationRollPitchYaw(XMConvertToRadians(15.0f), XMConvertToRadians(90.0f), 0.0f);
+                dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.85f, 0.7f, 5.0f);
+                dirComp->m_AmbientColor = XMFLOAT4(1.0f, 0.85f, 0.7f, 1.7f);
+
+                GEngine::Get()->m_SunHandle = dirLightEntityHandle;
         }
 
         // Create speedboost system
@@ -318,7 +321,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 }
 
                 UIManager::instance->StartupResAdjust(handle);
-				
+
                 {
                         static DWORD frameCount = 0;
                         ++frameCount;

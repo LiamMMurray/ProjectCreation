@@ -152,7 +152,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
         mTextureHandles[2] = GEngine::Get()->GetResourceManager()->LoadTexture2D("Soil01_Diffuse");
         mTextureHandles[3] = GEngine::Get()->GetResourceManager()->LoadTexture2D("Soil01_Normal");
         mTextureHandles[4] = GEngine::Get()->GetResourceManager()->LoadTexture2D("Terrain_Roughness");
-        mTextureHandles[5] = GEngine::Get()->GetResourceManager()->LoadTexture2D("Water01_Normal");
+        mTextureHandles[5] = GEngine::Get()->GetResourceManager()->LoadTexture2D("WaterHigh_NM");
 }
 using namespace DirectX;
 

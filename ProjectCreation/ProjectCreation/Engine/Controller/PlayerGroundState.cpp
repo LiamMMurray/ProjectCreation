@@ -1,5 +1,6 @@
 #include "PlayerGroundState.h"
 #include <iostream>
+#include "..//..//Rendering/Components/DirectionalLightComponent.h"
 #include "..//GEngine.h"
 #include "..//GenericComponents/TransformComponent.h"
 #include "..//MathLibrary/MathLibrary.h"
@@ -51,7 +52,7 @@ void PlayerGroundState::Update(float deltaTime)
         constexpr float pitchLimit   = XMConvertToRadians(90.0f);
         constexpr float rollLimit    = 20.0f;
 
-		float pitchDelta = eulerAngles.x;
+        float pitchDelta = eulerAngles.x;
         eulerAngles.x += GCoreInput::GetMouseY() * angularSpeed;
         pitchDelta = eulerAngles.x - pitchDelta;
 
@@ -161,8 +162,16 @@ void PlayerGroundState::Update(float deltaTime)
 
         _playerController->GetControlledEntity().GetComponent<TransformComponent>()->transform = _cachedTransform;
 
+        auto sunComp = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>();
+        sunComp->m_LightRotation =
+            sunComp->m_LightRotation *
+            XMQuaternionRotationAxis(VectorConstants::Up,
+                                     deltaTime * 0.14f * MathLibrary::CalulateVectorLength(XMVectorSetY(actualVelocity, 0.0f)));
+        // sunEuler.y    = MathLibrary::MoveTowardsAngle(sunEuler.y, MathLibrary::NormalizeAngle(eulerAngles.y + XM_PI), 1.0f *
+        // deltaTime);
+
         _playerController->SetCurrentVelocity(currentVelocity);
-        _playerController->SetEulerAngles(eulerAngles);
+        _playerController->SetEulerAngles(MathLibrary::NormalizeEulerAngles(eulerAngles));
 }
 
 void PlayerGroundState::Exit()
