@@ -194,6 +194,8 @@ void UIManager::MainTilteUnpause()
         {
                 instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][i].mEnabled = false;
         }
+
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = true;
 }
 
 void UIManager::Pause()
@@ -403,17 +405,17 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           false);
 
-        // (Spacebar, Q, and E)"
-        // instance->AddText(instance->m_RenderSystem->m_Device,
-        //                  instance->m_RenderSystem->m_Context,
-        //                  E_MENU_CATEGORIES::MainMenu,
-        //                  L"../Assets/2d/Text/calibri.spritefont",
-        //                  "(Spacebar, Q, and E)",
-        //                  0.06f,
-        //                  0.0f,
-        //                  0.2f,
-        //                  true,
-        //                  false);
+        // "Hold Left Click to Move. . . "
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::MainMenu,
+                          L"../Assets/2d/Text/calibri.spritefont",
+                          "Hold Left Click to Move",
+                          0.06f,
+                          0.0f,
+                          0.1f,
+                          false,
+                          false);
 
         // Pause Menu
         constexpr float pauseButtonWidth  = 0.25f;
@@ -1052,13 +1054,13 @@ void UIManager::Update()
                 }
         }
 
-        // Sets the game fullscreen on startup
-        // if (instance->m_FirstFull == true)
-        //{
-        //        instance->m_RenderSystem->SetFullscreen(true);
-        //        instance->m_FirstFull    = false;
-        //        instance->m_IsFullscreen = true;
-        //}
+        if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled == true)
+        {
+                if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
+                }
+        }
 
         for (auto& it : instance->m_AllSprites)
                 for (auto& sprite : it.second)
