@@ -644,6 +644,21 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           pauseButtonWidth,
                           pauseButtonHeight);
+
+        // Controls Menu
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::ControlsMenu,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Back",
+                          0.05f,
+                          0.0f,
+                          -0.15f,
+                          false,
+                          true,
+                          true,
+                          pauseButtonWidth,
+                          pauseButtonHeight);
         // Pause Menu
         {
                 // Resume Button
@@ -737,7 +752,32 @@ void UIManager::Initialize(native_handle_type hwnd)
                 });
 
                 // Controls Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][4].OnMouseDown.AddEventListener([](UIMouseEvent* e) {});
+                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][4].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                        // Sprites
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                        {
+                                if (i != 0)
+                                {
+                                        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
+                                }
+                        }
+                        // Text
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = false;
+                        }
+
+                        // Sprites
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::ControlsMenu].size(); i++)
+                        {
+                                instance->m_AllSprites[E_MENU_CATEGORIES::ControlsMenu][i].mEnabled = true;
+                        }
+                        // Text
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::ControlsMenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::ControlsMenu][i].mEnabled = true;
+                        }
+                });
 
                 // Exit Button
                 instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][5].OnMouseDown.AddEventListener(
@@ -861,6 +901,36 @@ void UIManager::Initialize(native_handle_type hwnd)
                         for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu].size(); i++)
                         {
                                 instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
+                        }
+
+                        // Enable all sprites for the background
+                        for (int i = 1; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                        {
+                                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
+                        }
+                        // Enable all text for the background
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
+                        }
+                });
+        }
+
+        // Controls Select
+        {
+                // Back Button
+                instance->m_AllSprites[E_MENU_CATEGORIES::ControlsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                        // Back button to go from the options menu to the pause menu
+
+                        // Disable all sprites for the options
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::ControlsMenu].size(); i++)
+                        {
+                                instance->m_AllSprites[E_MENU_CATEGORIES::ControlsMenu][i].mEnabled = false;
+                        }
+                        // Disable all text for the options
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::ControlsMenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::ControlsMenu][i].mEnabled = false;
                         }
 
                         // Enable all sprites for the background

@@ -24,6 +24,7 @@ struct E_MENU_CATEGORIES
                 OptionsMenu,
 				OptionsSubmenu,
                 LevelMenu,
+				ControlsMenu,
                 COUNT
         };
 };
