@@ -301,6 +301,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         {
                 GCoreInput::UpdateInput();
 
+                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "PeekMessage");
                 while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
                 {
                         // translate keystroke messages into the right format
@@ -313,10 +314,14 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                         if (msg.message == WM_QUIT)
                                 break;
                 }
+                GEngine::Get()->m_MainThreadProfilingContext.End();
 
+				GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "GEngine::Signal");
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
+                GEngine::Get()->m_MainThreadProfilingContext.End();
 
+						GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "Other");
                 if (GetActiveWindow() != handle && GEngine::Get()->GetGamePaused() == false)
                 {
                         UIManager::instance->Pause();
@@ -355,6 +360,8 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
                 debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
+                GEngine::Get()->m_MainThreadProfilingContext.End();
+
         }
         EngineHelpers::ShutdownEngineSystemManagers();
 
