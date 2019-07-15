@@ -234,7 +234,6 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
             EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
            
 
-
             TransformComponent* transformComp = HandleManager->GetComponent<TransformComponent>(transformHandle);
             transformComp->transform.SetScale(0.1f);*/
         }
@@ -273,13 +272,15 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 OrbitSystem* orbitSystem;
                 systemManager->CreateSystem<OrbitSystem>(&orbitSystem);
                 systemManager->RegisterSystem(&sysInitProps, orbitSystem);
+                orbitSystem->m_SystemName = "OrbitSystem";
 
                 SpeedBoostSystem* speedBoostSystem;
                 systemManager->CreateSystem<SpeedBoostSystem>(&speedBoostSystem);
                 systemManager->RegisterSystem(&sysInitProps, speedBoostSystem);
+                speedBoostSystem->m_SystemName = "SpeedBoostSystem";
         }
 
-        // Create Animation System
+        // Create AI System
         {
                 FSystemProperties sysInitProps;
                 sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
@@ -288,6 +289,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 AISystem* aiSystem;
                 systemManager->CreateSystem<AISystem>(&aiSystem);
                 systemManager->RegisterSystem(&sysInitProps, aiSystem);
+                aiSystem->m_SystemName = "AISystem";
         }
 
 

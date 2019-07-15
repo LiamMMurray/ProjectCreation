@@ -9,9 +9,9 @@
 #include "../ECS/SystemManager.h"
 #include "ResourceManager/ResourceManager.h"
 #include "XTime.h"
+#include "../Utility/Profiling.h"
 class GEngine
 {
-
         static NMemory::memsize            s_PoolAllocSize;
         NMemory::MemoryStack               m_PoolMemory;
         NMemory::NPools::RandomAccessPools m_ComponentPools;
@@ -34,6 +34,7 @@ class GEngine
         float        m_PlayerRadius = 0.0f;
         float        m_TerrainAlpha = 0.0f;
         EntityHandle m_SunHandle;
+        ProfilerContext m_MainThreadProfilingContext;		
 
         void        SetGamePaused(bool val);
         inline bool GetGamePaused()

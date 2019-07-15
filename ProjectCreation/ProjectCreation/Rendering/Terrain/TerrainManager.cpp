@@ -445,7 +445,9 @@ void TerrainManager::Initialize(RenderSystem* rs)
 
 void TerrainManager::Update(float deltaTime)
 {
+        GEngine::Get()->m_MainThreadProfilingContext.Begin("TerrainManager", "TerrainManager");
         instance->_update(deltaTime);
+        GEngine::Get()->m_MainThreadProfilingContext.End();
 }
 
 void TerrainManager::Shutdown()

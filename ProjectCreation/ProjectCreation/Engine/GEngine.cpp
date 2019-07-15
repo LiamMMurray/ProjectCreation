@@ -26,6 +26,7 @@ void GEngine::Initialize()
         instance->m_HandleManager =
             DBG_NEW HandleManager(instance->m_ComponentPools, instance->m_EntityPools, instance->m_PoolMemory);
 
+		instance->m_MainThreadProfilingContext.Initialize();
 
         instance->m_SystemManager   = DBG_NEW   SystemManager;
         instance->m_ResourceManager = DBG_NEW ResourceManager;
@@ -40,10 +41,11 @@ void GEngine::Shutdown()
         instance->m_ResourceManager->Shutdown();
         instance->m_HandleManager->Shutdown();
         NMemory::FreeGameMemory(instance->m_PoolMemory);
-
         delete instance->m_HandleManager;
         delete instance->m_SystemManager;
         delete instance->m_ResourceManager;
+
+        GEngine::Get()->m_MainThreadProfilingContext.Dump();
 }
 
 GEngine* GEngine::Get()

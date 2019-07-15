@@ -25,6 +25,7 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
                 systemManager->CreateSystem<RenderSystem>(&renderSystem);
                 renderSystem->SetWindowHandle(handle);
                 systemManager->RegisterSystem(&sysInitProps, renderSystem);
+                renderSystem->m_SystemName = "RenderSystem";
         }
 
         // Create Physics System
@@ -36,6 +37,7 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
                 PhysicsSystem* physicsSystem;
                 systemManager->CreateSystem<PhysicsSystem>(&physicsSystem);
                 systemManager->RegisterSystem(&sysInitProps, physicsSystem);
+                physicsSystem->m_SystemName = "PhysicsSystem";
         }
 
         // Create Animation System
@@ -47,6 +49,7 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
                 AnimationSystem* animSystem;
                 systemManager->CreateSystem<AnimationSystem>(&animSystem);
                 systemManager->RegisterSystem(&sysInitProps, animSystem);
+                animSystem->m_SystemName = "AnimSystem";
         }
 
         // Create Controller System
@@ -58,6 +61,7 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
                 ControllerSystem* controllerSystem;
                 systemManager->CreateSystem<ControllerSystem>(&controllerSystem);
                 systemManager->RegisterSystem(&sysInitProps, controllerSystem);
+                controllerSystem->m_SystemName = "ControllerSystem";
         }
 
         // Create Transform System
@@ -69,6 +73,7 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
                 TransformSystem* transformSystem;
                 systemManager->CreateSystem<TransformSystem>(&transformSystem);
                 systemManager->RegisterSystem(&sysInitProps, transformSystem);
+                transformSystem->m_SystemName = "TransformSystem";
         }
 
         GCoreInput::InitializeInput((HWND)handle);
