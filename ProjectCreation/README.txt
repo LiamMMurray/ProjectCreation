@@ -18,5 +18,6 @@ Press '1' -> Collect Red Orb
 Press '2' -> Collect Blue Orb
 Press '3' -> Collect Green Orb
 Press 'N' -> Trigger Scene Transition
+Press 'T' -> Reveal Terrain
 Press 'Tab' -> Enter Debug Mode
 Hold 'Shift' -> Show Wireframe
