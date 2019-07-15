@@ -28,6 +28,7 @@ void             ParticleManager::UpdateResources(ID3D11Resource* resource)
 
 void ParticleManager::update(float deltaTime)
 {
+        GEngine::Get()->m_MainThreadProfilingContext.Begin("ParticleManager", "ParticleManager");
         // update partilce data time
         // m_ParticleInfo->time = deltaTime;
         // update emitter container
@@ -106,6 +107,8 @@ void ParticleManager::update(float deltaTime)
         m_RenderSystem->m_Context->GSSetConstantBuffers(0, 1, &nullBuffer);
         ID3D11GeometryShader* nullGeometryShader = NULL;
         m_RenderSystem->m_Context->GSSetShader(nullGeometryShader, 0, 0);
+
+        GEngine::Get()->m_MainThreadProfilingContext.End();
 }
 
 void ParticleManager::init()

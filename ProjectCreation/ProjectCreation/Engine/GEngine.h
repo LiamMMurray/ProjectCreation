@@ -9,9 +9,9 @@
 #include "../ECS/SystemManager.h"
 #include "ResourceManager/ResourceManager.h"
 #include "XTime.h"
+#include "../Utility/Profiling.h"
 class GEngine
 {
-
         static NMemory::memsize            s_PoolAllocSize;
         NMemory::MemoryStack               m_PoolMemory;
         NMemory::NPools::RandomAccessPools m_ComponentPools;
@@ -31,6 +31,7 @@ class GEngine
         bool m_WantsGameExit = false;
 
     public:
+        ProfilerContext m_MainThreadProfilingContext;		
         float m_PlayerRadius = 0.0f;
         float m_TerrainAlpha = 0.0f;
 

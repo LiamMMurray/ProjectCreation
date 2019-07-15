@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <type_traits>
 #include "ECSTypes.h"
-
+#include <string>
 class SystemManager;
 
 #define SYSTEM_INIT_FLAG_SUSPEND_ON_START 1 << 1
@@ -36,7 +36,6 @@ class ISystem
 
     private:
         FSystemProperties m_Properties;
-
     protected:
         virtual void OnPreUpdate(float deltaTime)  = 0;
         virtual void OnUpdate(float deltaTime)     = 0;
@@ -45,8 +44,8 @@ class ISystem
         virtual void OnShutdown()                  = 0;
         virtual void OnResume()                    = 0;
         virtual void OnSuspend()                   = 0;
-
     public:
+        std::string       m_SystemName;
         virtual ~ISystem() = default;
 
         template <typename T>

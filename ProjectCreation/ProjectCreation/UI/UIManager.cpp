@@ -660,6 +660,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
 void UIManager::Update()
 {
+        GEngine::Get()->m_MainThreadProfilingContext.Begin("UIManager", "UIManager");
         using namespace DirectX;
 
         instance->m_ScreenSize =
@@ -779,6 +780,7 @@ void UIManager::Update()
                                 instance->m_SpriteBatch->End();
                         }
                 }
+        GEngine::Get()->m_MainThreadProfilingContext.End();
 }
 
 void UIManager::Shutdown()
