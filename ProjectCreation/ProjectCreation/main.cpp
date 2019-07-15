@@ -317,7 +317,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                         UIManager::instance->Pause();
                 }
 
-                UIManager::instance->AdjustResolution(handle);
+                UIManager::instance->StartupResAdjust(handle);
 				
                 {
                         static DWORD frameCount = 0;
