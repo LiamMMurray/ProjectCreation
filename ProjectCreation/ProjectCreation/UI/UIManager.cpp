@@ -306,7 +306,7 @@ void UIManager::CheckResolution()
                 if (instance->resDescriptors[i].Width == desktop.right 
 					&& instance->resDescriptors[i].Height == desktop.bottom)
 				{
-				            instance->m_Resolution = i;
+				            instance->CSettings.m_Resolution = i;
 				}
 		}
 }
@@ -570,6 +570,20 @@ void UIManager::Initialize(native_handle_type hwnd)
                           pauseButtonWidth,
                           pauseButtonHeight);
 
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::OptionsMenu,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Apply",
+                          0.05f,
+                          0.0f,
+                          -0.25f,
+                          false,
+                          true,
+                          true,
+                          pauseButtonWidth,
+                          pauseButtonHeight);
+
         // Options Submenu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
@@ -731,7 +745,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = true;
                         }
 
-                        if (instance->m_IsFullscreen == false)
+                        if (instance->CSettings.m_IsFullscreen == false)
                         {
                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = false; // Off
                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = true;  // On
@@ -747,7 +761,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                         	instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                         }
                         instance->CheckResolution();
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->m_Resolution + 4].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 4].mEnabled = true;
 						
                 });
 
@@ -822,67 +836,129 @@ void UIManager::Initialize(native_handle_type hwnd)
                         {
                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                         }
+
+
+                        instance->CSettings.m_Resolution   = instance->PSettings.m_Resolution;
+                        instance->CSettings.Volume         = instance->PSettings.Volume;
+                        instance->CSettings.m_IsFullscreen = instance->PSettings.m_IsFullscreen;
+
+                        instance->AdjustResolution(instance->m_window,
+                                                   instance->resDescriptors[instance->PSettings.m_Resolution].Width,
+                                                   instance->resDescriptors[instance->PSettings.m_Resolution].Height);
+
+                        instance->m_RenderSystem->SetFullscreen(instance->PSettings.m_IsFullscreen);
                 });
 
                 // Window Mode
                 instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                        if (instance->m_IsFullscreen == false)
+                        if (instance->CSettings.m_IsFullscreen == false)
                         {
-                                instance->m_IsFullscreen                                            = true;
+                                instance->CSettings.m_IsFullscreen                                  = true;
                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = true;  // Off
                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
                         }
                         else
                         {
-                                instance->m_IsFullscreen                                            = false;
+                                instance->CSettings.m_IsFullscreen                                  = false;
                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = false; // Off
                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = true;  // On
                         }
-                        instance->m_RenderSystem->SetFullscreen(instance->m_IsFullscreen);
+                        instance->m_RenderSystem->SetFullscreen(instance->CSettings.m_IsFullscreen);
+                });
+                
+        		// Apply Button
+                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                        // Back button to go from the options menu to the pause menu
+
+                        // Disable all sprites for the options
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
+                        {
+                                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
+                        }
+                        // Disable all text for the options
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
+                        }
+
+                        // Enable all sprites for the background
+                        for (int i = 1; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                        {
+                                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
+                        }
+                        // Enable all text for the background
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
+                        }
+
+                        // Disable all sprites for the options submenu
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                        {
+                                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                        }
+                        // Disable all text for the options submenu
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                        }
+
+						
+						instance->PSettings.m_Resolution   = instance->CSettings.m_Resolution;
+                        instance->PSettings.Volume         = instance->CSettings.Volume;
+                        instance->PSettings.m_IsFullscreen = instance->CSettings.m_IsFullscreen;
+
+                        instance->AdjustResolution(instance->m_window,
+                                                   instance->resDescriptors[instance->CSettings.m_Resolution].Width,
+                                                   instance->resDescriptors[instance->CSettings.m_Resolution].Height);
+
+                        instance->m_RenderSystem->SetFullscreen(instance->CSettings.m_IsFullscreen);
                 });
 
                 // Left Resolution Button
                 instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                        if (instance->m_Resolution - 1 <= 0)
+                        if (instance->CSettings.m_Resolution - 1 <= -1)
 						{
-                                instance->m_Resolution = 8;
+                                instance->CSettings.m_Resolution = 8;
 						}
                         else
                         {
-                                instance->m_Resolution--;
+                                instance->CSettings.m_Resolution--;
                         }
                         
                         for (int i = 4; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
                         {
                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                         }
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->m_Resolution + 4].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 4].mEnabled =
+                            true;
 					//Change Resolution HERE
                         instance->AdjustResolution(instance->m_window,
-                                                   instance->resDescriptors[instance->m_Resolution].Width,
-                                                   instance->resDescriptors[instance->m_Resolution].Height);
+                                                   instance->resDescriptors[instance->CSettings.m_Resolution].Width,
+                                                   instance->resDescriptors[instance->CSettings.m_Resolution].Height);
                 });
 
                 // Right Resolution Button
                 instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                        if (instance->m_Resolution + 1 >= 9)
+                        if (instance->CSettings.m_Resolution + 1 >= 9)
                         {
-                                instance->m_Resolution = 0;
+                                instance->CSettings.m_Resolution = 0;
                         }
                         else
                         {
-                                instance->m_Resolution++;
+                                instance->CSettings.m_Resolution++;
                         }
 
                         for (int i = 4; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
                         {
                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                         }
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->m_Resolution + 4].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 4].mEnabled =
+                            true;
                         // Change Resolution HERE
                         instance->AdjustResolution(instance->m_window,
-                                                   instance->resDescriptors[instance->m_Resolution].Width,
-                                                   instance->resDescriptors[instance->m_Resolution].Height);
+                                                   instance->resDescriptors[instance->CSettings.m_Resolution].Width,
+                                                   instance->resDescriptors[instance->CSettings.m_Resolution].Height);
                 });
         }
 

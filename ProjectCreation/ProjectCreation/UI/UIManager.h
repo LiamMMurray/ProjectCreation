@@ -22,11 +22,24 @@ struct E_MENU_CATEGORIES
                 MainMenu,
                 PauseMenu,
                 OptionsMenu,
-				OptionsSubmenu,
+                OptionsSubmenu,
                 LevelMenu,
-				ControlsMenu,
+                ControlsMenu,
                 COUNT
         };
+};
+
+struct PrevSettings
+{
+        bool m_IsFullscreen = false;
+        int  m_Resolution = 8; // 0-8 Representing the resDescriptors resolutions
+        int  Volume = 100;
+};
+struct CurrSettings
+{
+        bool m_IsFullscreen = false;
+        int  m_Resolution   = 8; // 0-8 Representing the resDescriptors resolutions
+        int  Volume = 100;
 };
 
 class UIManager
@@ -42,7 +55,7 @@ class UIManager
         // Pause Menu
         void AddSprite(ID3D11Device*        device,
                        ID3D11DeviceContext* deviceContext,
-                       int   category,
+                       int                  category,
                        const wchar_t*       FileName,
                        float                PositionX,
                        float                PositionY,
@@ -76,8 +89,7 @@ class UIManager
         void CheckResolution();
         void StartupResAdjust(HWND window);
         void AdjustResolution(HWND window, int wWidth, int wHeight);
-        void SupportedResolutions();	//Creates the supported resolutions for the game
-
+        void SupportedResolutions(); // Creates the supported resolutions for the game
 
 
         void        UIClipCursor();
@@ -87,18 +99,18 @@ class UIManager
         static UIManager* instance;
 
     private:
-        bool                                             m_IsFullscreen = false;
-        bool                                             m_FirstFull = true;	//Turns false when the game is put to fullscreen on launch
-        bool                                             m_InMenu       = false;
-        bool                                             m_AdjustedScreen = false;
-        int                                              m_Resolution; // 0-7 Representing the resDescriptors resolutions
+        bool m_FirstFull = true; // Turns false when the game is put to fullscreen on launch
+        bool m_InMenu         = false;
+        bool m_AdjustedScreen = false;
+        PrevSettings PSettings;
+        CurrSettings CSettings;
 
         std::unique_ptr<DirectX::SpriteBatch>            m_SpriteBatch;
         std::unique_ptr<DirectX::CommonStates>           m_States;
         RECT                                             m_fullscreenRect;
         Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_background;
         POINT                                            m_Cursor;
-        std::vector<DXGI_MODE_DESC> resDescriptors;
+        std::vector<DXGI_MODE_DESC>                      resDescriptors;
 
         RenderSystem* m_RenderSystem;
         HWND          m_window;
