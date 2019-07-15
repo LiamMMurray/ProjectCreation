@@ -62,7 +62,6 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
                                                                         m_BoostLifespan + m_BoostLifespanVariance);
         speedboostComponent->decay           = 1.0f;
         speedboostComponent->color           = color;
-
         return entityH;
 }
 
