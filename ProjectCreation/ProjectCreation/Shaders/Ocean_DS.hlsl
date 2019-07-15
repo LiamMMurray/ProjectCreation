@@ -10,15 +10,18 @@ struct Wave
         float  waveLength;
 };
 
-#define NUM_WAVES 5
+#define NUM_WAVES 8
 
-static Wave  waves[NUM_WAVES] = {{normalize(float2(1.0f, 2.0f)), 3.5f, 200.0f},
-                                {normalize(float2(-2.0f, 1.0f)), 3.5f, 180.0f},
-                                {normalize(float2(-2.0f, 1.0f)), 3.0f, 30.0f},
-                                {normalize(float2(-2.0f, 2.0f)), 4.0f, 35.0f},
-                                {normalize(float2(2.0f, -2.0f)), 0.5f, 8.0f}};
-static float steepness        = 1.2;
-static float speed            = 0.7f;
+static Wave  waves[NUM_WAVES] = {{normalize(float2(1.0f, 2.0f)), 6.5f, 200.0f},
+                                {normalize(float2(1.0f, 1.0f)), 7.5f, 180.0f},
+                                {normalize(float2(-2.0f, 1.0f)), 3.5f, 80.0f},
+                                {normalize(float2(-1.0f, 2.0f)), 3.7f, 90.0f},
+                                {normalize(float2(2.0f, 2.4f)), 2.0f, 30.0f},
+                                {normalize(float2(2.0f, 1.0f)), 1.8f, 35.0f},
+                                {normalize(float2(2.0f, 2.0f)), 0.3f, 12.0f},
+                                {normalize(float2(2.0f, 1.4f)), 0.3f, 10.0f}};
+static float steepness        = 1.6;
+static float speed            = 1.1f;
 
 
 struct DomainOutput
@@ -32,6 +35,7 @@ struct DomainOutput
         float2 Tex : TEXCOORD0;
         float2 Tex2 : TEXCOORD1;
         float  linearDepth : DEPTH;
+        float  offset : TEXCOORD2;
 };
 
 // Output control point
@@ -49,14 +53,26 @@ struct HullConstantDataOut
                                                          // TODO: change/add other stuff
 };
 
+float3 GerstnerWaveNormal(float2 D, float WA, float Q, float C, float S)
+{
+        float  WAC    = WA * C;
+        float3 normal = float3(-D.x * WAC, 1.0 - Q * WA * S, -D.y * WAC);
+        return normalize(normal.xyz);
+}
+
+float3 GerstnerWaveTangent(float2 D, float WA, float Q, float C, float S)
+{
+        float  WAS    = WA * S;
+        float3 normal = float3(Q * -D.x * D.y * WAS, D.y * WA * C, 1.0 - Q * D.y * D.y * WAS);
+        return normalize(normal.xyz);
+}
+
 DomainOutput CalcGerstnerWaveOffset(float3 v)
 {
         DomainOutput output = (DomainOutput)0;
         float        scale  = gScale / 8000.0f;
         output.PosWS        = v;
-        output.BinormalWS   = float3(0.0f, 0.0f, 1.0f);
-        output.NormalWS     = float3(0.0f, 1.0f, 0.0f);
-        output.TangentWS    = float3(1.0f, 0.0f, 1.0f);
+        output.NormalWS     = output.TangentWS = float3(0.0f, 1.0f, 0.0f);
         [unroll] for (int i = 0; i < NUM_WAVES; i++)
         {
                 Wave  wave = waves[i];
@@ -68,24 +84,19 @@ DomainOutput CalcGerstnerWaveOffset(float3 v)
                 float s = sin(rad);
                 float c = cos(rad);
 
+                float wa = wi * wave.amplitude * scale;
+
                 output.PosWS.y += (s + 1.0f) * wave.amplitude * scale;
                 output.PosWS.xz += (c + 1.0f) * wave.amplitude * scale * Qi * wave.dir;
 
-                output.NormalWS.xz -= wave.dir * wi * wave.amplitude * scale * c;
-                output.NormalWS.y -= wi * wave.amplitude * scale * s;//
-
-                output.TangentWS.x -= Qi * wave.dir.y * wave.dir.x * wi * wave.amplitude * scale * c;
-                output.TangentWS.z -= Qi * wave.dir.y * wave.dir.y * wi * wave.amplitude * scale * c;
-                output.TangentWS.y += wave.dir.y * wave.amplitude * scale * c;
-
-                output.BinormalWS.x -= Qi * wave.dir.x * wave.dir.x * wi * wave.amplitude * scale * c;
-                output.BinormalWS.z -= Qi * wave.dir.y * wave.dir.x * wi * wave.amplitude * scale * c;
-                output.BinormalWS.y += wave.dir.x * wave.amplitude * scale * c;	
+                output.NormalWS += wave.amplitude*GerstnerWaveNormal(wave.dir, wa, Qi, c, s);
+                output.TangentWS += GerstnerWaveTangent(wave.dir, wa, Qi, c, s);
         }
 
-        output.BinormalWS = normalize(output.BinormalWS);
         output.TangentWS  = normalize(output.TangentWS);
         output.NormalWS   = normalize(output.NormalWS);
+        output.BinormalWS = normalize(cross(output.NormalWS, output.TangentWS));
+        output.offset     = output.PosWS.y;
 
         return output;
 }
@@ -104,8 +115,7 @@ DomainOutput CalcGerstnerWaveOffset(float3 v)
         pos        = mul(float4(pos, 1.0f), World).xyz;
         pos.y      = 0.0f;
         // Gerstner Wave
-        dOut = CalcGerstnerWaveOffset(pos);
-
+        dOut      = CalcGerstnerWaveOffset(pos);
         dOut.Tex  = Bilerp(texs, domain);
         dOut.Tex2 = dOut.Tex * gTexScale;
 

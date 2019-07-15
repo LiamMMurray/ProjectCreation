@@ -112,7 +112,7 @@ void DebugCameraController::ApplyInput()
         XMVECTOR desiredDir = XMVector3Normalize(m_CurrentInput);
 
         // Determine the max speed the object can move
-        float maxSpeed = 1.0f;
+        float maxSpeed = 10.0f;
 
         float angularSpeed = XMConvertToRadians(2.0f) * deltaTime;
         m_EulerAngles.y += m_MouseXDelta * angularSpeed;
@@ -123,7 +123,7 @@ void DebugCameraController::ApplyInput()
         m_EulerAngles.z            = 0.0f;
 
         // Calculate offset
-        XMVECTOR offset = XMVector3Rotate(m_CurrentInput * deltaTime, transformComp->transform.rotation.data);
+        XMVECTOR offset = XMVector3Rotate(m_CurrentInput * deltaTime * maxSpeed, transformComp->transform.rotation.data);
 
         transformComp->transform.rotation = FQuaternion::FromEulerAngles(m_EulerAngles);
         // Set the rotation for the transform component
