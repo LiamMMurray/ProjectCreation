@@ -289,6 +289,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 
         GEngine::Get()->SetGamePaused(true);
+        UIManager::instance->StartupResAdjust(handle);
 
         while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
 
@@ -317,7 +318,6 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                         UIManager::instance->Pause();
                 }
 
-                UIManager::instance->StartupResAdjust(handle);
 				
                 {
                         static DWORD frameCount = 0;
