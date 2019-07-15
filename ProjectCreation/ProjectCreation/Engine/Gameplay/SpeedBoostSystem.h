@@ -46,6 +46,7 @@ class SpeedBoostSystem : public ISystem
 
         ComponentHandle latchedSplineHandle;
         bool            bIsLatchedToSpline;
+        bool            shouldLatch;
 
         bool m_EnableRandomSpawns = false;
 

@@ -31,7 +31,7 @@ class PlayerController : public IController
         DirectX::XMFLOAT3 m_EulerAngles;
 
         float minMaxSpeed     = 2.5f;
-        float maxMaxSpeed     = 5.0f;
+        float maxMaxSpeed     = 4.0f;
         float currentMaxSpeed = minMaxSpeed;
 
         float acceleration   = 1.0;
