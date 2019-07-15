@@ -110,12 +110,16 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                         }
                         case WM_INPUT:
                         {
+                                GEngine::Get()->m_MainThreadProfilingContext.Begin("WinProc", "GatherInput");
                                 GCoreInput::GatherInput(hWnd, message, wParam, lParam);
+                                GEngine::Get()->m_MainThreadProfilingContext.End();
                                 break;
                         }
                         case WM_SIZE:
                         {
+                                GEngine::Get()->m_MainThreadProfilingContext.Begin("WinProc", "OnWindowResize");
                                 GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->OnWindowResize(wParam, lParam);
+                                GEngine::Get()->m_MainThreadProfilingContext.End();
                                 break;
                         }
                 }
@@ -321,14 +325,18 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 GEngine::Get()->Signal();
                 GEngine::Get()->m_MainThreadProfilingContext.End();
 
-						GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "Other");
+				GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "Pause");
                 if (GetActiveWindow() != handle && GEngine::Get()->GetGamePaused() == false)
                 {
                         UIManager::instance->Pause();
                 }
+                GEngine::Get()->m_MainThreadProfilingContext.End();
 
+                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "ResAdjust");
                 UIManager::instance->StartupResAdjust(handle);
+                GEngine::Get()->m_MainThreadProfilingContext.End();
 
+				GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "SetWindowText");
                 {
                         static DWORD frameCount = 0;
                         ++frameCount;
@@ -343,7 +351,9 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                                 prevCount  = GetTickCount();
                         }
                 }
+                GEngine::Get()->m_MainThreadProfilingContext.End();
 
+                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "GetKeyStates");
                 if (GCoreInput::GetKeyState(KeyCode::P) == KeyState::DownFirst)
                 {
                         boop->Play();
@@ -357,10 +367,13 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                         else
                                 music->PauseStream();
                 }
-
-                debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
-                GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
                 GEngine::Get()->m_MainThreadProfilingContext.End();
+
+                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "AddGrid");
+                debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
+                GEngine::Get()->m_MainThreadProfilingContext.End();
+
+                GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
 
         }
         EngineHelpers::ShutdownEngineSystemManagers();
