@@ -11,6 +11,7 @@ struct FParticleGPU
         float  time;
         bool   active;
         int    index;
+        float  scale;
 };
 
 
@@ -44,28 +45,53 @@ struct GSOutput
         uint stride     = 0;
         buffer.GetDimensions(numStructs, stride);
 
+        float scale = buffer[InstanceID].scale;
+        // scale       = 1.0f;
         // verts[j].pos = mul(float4(verts[j].pos.xyz, 1.0f), World);
         verts[0].pos = mul(float4(verts[0].pos.xyz, 1.0f), ViewProjection);
-        verts[0].pos = verts[0].pos + float4(-1.0f / _AspectRatio, 1.0f, 0.0f, 0.0f);
+        verts[0].pos = verts[0].pos + float4(-1.0f / _AspectRatio, 1.0f, 0.0f, 0.0f) * scale;
         verts[0].uv  = float2(0.0f, 0.0f);
 
         verts[1].pos = mul(float4(verts[1].pos.xyz, 1.0f), ViewProjection);
-        verts[1].pos = verts[1].pos + float4(1.0f / _AspectRatio, 1.0f, 0.0f, 0.0f);
+        verts[1].pos = verts[1].pos + float4(1.0f / _AspectRatio, 1.0f, 0.0f, 0.0f) * scale;
         verts[1].uv  = float2(1.0f, 0.0f);
 
 
         verts[2].pos = mul(float4(verts[2].pos.xyz, 1.0f), ViewProjection);
-        verts[2].pos = verts[2].pos + float4(-1.0f / _AspectRatio, -1.0f, 0.0f, 0.0f);
+        verts[2].pos = verts[2].pos + float4(-1.0f / _AspectRatio, -1.0f, 0.0f, 0.0f) * scale;
         verts[2].uv  = float2(0.0f, 1.0f);
 
 
         verts[3].pos = mul(float4(verts[3].pos.xyz, 1.0f), ViewProjection);
-        verts[3].pos = verts[3].pos + float4(1.0f / _AspectRatio, -1.0f, 0.0f, 0.0f);
+        verts[3].pos = verts[3].pos + float4(1.0f / _AspectRatio, -1.0f, 0.0f, 0.0f) * scale;
         verts[3].uv  = float2(1.0f, 1.0f);
 
 
         for (int j = 0; j < 4; ++j)
         {
                 output.Append(verts[j]);
+        }
+}
+
+void TextureAddress(inout float2 UVcord[4], int index, int rowcol) // row and coll must be the same
+{
+        // index is the number texture you want to get. (Starts from 0!)
+        float cellSize;
+        // float cellSizeY;
+        int cells; // amount of cells
+        cells    = (rowcol - 1) * 2;
+        cellSize = 1 / (rowcol - 1);
+        // cellSizeY = 1 / (col - 1);
+
+        if (index <= (cells - 1) || index >= 0)
+        {
+                int rowX = fmod(index, rowcol);
+                int colY = index / rowcol;
+                float xValue = rowX * cellSize;
+                float yValue = colY * cellSize;
+                UVcord[0]    = float2(xValue, yValue);                                             // top left
+                UVcord[1]    = float2(xValue + cellSize, yValue);                                  // top right
+                UVcord[2]    = float2(xValue, yValue + cellSize);                                  // bottom left
+                UVcord[3]    = float2(xValue + cellSize, yValue + cellSize);                       // bottom left
         }
 }

@@ -30,15 +30,15 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
 {
         float aspectRatio = (1.0f / _inverseScreenDimensions.y) / (1.0f / _inverseScreenDimensions.x);
 
-		float4 uvOffset = float4(_inverseScreenDimensions.x, 0.0f, _inverseScreenDimensions.y, 1.0f);
+        float4 uvOffset = float4(_inverseScreenDimensions.x, 0.0f, _inverseScreenDimensions.y, 1.0f);
 
         float2 uv              = float2(1.0f, aspectRatio) * abs(texCoord * 2.0f - 1.0f);
         float  fringeIntensity = dot(uv, uv);
-        fringeIntensity = saturate(fringeIntensity);
-        //return fringeIntensity;
+        fringeIntensity        = saturate(fringeIntensity);
+        // return fringeIntensity;
         float offset = 2.0f * fringeIntensity;
 
-		//return offset;
+        // return offset;
 
         float  colorR = ScreenTexture.Sample(sampleTypeClamp, texCoord + offset * uvOffset.xz).r;
         float  colorG = ScreenTexture.Sample(sampleTypeClamp, texCoord - offset * uvOffset.xz).g;
@@ -54,6 +54,6 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
         // color *= 1.5f;
         color = pow(color, 1.f / 2.2f);
         color += dither / 255;
-
+       
         return float4(color, 1.f);
 }

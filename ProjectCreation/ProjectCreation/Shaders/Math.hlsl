@@ -52,3 +52,4 @@ float3 WrapPosition(float3 position, float3 Min, float3 Max)
         output.y     = position.y;
         return output;
 }
+

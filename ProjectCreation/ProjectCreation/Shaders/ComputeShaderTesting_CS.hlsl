@@ -1,6 +1,6 @@
 #include "Math.hlsl"
 #include "SceneBuffer.hlsl"
-
+#include "Wrap.hlsl"
 static const unsigned int gMaxEmitterCount  = 2 << 10;
 static const unsigned int gMaxParticleCount = 2 << 16;
 struct FParticleGPU
@@ -28,7 +28,7 @@ struct FEmitterGPU
         float2 uv;
         float3 minInitialVelocity;
         float3 maxInitialVelocity;
-        float2  particleScale;
+        float2 particleScale;
 };
 
 struct FSegmentBuffer
@@ -41,17 +41,18 @@ RWStructuredBuffer<FSegmentBuffer> SegmentBuffer : register(u1);
 RWTexture2D<float2>                tex : register(u2);
 // Texture2D                         tex2d : register(t0);
 
-[numthreads(100, 1, 1)] 
-void main(uint3 DTid
+[numthreads(100, 1, 1)] void main(uint3 DTid
                                   : SV_DispatchThreadID) {
         int id = DTid.x;
-        // tex[id]  = float2(id / 1024.0f, 0, 1);
+
+
         if (ParticleBuffer[id].time <= 0.0f)
         {
-                ParticleBuffer[id].time = EmitterBuffer[0].accumulatedTime;
-                float4 startPos         = EmitterBuffer[0].position;
+                ParticleBuffer[id].scale = rand_1_05(EmitterBuffer[0].particleScale);
+                ParticleBuffer[id].time  = EmitterBuffer[0].accumulatedTime + 1000.0f;
+                float4 startPos          = EmitterBuffer[0].position;
 
-				ParticleBuffer[id].prevPos = startPos;
+                ParticleBuffer[id].prevPos = startPos;
 
                 float alphaA = rand(_Time * id / 0.1f);
                 float alphaB = rand(alphaA);
@@ -67,20 +68,24 @@ void main(uint3 DTid
                 ParticleBuffer[id].uv    = EmitterBuffer[0].uv;
                 ParticleBuffer[id].color = EmitterBuffer[0].initialColor;
 
-                //ParticleBuffer[id].position = float4(_EyePosition + ParticleBuffer[id].velocity * 1.0f, 1.0f);
-                ParticleBuffer[id].position;
+                ParticleBuffer[id].position =
+                    float4(_EyePosition + ParticleBuffer[id].velocity * float3(_Scale, 1.0f, _Scale), 1.0f);
         }
         else
         {
-				float alpha              = 1.0f - ParticleBuffer[id].time / EmitterBuffer[0].accumulatedTime;
+                float alpha              = 1.0f - ParticleBuffer[id].time / EmitterBuffer[0].accumulatedTime;
                 ParticleBuffer[id].color = lerp(EmitterBuffer[0].initialColor, EmitterBuffer[0].finalColor, alpha);
-                ParticleBuffer[id].color.w = alpha;
+                /*ParticleBuffer[id].scale = lerp(EmitterBuffer[0].particleScale.x, EmitterBuffer[0].particleScale.y, alpha);*/
                 ParticleBuffer[DTid.x].time -= _DeltaTime;
                 // ParticleBuffer[DTid.x].position += 1.0f*float4(ParticleBuffer[DTid.x].velocity * _DeltaTime, 0.0f);
-                float3 Min = float3(-0.5f * _Scale, 0.0f, -0.5f * _Scale);
-                // Min        = float3(-10.0f, 0.0f, -10.0f);
-                float3 Max = -Min;
-                ParticleBuffer[id].position.xyz =
-                    WrapPosition(ParticleBuffer[id].position.xyz, _EyePosition + Min, _EyePosition + Max);
+                float2 Min = float2(-0.5f * _Scale, -0.5f * _Scale);
+                // Min        = float2(-10.0f, -10.0f);
+                float2 Max = -Min;
+                // ParticleBuffer[id].position.xyz =
+                //  WrapPosition(ParticleBuffer[id].position.xyz, _EyePosition + Min, _EyePosition + Max);
+                ParticleBuffer[id].position.xz =
+                    wrap(ParticleBuffer[id].position.xz, _EyePosition.xz + Min, _EyePosition.xz + Max);
         }
 }
+
+

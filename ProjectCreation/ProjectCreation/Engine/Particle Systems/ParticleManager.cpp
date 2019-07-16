@@ -130,6 +130,7 @@ void ParticleManager::init()
         m_EnitterInfo->minVelocity          = {-30.0f, -0.0f, -30.0f};
         m_EnitterInfo->maxVelocity          = {30.0f, 20.0f, 30.0f};
         m_EnitterInfo->accumulatedTime      = 15.0f;
+        m_EnitterInfo->scale.x                     = 1.0f;
 
         m_EmitterCpuInfo               = new FEmitterCPU;
         m_EmitterCpuInfo->maxParticles = 1000;
