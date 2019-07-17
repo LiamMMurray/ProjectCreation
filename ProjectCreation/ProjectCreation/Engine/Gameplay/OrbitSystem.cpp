@@ -61,7 +61,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
 
         double totalTime = GEngine::Get()->GetTotalTime();
 
-        m_ClosestGoalTransform = playerTransformHandle;
+        m_ClosestGoalTransform = playerTransform->transform;
 
 
         TransformComponent* closestGoalTransform = nullptr;
@@ -82,7 +82,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
 
                 if (goalComp.goalState == E_GOAL_STATE::Idle && (closestGoalTransform == nullptr || distanceNew < distancePrev))
                 {
-                        m_ClosestGoalTransform = transHandle;
+                        m_ClosestGoalTransform = transComp->transform;
                 }
         }
 
@@ -128,7 +128,8 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         transComp->wrapping = false;
                         playerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
                         playerController->SetCollectedPlanetCount(1 + playerController->GetCollectedPlanetCount());
-                        std::cout << "Orbit System: Planet count = " << playerController->GetCollectedPlanetCount() << std::endl;
+                        std::cout << "Orbit System: Planet count = " << playerController->GetCollectedPlanetCount()
+                                  << std::endl;
                 }
 
                 if (goalComp.goalState == E_GOAL_STATE::Done)
@@ -247,7 +248,7 @@ void OrbitSystem::OnInitialize()
 
         PlayerController* playerController = (PlayerController*)SYSTEM_MANAGER->GetSystem<ControllerSystem>()
                                                  ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
-        m_ClosestGoalTransform = playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
+        m_ClosestGoalTransform = playerController->GetControlledEntity().GetComponent<TransformComponent>()->transform;
 }
 
 void OrbitSystem::OnShutdown()

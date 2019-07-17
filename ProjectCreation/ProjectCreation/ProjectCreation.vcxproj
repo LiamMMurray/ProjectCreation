@@ -55,6 +55,13 @@
     <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
     <ClInclude Include="Engine\GenericComponents\TransformSystem.h" />
+    <ClInclude Include="Engine\Levels\LevelState.h" />
+    <ClInclude Include="Engine\Levels\LevelStateEvents.h" />
+    <ClInclude Include="Engine\Levels\LevelStateMachine.h" />
+    <ClInclude Include="Engine\Levels\LevelStateManager.h" />
+    <ClInclude Include="Engine\Levels\Level_01.h" />
+    <ClInclude Include="Engine\Levels\Level_02.h" />
+    <ClInclude Include="Engine\Levels\TutorialLevel.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\Particle Systems\EmitterComponent.h" />
     <ClInclude Include="Engine\MathLibrary\Maze\MazeGenerator.h" />
@@ -291,6 +298,11 @@
     <ClCompile Include="Engine\Gameplay\StateMachine\IState.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
     <ClCompile Include="Engine\GenericComponents\TransformSystem.cpp" />
+    <ClCompile Include="Engine\Levels\LevelStateMachine.cpp" />
+    <ClCompile Include="Engine\Levels\LevelStateManager.cpp" />
+    <ClCompile Include="Engine\Levels\Level_01.cpp" />
+    <ClCompile Include="Engine\Levels\Level_02.cpp" />
+    <ClCompile Include="Engine\Levels\TutorialLevel.cpp" />
     <ClCompile Include="Engine\Particle Systems\ParticleData.cpp" />
     <ClCompile Include="Engine\Particle Systems\ParticleManager.cpp" />
     <ClCompile Include="Engine\MathLibrary\Maze\MazeGenerator.cpp" />

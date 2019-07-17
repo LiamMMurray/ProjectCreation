@@ -177,12 +177,12 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                                         XMVECTOR randStart = MathLibrary::GetRandomPointInRadius2D(XMVectorZero(), 0, 50);
                                         XMVECTOR randEnd   = MathLibrary::GetRandomPointInRadius2D(XMVectorZero(), -50, 0);
 
-                                        CreateRandomPath(randStart, randEnd, i);
+                                        CreateRandomPath(randStart, end, i);
 
                                         randStart = MathLibrary::GetRandomPointInRadius2D(XMVectorZero(), 0, 50);
                                         randEnd   = MathLibrary::GetRandomPointInRadius2D(XMVectorZero(), -50, 0);
                                         
-                                		CreateRandomPath(randStart, randEnd, i);
+                                		CreateRandomPath(randStart, end, i);
 
                                         goals[i] = true;
                                 }
@@ -282,7 +282,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
         }
 
         // m_PlayerEffectRadius                       = 25.0f;
-        ComponentHandle closestGoalTransformHandle = m_SystemManager->GetSystem<OrbitSystem>()->GetClosestGoalTransform();
         int             speedboostCount            = 0;
         {
                 for (auto& speedComp : m_HandleManager->GetActiveComponents<SpeedboostComponent>())
@@ -635,26 +634,27 @@ void SpeedBoostSystem::OnInitialize()
 
         std::random_shuffle(m_Paths.begin(), m_Paths.end());
 
-        EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                        ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-                                        ->GetControlledEntity();
-
-        TransformComponent* playerTransform = playerEntity.GetComponent<TransformComponent>();
-
-        XMVECTOR pos    = playerTransform->transform.translation + 2.0f * VectorConstants::Forward;
-        auto     handle = SpawnLightOrb(pos, E_LIGHT_ORBS::WHITE_LIGHTS);
-
-        auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
-        speedboostComponent->collisionRadius = m_BoostRadius;
-        speedboostComponent->lifetime        = 1.0f;
-        speedboostComponent->decay           = 0.0f;
-        speedboostComponent->color           = E_LIGHT_ORBS::WHITE_LIGHTS;
-        /*CreateRandomPath(playerTransform->transform.translation,
-                         SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[0],
-                         E_LIGHT_ORBS::BLUE_LIGHTS,
-                         5.0f,
-                         4);*/
+         EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+                                         ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
+                                         ->GetControlledEntity();
+		 
+         TransformComponent* playerTransform = playerEntity.GetComponent<TransformComponent>();
+		 
+         XMVECTOR pos    = playerTransform->transform.translation + 2.0f * VectorConstants::Forward;
+         auto     handle = SpawnLightOrb(pos, E_LIGHT_ORBS::WHITE_LIGHTS);
+		 
+         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
+         speedboostComponent->collisionRadius = m_BoostRadius;
+         speedboostComponent->lifetime        = 1.0f;
+         speedboostComponent->decay           = 0.0f;
+         speedboostComponent->color           = E_LIGHT_ORBS::WHITE_LIGHTS;
+         /*CreateRandomPath(playerTransform->transform.translation,
+                          SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[0],
+                          E_LIGHT_ORBS::BLUE_LIGHTS,
+                          5.0f,
+                          4);*/
         bIsLatchedToSpline = false;
+
 }
 
 void SpeedBoostSystem::OnShutdown()

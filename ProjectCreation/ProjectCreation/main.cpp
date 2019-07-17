@@ -33,6 +33,9 @@
 /////testing -vic
 #include "Rendering/DebugRender/debug_renderer.h"
 ////testing -vic
+///
+
+#include "Engine/Levels/LevelStateManager.h"
 
 #include "Engine/Controller/ControllerSystem.h"
 
@@ -294,7 +297,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 
         GEngine::Get()->SetGamePaused(true);
-
+        GEngine::Get()->GetLevelStateManager()->Init();
         while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
 
 
