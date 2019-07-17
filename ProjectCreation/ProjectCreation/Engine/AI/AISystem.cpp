@@ -90,6 +90,7 @@ void AISystem::CalculateAverage()
 
 void AISystem::OnInitialize()
 {
+        /*
         ControllerSystem* controllerSystem = GEngine::Get()->GetSystemManager()->GetSystem<ControllerSystem>();
         m_PlayerEntity = controllerSystem->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]->GetControlledEntity();
 
@@ -105,13 +106,15 @@ void AISystem::OnInitialize()
 
         m_FlockRadius = 1.0f;
         m_PlayerRadius = 3.0f;
+		*/
 }
 
 void AISystem::OnPreUpdate(float deltaTime)
 {}
 
 void AISystem::OnUpdate(float deltaTime)
-{
+{ 
+	/*
         CalculateAverage();
 
         for (auto& aiComp : m_HandleManager->GetActiveComponents<AIComponent>())
@@ -138,6 +141,7 @@ void AISystem::OnUpdate(float deltaTime)
                 }
                 aiComp.GetParent().GetComponent<TransformComponent>()->transform.translation += aiComp.m_Velocity * deltaTime;
         }
+*/
 }
 
 void AISystem::OnPostUpdate(float deltaTime)
