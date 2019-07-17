@@ -186,7 +186,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
                 // color += lerp(shallowWaterColor, deepWaterColor, fresnelTerm) + specular * radiance;
         }
 
-        return float4(color, 1.0f);
+        //return float4(color, 1.0f);
 
         float maskA     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 45.0f + _Time * 0.01f * float2(1.0f, 0.0f)).z;
         float maskB     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 40.0f + _Time * 0.01f * float2(-1.0f, 0.0f)).z;
@@ -213,7 +213,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
         veins                = saturate(pow(veins, 4.0f));
         float3 veinsEmissive = veins * 0.1f * float3(1.0f, 1.0f, 1.0f) * mask;
 
-        clip((1 - bandA + veinsEmissive) < 0.01f ? -1 : 1);
+        clip((1 - bandA) < 0.01f ? -1 : 1);
 
         color += surface.emissiveColor + band;
 

@@ -11,7 +11,7 @@ struct Wave
         float  waveLength;
 };
 
-#define NUM_WAVES 1
+#define NUM_WAVES 8
 
 static Wave  waves[8]  = {{normalize(float2(1.0f, 2.0f)), 6.5f, 20.0f * 2 * PI},
                         {normalize(float2(1.0f, 1.0f)), 7.5f, 180.0f},
@@ -80,9 +80,10 @@ DomainOutput CalcGerstnerWaveOffset(float3 v)
                 float wi   = 2 / (wave.waveLength * scale);
                 float Qi   = steepness / (scale * wave.amplitude * wi * NUM_WAVES);
                 float phi  = speed * wi;
-                //phi = PI;
-                float rad  = dot(wave.dir, v.xz) * wi + _Time * phi;
+                // phi = PI;
+                float rad = dot(wave.dir, v.xz) * wi + _Time * phi;
 
+                // s =
                 float s = sin(rad);
                 float c = cos(rad);
 

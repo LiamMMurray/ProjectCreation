@@ -76,7 +76,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
                 surface.normal = TangentWS * normalSample.x + BinormalWS * normalSample.y + NormalWS * normalSample.z;
         }
         surface.normal = normalize(surface.normal);
-        //surface.normal = NormalWS;
+        // surface.normal = NormalWS;
         // return surface.normal.xyzz;
         float alpha = 1.f;
 
@@ -117,8 +117,8 @@ float4 main(DomainOutput pIn) : SV_TARGET
                 float2 integration = IBLIntegration.Sample(sampleTypeNearest, float2(NdotV, 1.f - surface.roughness)).rg;
                 color += IBL(surface, viewWS, specColor, diffuse, specular, integration);
         }
-        //return NormalWS.xxxx;
-        return float4(color, 1.0f);
+        // return NormalWS.xxxx;
+        // return float4(color, 1.0f);
 
         float maskA     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 45.0f + _Time * 0.01f * float2(1.0f, 0.0f)).z;
         float maskB     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 40.0f + _Time * 0.01f * float2(-1.0f, 0.0f)).z;
@@ -145,7 +145,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
         veins                = saturate(pow(veins, 4.0f));
         float3 veinsEmissive = veins * 0.1f * float3(1.0f, 1.0f, 1.0f) * mask;
 
-        clip((1 - bandA + veinsEmissive) < 0.01f ? -1 : 1);
+        clip((1 - bandA) < 0.01f ? -1 : 1);
 
         color += surface.emissiveColor + band;
 

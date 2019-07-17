@@ -50,7 +50,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         // return flow;
         // return sphere;
 
-		        // get and uncompress the flow vector for this pixel
+        // get and uncompress the flow vector for this pixel
         float skySpeed        = 0.012f * _Time;
         float distortionSpeed = 0.004f * _Time;
         // Sample normal map.
@@ -58,17 +58,17 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         noise       = saturate(pow(noise, 4.0f));
         noise       = lerp(0.2f, 1.0f, noise);
         // return noise;
-        float3 skyA   = diffuseMap.SampleLevel(sampleTypeWrap, rotateUV(pIn.Tex, skySpeed) + 0.3 * flow * noise, 0).b;
+        float3 skyA        = diffuseMap.SampleLevel(sampleTypeWrap, rotateUV(pIn.Tex, skySpeed) + 0.3 * flow * noise, 0).b;
         float  cloudSample = skyA;
 
         float2 flowWave = sin(_Time * 0.007f) * flow;
         float2 alpha    = flow * 0.5f + 0.5f;
         // return alpha.x;
-        float  speed       = _Time * 0.007f;
-        float2 uvA         = rotateUV(pIn.Tex, speed);
-        float2 uvB         = rotateUV(pIn.Tex, speed + 0.08f);
-        float2 uv          = lerp(uvA, uvB, alpha);
-        float  cloudMask   = saturate(pow(cloudSample, 1.3f) * 1.5f);
+        float  speed     = _Time * 0.007f;
+        float2 uvA       = rotateUV(pIn.Tex, speed);
+        float2 uvB       = rotateUV(pIn.Tex, speed + 0.08f);
+        float2 uv        = lerp(uvA, uvB, alpha);
+        float  cloudMask = saturate(pow(cloudSample, 1.3f) * 1.5f);
 
         float2 skyCenterUV = pIn.Tex * 2.0f - 1.0f;
         float  skyCenter   = dot(skyCenterUV, skyCenterUV);
@@ -111,6 +111,8 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         color        = lerp(color, sunColor, sunMask);
         color        = lerp(color, cloudColor * lerp(0.6f, 1.0f, cloudMask), saturate(cloudMask * 5.0f));
 
+        float revealAlpha = _playerRadius / 500.0f;
+        revealAlpha       = saturate(pow(revealAlpha, 4.0f));
 
-        return float4(color, 1.0f);
+        return float4(color * revealAlpha, 1.0f);
 }
