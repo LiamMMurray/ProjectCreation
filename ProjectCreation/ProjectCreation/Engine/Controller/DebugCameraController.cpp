@@ -114,6 +114,9 @@ void DebugCameraController::ApplyInput()
         // Determine the max speed the object can move
         float maxSpeed = 10.0f;
 
+        if (GCoreInput::GetMouseState(MouseCode::RightClick) == KeyState::Down)
+                maxSpeed *= 10.0f;
+
         float angularSpeed = XMConvertToRadians(2.0f) * deltaTime;
         m_EulerAngles.y += m_MouseXDelta * angularSpeed;
         m_EulerAngles.x += m_MouseYDelta * angularSpeed;

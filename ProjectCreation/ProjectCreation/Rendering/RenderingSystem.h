@@ -241,6 +241,8 @@ class RenderSystem : public ISystem
         friend class ParticleManager;
         friend class TerrainManager;
 
+        ComponentHandle m_SkyHandle;
+
         std::vector<FDraw> m_OpaqueDraws;
         std::vector<FDraw> m_TransluscentDraws;
 

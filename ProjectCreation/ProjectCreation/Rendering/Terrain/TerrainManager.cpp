@@ -8,6 +8,7 @@
 #include "..//..//Engine/CoreInput/CoreInput.h"
 #include "..//..//Engine/GEngine.h"
 #include "..//..//Engine/GenericComponents/TransformComponent.h"
+#include "..//..//Engine/GenericComponents/TransformSystem.h"
 #include "..//DebugRender/debug_renderer.h"
 #include "..//RenderingSystem.h"
 
@@ -162,12 +163,11 @@ void TerrainManager::_update(float deltaTime)
 
         ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
 
-        XMVECTOR& playerPos = GEngine::Get()
+        XMVECTOR playerPos = GEngine::Get()
                                   ->GetSystemManager()
-                                  ->GetSystem<ControllerSystem>()
-                                  ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-                                  ->GetControlledEntity()
-                                  .GetComponent<TransformComponent>()
+                                  ->GetSystem<TransformSystem>()
+                                  ->GetPlayerWrapTransformHandle()
+                                  .Get<TransformComponent>()
                                   ->transform.translation;
 
         XMVECTOR correctedTerrainPos = playerPos;
@@ -180,8 +180,8 @@ void TerrainManager::_update(float deltaTime)
         TerrainMatrix.r[3]   = correctedTerrainPos;
         InverseTerrainMatrix = DirectX::XMMatrixInverse(nullptr, TerrainMatrix);
 
-        //GEngine::Get()->m_TerrainAlpha += deltaTime * 0.04f;
-        //GEngine::Get()->m_TerrainAlpha = std::min(1.0f, GEngine::Get()->m_TerrainAlpha);
+        // GEngine::Get()->m_TerrainAlpha += deltaTime * 0.04f;
+        // GEngine::Get()->m_TerrainAlpha = std::min(1.0f, GEngine::Get()->m_TerrainAlpha);
 
         UINT stride = sizeof(TerrainVertex);
         UINT offset = 0;
