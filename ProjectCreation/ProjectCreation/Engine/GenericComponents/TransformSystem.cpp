@@ -7,9 +7,13 @@
 
 using namespace DirectX;
 void TransformSystem::OnPreUpdate(float deltaTime)
-{}
+{
+        playerTransform =
+            controllerSystem->GetCurrentController()->GetControlledEntity().GetComponentHandle<TransformComponent>();
+}
 void TransformSystem::OnUpdate(float deltaTime)
 {
+
         XMVECTOR& playerPos = playerTransform.Get<TransformComponent>()->transform.translation;
         float     scale     = TerrainManager::Get()->GetScale();
         XMVECTOR  min       = XMVectorSet(-0.5f * scale, 0.0f, -0.5f * scale, 0.0f);
@@ -17,7 +21,9 @@ void TransformSystem::OnUpdate(float deltaTime)
 
 
         playerPos = MathLibrary::WrapPosition(playerPos, min, max);
-        playerPos = XMVectorMax(playerPos, TerrainManager::Get()->AlignPositionToTerrain(playerPos));
+
+        if (controllerSystem->GetCurrentControllerIndex() == 0)
+                playerPos = XMVectorMax(playerPos, TerrainManager::Get()->AlignPositionToTerrain(playerPos));
 
 
         for (auto& transComp : m_HandleManager->GetActiveComponents<TransformComponent>())
@@ -41,15 +47,12 @@ void TransformSystem::OnPostUpdate(float deltaTime)
 
 void TransformSystem::OnInitialize()
 {
-        auto PlayerHandle = GEngine::Get()
-                                ->GetSystemManager()
-                                ->GetSystem<ControllerSystem>()
-                                ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-                                ->GetControlledEntity();
-
-        playerTransform = PlayerHandle.GetComponentHandle<TransformComponent>();
-
         m_HandleManager = GEngine::Get()->GetHandleManager();
+
+        controllerSystem = GEngine::Get()->GetSystemManager()->GetSystem<ControllerSystem>();
+
+        playerTransform =
+            controllerSystem->GetCurrentController()->GetControlledEntity().GetComponentHandle<TransformComponent>();
 }
 
 void TransformSystem::OnShutdown()

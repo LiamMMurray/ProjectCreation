@@ -30,15 +30,15 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
 {
         float aspectRatio = (1.0f / _inverseScreenDimensions.y) / (1.0f / _inverseScreenDimensions.x);
 
-		float4 uvOffset = float4(_inverseScreenDimensions.x, 0.0f, _inverseScreenDimensions.y, 1.0f);
+        float4 uvOffset = float4(_inverseScreenDimensions.x, 0.0f, _inverseScreenDimensions.y, 1.0f);
 
         float2 uv              = float2(1.0f, aspectRatio) * abs(texCoord * 2.0f - 1.0f);
         float  fringeIntensity = dot(uv, uv);
-        fringeIntensity = saturate(fringeIntensity);
-        //return fringeIntensity;
+        fringeIntensity        = saturate(fringeIntensity);
+        // return fringeIntensity;
         float offset = 2.0f * fringeIntensity;
 
-		//return offset;
+        // return offset;
 
         float  colorR = ScreenTexture.Sample(sampleTypeClamp, texCoord + offset * uvOffset.xz).r;
         float  colorG = ScreenTexture.Sample(sampleTypeClamp, texCoord - offset * uvOffset.xz).g;
@@ -46,6 +46,9 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
         float3 color  = float3(colorR, colorG, colorB);
         float3 bloom  = BloomTexture.Sample(sampleTypeClamp, texCoord).rgb * _brightness;
 
+
+        float3 bw     = 0.21 * color.r + 0.71 * color.g + 0.07 * color.b;
+        color         = lerp(color, bw, 0.1f);
         float3 dither = InterleavedGradientNoise(pos.xy + _time);
 
         color += bloom;

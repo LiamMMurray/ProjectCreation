@@ -1,3 +1,4 @@
+#include "Constants.hlsl"
 #include "Interpolation.hlsl"
 #include "MVPBuffer.hlsl"
 #include "Samplers.hlsl"
@@ -12,16 +13,16 @@ struct Wave
 
 #define NUM_WAVES 8
 
-static Wave  waves[NUM_WAVES] = {{normalize(float2(1.0f, 2.0f)), 6.5f, 200.0f},
-                                {normalize(float2(1.0f, 1.0f)), 7.5f, 180.0f},
-                                {normalize(float2(-2.0f, 1.0f)), 3.5f, 80.0f},
-                                {normalize(float2(-1.0f, 2.0f)), 3.7f, 90.0f},
-                                {normalize(float2(2.0f, 2.4f)), 2.0f, 30.0f},
-                                {normalize(float2(2.0f, 1.0f)), 1.8f, 35.0f},
-                                {normalize(float2(2.0f, 2.0f)), 0.3f, 12.0f},
-                                {normalize(float2(2.0f, 1.4f)), 0.3f, 10.0f}};
-static float steepness        = 1.6;
-static float speed            = 1.1f;
+static Wave  waves[8]  = {{normalize(float2(1.0f, 2.0f)), 6.5f, 20.0f * 2 * PI},
+                        {normalize(float2(1.0f, 1.0f)), 7.5f, 180.0f},
+                        {normalize(float2(-2.0f, 1.0f)), 3.5f, 80.0f},
+                        {normalize(float2(-1.0f, 2.0f)), 3.7f, 90.0f},
+                        {normalize(float2(2.0f, 2.4f)), 2.0f, 30.0f},
+                        {normalize(float2(2.0f, 1.0f)), 1.8f, 35.0f},
+                        {normalize(float2(2.0f, 2.0f)), 0.3f, 12.0f},
+                        {normalize(float2(2.0f, 1.4f)), 0.3f, 10.0f}};
+static float steepness = 1.6;
+static float speed     = 1.1f;
 
 
 struct DomainOutput
@@ -72,15 +73,17 @@ DomainOutput CalcGerstnerWaveOffset(float3 v)
         DomainOutput output = (DomainOutput)0;
         float        scale  = gScale / 8000.0f;
         output.PosWS        = v;
-        output.NormalWS     = output.TangentWS = float3(0.0f, 1.0f, 0.0f);
+        output.NormalWS = output.TangentWS = float3(0.0f, 1.0f, 0.0f);
         [unroll] for (int i = 0; i < NUM_WAVES; i++)
         {
                 Wave  wave = waves[i];
                 float wi   = 2 / (wave.waveLength * scale);
                 float Qi   = steepness / (scale * wave.amplitude * wi * NUM_WAVES);
                 float phi  = speed * wi;
-                float rad  = dot(wave.dir, v.xz) * wi + _Time * phi;
+                // phi = PI;
+                float rad = dot(wave.dir, v.xz) * wi + _Time * phi;
 
+                // s =
                 float s = sin(rad);
                 float c = cos(rad);
 
@@ -89,7 +92,7 @@ DomainOutput CalcGerstnerWaveOffset(float3 v)
                 output.PosWS.y += (s + 1.0f) * wave.amplitude * scale;
                 output.PosWS.xz += (c + 1.0f) * wave.amplitude * scale * Qi * wave.dir;
 
-                output.NormalWS += wave.amplitude*GerstnerWaveNormal(wave.dir, wa, Qi, c, s);
+                output.NormalWS += wave.amplitude * GerstnerWaveNormal(wave.dir, wa, Qi, c, s);
                 output.TangentWS += GerstnerWaveTangent(wave.dir, wa, Qi, c, s);
         }
 

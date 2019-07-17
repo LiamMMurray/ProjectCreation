@@ -22,7 +22,7 @@ void GCoreInput::InitializeInput(HWND hwnd)
         Rid[0].dwFlags     = 0; // adds HID mouse and also ignores legacy mouse messages
         Rid[0].hwndTarget  = 0;
 
-        Rid[1].usUsagePage = 0x01;
+		Rid[1].usUsagePage = 0x01;
         Rid[1].usUsage     = 0x06;
         Rid[1].dwFlags     = 0; // adds HID keyboard and also ignores legacy keyboard messages
         Rid[1].hwndTarget  = 0;

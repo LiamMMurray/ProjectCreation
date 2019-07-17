@@ -2,10 +2,14 @@
 
 #include "..//..//ECS/ECS.h"
 
+class ControllerSystem;
+
 class TransformSystem : public ISystem
 {
-        ComponentHandle playerTransform;
-        HandleManager*  m_HandleManager;
+        ComponentHandle   playerTransform;
+        HandleManager*    m_HandleManager;
+        ControllerSystem* controllerSystem;
+
         // Inherited via ISystem
         virtual void OnPreUpdate(float deltaTime) override;
         virtual void OnUpdate(float deltaTime) override;
@@ -14,4 +18,10 @@ class TransformSystem : public ISystem
         virtual void OnShutdown() override;
         virtual void OnResume() override;
         virtual void OnSuspend() override;
+
+    public:
+        inline ComponentHandle GetPlayerWrapTransformHandle()
+        {
+                return playerTransform;
+        }
 };

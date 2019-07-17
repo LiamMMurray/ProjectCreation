@@ -1,12 +1,12 @@
 #include "RenderingSystem.h"
+#include <algorithm>
 #include <iostream>
+#include "..//Engine/Entities/EntityFactory.h"
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
 #include "../Engine/MathLibrary/MathLibrary.h"
 #include "../FileIO/FileIO.h"
 #include "PostProcess/Bloom.h"
-
-#include <algorithm>
 
 #include <d3d11_1.h>
 #pragma comment(lib, "d3d11.lib")
@@ -675,6 +675,8 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         mainCamera->_cachedProjection     = m_CachedMainProjectionMatrix;
         mainCamera->_cachedViewProjection = m_CachedMainViewProjectionMatrix;
 
+        m_SkyHandle.Get<TransformComponent>()->transform.translation = mainTransform->transform.translation;
+
         XMStoreFloat3(&m_ConstantBuffer_SCENE.eyePosition, mainTransform->transform.translation);
         m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(m_CachedMainViewProjectionMatrix);
         m_ConstantBuffer_MVP.Projection     = XMMatrixTranspose(m_CachedMainProjectionMatrix);
@@ -952,6 +954,11 @@ void RenderSystem::OnInitialize()
         UIManager::Initialize(m_WindowHandle);
         TerrainManager::Initialize(this);
         ParticleManager::Initialize();
+        {
+                EntityFactory::CreateStaticMeshEntity("SkyDome01", "SkyMat01", &m_SkyHandle);
+                auto transComp = m_SkyHandle.Get<TransformComponent>();
+                transComp->transform.SetScale(1400.0f);
+        }
 }
 
 void RenderSystem::OnShutdown()
