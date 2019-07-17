@@ -30,7 +30,7 @@ GMusic *AudioManager::LoadMusic(const char *name)
         auto it = m_LoadedMusic.find(name);
         if (it == m_LoadedMusic.end())
         {
-                m_SoundEngine->CreateMusicStream(str.c_str(), &output);
+                GW::GReturn returnCode = m_SoundEngine->CreateMusicStream(str.c_str(), &output);
                 m_LoadedMusic.insert(std::make_pair(name, output));
         }
         else
@@ -62,7 +62,6 @@ void AudioManager::_shutdown()
                 it.second->DecrementCount();
         }
         m_SoundEngine->DecrementCount();
-
 }
 
 void AudioManager::Initialize()

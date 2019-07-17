@@ -215,7 +215,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         // Joseph found an underwater abience music track and is replacing the old music with it for testing <06/19/19>
         // auto music = AudioManager::Get()->LoadMusic("extreme");
 
-        auto music = AudioManager::Get()->LoadMusic("AMBIENCE_Under_Water_Active_loop_stereo");
+        auto music = AudioManager::Get()->LoadMusic("Ambience 16-48k");
         AudioManager::Get()->ActivateMusicAndPause(music, true);
 
         music->ResumeStream();
