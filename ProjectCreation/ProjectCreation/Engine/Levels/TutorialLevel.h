@@ -35,7 +35,7 @@ class TutorialLevel : public ILevelState
         TutorialLevel();
         virtual ~TutorialLevel() = default;
 
-		int whiteCount, redCount, blueCount, greenCount;
+		int whiteCount, redCount, blueCount, greenCount, levelRequested;
 
         void SpawnFirstWhiteOrb();
         void SpawnFirstRedOrb();
