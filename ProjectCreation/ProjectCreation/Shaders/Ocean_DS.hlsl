@@ -13,7 +13,7 @@ struct Wave
 
 #define NUM_WAVES 8
 
-static Wave  waves[8]  = {{normalize(float2(1.0f, 2.0f)), 6.5f, 20.0f * 2 * PI},
+static Wave  waves[8]  = {{normalize(float2(1.0f, 2.0f)), 6.5f, 20.0f},
                         {normalize(float2(1.0f, 1.0f)), 7.5f, 180.0f},
                         {normalize(float2(-2.0f, 1.0f)), 3.5f, 80.0f},
                         {normalize(float2(-1.0f, 2.0f)), 3.7f, 90.0f},
