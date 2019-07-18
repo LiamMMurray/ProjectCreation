@@ -533,7 +533,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           "Windowed",
                           0.04f,
                           0.0f,
-                          0.0f,
+                          0.08f,
                           false,
                           true,
                           true,
@@ -547,7 +547,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           "Resolution",
                           0.04f,
                           0.0f,
-                          0.2f,
+                          0.25f,
                           false,
                           true,
                           true,
@@ -568,6 +568,21 @@ void UIManager::Initialize(native_handle_type hwnd)
                           pauseButtonWidth,
                           pauseButtonHeight);
 
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::OptionsMenu,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Master Volume",
+                          0.03f,
+                          0.0f,
+                          -0.1f,
+                          false,
+                          true,
+                          true,
+                          pauseButtonWidth,
+                          pauseButtonHeight);
+
+
         // Options Submenu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
@@ -576,7 +591,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           "Off",
                           0.04f,
                           0.0f,
-                          0.08f,
+                          0.16f,
                           false,
                           false);
 
@@ -587,7 +602,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           "On",
                           0.04f,
                           0.0f,
-                          0.08f,
+                          0.16f,
                           false,
                           false);
 
@@ -598,7 +613,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           "<",
                           0.04f,
                           -0.12f,
-                          0.3f,
+                          0.35f,
                           false,
                           true);
 
@@ -609,7 +624,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           ">",
                           0.04f,
                           0.12f,
-                          0.3f,
+                          0.35f,
                           false,
                           true);
 
@@ -623,34 +638,37 @@ void UIManager::Initialize(native_handle_type hwnd)
                                       std::to_string(instance->resDescriptors[i].Height),
                                   0.04f,
                                   0.0f,
-                                  0.3f,
+                                  0.35f,
                                   false,
                                   false);
         }
-        
-	/*
-		//Options Volume Slider
-        instance->m_SliderHandle = 0.0f;
-        instance->AddSprite(instance->m_RenderSystem->m_Device,
-                            instance->m_RenderSystem->m_Context,
-                            E_MENU_CATEGORIES::PauseMenu,
-                            L"../Assets/2d/Sprite/Slider_BG.dds",
-                            0.0f,
-                            -0.35f,
-                            0.2f,
-                            0.5f,
-                            false);
-	
-        instance->AddSprite(instance->m_RenderSystem->m_Device,
-                            instance->m_RenderSystem->m_Context,
-                            E_MENU_CATEGORIES::PauseMenu,
-                            L"../Assets/2d/Sprite/Slider_FG.dds",
-                            0.0f,
-                            -0.35f,
-                            0.2f,
-                            0.5f,
-                            false);
-	*/
+
+        /*
+            //Options Volume Slider
+            instance->m_SliderHandle = 0.0f;
+            instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                instance->m_RenderSystem->m_Context,
+                                E_MENU_CATEGORIES::PauseMenu,
+                                L"../Assets/2d/Sprite/Slider_BG.dds",
+                                0.0f,
+                                -0.35f,
+                                0.2f,
+                                0.5f,
+                                false);
+        
+
+
+
+            instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                instance->m_RenderSystem->m_Context,
+                                E_MENU_CATEGORIES::PauseMenu,
+                                L"../Assets/2d/Sprite/Slider_FG.dds",
+                                0.0f,
+                                -0.35f,
+                                0.2f,
+                                0.5f,
+                                false);
+        */
         // Level Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
@@ -665,7 +683,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           pauseButtonWidth,
                           pauseButtonHeight);
-        
+
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
@@ -739,10 +757,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         // Pause Menu
         {
                 // Resume Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e)
-                {
-	                instance->Unpause();
-                });
+                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][1].OnMouseDown.AddEventListener(
+                    [](UIMouseEvent* e) { instance->Unpause(); });
 
                 // Level Select Button
                 instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
@@ -858,10 +874,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                 });
 
                 // Exit Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][5].OnMouseDown.AddEventListener([](UIMouseEvent* e)
-                {
-	                GEngine::Get()->RequestGameExit();
-                });
+                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][5].OnMouseDown.AddEventListener(
+                    [](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
         }
 
         // Options
@@ -1057,11 +1071,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
                         }
                 });
-                
+
                 // Tutorial Button
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         instance->Unpause();
-					    //Load Level Function
+                        // Load Level Function
                 });
 
                 // Level 1 Button
@@ -1170,6 +1184,11 @@ void UIManager::Update()
                 }
         }
 
+        UIMouseEvent e;
+        e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
+        e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
+        std::vector<SpriteComponent*> clickedSprites;
+
         for (auto& it : instance->m_AllSprites)
                 for (auto& sprite : it.second)
                 {
@@ -1183,12 +1202,7 @@ void UIManager::Update()
                                         if (UI::PointInRect(sprite.mRectangle, point))
                                         {
                                                 // Button Was Pressed
-                                                UIMouseEvent e;
-
-                                                e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
-                                                e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
-                                                e.sprite = &sprite;
-                                                sprite.OnMouseDown.Invoke(&e);
+                                                clickedSprites.push_back(&sprite);
                                         }
                                 }
 
@@ -1213,6 +1227,12 @@ void UIManager::Update()
                                 instance->m_SpriteBatch->End();
                         }
                 }
+
+        for (auto& sprite : clickedSprites)
+        {
+                e.sprite = sprite;
+                sprite->OnMouseDown.Invoke(&e);
+        }
 
         for (auto& it : instance->m_AllFonts)
                 for (auto& font : it.second)
