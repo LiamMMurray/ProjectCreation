@@ -222,6 +222,8 @@ void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
         XMVECTOR dummy;
         it.first->second.BakeNextPointOnSpline(dummy, dummy, dummy);
         it.first->second.current = 0;
+
+
         m_ClusterCounter++;
 }
 
@@ -302,6 +304,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         {
                                 if (playerController->SpeedBoost(center, speedComp.color))
                                 {
+                                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.color);
                                         RequestDestroySpeedboost(&speedComp);
                                         break;
                                 }
@@ -603,7 +606,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         m_SpawnBoostTimer -= deltaTime;
                 }
         }
-
+		
         UpdateSpeedboostEvents();
 }
 
@@ -634,20 +637,20 @@ void SpeedBoostSystem::OnInitialize()
 
         std::random_shuffle(m_Paths.begin(), m_Paths.end());
 
-         EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                         ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-                                         ->GetControlledEntity();
-		 
-         TransformComponent* playerTransform = playerEntity.GetComponent<TransformComponent>();
-		 
-         XMVECTOR pos    = playerTransform->transform.translation + 2.0f * VectorConstants::Forward;
-         auto     handle = SpawnLightOrb(pos, E_LIGHT_ORBS::WHITE_LIGHTS);
-		 
-         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
-         speedboostComponent->collisionRadius = m_BoostRadius;
-         speedboostComponent->lifetime        = 1.0f;
-         speedboostComponent->decay           = 0.0f;
-         speedboostComponent->color           = E_LIGHT_ORBS::WHITE_LIGHTS;
+         // EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+         //                                 ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
+         //                                 ->GetControlledEntity();
+		 // 
+         // TransformComponent* playerTransform = playerEntity.GetComponent<TransformComponent>();
+		 // 
+         // XMVECTOR pos    = playerTransform->transform.translation + 2.0f * VectorConstants::Forward;
+         // auto     handle = SpawnLightOrb(pos, E_LIGHT_ORBS::WHITE_LIGHTS);
+		 // 
+         // auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
+         // speedboostComponent->collisionRadius = m_BoostRadius;
+         // speedboostComponent->lifetime        = 1.0f;
+         // speedboostComponent->decay           = 0.0f;
+         // speedboostComponent->color           = E_LIGHT_ORBS::WHITE_LIGHTS;
          /*CreateRandomPath(playerTransform->transform.translation,
                           SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[0],
                           E_LIGHT_ORBS::BLUE_LIGHTS,

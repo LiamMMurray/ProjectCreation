@@ -8,5 +8,7 @@ class Level_02 : public ILevelState
         void Enter() override;
         void Update(float deltaTime) override;
         void Exit() override;
+
+        Level_02();
         virtual ~Level_02() = default;
 };

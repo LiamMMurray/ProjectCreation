@@ -11,7 +11,7 @@
 #include "ResourceManager/ResourceManager.h"
 #include "XTime.h"
 
-class LevelStateManager;
+#include "Levels/LevelStateManager.h"
 
 class GEngine
 {
@@ -35,8 +35,33 @@ class GEngine
 
         LevelStateManager* m_LevelStateManager;
 
+        void Signal();
+
+        float m_PlayerRadius          = 0.0f;
+        float m_DesiredPlayerRadius   = 0.0f;
+        float m_RadiusTransitionSpeed = 5.0f;
+
     public:
-        float           m_PlayerRadius = 0.0f;
+        inline void SetPlayerRadius(float r)
+        {
+                m_PlayerRadius = m_DesiredPlayerRadius = r;
+        }
+
+        inline void SetDesiredPlayerRadius(float r)
+        {
+                m_DesiredPlayerRadius = r;
+        }
+
+        inline void SetTransitionSpeed(float s)
+        {
+                m_RadiusTransitionSpeed = s;
+        }
+
+        inline float GetCurrentPlayerRadius() const
+        {
+                return m_PlayerRadius;
+        }
+
         float           m_TerrainAlpha = 0.0f;
         EntityHandle    m_SunHandle;
         ProfilerContext m_MainThreadProfilingContext;
@@ -52,7 +77,7 @@ class GEngine
 
         static GEngine* Get();
 
-        void Signal();
+        float Update();
 
         HandleManager*          GetHandleManager();
         SystemManager*          GetSystemManager();
