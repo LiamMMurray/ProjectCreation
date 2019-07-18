@@ -356,3 +356,5 @@ MigrationBackup/
 x64
 
 ProjectCreation/ProjectCreation/profiling\.json
+
+*.json
