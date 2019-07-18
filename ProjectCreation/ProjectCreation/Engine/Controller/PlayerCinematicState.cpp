@@ -15,7 +15,7 @@ void PlayerCinematicState::Enter()
         m_currAlpha   = 0.0f;
         m_lookAtAlpha = 0.0f;
 
-        m_LookAtTransitionDuration = std::min(m_LookAtTransitionDuration, m_Duration);
+        m_LookAtTransitionDuration = min(m_LookAtTransitionDuration, m_Duration);
 
         size_t n = m_TransformComponents.size();
         m_InitTransforms.resize(n);
@@ -78,7 +78,7 @@ void PlayerCinematicState::UpdateSimple(float deltaTime)
                 FTransform          currentTransform;
                 TransformComponent* transformComp = m_TransformComponents[i].Get<TransformComponent>();
 
-                currentTransform = FTransform::Lerp(m_InitTransforms[i], m_EndTransforms[i], std::min(1.0f, m_currAlpha));
+                currentTransform = FTransform::Lerp(m_InitTransforms[i], m_EndTransforms[i], min(1.0f, m_currAlpha));
 
                 transformComp->transform = currentTransform;
         }
@@ -94,7 +94,7 @@ void PlayerCinematicState::UpdateLookAt(float deltaTime)
                 FTransform currentTransform;
                 auto       transformComp = m_TransformComponents[i].Get<TransformComponent>();
 
-                currentTransform = FTransform::Lerp(m_InitTransforms[i], m_EndTransforms[i], std::min(1.0f, m_currAlpha));
+                currentTransform = FTransform::Lerp(m_InitTransforms[i], m_EndTransforms[i], min(1.0f, m_currAlpha));
 
                 transformComp->transform = currentTransform;
         }
@@ -107,7 +107,7 @@ void PlayerCinematicState::UpdateLookAt(float deltaTime)
                                                                   lookAtTransformComponent->transform.translation);
 
         playerTransformComponent->transform.rotation =
-            FQuaternion::Lerp(_playerInitialLookAtRot, desiredRotation, std::min(1.0f, m_lookAtAlpha));
+            FQuaternion::Lerp(_playerInitialLookAtRot, desiredRotation, min(1.0f, m_lookAtAlpha));
 }
 
 void PlayerCinematicState::UpdateReveal(float deltaTime)

@@ -7,11 +7,14 @@
 
 #include "../ECS/HandleManager.h"
 #include "../ECS/SystemManager.h"
+#include "../Utility/Profiling.h"
 #include "ResourceManager/ResourceManager.h"
 #include "XTime.h"
+
+class LevelStateManager;
+
 class GEngine
 {
-
         static NMemory::memsize            s_PoolAllocSize;
         NMemory::MemoryStack               m_PoolMemory;
         NMemory::NPools::RandomAccessPools m_ComponentPools;
@@ -30,10 +33,13 @@ class GEngine
         bool m_GameIsPaused  = false;
         bool m_WantsGameExit = false;
 
+        LevelStateManager* m_LevelStateManager;
+
     public:
-        float        m_PlayerRadius = 0.0f;
-        float        m_TerrainAlpha = 0.0f;
-        EntityHandle m_SunHandle;
+        float           m_PlayerRadius = 0.0f;
+        float           m_TerrainAlpha = 0.0f;
+        EntityHandle    m_SunHandle;
+        ProfilerContext m_MainThreadProfilingContext;
 
         void        SetGamePaused(bool val);
         inline bool GetGamePaused()
@@ -53,6 +59,11 @@ class GEngine
         inline ResourceManager* GetResourceManager()
         {
                 return m_ResourceManager;
+        }
+
+        inline LevelStateManager* GetLevelStateManager()
+        {
+                return m_LevelStateManager;
         }
 
         inline void SetDebugMode(bool val)

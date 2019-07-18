@@ -95,8 +95,9 @@ void PlayerController::ApplyInput()
         FSphere fSpherePlayer;
         fSpherePlayer.center = _cachedControlledTransform.translation;
         fSpherePlayer.radius = 0.25f;
-
-        debug_renderer::AddSphere(fSpherePlayer, 36, XMMatrixIdentity());
+		#ifdef _DEBUG
+        debug_renderer::AddSphere(fSpherePlayer, 4, XMMatrixIdentity());
+		#endif
 }
 
 void PlayerController::DebugPrintSpeedBoostColor(int color)

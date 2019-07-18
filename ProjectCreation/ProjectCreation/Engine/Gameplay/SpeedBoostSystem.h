@@ -37,15 +37,13 @@ class SpeedBoostSystem : public ISystem
         ResourceHandle speedboostMaterials[E_LIGHT_ORBS::COUNT]  = {};
         std::string speedboostMaterialNames[E_LIGHT_ORBS::COUNT] = {"SpeedboostR", "SpeedboostG", "SpeedboostB", "SpeedboostW"};
 
-        EntityHandle SpawnSpeedOrb();
-        EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
-        EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
 
         void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
         void RequestDestroySplineOrb(SpeedboostSplineComponent* speedComp);
 
         ComponentHandle latchedSplineHandle;
         bool            bIsLatchedToSpline;
+        bool            shouldLatch;
 
         bool m_EnableRandomSpawns = false;
 
@@ -84,8 +82,6 @@ class SpeedBoostSystem : public ISystem
         static constexpr float m_SplineAttractionForceMax = 1.5f;
         static constexpr float m_SplineHeightOffset       = 0.06f;
 
-	
-
     protected:
         // Inherited via ISystem
         virtual void OnPreUpdate(float deltaTime) override;
@@ -97,4 +93,12 @@ class SpeedBoostSystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
+        EntityHandle SpawnSpeedOrb();
+        EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
+        EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
+
+        inline void SetRandomSpawnEnabled(bool val)
+        {
+                m_EnableRandomSpawns = val;
+        };
 };

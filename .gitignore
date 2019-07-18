@@ -354,3 +354,7 @@ MigrationBackup/
 /ProjectCreation/ProjectCreation/Debug
 /ProjectCreation/ProjectCreation/x64
 x64
+
+ProjectCreation/ProjectCreation/profiling\.json
+
+*.json

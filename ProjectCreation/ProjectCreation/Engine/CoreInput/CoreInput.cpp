@@ -1,5 +1,5 @@
 #include "CoreInput.h"
-
+#include "..//GEngine.h"
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #define NOMINMAX
 #include <Windows.h>
@@ -90,6 +90,7 @@ void GCoreInput::GatherInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
 void GCoreInput::UpdateInput()
 {
+        GEngine::Get()->m_MainThreadProfilingContext.Begin("Message Processing", "Input");
         for (int i = 0; i < 256; i++)
         {
                 const uint8_t last = 1 & keyStates[i];
@@ -101,7 +102,7 @@ void GCoreInput::UpdateInput()
                 const uint8_t last = 1 & MouseStates[i];
                 MouseStates[i]     = (MouseStates[i] << 1) | last;
         }
-
+		GEngine::Get()->m_MainThreadProfilingContext.End();
 
         ResetAxes();
 }

@@ -122,7 +122,7 @@ void PlayerGroundState::Update(float deltaTime)
         float dist = MathLibrary::CalulateDistance(currentVelocity, desiredVelocity);
 
         // Calculate change based on the type of acceleration, the change in time, and the calculated distance
-        float delta = std::min(accel * deltaTime, dist);
+        float delta = min(accel * deltaTime, dist);
 
         // Normalize the difference of the desired velocity and the current velocity
         XMVECTOR deltaVec = XMVector3Normalize(desiredVelocity - currentVelocity);
@@ -156,7 +156,7 @@ void PlayerGroundState::Update(float deltaTime)
                 XMVECTOR offset = actualVelocity * deltaTime;
                 _cachedTransform.translation += offset;
                 float posY                   = XMVectorGetY(_cachedTransform.translation);
-                posY                         = std::max(posY, 0.0f);
+                posY                         = max(posY, 0.0f);
                 _cachedTransform.translation = XMVectorSetY(_cachedTransform.translation, posY);
         }
 

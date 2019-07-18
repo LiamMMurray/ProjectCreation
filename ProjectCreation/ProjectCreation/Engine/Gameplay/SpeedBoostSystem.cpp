@@ -62,7 +62,6 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
                                                                         m_BoostLifespan + m_BoostLifespanVariance);
         speedboostComponent->decay           = 1.0f;
         speedboostComponent->color           = color;
-
         return entityH;
 }
 
@@ -174,6 +173,17 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                                         XMVECTOR end = orbitSystem->GoalPositions[i] - 2.0f * XMVector3Normalize(dir);
 
                                         CreateRandomPath(start, end, i);
+
+                                        XMVECTOR randStart = MathLibrary::GetRandomPointInRadius2D(XMVectorZero(), 0, 50);
+                                        XMVECTOR randEnd   = MathLibrary::GetRandomPointInRadius2D(XMVectorZero(), -50, 0);
+
+                                        CreateRandomPath(randStart, end, i);
+
+                                        randStart = MathLibrary::GetRandomPointInRadius2D(XMVectorZero(), 0, 50);
+                                        randEnd   = MathLibrary::GetRandomPointInRadius2D(XMVectorZero(), -50, 0);
+                                        
+                                		CreateRandomPath(randStart, end, i);
+
                                         goals[i] = true;
                                 }
                         }
@@ -272,7 +282,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
         }
 
         // m_PlayerEffectRadius                       = 25.0f;
-        ComponentHandle closestGoalTransformHandle = m_SystemManager->GetSystem<OrbitSystem>()->GetClosestGoalTransform();
         int             speedboostCount            = 0;
         {
                 for (auto& speedComp : m_HandleManager->GetActiveComponents<SpeedboostComponent>())
@@ -366,7 +375,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         auto clusterIt = m_SplineClusterSpawners.find(clusterID);
 
-					int splineColor = m_SplineClusterSpawners.at(clusterID).color;
+                        int splineColor = m_SplineClusterSpawners.at(clusterID).color;
 
                         XMVECTOR pos = splineComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
                         clusterIt->second.pointPositions[index] = pos;
@@ -375,10 +384,13 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         if (distance < (checkRadius))
                         {
-                                if (bIsLatchedToSpline == false || prevDistance > distance && (GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[splineColor]) == KeyState::Down))
+                                if ((bIsLatchedToSpline == false || prevDistance > distance) &&
+                                    (GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[splineColor]) ==
+                                     KeyState::Down))
                                 {
                                         bIsLatchedToSpline  = true;
                                         latchedSplineHandle = splineComp.GetHandle();
+                                        shouldLatch         = true;
                                 }
                         }
                 }
@@ -429,6 +441,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         inPath |= CollisionLibary::PointInCapsule(playerTransform->transform.translation, capsuleA);
                         inPath |= CollisionLibary::PointInCapsule(playerTransform->transform.translation, capsuleB);
+                        inPath &= shouldLatch;
 
                         if (inPath)
                         {
@@ -487,6 +500,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                         // playerController->AddCurrentVelocity(dir * 10.0f * deltaTime);
                                 }
                         }
+
                         else
                         {
                                 // Player has fallen off the spline
@@ -499,21 +513,19 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 int splineID  = latchedSplineComp->clusterID;
                                 int goalIndex = m_SplineClusterSpawners.at(splineID).color;
 
-                                 // Start of the new spline
-                                 XMVECTOR start =
-                                     playerTransform->transform.translation + 2.0f * playerTransform->transform.GetForward();
-								 
-                                 // Direction of the new spline
-                                 XMVECTOR dir = SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] - start;
-								 
-                                 // End point of the new spline
-                                 XMVECTOR end = SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] -
-                                                2.0f * XMVector3Normalize(dir);
-								 
-                                 // Finish creation of new spline
-                                 CreateRandomPath(start, end, goalIndex);
+                                // Start of the new spline
+                                XMVECTOR start =
+                                    playerTransform->transform.translation + 2.0f * playerTransform->transform.GetForward();
 
-							
+                                // Direction of the new spline
+                                XMVECTOR dir = SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] - start;
+
+                                // End point of the new spline
+                                XMVECTOR end = SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] -
+                                               2.0f * XMVector3Normalize(dir);
+
+                                // Finish creation of new spline
+                                CreateRandomPath(start, end, goalIndex);
                         }
                 }
                 else
@@ -622,26 +634,27 @@ void SpeedBoostSystem::OnInitialize()
 
         std::random_shuffle(m_Paths.begin(), m_Paths.end());
 
-        EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                        ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-                                        ->GetControlledEntity();
-
-        TransformComponent* playerTransform = playerEntity.GetComponent<TransformComponent>();
-
-        XMVECTOR pos    = playerTransform->transform.translation + 2.0f * VectorConstants::Forward;
-        auto     handle = SpawnLightOrb(pos, E_LIGHT_ORBS::WHITE_LIGHTS);
-
-        auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
-        speedboostComponent->collisionRadius = m_BoostRadius;
-        speedboostComponent->lifetime        = 1.0f;
-        speedboostComponent->decay           = 0.0f;
-        speedboostComponent->color           = E_LIGHT_ORBS::WHITE_LIGHTS;
-        /*CreateRandomPath(playerTransform->transform.translation,
-                         SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[0],
-                         E_LIGHT_ORBS::BLUE_LIGHTS,
-                         5.0f,
-                         4);*/
+         EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+                                         ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
+                                         ->GetControlledEntity();
+		 
+         TransformComponent* playerTransform = playerEntity.GetComponent<TransformComponent>();
+		 
+         XMVECTOR pos    = playerTransform->transform.translation + 2.0f * VectorConstants::Forward;
+         auto     handle = SpawnLightOrb(pos, E_LIGHT_ORBS::WHITE_LIGHTS);
+		 
+         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
+         speedboostComponent->collisionRadius = m_BoostRadius;
+         speedboostComponent->lifetime        = 1.0f;
+         speedboostComponent->decay           = 0.0f;
+         speedboostComponent->color           = E_LIGHT_ORBS::WHITE_LIGHTS;
+         /*CreateRandomPath(playerTransform->transform.translation,
+                          SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[0],
+                          E_LIGHT_ORBS::BLUE_LIGHTS,
+                          5.0f,
+                          4);*/
         bIsLatchedToSpline = false;
+
 }
 
 void SpeedBoostSystem::OnShutdown()

@@ -22,11 +22,11 @@ void PlayerPuzzleState::Enter()
 
 void PlayerPuzzleState::Update(float deltaTime)
 {
-        auto goalComp              = _playerController->GetGoalComponent().Get<GoalComponent>();
-        auto goalTransform         = goalComp->GetParent().GetComponent<TransformComponent>();
-        auto playerTransformHandle = _playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
-        auto playerTransformComp   = playerTransformHandle.Get<TransformComponent>();
-        auto cameraComponent       = _playerController->GetControlledEntity().GetComponent<CameraComponent>();
+        auto     goalComp              = _playerController->GetGoalComponent().Get<GoalComponent>();
+        auto     goalTransform         = goalComp->GetParent().GetComponent<TransformComponent>();
+        auto     playerTransformHandle = _playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
+        auto     playerTransformComp   = playerTransformHandle.Get<TransformComponent>();
+        auto     cameraComponent       = _playerController->GetControlledEntity().GetComponent<CameraComponent>();
         XMVECTOR input = deltaTime * XMVectorSet((float)GCoreInput::GetMouseX(), (float)-GCoreInput::GetMouseY(), 0.0f, 0.0f);
         float    speed = MathLibrary::CalulateVectorLength(dragVelocity);
 
@@ -44,7 +44,7 @@ void PlayerPuzzleState::Update(float deltaTime)
         else
         {
                 accel = dragDeacceleration;
-                dragVelocity -= XMVector3Normalize(dragVelocity) * std::min(accel * deltaTime, speed);
+                dragVelocity -= XMVector3Normalize(dragVelocity) * min(accel * deltaTime, speed);
         }
         dragVelocity = XMVector3ClampLength(dragVelocity, 0.0f, goalDragMaxSpeed);
 
@@ -60,25 +60,31 @@ void PlayerPuzzleState::Update(float deltaTime)
         if (result.hasOverlap)
         {
                 // stateMachine->Transition();
-                auto tHandle      = GEngine::Get()->GetSystemManager()->GetSystem<OrbitSystem>()->GetClosestGoalTransform();
-                auto tComp        = tHandle.Get<TransformComponent>();
-                auto currGoalComp = goalComp->GetParent().GetComponent<TransformComponent>();
+                auto closestTransform = GEngine::Get()->GetSystemManager()->GetSystem<OrbitSystem>()->GetClosestGoalTransform();
+                auto currGoalComp     = goalComp->GetParent().GetComponent<TransformComponent>();
 
-                if (tComp == playerTransformComp || tComp == currGoalComp)
+                float distanceToPlayer =
+                    MathLibrary::CalulateDistance(closestTransform.translation, _cachedTransform.translation);
+
+                if (distanceToPlayer < 20.0f)
                 {
                         FTransform targetTransform;
-                        targetTransform.translation = XMVectorSetY(tComp->transform.translation, 0.0f);
+                        targetTransform.translation = XMVectorSetY(closestTransform.translation, 0.0f);
                         targetTransform.rotation    = FQuaternion::FromEulerAngles(0.0f, 0.0f, 0.0f);
                         _playerController->RequestCinematicTransition(
                             1, &playerTransformHandle, &targetTransform, E_PLAYERSTATE_EVENT::TO_GROUND, 4.0f, 1.0f);
                 }
                 else
                 {
-                        XMVECTOR targetPos = playerTransformComp->transform.translation;
-                        targetPos          = XMVectorSetY(targetPos, 0.0f);
+                        FTransform targetTransform;
+                        targetTransform.translation = playerTransformComp->transform.translation;
+                        targetTransform.translation = XMVectorSetY(targetTransform.translation, 0.0f);
 
-                        _playerController->RequestCinematicTransitionLookAt(
-                            tHandle, 0, nullptr, nullptr, E_PLAYERSTATE_EVENT::TO_GROUND, 4.0f, 4.0f, 1.0f);
+                        targetTransform.rotation =
+                            FQuaternion::LookAt(XMVector3Normalize(closestTransform.translation - targetTransform.translation));
+
+                        _playerController->RequestCinematicTransition(
+                            1, &playerTransformHandle, &targetTransform, E_PLAYERSTATE_EVENT::TO_GROUND, 4.0f, 1.0f);
                         m_CollectedPlanetCount++;
                         _playerController->SetCollectedPlanetCount(m_CollectedPlanetCount);
                 }
