@@ -519,7 +519,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           "Back",
                           0.05f,
                           0.0f,
-                          -0.15f,
+                          -0.35f,
                           false,
                           true,
                           true,
@@ -627,7 +627,30 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   false,
                                   false);
         }
-
+        
+	/*
+		//Options Volume Slider
+        instance->m_SliderHandle = 0.0f;
+        instance->AddSprite(instance->m_RenderSystem->m_Device,
+                            instance->m_RenderSystem->m_Context,
+                            E_MENU_CATEGORIES::PauseMenu,
+                            L"../Assets/2d/Sprite/Slider_BG.dds",
+                            0.0f,
+                            -0.35f,
+                            0.2f,
+                            0.5f,
+                            false);
+	
+        instance->AddSprite(instance->m_RenderSystem->m_Device,
+                            instance->m_RenderSystem->m_Context,
+                            E_MENU_CATEGORIES::PauseMenu,
+                            L"../Assets/2d/Sprite/Slider_FG.dds",
+                            0.0f,
+                            -0.35f,
+                            0.2f,
+                            0.5f,
+                            false);
+	*/
         // Level Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
@@ -636,7 +659,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           "Back",
                           0.05f,
                           0.0f,
-                          -0.15f,
+                          -0.35f,
                           false,
                           true,
                           true,
@@ -647,56 +670,56 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "Tutorial",
+                          "Tutorial: Inti",
                           0.05f,
                           0.0f,
-                          0.0f,
+                          -0.15f,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
+                          pauseButtonWidth + 0.13f,
                           pauseButtonHeight);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "Level 1",
+                          "Level 1: Yaku",
                           0.05f,
                           0.0f,
-                          0.1f,
+                          0.0f,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
+                          pauseButtonWidth + 0.13f,
                           pauseButtonHeight);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "Level 2",
+                          "Level 2: Pacha",
                           0.05f,
                           0.0f,
-                          0.2f,
+                          0.15f,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
+                          pauseButtonWidth + 0.13f,
                           pauseButtonHeight);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "Level 3",
+                          "Level 3: Yura",
                           0.05f,
                           0.0f,
                           0.3f,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
+                          pauseButtonWidth + 0.13f,
                           pauseButtonHeight);
 
         // Controls Menu
@@ -707,7 +730,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           "Back",
                           0.05f,
                           0.0f,
-                          -0.15f,
+                          -0.35f,
                           false,
                           true,
                           true,
@@ -882,7 +905,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
 
                         instance->CSettings.m_Resolution   = instance->PSettings.m_Resolution;
-                        instance->CSettings.Volume         = instance->PSettings.Volume;
+                        instance->CSettings.m_Volume       = instance->PSettings.m_Volume;
                         instance->CSettings.m_IsFullscreen = instance->PSettings.m_IsFullscreen;
 
                         instance->AdjustResolution(instance->m_window,
@@ -949,7 +972,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
 
                         instance->PSettings.m_Resolution   = instance->CSettings.m_Resolution;
-                        instance->PSettings.Volume         = instance->CSettings.Volume;
+                        instance->PSettings.m_Volume       = instance->CSettings.m_Volume;
                         instance->PSettings.m_IsFullscreen = instance->CSettings.m_IsFullscreen;
 
                         instance->AdjustResolution(instance->m_window,
