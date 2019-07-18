@@ -38,7 +38,7 @@ class SpeedBoostSystem : public ISystem
         std::string speedboostMaterialNames[E_LIGHT_ORBS::COUNT] = {"SpeedboostR", "SpeedboostG", "SpeedboostB", "SpeedboostW"};
 
 
-        void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
+        //void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
         void RequestDestroySplineOrb(SpeedboostSplineComponent* speedComp);
 
         ComponentHandle latchedSplineHandle;
@@ -47,7 +47,6 @@ class SpeedBoostSystem : public ISystem
 
         bool m_EnableRandomSpawns = false;
 
-        void               UpdateSpeedboostEvents();
         std::vector<float> x;
 
         void CreateRandomPath(const DirectX::XMVECTOR& start,
@@ -96,6 +95,10 @@ class SpeedBoostSystem : public ISystem
         EntityHandle SpawnSpeedOrb();
         EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
         EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
+
+        void UpdateSpeedboostEvents();
+
+        void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
 
         inline void SetRandomSpawnEnabled(bool val)
         {

@@ -1,7 +1,6 @@
 #include "GEngine.h"
 #include "../Utility/MemoryLeakDetection.h"
-
-#include "Levels/LevelStateManager.h"
+#include "MathLibrary/MathLibrary.h"
 
 GEngine*         GEngine::instance        = 0;
 NMemory::memsize GEngine::s_PoolAllocSize = MB(64);
@@ -31,9 +30,9 @@ void GEngine::Initialize()
 
         instance->m_MainThreadProfilingContext.Initialize();
 
-        instance->m_SystemManager     = DBG_NEW   SystemManager;
-        instance->m_ResourceManager   = DBG_NEW ResourceManager;
-        instance->m_LevelStateManager = DBG_NEW   LevelStateManager;
+        instance->m_SystemManager     = DBG_NEW     SystemManager;
+        instance->m_ResourceManager   = DBG_NEW   ResourceManager;
+        instance->m_LevelStateManager = DBG_NEW LevelStateManager;
 
         instance->m_SystemManager->Initialize();
         instance->m_ResourceManager->Initialize();
@@ -57,6 +56,16 @@ GEngine* GEngine::Get()
 {
         assert(instance != nullptr);
         return instance;
+}
+
+float GEngine::Update()
+{
+        Signal();
+        float deltaTime = GetDeltaTime();
+
+        m_PlayerRadius = MathLibrary::MoveTowards(m_PlayerRadius, m_DesiredPlayerRadius, m_RadiusTransitionSpeed * deltaTime);
+        GetLevelStateManager()->Update(deltaTime);
+        return deltaTime;
 }
 
 void GEngine::Signal()

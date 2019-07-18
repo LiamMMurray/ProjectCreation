@@ -21,6 +21,7 @@ class LevelStateManager
         }
 
         void Init();
-
+        void Update(float deltaTime);
         void RequestState(int level);
+		void RequestNextLevel();
 };

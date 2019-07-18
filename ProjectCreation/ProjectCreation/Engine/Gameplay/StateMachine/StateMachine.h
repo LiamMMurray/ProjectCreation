@@ -34,6 +34,11 @@ class StateMachine
                 return state;
         }
 
+        inline void SetCurrentState(IState* c_state)
+        {
+                m_Current = c_state;
+        }
+
         inline IState* GetCurrentState()
         {
                 return m_Current;

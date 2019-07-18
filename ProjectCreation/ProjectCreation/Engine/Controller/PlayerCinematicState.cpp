@@ -53,11 +53,11 @@ void PlayerCinematicState::Update(float deltaTime)
                         UpdateLookAt(deltaTime);
                         break;
                 }
-                case E_TRANSITION_MODE::Reveal:
-                {
-                        UpdateReveal(deltaTime);
-                        break;
-                }
+                //case E_TRANSITION_MODE::Reveal:
+                //{
+                //      //  UpdateReveal(deltaTime);
+                //        break;
+                //}
                 default:
                 {
                         assert(false && "invalid transition mode requested");
@@ -110,16 +110,16 @@ void PlayerCinematicState::UpdateLookAt(float deltaTime)
             FQuaternion::Lerp(_playerInitialLookAtRot, desiredRotation, min(1.0f, m_lookAtAlpha));
 }
 
-void PlayerCinematicState::UpdateReveal(float deltaTime)
-{
-        m_RevealRadius += 1.0f;
-        GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_RevealRadius, deltaTime * 15.0f);
-        if (GEngine::Get()->m_PlayerRadius >= 500)
-        {
-                _playerController->SetCollectedPlanetCount(0);
-                m_currAlpha = 1.0f;
-        }
-}
+//void PlayerCinematicState::UpdateReveal(float deltaTime)
+//{
+//        m_RevealRadius += 1.0f;
+//        GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_RevealRadius, deltaTime * 15.0f);
+//        if (GEngine::Get()->m_PlayerRadius >= 500)
+//        {
+//                _playerController->SetCollectedPlanetCount(0);
+//                m_currAlpha = 1.0f;
+//        }
+//}
 
 void PlayerCinematicState::Exit()
 {

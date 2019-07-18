@@ -5,22 +5,26 @@
 
 enum E_Level_States
 {
-	TUTORIAL_LEVEL = 0,
-	LEVEL_01,
-	LEVEL_02,
-	COUNT
+        TUTORIAL_LEVEL = 0,
+        LEVEL_01,
+        LEVEL_02,
+        COUNT
 };
 
 class ILevelState : public IState
 {
         friend class LevelStateMachine;
-		
+
     protected:
-        int m_LevelType;
+        int m_LevelType = E_Level_States::TUTORIAL_LEVEL;
 
         virtual void Enter()                 = 0;
         virtual void Update(float deltaTime) = 0;
         virtual void Exit()                  = 0;
 
-        int GetLevelType();
+    public:
+        inline int GetLevelType() const
+        {
+                return m_LevelType;
+        }
 };

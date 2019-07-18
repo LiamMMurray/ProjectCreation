@@ -8,7 +8,7 @@ enum class E_TRANSITION_MODE
 {
         Simple,
         LookAt,
-        Reveal,
+        // Reveal,
 };
 
 class PlayerCinematicState : public IPlayerControllerState
@@ -40,7 +40,7 @@ class PlayerCinematicState : public IPlayerControllerState
 
         void UpdateSimple(float deltaTime);
         void UpdateLookAt(float deltaTime);
-        void UpdateReveal(float deltaTime);
+        // void UpdateReveal(float deltaTime);
 
         virtual void Exit() override;
 
