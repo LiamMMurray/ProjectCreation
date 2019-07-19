@@ -189,6 +189,8 @@ void TerrainManager::_update(float deltaTime)
         renderSystem->m_ConstantBuffer_MVP.World = XMMatrixTranspose(TerrainMatrix);
         terrainConstantBufferCPU.worldView       = XMMatrixTranspose(TerrainMatrix * renderSystem->m_CachedMainViewMatrix);
         terrainConstantBufferCPU.gTerrainAlpha   = GEngine::Get()->m_TerrainAlpha;
+
+		XMStoreFloat3(&terrainConstantBufferCPU.gOriginOffset, GEngine::Get()->m_OriginOffset);
         renderSystem->UpdateConstantBuffer(renderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP],
                                            &renderSystem->m_ConstantBuffer_MVP,
                                            sizeof(renderSystem->m_ConstantBuffer_MVP));

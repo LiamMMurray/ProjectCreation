@@ -117,8 +117,8 @@ float4 main(DomainOutput pIn) : SV_TARGET
                 float2 integration = IBLIntegration.Sample(sampleTypeNearest, float2(NdotV, 1.f - surface.roughness)).rg;
                 color += IBL(surface, viewWS, specColor, diffuse, specular, integration);
         }
-        // return NormalWS.xxxx;
-        // return float4(color, 1.0f);
+        //return NormalWS.xxxx;
+        //return float4(color, 1.0f);
 
         float maskA     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 45.0f + _Time * 0.01f * float2(1.0f, 0.0f)).z;
         float maskB     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 40.0f + _Time * 0.01f * float2(-1.0f, 0.0f)).z;
@@ -130,9 +130,9 @@ float4 main(DomainOutput pIn) : SV_TARGET
 
         float modulatedDistance = dist / .1f + InterleavedGradientNoise(pIn.Pos.xy + _Time);
 
-        float mask         = saturate(dist / 0.1f - _playerRadius);
-        float bandA        = saturate(dist / 0.1f - _playerRadius + 0.5f);
-        float bandB        = saturate(dist / 0.1f - _playerRadius - 0.5f);
+        float mask         = saturate(dist / 0.1f - _playerRadius*2.0f);
+        float bandA        = saturate(dist / 0.1f - _playerRadius*2.0f + 0.5f);
+        float bandB        = saturate(dist / 0.1f - _playerRadius*2.0f - 0.5f);
         float bandCombined = saturate(5.0f * (bandA - bandB));
         color *= (1 - mask);
 

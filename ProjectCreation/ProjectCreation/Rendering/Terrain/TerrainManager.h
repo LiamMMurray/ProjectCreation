@@ -21,8 +21,8 @@ struct CTerrainInfoBuffer
         DirectX::XMFLOAT2 gScreenDimensions;
         float             gTriangleSize;
         float             gCellSizeWorld;
+        DirectX::XMFLOAT3 gOriginOffset;
         float             gTerrainAlpha;
-        DirectX::XMFLOAT3 padding;
 };
 
 struct TerrainVertex

@@ -13,8 +13,8 @@ struct Wave
 
 #define NUM_WAVES 8
 
-static Wave  waves[8]  = {{normalize(float2(1.0f, 2.0f)), 6.5f, 20.0f},
-                        {normalize(float2(1.0f, 1.0f)), 7.5f, 180.0f},
+static Wave  waves[8]  = {{normalize(float2(1.0f, 2.0f)), 5.5f, 200.0f},
+                        {normalize(float2(1.0f, 1.0f)), 5.5f, 180.0f},
                         {normalize(float2(-2.0f, 1.0f)), 3.5f, 80.0f},
                         {normalize(float2(-1.0f, 2.0f)), 3.7f, 90.0f},
                         {normalize(float2(2.0f, 2.4f)), 2.0f, 30.0f},
@@ -22,7 +22,7 @@ static Wave  waves[8]  = {{normalize(float2(1.0f, 2.0f)), 6.5f, 20.0f},
                         {normalize(float2(2.0f, 2.0f)), 0.3f, 12.0f},
                         {normalize(float2(2.0f, 1.4f)), 0.3f, 10.0f}};
 static float steepness = 1.6;
-static float speed     = 1.1f;
+static float speed     = 1.5f;
 
 
 struct DomainOutput
@@ -72,7 +72,9 @@ DomainOutput CalcGerstnerWaveOffset(float3 v)
 {
         DomainOutput output = (DomainOutput)0;
         float        scale  = gScale / 8000.0f;
-        output.PosWS        = v;
+        float3       inPos  = v - gOriginOffset;
+        output.Tex          = inPos.xz / (float2(gScale, gScale)) - 0.5f;
+        output.PosWS        = inPos;
         output.NormalWS = output.TangentWS = float3(0.0f, 1.0f, 0.0f);
         [unroll] for (int i = 0; i < NUM_WAVES; i++)
         {
@@ -81,7 +83,7 @@ DomainOutput CalcGerstnerWaveOffset(float3 v)
                 float Qi   = steepness / (scale * wave.amplitude * wi * NUM_WAVES);
                 float phi  = speed * wi;
                 // phi = PI;
-                float rad = dot(wave.dir, v.xz) * wi + _Time * phi;
+                float rad = dot(wave.dir, inPos.xz) * wi + _Time * phi;
 
                 // s =
                 float s = sin(rad);
@@ -118,10 +120,13 @@ DomainOutput CalcGerstnerWaveOffset(float3 v)
         pos        = mul(float4(pos, 1.0f), World).xyz;
         pos.y      = 0.0f;
         // Gerstner Wave
-        dOut      = CalcGerstnerWaveOffset(pos);
-        dOut.Tex  = Bilerp(texs, domain);
+
+
+        dOut = CalcGerstnerWaveOffset(pos);
+        //dOut.Tex  = Bilerp(texs, domain);
         dOut.Tex2 = dOut.Tex * gTexScale;
 
+        dOut.PosWS += gOriginOffset;
         dOut.Pos         = mul(float4(dOut.PosWS, 1.0f), ViewProjection);
         dOut.linearDepth = dOut.Pos.w;
 

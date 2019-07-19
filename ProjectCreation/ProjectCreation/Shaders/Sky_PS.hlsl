@@ -45,30 +45,35 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
 
         float2 windDir = float2(1.0f, 1.0f);
 
-        float2 flowMap = diffuseMap.SampleLevel(sampleTypeWrap, pIn.Tex, 0).rg;
+
+        // return noiseBlend;
+        float2 flowMap = diffuseMap.SampleLevel(sampleTypeWrap, rotateUV(pIn.Tex, -0.004f * _Time), 0).rg;
         float2 flow    = flowMap * 2.0f - 1.0f;
         // return flow;
         // return sphere;
 
         // get and uncompress the flow vector for this pixel
-        float skySpeed        = 0.012f * _Time;
-        float distortionSpeed = 0.004f * _Time;
+        float skySpeed        = 0.004f * _Time;
+        float distortionSpeed = 0.0015f * _Time;
         // Sample normal map.
-        float noise = Mask1.Sample(sampleTypeWrap, pIn.Tex * 4.0f + distortionSpeed).r;
-        noise       = saturate(pow(noise, 4.0f));
-        noise       = lerp(0.2f, 1.0f, noise);
+        float noiseA = Mask1.Sample(sampleTypeWrap, pIn.Tex * 8.0f + distortionSpeed).r;
+        float noiseB = Mask1.Sample(sampleTypeWrap, pIn.Tex * 16.0f - distortionSpeed / 4.0f).r;
+        float noiseC = Mask1.Sample(sampleTypeWrap, pIn.Tex * 32.0f + distortionSpeed / 8.0f).r;
+        float noise  = noiseA * noiseB * noiseC;
         // return noise;
-        float3 skyA        = diffuseMap.SampleLevel(sampleTypeWrap, rotateUV(pIn.Tex, skySpeed) + 0.3 * flow * noise, 0).b;
-        float  cloudSample = skyA;
+        float skyA = diffuseMap.SampleLevel(sampleTypeWrap, rotateUV(pIn.Tex, skySpeed + 0.1f * flowMap) + 0.01f * noise, 0).b;
+
+        float cloudSample = skyA;
+        // return cloudSample;
 
         float2 flowWave = sin(_Time * 0.007f) * flow;
         float2 alpha    = flow * 0.5f + 0.5f;
-        // return alpha.x;
-        float  speed     = _Time * 0.007f;
-        float2 uvA       = rotateUV(pIn.Tex, speed);
-        float2 uvB       = rotateUV(pIn.Tex, speed + 0.08f);
-        float2 uv        = lerp(uvA, uvB, alpha);
-        float  cloudMask = saturate(pow(cloudSample, 1.3f) * 1.5f);
+
+        float cloudMaskBase    = saturate(pow(cloudSample, 1.3f) * 1.5f);
+        float cloudMaskBacklit = saturate(pow(cloudSample, 2.8f) * 3.5f);
+
+        cloudMaskBacklit = saturate((cloudMaskBacklit - cloudMaskBase) * 5.0f);
+        // return cloudMaskBacklit;
 
         float2 skyCenterUV = pIn.Tex * 2.0f - 1.0f;
         float  skyCenter   = dot(skyCenterUV, skyCenterUV);
@@ -77,13 +82,6 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         float3 shallowWaterColor = float3(0.0f, 0.5f, 0.4f);
         float  skyColorMask      = saturate(pow(skyCenter, 1.0f));
         float3 skyColor          = lerp(deepWaterColor, shallowWaterColor, skyColorMask * 0.6f);
-
-        float3 horizonColor = float3(0.9f, 0.85f, 0.7f);
-
-        float horizonMask = saturate(pow(skyCenter, 6.0f));
-        // return horizonMask;
-
-        float3 horizonSkyColor = lerp(skyColor, horizonSkyColor, horizonMask);
 
         float3 L = _DirectionalLightDirection;
         float  N = normalize(_EyePosition - pIn.PosWS);
@@ -100,17 +98,30 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         float3 flatSunColor = float3(1.0f, 0.9f, 0.4f);
         float3 sunColor     = 2.0f * flatSunColor;
         // return 1.0f - cloudDepth;
-        float backLitMask = saturate((pow(max(VDotL, 0.0f), 150.0f) * 0.5f) + smoothstep(0.998, 1.1, VDotL) * 10.0f);
+        float backLitMask = saturate((pow(max(VDotL, 0.0f), 150.0f) * 0.5f) + smoothstep(0.998, 1.1, VDotL) * 200.0f);
         // return backLitMask;
         // return 1.0f - cloudDepth;
-        float3 backlitCloudColor = lerp(0.1f, flatSunColor * 1.5f, 1.0f - cloudDepth);
-        float3 cloudColor        = lerp(1.1f * float3(1.0f, 1.0f, 1.0f), backlitCloudColor, backLitMask);
-
+        float3 scatteringColor   = float3(1.0f, 0.5f, 0.1f);
+        float3 backlitCloudColor = lerp(0.01f, scatteringColor * 2.5f, cloudMaskBacklit);
+        // return backlitCloudColor.xyzz;
+        float3 cloudColor = lerp(1.1f * float3(1.0f, 1.0f, 1.0f), backlitCloudColor, backLitMask);
+        // return cloudColor.xyzz;
+        // return backLitMask;
         // return cloudDepth;
         float3 color = skyColor;
         color        = lerp(color, sunColor, sunMask);
-        color        = lerp(color, cloudColor * lerp(0.6f, 1.0f, cloudMask), saturate(cloudMask * 5.0f));
 
+        float cloudBlendAlpha = saturate(cloudMaskBase * 5.0f);
+        // return cloudBlendAlpha
+        color = lerp(color, cloudColor * lerp(0.5f, 1.0f, cloudMaskBase), cloudBlendAlpha);
+
+        float3 horizonColor = float3(0.7f, 0.7f, 0.85f);
+
+        float horizonMask = saturate(pow(skyCenter, 8.0f));
+        // return horizonMask;
+
+        color = lerp(color, horizonColor, horizonMask);
+        return color.xyzz;
         float revealAlpha = _playerRadius / 500.0f;
         revealAlpha       = saturate(pow(revealAlpha, 4.0f));
 

@@ -22,6 +22,7 @@ cbuffer TerrainInfoBuffer : register(b4)
         float2 screenDimensions;
         float  triangleSize;
         float  cellSizeWorld;
+        float3 gOriginOffset;
         float  gTerrainAlpha;
 };
 

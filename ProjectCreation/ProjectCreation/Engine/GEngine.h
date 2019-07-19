@@ -11,6 +11,8 @@
 #include "ResourceManager/ResourceManager.h"
 #include "XTime.h"
 
+#include <DirectXMath.h>
+
 class LevelStateManager;
 
 class GEngine
@@ -36,10 +38,11 @@ class GEngine
         LevelStateManager* m_LevelStateManager;
 
     public:
-        float           m_PlayerRadius = 0.0f;
-        float           m_TerrainAlpha = 0.0f;
-        EntityHandle    m_SunHandle;
-        ProfilerContext m_MainThreadProfilingContext;
+        float             m_PlayerRadius = 0.0f;
+        float             m_TerrainAlpha = 0.0f;
+        DirectX::XMVECTOR m_OriginOffset = DirectX::XMVECTORF32{0.0f, 0.0f, 0.0f, 0.0f};
+        EntityHandle      m_SunHandle;
+        ProfilerContext   m_MainThreadProfilingContext;
 
         void        SetGamePaused(bool val);
         inline bool GetGamePaused()
