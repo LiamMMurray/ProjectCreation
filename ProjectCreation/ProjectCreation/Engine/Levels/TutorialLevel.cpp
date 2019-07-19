@@ -16,27 +16,27 @@ void TutorialLevel::Update(float deltaTime)
         if (m_WhiteCollected == false && whiteCount <= 0)
         {
                 SpawnFirstWhiteOrb();
-				// UI: Hold Left Mouse Button to Move Forward
+                // UI: Hold Left Mouse Button to Move Forward
         }
 
-        else if (m_RedCollected == false && redCount <= 0 && m_WhiteCollected == true)
+        else if (redCount <= 0 && m_WhiteCollected == true)
         {
                 SpawnFirstRedOrb();
                 // UI: Hold A to Collect Red Orbs
         }
 
-        else if (m_BlueCollected == false && blueCount <= 0 && m_RedCollected == true)
+        else if (blueCount <= 0 && m_RedCollected == true)
         {
                 SpawnFirstBlueOrb();
                 // UI: Hold S to Collect Blue Orbs
         }
 
-        else if (m_GreenCollected == false && greenCount <= 0 && m_BlueCollected == true)
+        else if (greenCount <= 0 && m_BlueCollected == true)
         {
                 SpawnFirstGreenOrb();
                 // UI: Hold D to Collect Green Orbs
         }
-
+		
         for (auto& speedComp : m_HandleManager->GetActiveComponents<SpeedboostComponent>())
         {
                 XMVECTOR center = speedComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
@@ -46,7 +46,7 @@ void TutorialLevel::Update(float deltaTime)
 
                 float checkRadius = speedComp.collisionRadius;
 
-                if (speedComp.lifetime > 0.0f && distanceSq < (checkRadius * checkRadius) && m_WhiteCollected == false)
+                if (speedComp.lifetime >= 0.0f && distanceSq < (checkRadius * checkRadius) && m_WhiteCollected == false)
                 {
                         ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
 
@@ -57,11 +57,16 @@ void TutorialLevel::Update(float deltaTime)
                         {
                                 m_WhiteCollected = true;
                         }
+                        else
+                        {
+                                int error = 0;
+                        }
                         m_SpeedBoostSystem->RequestDestroySpeedboost(&speedComp);
                         break;
                 }
 
-                if (speedComp.lifetime > 0.0f && distanceSq < (checkRadius * checkRadius) && m_WhiteCollected == true && m_RedCollected == false)
+                if (speedComp.lifetime >= 0.0f && distanceSq < (checkRadius * checkRadius) && m_WhiteCollected == true &&
+                    m_RedCollected == false)
                 {
                         ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
 
@@ -72,11 +77,16 @@ void TutorialLevel::Update(float deltaTime)
                         {
                                 m_RedCollected = true;
                         }
+                        else
+                        {
+                                int error = 0;
+                        }
                         m_SpeedBoostSystem->RequestDestroySpeedboost(&speedComp);
                         break;
                 }
 
-                if (speedComp.lifetime > 0.0f && distanceSq < (checkRadius * checkRadius) && m_RedCollected == true && m_BlueCollected == false)
+                if (speedComp.lifetime >= 0.0f && distanceSq < (checkRadius * checkRadius) && m_RedCollected == true &&
+                    m_BlueCollected == false)
                 {
                         ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
 
@@ -87,11 +97,16 @@ void TutorialLevel::Update(float deltaTime)
                         {
                                 m_BlueCollected = true;
                         }
+                        else
+                        {
+                                int error = 0;
+                        }
                         m_SpeedBoostSystem->RequestDestroySpeedboost(&speedComp);
                         break;
                 }
 
-                if (speedComp.lifetime > 0.0f && distanceSq < (checkRadius * checkRadius) && m_BlueCollected == true && m_GreenCollected == false)
+                if (speedComp.lifetime >= 0.0f && distanceSq < (checkRadius * checkRadius) && m_BlueCollected == true &&
+                    m_GreenCollected == false)
                 {
                         ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
 
@@ -102,15 +117,19 @@ void TutorialLevel::Update(float deltaTime)
                         {
                                 m_GreenCollected = true;
                         }
+                        else
+                        {
+                                int error = 0;
+                        }
                         m_SpeedBoostSystem->RequestDestroySpeedboost(&speedComp);
                         break;
                 }
         }
 
-        if ((m_WhiteCollected == true && m_RedCollected == true && m_BlueCollected == true && m_GreenCollected == true) && levelRequested <= 0)
+        if ((m_WhiteCollected == true && m_RedCollected == true && m_BlueCollected == true && m_GreenCollected == true) &&
+            levelRequested <= 0)
         {
-                levelRequested += 1;
-                GEngine::Get()->GetLevelStateManager()->RequestNextLevel();
+                GEngine::Get()->GetLevelStateManager()->RequestState(1);
         }
 }
 
