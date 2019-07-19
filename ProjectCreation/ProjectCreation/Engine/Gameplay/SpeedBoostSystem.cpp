@@ -138,18 +138,18 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                                             ->GetControlledEntity();
         TransformComponent* playerTransform = controlledEntity.GetComponent<TransformComponent>();
 
-        //static bool bFirstStage = false;
-        //{
-        //        if (!bFirstStage)
-        //        {
-        //                int count = controllerSystem->GetOrbCount(E_LIGHT_ORBS::WHITE_LIGHTS);
-        //                if (count >= 1)
-        //                {
-        //                        m_EnableRandomSpawns = true;
-        //                        bFirstStage          = true;
-        //                }
-        //        }
-        //}
+        static bool bFirstStage = false;
+        {
+                if (!bFirstStage)
+                {
+                        int count = controllerSystem->GetOrbCount(E_LIGHT_ORBS::WHITE_LIGHTS);
+                        if (count >= 1)
+                        {
+                                //m_EnableRandomSpawns = true;
+                                bFirstStage          = true;
+                        }
+                }
+        }
 
         auto orbitSystem = SYSTEM_MANAGER->GetSystem<OrbitSystem>();
 

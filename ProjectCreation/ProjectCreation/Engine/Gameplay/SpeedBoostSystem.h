@@ -52,9 +52,9 @@ class SpeedBoostSystem : public ISystem
         void CreateRandomPath(const DirectX::XMVECTOR& start,
                               const DirectX::XMVECTOR& end,
                               int                      color,
-                              float                    width     = 50.0f,
+                              float                    width     = 50.0f, // 00.0f
                               unsigned int             waveCount = 5,
-                              float                    heightvar = 1.6f);
+                              float                    heightvar = 1.6f); // 0.0f
 
         void DestroySpline(int SplineID, int curr);
 

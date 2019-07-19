@@ -16,21 +16,25 @@ void TutorialLevel::Update(float deltaTime)
         if (m_WhiteCollected == false && whiteCount <= 0)
         {
                 SpawnFirstWhiteOrb();
+				// UI: Hold Left Mouse Button to Move Forward
         }
 
         else if (m_RedCollected == false && redCount <= 0 && m_WhiteCollected == true)
         {
                 SpawnFirstRedOrb();
+                // UI: Hold A to Collect Red Orbs
         }
 
         else if (m_BlueCollected == false && blueCount <= 0 && m_RedCollected == true)
         {
                 SpawnFirstBlueOrb();
+                // UI: Hold S to Collect Blue Orbs
         }
 
         else if (m_GreenCollected == false && greenCount <= 0 && m_BlueCollected == true)
         {
                 SpawnFirstGreenOrb();
+                // UI: Hold D to Collect Green Orbs
         }
 
         for (auto& speedComp : m_HandleManager->GetActiveComponents<SpeedboostComponent>())
