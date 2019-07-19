@@ -581,8 +581,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           pauseButtonWidth,
                           pauseButtonHeight);
-
-
+		
         // Options Submenu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
@@ -693,56 +692,56 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "Tutorial: Inti",
+                          "Tutorial",
                           0.05f,
                           0.0f,
-                          -0.15f,
+                          -0.1f,
                           false,
                           true,
                           true,
-                          pauseButtonWidth + 0.13f,
+                          pauseButtonWidth,
                           pauseButtonHeight);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "Level 1: Yaku",
+                          "Inti",
                           0.05f,
                           0.0f,
                           0.0f,
                           false,
                           true,
                           true,
-                          pauseButtonWidth + 0.13f,
+                          pauseButtonWidth,
                           pauseButtonHeight);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "Level 2: Pacha",
+                          "Yaku",
                           0.05f,
                           0.0f,
-                          0.15f,
+                          0.1f,
                           false,
                           true,
                           true,
-                          pauseButtonWidth + 0.13f,
+                          pauseButtonWidth,
                           pauseButtonHeight);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           L"../Assets/2d/Text/myfile.spritefont",
-                          "Level 3: Yura",
+                          "Pacha",
                           0.05f,
                           0.0f,
-                          0.3f,
+                          0.2f,
                           false,
                           true,
                           true,
-                          pauseButtonWidth + 0.13f,
+                          pauseButtonWidth,
                           pauseButtonHeight);
 
         // Controls Menu
@@ -753,7 +752,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           "Back",
                           0.05f,
                           0.0f,
-                          -0.35f,
+                          -0.3f,
                           false,
                           true,
                           true,
@@ -1081,24 +1080,28 @@ void UIManager::Initialize(native_handle_type hwnd)
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         instance->Unpause();
                         // Load Level Function
+                        GEngine::Get()->GetLevelStateManager()->RequestState(0);
                 });
 
                 // Level 1 Button
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         instance->Unpause();
                         // Load Level Function
+                        GEngine::Get()->GetLevelStateManager()->RequestState(1);
                 });
 
                 // Level 2 Button
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         instance->Unpause();
                         // Load Level Function
+                        GEngine::Get()->GetLevelStateManager()->RequestState(2);
                 });
 
                 // Level 3 Button
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][4].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         instance->Unpause();
                         // Load Level Function
+                        GEngine::Get()->GetLevelStateManager()->RequestState(3);
                 });
         }
 

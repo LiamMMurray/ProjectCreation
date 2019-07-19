@@ -110,7 +110,7 @@ void TutorialLevel::Update(float deltaTime)
         if ((m_WhiteCollected == true && m_RedCollected == true && m_BlueCollected == true && m_GreenCollected == true) && levelRequested <= 0)
         {
                 levelRequested += 1;
-                GEngine::Get()->GetLevelStateManager()->RequestNextLevel();
+                GEngine::Get()->GetLevelStateManager()->RequestState(1);
         }
 }
 
