@@ -44,6 +44,7 @@ void GEngine::Shutdown()
         instance->m_SystemManager->Shutdown();
         instance->m_ResourceManager->Shutdown();
         instance->m_HandleManager->Shutdown();
+        instance->m_LevelStateManager->Shutdown();
         NMemory::FreeGameMemory(instance->m_PoolMemory);
         delete instance->m_HandleManager;
         delete instance->m_SystemManager;
