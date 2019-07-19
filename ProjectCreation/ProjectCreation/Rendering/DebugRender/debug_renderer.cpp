@@ -17,7 +17,7 @@ namespace
         // CPU-side buffer of debug-line verts
         // Copied to the GPU and reset every frame.
         size_t                                   line_vert_count = 0;
-        std::array<FDebugVertex, MAX_LINE_VERTS> line_verts;
+        FDebugVertex line_verts[MAX_LINE_VERTS];
 } // namespace
 
 namespace debug_renderer
@@ -231,7 +231,7 @@ namespace debug_renderer
         const FDebugVertex* get_line_verts()
         {
                 // Does just what it says in the name
-                return line_verts.data();
+                return line_verts;
         }
 
         size_t get_line_vert_count()
