@@ -15,7 +15,12 @@ void LevelStateManager::Init()
         m_LevelStateMachine.AddTransition(levelStates[0], levelStates[1], E_LevelStateEvents::TO_LEVEL_01);
         m_LevelStateMachine.AddTransition(levelStates[1], levelStates[2], E_LevelStateEvents::TO_LEVEL_02);
 
-		RequestState(0);
+        RequestState(0);
+}
+
+void LevelStateManager::Shutdown()
+{
+        m_LevelStateMachine.Shutdown();
 }
 
 void LevelStateManager::RequestState(int level)

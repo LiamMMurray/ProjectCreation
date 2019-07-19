@@ -121,7 +121,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         // return horizonMask;
 
         color = lerp(color, horizonColor, horizonMask);
-        return color.xyzz;
+        //return color.xyzz;
         float revealAlpha = _playerRadius / 500.0f;
         revealAlpha       = saturate(pow(revealAlpha, 4.0f));
 

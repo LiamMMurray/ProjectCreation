@@ -8,4 +8,6 @@ void LevelStateMachine::Init()
 }
 
 void LevelStateMachine::Shutdown()
-{}
+{
+        StateMachine::Shutdown();
+}

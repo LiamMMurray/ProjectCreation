@@ -137,11 +137,10 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 )
 {
         ENABLE_LEAK_DETECTION();
-        //_CrtSetBreakAlloc(177);
+        //_CrtSetBreakAlloc(179);
         _WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
         _CrtDumpMemoryLeaks();
-
         return 0;
 }
 
@@ -235,7 +234,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
             /*std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
             ComponentHandle          transformHandle;
             EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
-           
+           
 
             TransformComponent* transformComp = HandleManager->GetComponent<TransformComponent>(transformHandle);
             transformComp->transform.SetScale(0.1f);*/
@@ -321,18 +320,18 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 }
                 GEngine::Get()->m_MainThreadProfilingContext.End();
 
-				GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "GEngine::Signal");
+                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "GEngine::Signal");
                 // Main application loop goes here.
                 GEngine::Get()->Signal();
                 GEngine::Get()->m_MainThreadProfilingContext.End();
 
-						GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "Other");
+                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "Other");
                 if (GetActiveWindow() != handle && GEngine::Get()->GetGamePaused() == false)
                 {
                         UIManager::instance->Pause();
                 }
 
-				
+
                 {
                         static DWORD frameCount = 0;
                         ++frameCount;
@@ -365,7 +364,6 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
                 GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
                 GEngine::Get()->m_MainThreadProfilingContext.End();
-
         }
         EngineHelpers::ShutdownEngineSystemManagers();
 

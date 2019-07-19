@@ -105,7 +105,7 @@ void ControllerSystem::OnInitialize()
         m_HandleManager = GEngine::Get()->GetHandleManager();
 
         m_Controllers[E_CONTROLLERS::PLAYER] = new PlayerController;
-        m_Controllers[E_CONTROLLERS::DEBUG]  = new DebugCameraController;
+        m_Controllers[E_CONTROLLERS::DEBUG]  = new  DebugCameraController;
 
 
         // Player entity setup
