@@ -14,7 +14,6 @@ struct FParticleGPU
         bool   active;
         int    index;
         float  scale;
-        float3 acceleration;
 };
 
 
@@ -30,17 +29,17 @@ struct FEmitterGPU
         float3 minInitialVelocity;
         float3 maxInitialVelocity;
         float2 particleScale;
-        float3 acceleration;
 };
 
-struct FSegmentBuffer
+struct PhysicParticle
 {
-        int index[gMaxEmitterCount];
+        float  radius;
+        float3 grvitity;
+
+        FParticleGPU particleinfo;
 };
-RWStructuredBuffer<FParticleGPU>   ParticleBuffer : register(u0);
-StructuredBuffer<FEmitterGPU>      EmitterBuffer : register(t0);
-RWStructuredBuffer<FSegmentBuffer> SegmentBuffer : register(u1);
-RWTexture2D<float2>                tex : register(u2);
+RWStructuredBuffer<FParticleGPU> ParticleBuffer : register(u0);
+StructuredBuffer<FEmitterGPU>    EmitterBuffer : register(t0);
 // Texture2D                         tex2d : register(t0);
 
 [numthreads(100, 1, 1)] void main(uint3 DTid
@@ -52,12 +51,13 @@ RWTexture2D<float2>                tex : register(u2);
         {
                 ParticleBuffer[id].scale = rand_1_05(EmitterBuffer[0].particleScale);
                 ParticleBuffer[id].time  = EmitterBuffer[0].accumulatedTime + 1000.0f;
-                float4 startPos          =  EmitterBuffer[0].position;
+                float4 startPos          = EmitterBuffer[0].position;
 
+                ParticleBuffer[id].prevPos = startPos;
 
-                float alphaA                = rand(_Time * id / 0.1f);
-                float alphaB                = rand(alphaA);
-                float alphaC                = rand(alphaB);
+                float alphaA = rand(_Time * id / 0.1f);
+                float alphaB = rand(alphaA);
+                float alphaC = rand(alphaB);
 
                 ParticleBuffer[id].velocity.x =
                     lerp(EmitterBuffer[0].minInitialVelocity.x, EmitterBuffer[0].maxInitialVelocity.x, alphaA);
@@ -71,10 +71,6 @@ RWTexture2D<float2>                tex : register(u2);
 
                 ParticleBuffer[id].position =
                     float4(_EyePosition + ParticleBuffer[id].velocity * float3(_Scale, 1.0f, _Scale), 1.0f);
-
-				
-                ParticleBuffer[id].prevPos  = ParticleBuffer[id].position; 
-                ParticleBuffer[id].position = ParticleBuffer[id].prevPos;
         }
         else
         {
@@ -83,7 +79,6 @@ RWTexture2D<float2>                tex : register(u2);
                 /*ParticleBuffer[id].scale = lerp(EmitterBuffer[0].particleScale.x, EmitterBuffer[0].particleScale.y, alpha);*/
                 ParticleBuffer[DTid.x].time -= _DeltaTime;
                 // ParticleBuffer[DTid.x].position += 1.0f*float4(ParticleBuffer[DTid.x].velocity * _DeltaTime, 0.0f);
-
                 float2 Min = float2(-0.5f * _Scale, -0.5f * _Scale);
                 // Min        = float2(-10.0f, -10.0f);
                 float2 Max = -Min;
@@ -91,10 +86,9 @@ RWTexture2D<float2>                tex : register(u2);
                 //  WrapPosition(ParticleBuffer[id].position.xyz, _EyePosition + Min, _EyePosition + Max);
                 ParticleBuffer[id].position.xz =
                     wrap(ParticleBuffer[id].position.xz, _EyePosition.xz + Min, _EyePosition.xz + Max);
-
-				ParticleBuffer[id].acceleration = EmitterBuffer[0].acceleration;
-				ParticleBuffer[id].prevPos = ParticleBuffer[id].position;
-                ParticleBuffer[id].position = ParticleBuffer[id].position + float4(ParticleBuffer[id].velocity, 0.0f) * _DeltaTime;
-                ParticleBuffer[id].velocity = ParticleBuffer[id].velocity + ParticleBuffer[id].acceleration * _DeltaTime;
         }
 }
+
+
+void ParticleCollision()
+{}

@@ -14,8 +14,15 @@ struct FParticleGPU
         float  scale;
 };
 
+struct FTextureSetting
+{
+        int index;
+        int col;
+        int row;
 
+};
 StructuredBuffer<FParticleGPU> buffer : register(t1);
+StructuredBuffer<FTextureSetting> Texbuffer : register(t2);
 
 struct VS_OUTPUT
 {
@@ -85,13 +92,13 @@ void TextureAddress(inout float2 UVcord[4], int index, int rowcol) // row and co
 
         if (index <= (cells - 1) || index >= 0)
         {
-                int rowX = fmod(index, rowcol);
-                int colY = index / rowcol;
+                int   rowX   = fmod(index, rowcol);
+                int   colY   = index / rowcol;
                 float xValue = rowX * cellSize;
                 float yValue = colY * cellSize;
-                UVcord[0]    = float2(xValue, yValue);                                             // top left
-                UVcord[1]    = float2(xValue + cellSize, yValue);                                  // top right
-                UVcord[2]    = float2(xValue, yValue + cellSize);                                  // bottom left
-                UVcord[3]    = float2(xValue + cellSize, yValue + cellSize);                       // bottom left
+                UVcord[0]    = float2(xValue, yValue);                       // top left
+                UVcord[1]    = float2(xValue + cellSize, yValue);            // top right
+                UVcord[2]    = float2(xValue, yValue + cellSize);            // bottom left
+                UVcord[3]    = float2(xValue + cellSize, yValue + cellSize); // bottom left
         }
 }
