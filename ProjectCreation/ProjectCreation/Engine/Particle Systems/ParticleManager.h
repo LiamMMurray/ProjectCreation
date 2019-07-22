@@ -40,7 +40,7 @@ class ParticleManager
                                 ParticleData::FSegmentBuffer* segmentData,
                                 unsigned int                  numParticles);
         void ParticleBufferShutdown(ParticleBuffer* buffer);
-
+        void SetTextureDepth(ID3D11Device1* device1, ID3D11Texture2D* texture);
     public:
         EntityHandle                   CreateEmitter(ParticleData::FEmitterCPU& emitter);
         void                           AddEmitter(ParticleData::FEmitterGPU& emitter);

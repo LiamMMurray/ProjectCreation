@@ -142,10 +142,10 @@ void ParticleManager::init()
 
         // init
         m_RenderSystem = SYSTEM_MANAGER->GetSystem<RenderSystem>();
-		//for (int i = 0; i < m_Emitters.size(); ++i) 
-		//{
+        // for (int i = 0; i < m_Emitters.size(); ++i)
+        //{
 
-		//}
+        //}
         ParticleBufferInit(m_RenderSystem->GetDevice(), nullptr, m_EnitterInfo, &m_SegmentInfo, gMaxParticleCount);
         // Load Computer Shader
         m_ComputeShaderHandle  = RESOURCE_MANAGER->LoadComputeShader("ComputeShaderTesting");
@@ -313,6 +313,27 @@ void ParticleManager::ParticleBufferShutdown(ParticleBuffer* buffer)
         SAFE_RELEASE(buffer->m_StructuredBuffer);
         SAFE_RELEASE(buffer->m_UAV);
         SAFE_RELEASE(buffer->m_StructuredView);
+}
+
+void ParticleManager::SetTextureDepth(ID3D11Device1* device1, ID3D11Texture2D* texture)
+{
+
+        HREFTYPE hr;
+        // Create the depth stencil view
+        D3D11_DEPTH_STENCIL_VIEW_DESC descDSV{};
+        descDSV.Format             = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        descDSV.ViewDimension      = D3D11_DSV_DIMENSION_TEXTURE2D;
+        descDSV.Texture2D.MipSlice = 0;
+        hr                         = device1->CreateDepthStencilView(
+            texture, &descDSV, &m_RenderSystem->m_DefaultDepthStencil[E_DEPTH_STENCIL::BASE_PASS]);
+
+        D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc{};
+        viewDesc.Format              = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+        viewDesc.ViewDimension       = D3D11_SRV_DIMENSION_TEXTURE2D;
+        viewDesc.Texture2D.MipLevels = 1;
+        hr                           = device1->CreateShaderResourceView(
+            texture, &viewDesc, &m_RenderSystem->m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::BASE_DEPTH]);
+        texture->Release();
 }
 
 EntityHandle ParticleManager::CreateEmitter(ParticleData::FEmitterCPU& emitter)

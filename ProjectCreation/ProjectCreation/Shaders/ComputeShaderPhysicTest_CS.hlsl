@@ -36,8 +36,8 @@ struct FPhysicParticle // only for collision for now
         float  radius;
         float3 center;
 };
-RWStructuredBuffer<FParticleGPU>  ParticleBuffer : register(u0);
-StructuredBuffer<FEmitterGPU>     EmitterBuffer : register(t0);
+RWStructuredBuffer<FParticleGPU>    ParticleBuffer : register(u0);
+StructuredBuffer<FEmitterGPU>       EmitterBuffer : register(t0);
 RWStructuredBuffer<FPhysicParticle> PhyParticleBuffer : register(u1);
 
 [numthreads(100, 1, 1)] void main(uint3 DTid
@@ -84,7 +84,10 @@ RWStructuredBuffer<FPhysicParticle> PhyParticleBuffer : register(u1);
                 //  WrapPosition(ParticleBuffer[id].position.xyz, _EyePosition + Min, _EyePosition + Max);
                 ParticleBuffer[id].position.xz =
                     wrap(ParticleBuffer[id].position.xz, _EyePosition.xz + Min, _EyePosition.xz + Max);
+
         }
+
+        
 }
 
 
