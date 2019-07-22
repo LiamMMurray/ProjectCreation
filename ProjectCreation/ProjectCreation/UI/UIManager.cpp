@@ -1,19 +1,19 @@
 #include "UIManager.h"
 #include <iostream>
+#include <Windows.h>
+
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
 #include "../Rendering/RenderingSystem.h"
-
 #include "../Engine/Controller/ControllerSystem.h"
+#include "../Utility/Hashing/PairHash.h"
+#include "../Utility/Macros/DirectXMacros.h"
+#include "../Utility/MemoryLeakDetection.h"
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #define NOMINMAX
-#include <Windows.h>
 
-#include "../Utility/Macros/DirectXMacros.h"
-#include "../Utility/MemoryLeakDetection.h"
 UIManager* UIManager::instance;
-
 using namespace DirectX;
 // Adding UI
 void UIManager::AddSprite(ID3D11Device*        device,
@@ -333,11 +333,20 @@ void UIManager::SupportedResolutions()
         pOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, 0, &num, instance->resDescriptors.data());
         pOutput->Release();
 
-        for (auto i = 0; i < instance->resDescriptors.size(); i++)
+        std::unordered_set<std::pair<UINT, UINT>, hash_pair> checkedResolutions;
+
+        size_t size = instance->resDescriptors.size();
+        for (int i = size - 1; i >= 0; i--)
         {
-                if (instance->resDescriptors[i].Scaling != DXGI_MODE_SCALING_UNSPECIFIED)
+                std::pair<UINT, UINT> newRes =
+                    std::make_pair(instance->resDescriptors[i].Width, instance->resDescriptors[i].Height);
+                if (checkedResolutions.find(newRes) != checkedResolutions.end())
                 {
                         instance->resDescriptors.erase(instance->resDescriptors.begin() + i);
+                }
+                else
+                {
+                        checkedResolutions.insert(newRes);
                 }
         }
 }
@@ -581,7 +590,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           pauseButtonWidth,
                           pauseButtonHeight);
-		
+
         // Options Submenu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
@@ -654,15 +663,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 0.2f,
                                 0.5f,
                                 false);
-        
-
-
-
-
-
-
-
-
+								
             instance->AddSprite(instance->m_RenderSystem->m_Device,
                                 instance->m_RenderSystem->m_Context,
                                 E_MENU_CATEGORIES::PauseMenu,
