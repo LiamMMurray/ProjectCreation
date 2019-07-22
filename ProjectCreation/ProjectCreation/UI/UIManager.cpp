@@ -351,6 +351,31 @@ void UIManager::SupportedResolutions()
         }
 }
 
+void UIManager::DemoEnd()
+{
+        instance->m_InMenu = true;
+        GEngine::Get()->SetGamePaused(true);
+        if (instance->m_InMenu)
+        {
+                while (ShowCursor(TRUE) < 0)
+                        ;
+        }
+        else
+        {
+                while (ShowCursor(FALSE) >= 0)
+                        ;
+        }
+
+        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::Demo].size(); i++)
+        {
+                instance->m_AllFonts[E_MENU_CATEGORIES::Demo][i].mEnabled = true;
+        }
+        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::Demo].size(); i++)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::Demo][i].mEnabled = true;
+        }
+}
+
 // Core Function
 void UIManager::Initialize(native_handle_type hwnd)
 {
@@ -386,6 +411,9 @@ void UIManager::Initialize(native_handle_type hwnd)
         }
 
         instance->m_WindowHandle = hwnd;
+
+        constexpr float pauseButtonWidth  = 0.25f;
+        constexpr float pauseButtonHeight = 0.05f;
 
         // Create supported resolutions
         instance->SupportedResolutions();
@@ -427,8 +455,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                           false);
 
         // Pause Menu
-        constexpr float pauseButtonWidth  = 0.25f;
-        constexpr float pauseButtonHeight = 0.05f;
         instance->AddSprite(instance->m_RenderSystem->m_Device,
                             instance->m_RenderSystem->m_Context,
                             E_MENU_CATEGORIES::PauseMenu,
@@ -759,6 +785,47 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           pauseButtonWidth,
                           pauseButtonHeight);
+
+        // Demo
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::Demo,
+                          L"../Assets/2d/Text/calibri.spritefont",
+                          "Thank you for playing our demo!",
+                          0.06f,
+                          0.0f,
+                          0.0f,
+                          false,
+                          false);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::Demo,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Continue",
+                          0.05f,
+                          -0.15f,
+                          0.1f,
+                          false,
+                          true,
+                          true,
+                          pauseButtonWidth,
+                          pauseButtonHeight);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::Demo,
+                          L"../Assets/2d/Text/myfile.spritefont",
+                          "Exit",
+                          0.05f,
+                          0.15f,
+                          0.1f,
+                          false,
+                          true,
+                          true,
+                          pauseButtonWidth,
+                          pauseButtonHeight);
+
         // Pause Menu
         {
                 // Resume Button
@@ -1135,6 +1202,14 @@ void UIManager::Initialize(native_handle_type hwnd)
                         }
                 });
         }
+
+			//Demo
+		//Continue
+        instance->m_AllSprites[E_MENU_CATEGORIES::Demo][0].OnMouseDown.AddEventListener(
+            [](UIMouseEvent* e) { instance->Unpause(); });
+		//Exit
+        instance->m_AllSprites[E_MENU_CATEGORIES::Demo][1].OnMouseDown.AddEventListener(
+            [](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
 }
 
 void UIManager::Update()
@@ -1174,6 +1249,16 @@ void UIManager::Update()
                 if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
+
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::Demo].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::Demo][i].mEnabled = false;
+                        }
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::Demo].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::Demo][i].mEnabled = false;
+                        }
+
                         if (GEngine::Get()->GetGamePaused() == false)
                         {
                                 instance->Pause();
@@ -1191,6 +1276,11 @@ void UIManager::Update()
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
                 }
+        }
+
+        if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Down)
+        {
+                instance->DemoEnd();
         }
 
         UIMouseEvent e;

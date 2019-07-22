@@ -25,6 +25,7 @@ struct E_MENU_CATEGORIES
                 OptionsSubmenu,
                 LevelMenu,
                 ControlsMenu,
+				Demo,
                 COUNT
         };
 };
@@ -90,6 +91,7 @@ class UIManager
         void StartupResAdjust(HWND window);
         void AdjustResolution(HWND window, int wWidth, int wHeight);
         void SupportedResolutions(); // Creates the supported resolutions for the game
+        void DemoEnd();
 
 
         void        UIClipCursor();
