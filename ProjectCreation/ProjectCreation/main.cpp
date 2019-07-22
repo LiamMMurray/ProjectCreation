@@ -1,3 +1,4 @@
+#include "Utility/StaticSentinelDumpMemoryLeaks.h"
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #define NOMINMAX
@@ -137,10 +138,9 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 )
 {
         ENABLE_LEAK_DETECTION();
-        //_CrtSetBreakAlloc(179);
+
         _WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
-        _CrtDumpMemoryLeaks();
         return 0;
 }
 
@@ -234,7 +234,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
             /*std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
             ComponentHandle          transformHandle;
             EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
-           
+           
 
 
             TransformComponent* transformComp = HandleManager->GetComponent<TransformComponent>(transformHandle);
@@ -319,7 +319,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 }
                 GEngine::Get()->m_MainThreadProfilingContext.End();
 
-				GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "GEngine::Signal");
+                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "GEngine::Signal");
                 // Main application loop goes here.
                 float deltaTime = GEngine::Get()->Update();
                 GEngine::Get()->m_MainThreadProfilingContext.End();
@@ -368,4 +368,3 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
         return 0;
 }
-
