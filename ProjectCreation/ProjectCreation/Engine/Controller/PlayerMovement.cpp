@@ -95,9 +95,9 @@ void PlayerController::ApplyInput()
         FSphere fSpherePlayer;
         fSpherePlayer.center = _cachedControlledTransform.translation;
         fSpherePlayer.radius = 0.25f;
-		#ifdef _DEBUG
+#ifdef _DEBUG
         debug_renderer::AddSphere(fSpherePlayer, 4, XMMatrixIdentity());
-		#endif
+#endif
 }
 
 void PlayerController::DebugPrintSpeedBoostColor(int color)
@@ -155,6 +155,8 @@ void PlayerController::Init(EntityHandle h)
 
         // After you create the states, initialize the state machine. First created state is starting state
         m_StateMachine.Init(this);
+
+		
 
         // Init sound pool
         for (unsigned int color = 0; color < E_LIGHT_ORBS::COUNT; ++color)
@@ -252,11 +254,14 @@ void PlayerController::RequestCinematicTransitionLookAt(const ComponentHandle  l
         m_StateMachine.Transition(E_PLAYERSTATE_EVENT::TO_TRANSITION);
 }
 
-void PlayerController::RequestCinematicReveal()
+void PlayerController::RequestCurrentLevel()
 {
-        TransformComponent* transformComp = m_ControlledEntityHandle.GetComponent<TransformComponent>();
-        m_CinematicState->SetTransitionMode(E_TRANSITION_MODE::Reveal);		
-        m_StateMachine.Transition(E_PLAYERSTATE_EVENT::TO_TRANSITION);
+        GEngine::Get()->GetLevelStateManager()->RequestState(0);
+}
+
+void PlayerController::RequestNextLevel()
+{
+        GEngine::Get()->GetLevelStateManager()->RequestNextLevel();
 }
 
 void PlayerController::RequestPuzzleMode(ComponentHandle          goalHandle,

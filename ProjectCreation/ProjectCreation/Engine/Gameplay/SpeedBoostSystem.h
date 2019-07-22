@@ -38,7 +38,7 @@ class SpeedBoostSystem : public ISystem
         std::string speedboostMaterialNames[E_LIGHT_ORBS::COUNT] = {"SpeedboostR", "SpeedboostG", "SpeedboostB", "SpeedboostW"};
 
 
-        void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
+        //void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
         void RequestDestroySplineOrb(SpeedboostSplineComponent* speedComp);
 
         ComponentHandle latchedSplineHandle;
@@ -47,15 +47,14 @@ class SpeedBoostSystem : public ISystem
 
         bool m_EnableRandomSpawns = false;
 
-        void               UpdateSpeedboostEvents();
         std::vector<float> x;
 
         void CreateRandomPath(const DirectX::XMVECTOR& start,
                               const DirectX::XMVECTOR& end,
                               int                      color,
-                              float                    width     = 50.0f,
+                              float                    width     = 0.0f, // 50.0f
                               unsigned int             waveCount = 5,
-                              float                    heightvar = 1.6f);
+                              float                    heightvar = 0.0f); // 1.6f
 
         void DestroySpline(int SplineID, int curr);
 
@@ -82,6 +81,9 @@ class SpeedBoostSystem : public ISystem
         static constexpr float m_SplineAttractionForceMax = 1.5f;
         static constexpr float m_SplineHeightOffset       = 0.06f;
 
+	//TESTING
+        int colorCount = 0;
+
     protected:
         // Inherited via ISystem
         virtual void OnPreUpdate(float deltaTime) override;
@@ -96,6 +98,10 @@ class SpeedBoostSystem : public ISystem
         EntityHandle SpawnSpeedOrb();
         EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
         EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
+
+        void UpdateSpeedboostEvents();
+
+        void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
 
         inline void SetRandomSpawnEnabled(bool val)
         {

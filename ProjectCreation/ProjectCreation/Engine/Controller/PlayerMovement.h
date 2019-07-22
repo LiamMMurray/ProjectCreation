@@ -75,10 +75,7 @@ class PlayerController : public IController
 
         KeyCode m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT] = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
 
-        const char* m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"PianoC",
-                                                                   "PianoE",
-                                                                   "PianoF#",
-                                                                   "whiteSpeedBoost"};
+        const char* m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"PianoC", "PianoE", "PianoF#", "whiteSpeedBoost"};
 
         GW::AUDIO::GSound* m_SpeedBoostSoundPool[E_LIGHT_ORBS::COUNT][MAX_SPEEDBOOST_SOUNDS];
         unsigned int       m_SpeedBoostPoolCounter[E_LIGHT_ORBS::COUNT] = {};
@@ -217,7 +214,7 @@ class PlayerController : public IController
         {
                 m_EulerAngles = val;
         }
-		
+
         void SetUseGravity(bool val);
         bool GetUseGravity();
         void SetYExtraSpeed(float val);
@@ -238,7 +235,8 @@ class PlayerController : public IController
                                               float                  lookAtTransitionDuration = 1.0f,
                                               float                  delay                    = 0.0f);
 
-        void RequestCinematicReveal();
+        void RequestCurrentLevel();
+        void RequestNextLevel();
 
         void RequestPuzzleMode(ComponentHandle          goalHandle,
                                const DirectX::XMVECTOR& puzzleCenter,

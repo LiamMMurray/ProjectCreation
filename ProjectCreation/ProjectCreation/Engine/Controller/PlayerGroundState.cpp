@@ -16,6 +16,8 @@ void PlayerGroundState::Enter()
 
         _playerController->SetEulerAngles(playerTransformComponent->transform.rotation.ToEulerAngles());
 
+		_playerController->RequestCurrentLevel();
+
         // Sets the gravity vector for the player
         //_playerController->SetPlayerGravity(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f));
 }
@@ -30,7 +32,7 @@ void PlayerGroundState::Update(float deltaTime)
         // Check if the player has collected the three planets
         if (_playerController->GetCollectedPlanetCount() >= 3)
         {
-                _playerController->RequestCinematicReveal();
+                _playerController->RequestNextLevel();
         }
 
         XMVECTOR currentVelocity = _playerController->GetCurrentVelocity();

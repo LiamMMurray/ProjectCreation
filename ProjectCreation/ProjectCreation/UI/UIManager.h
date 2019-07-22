@@ -43,14 +43,14 @@ struct E_FONT_TYPE
 struct PrevSettings
 {
         bool m_IsFullscreen = false;
-        int  m_Resolution   = 8; // 0-8 Representing the resDescriptors resolutions
-        int  Volume         = 100;
+        int  m_Resolution = 8; // 0-8 Representing the resDescriptors resolutions
+        int  m_Volume = 100;
 };
 struct CurrSettings
 {
         bool m_IsFullscreen = false;
         int  m_Resolution   = 8; // 0-8 Representing the resDescriptors resolutions
-        int  Volume         = 100;
+        int  m_Volume = 100;
 };
 
 class UIManager
@@ -115,21 +115,20 @@ class UIManager
         bool         m_AdjustedScreen = false;
         PrevSettings PSettings;
         CurrSettings CSettings;
-
-        std::unique_ptr<DirectX::SpriteBatch>            m_SpriteBatch;
-        std::unique_ptr<DirectX::CommonStates>           m_States;
-        RECT                                             m_fullscreenRect;
-        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_background;
-        POINT                                            m_Cursor;
-        std::vector<DXGI_MODE_DESC>                      resDescriptors;
-
-        RenderSystem* m_RenderSystem;
-        HWND          m_window;
+        float        m_SliderHandle;
 
         DirectX::XMFLOAT2 m_TexelSize;
         DirectX::XMFLOAT2 m_ScreenSize;
         DirectX::XMVECTOR m_ScreenCenter;
 
+        RenderSystem*                                         m_RenderSystem;
+        HWND                                                  m_window;
+        std::unique_ptr<DirectX::SpriteBatch>                 m_SpriteBatch;
+        std::unique_ptr<DirectX::CommonStates>                m_States;
+        RECT                                                  m_fullscreenRect;
+        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>      m_background;
+        POINT                                                 m_Cursor;
+        std::vector<DXGI_MODE_DESC>                           resDescriptors;
         std::unordered_map<int, std::vector<SpriteComponent>> m_AllSprites;
         std::unordered_map<int, std::vector<FontComponent>>   m_AllFonts;
 

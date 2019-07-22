@@ -319,9 +319,9 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 }
                 GEngine::Get()->m_MainThreadProfilingContext.End();
 
-                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "GEngine::Signal");
+				GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "GEngine::Signal");
                 // Main application loop goes here.
-                GEngine::Get()->Signal();
+                float deltaTime = GEngine::Get()->Update();
                 GEngine::Get()->m_MainThreadProfilingContext.End();
 
                 GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "Other");
@@ -361,10 +361,12 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 }
 
                 debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
-                GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
+                GEngine::Get()->GetSystemManager()->Update(deltaTime);
                 GEngine::Get()->m_MainThreadProfilingContext.End();
         }
         EngineHelpers::ShutdownEngineSystemManagers();
 
         return 0;
 }
+
+                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "GEngine::Update");
