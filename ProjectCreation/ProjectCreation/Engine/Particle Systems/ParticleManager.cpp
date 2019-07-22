@@ -3,6 +3,7 @@
 #include "../../Engine/MathLibrary/MathLibrary.h"
 #include "../../FileIO/FileIO.h"
 #include "../../Rendering/RenderingSystem.h"
+#include "../../Rendering/Terrain/TerrainManager.h"
 #include "../../Rendering/Vertex.h"
 #include "../../Utility/Macros/DirectXMacros.h"
 #include "..//..//Engine/GEngine.h"
@@ -14,7 +15,6 @@
 #include "../ResourceManager/ResourceManager.h"
 #include "../ResourceManager/Texture2D.h"
 #include "../ResourceManager/VertexShader.h"
-#include"../../Rendering/Terrain/TerrainManager.h"
 #include "EmitterComponent.h"
 #include "ParticleBufferSetup.h"
 using namespace ParticleData;
@@ -63,7 +63,7 @@ void ParticleManager::update(float deltaTime)
         m_RenderSystem->m_Context->CSSetUnorderedAccessViews(0, 1, &m_ParticleBuffer.m_UAV, 0);
         m_RenderSystem->m_Context->CSSetShaderResources(0, 1, &m_EmitterBuffer.m_StructuredView);
         m_RenderSystem->m_Context->CSSetUnorderedAccessViews(1, 1, &m_SegmentBuffer.m_UAV, 0);
-        //m_RenderSystem->m_Context->CSSetShaderResources(0, 1, &texture->m_SRV);
+        // m_RenderSystem->m_Context->CSSetShaderResources(0, 1, &texture->m_SRV);
         // dispatch before setting UAV to null
         m_RenderSystem->m_Context->Dispatch(1000, 1, 1);
 
@@ -123,15 +123,16 @@ void ParticleManager::init()
 
         m_EnitterInfo->currentParticleCount = 0;
         m_EnitterInfo->active               = true;
-        m_EnitterInfo->initialColor                = {10.0f, 10.0f, 0.0f, 1.0f};
-        m_EnitterInfo->finalColor                = {1.0f, 1.0f, 1.0f, 1.0f};
+        m_EnitterInfo->initialColor         = {10.0f, 10.0f, 0.0f, 1.0f};
+        m_EnitterInfo->finalColor           = {1.0f, 1.0f, 1.0f, 1.0f};
         m_EnitterInfo->position             = {0.0f, 0.0f, 0.0f, 0.0f};
         m_EnitterInfo->uv                   = {0.0f, 0.0f};
         m_EnitterInfo->minVelocity          = {-30.0f, -0.0f, -30.0f};
         m_EnitterInfo->maxVelocity          = {30.0f, 20.0f, 30.0f};
         m_EnitterInfo->accumulatedTime      = 15.0f;
-        m_EnitterInfo->scale.x                     = 1.0f;
+        m_EnitterInfo->scale.x              = 1.0f;
 
+        AddEmitter(*m_EnitterInfo);
         m_EmitterCpuInfo               = new FEmitterCPU;
         m_EmitterCpuInfo->maxParticles = 1000;
 
@@ -141,6 +142,10 @@ void ParticleManager::init()
 
         // init
         m_RenderSystem = SYSTEM_MANAGER->GetSystem<RenderSystem>();
+		//for (int i = 0; i < m_Emitters.size(); ++i) 
+		//{
+
+		//}
         ParticleBufferInit(m_RenderSystem->GetDevice(), nullptr, m_EnitterInfo, &m_SegmentInfo, gMaxParticleCount);
         // Load Computer Shader
         m_ComputeShaderHandle  = RESOURCE_MANAGER->LoadComputeShader("ComputeShaderTesting");
@@ -148,7 +153,6 @@ void ParticleManager::init()
         m_VertexShaderHandle   = RESOURCE_MANAGER->LoadVertexShader("PureVertexShader");
         m_GeometryShaderHandle = RESOURCE_MANAGER->LoadGeometryShader("GeometryShaderTesting");
         m_TextureHandle        = RESOURCE_MANAGER->LoadTexture2D("Teddy_D");
-
 
 
         D3D11_INPUT_ELEMENT_DESC layout1[] = {
@@ -323,7 +327,7 @@ EntityHandle ParticleManager::CreateEmitter(ParticleData::FEmitterCPU& emitter)
 
 void ParticleManager::AddEmitter(ParticleData::FEmitterGPU& emitter)
 {
-        // m_Emitters.push_back(emitter);
+        m_Emitters.push_back(&emitter);
 }
 
 void ParticleManager::SetParticleInfo(ParticleData::FParticleGPU* particleInfo)

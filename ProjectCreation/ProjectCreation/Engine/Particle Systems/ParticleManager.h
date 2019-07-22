@@ -27,7 +27,7 @@ class ParticleManager
         ParticleData::FParticleGPU* m_ParticleInfo;
         ParticleData::FEmitterGPU*  m_EnitterInfo;
         ParticleData::FEmitterCPU*  m_EmitterCpuInfo;
-        // std::vector<FEmitterGPU>     m_Emitters;
+        std::vector<ParticleData::FEmitterGPU*> m_Emitters;
         ParticleData::FSegmentBuffer m_SegmentInfo;
         void                         UpdateResources(ID3D11Resource* resource);
         void                         update(float deltaTime);

@@ -31,16 +31,14 @@ struct FEmitterGPU
         float2 particleScale;
 };
 
-struct PhysicParticle
+struct FPhysicParticle // only for collision for now
 {
         float  radius;
-        float3 grvitity;
-
-        FParticleGPU particleinfo;
+        float3 center;
 };
-RWStructuredBuffer<FParticleGPU> ParticleBuffer : register(u0);
-StructuredBuffer<FEmitterGPU>    EmitterBuffer : register(t0);
-// Texture2D                         tex2d : register(t0);
+RWStructuredBuffer<FParticleGPU>  ParticleBuffer : register(u0);
+StructuredBuffer<FEmitterGPU>     EmitterBuffer : register(t0);
+RWStructuredBuffer<FPhysicParticle> PhyParticleBuffer : register(u1);
 
 [numthreads(100, 1, 1)] void main(uint3 DTid
                                   : SV_DispatchThreadID) {
@@ -90,5 +88,8 @@ StructuredBuffer<FEmitterGPU>    EmitterBuffer : register(t0);
 }
 
 
-void ParticleCollision()
-{}
+void ParticleData(FParticleGPU particle, FPhysicParticle phyParticle)
+{
+        phyParticle.center = particle.position.xyzx;
+        phyParticle.radius = particle.scale;
+}

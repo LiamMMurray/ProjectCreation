@@ -17,7 +17,7 @@ float4 main(PS_INPUT input) : SV_TARGET
 {
 
         float4 output = input.color;
-        output        = tex1.Sample(objSamplerState, input.uv);
+       // output        = tex1.Sample(objSamplerState, input.uv);
 		//Transparency
         output.a      *= 0.5;
         clip(output.a > 0.1);

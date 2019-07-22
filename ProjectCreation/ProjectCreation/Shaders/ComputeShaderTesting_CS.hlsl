@@ -50,7 +50,7 @@ RWTexture2D<float2>                tex : register(u2);
 
         if (ParticleBuffer[id].time <= 0.0f)
         {
-                ParticleBuffer[id].scale = rand_1_05(EmitterBuffer[0].particleScale);
+                ParticleBuffer[id].scale = EmitterBuffer[0].particleScale.x;
                 ParticleBuffer[id].time  = EmitterBuffer[0].accumulatedTime + 1000.0f;
                 float4 startPos          =  EmitterBuffer[0].position;
 
@@ -92,9 +92,9 @@ RWTexture2D<float2>                tex : register(u2);
                 ParticleBuffer[id].position.xz =
                     wrap(ParticleBuffer[id].position.xz, _EyePosition.xz + Min, _EyePosition.xz + Max);
 
-				ParticleBuffer[id].acceleration = EmitterBuffer[0].acceleration;
+				/*ParticleBuffer[id].acceleration = EmitterBuffer[0].acceleration;
 				ParticleBuffer[id].prevPos = ParticleBuffer[id].position;
-                ParticleBuffer[id].position = ParticleBuffer[id].position + float4(ParticleBuffer[id].velocity, 0.0f) * _DeltaTime;
-                ParticleBuffer[id].velocity = ParticleBuffer[id].velocity + ParticleBuffer[id].acceleration * _DeltaTime;
+                ParticleBuffer[id].position = ParticleBuffer[id].position + float4(ParticleBuffer[id].velocity, 1.0f) * _DeltaTime;
+                ParticleBuffer[id].velocity = ParticleBuffer[id].velocity + ParticleBuffer[id].acceleration * _DeltaTime;*/
         }
 }
