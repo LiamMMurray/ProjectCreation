@@ -17,6 +17,7 @@ class TransformComponent;
 class ResourceManager;
 class SpeedboostComponent;
 class SpeedboostSplineComponent;
+class PlayerController;
 
 class SpeedBoostSystem : public ISystem
 {
@@ -43,12 +44,14 @@ class SpeedBoostSystem : public ISystem
 
         ComponentHandle latchedSplineHandle;
         bool            bIsLatchedToSpline;
-        bool            shouldLatch;
 
         bool m_EnableRandomSpawns = false;
 
         std::vector<float> x;
 
+		void  RequestUnlatchFromSpline(PlayerController* playerController, float deltaTime);
+        float mDelatchTimer = 0.0f;
+        float mDelatchCD    = 0.5f;
         void CreateRandomPath(const DirectX::XMVECTOR& start,
                               const DirectX::XMVECTOR& end,
                               int                      color,
@@ -68,7 +71,7 @@ class SpeedBoostSystem : public ISystem
         float m_BoostLifespanVariance = 2.0f;
         float m_BoostShrinkSpeed      = m_BoostRadius;
 
-        static constexpr float m_SplineLengthPerOrb       = 1.5f;
+        static constexpr float m_SplineLengthPerOrb       = 4.5f;
         static constexpr float m_SplineLatchRadius        = 0.2f;
         static constexpr float m_SplineFallRadius         = 0.3f;
         static constexpr float m_MaxSpawnDistance         = 15.0f;

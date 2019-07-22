@@ -369,4 +369,3 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         return 0;
 }
 
-                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "GEngine::Update");

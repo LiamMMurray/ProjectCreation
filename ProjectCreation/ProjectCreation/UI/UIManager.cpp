@@ -578,7 +578,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Master Volume",
                           0.03f,
                           0.0f,

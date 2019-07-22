@@ -72,7 +72,7 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
 
         // cluster.color = MathLibrary::GetRandomIntInRange(0, E_LIGHT_ORBS::COUNT);
 
-		colorCount++;
+        colorCount++;
 
         if (colorCount < 30)
         {
@@ -94,15 +94,18 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
                 colorCount = 0;
         }
 
-        cluster.pointPositions.push_back(curr);
+        SplineCluster::CachedSplinePointData pointData;
+        pointData.pos   = curr;
+        pointData.color = cluster.color;
+        cluster.cachedPoints.emplace_back(pointData);
         auto entityH = SpawnLightOrb(curr, cluster.color);
         auto splineH = entityH.AddComponent<SpeedboostSplineComponent>();
 
         cluster.splineComponentList.push_back((splineH));
-        auto splineComp   = splineH.Get<SpeedboostSplineComponent>();
-        splineComp->bHead = head;
-        splineComp->bTail = tail;
-
+        auto splineComp       = splineH.Get<SpeedboostSplineComponent>();
+        splineComp->bHead     = head;
+        splineComp->bTail     = tail;
+        splineComp->color     = cluster.color;
         splineComp->index     = cluster.current - 1;
         splineComp->clusterID = clusterID;
 
@@ -211,6 +214,45 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                                         goals[i] = true;
                                 }
                         }
+                }
+        }
+}
+
+void SpeedBoostSystem::RequestUnlatchFromSpline(PlayerController* playerController, float deltaTime)
+{
+        if (mDelatchTimer > 0.0f)
+        {
+                mDelatchTimer -= deltaTime;
+        }
+        else
+        {
+                playerController->SetUseGravity(true);
+
+                if (bIsLatchedToSpline)
+                {
+                        bIsLatchedToSpline                           = false;
+                        SpeedboostSplineComponent* latchedSplineComp = latchedSplineHandle.Get<SpeedboostSplineComponent>();
+                        TransformComponent*        playerTransform =
+                            playerController->GetControlledEntity().GetComponent<TransformComponent>();
+                        // Destroy the old spline
+                        DestroySpline(latchedSplineComp->clusterID, latchedSplineComp->index);
+
+                        int splineID  = latchedSplineComp->clusterID;
+                        int goalIndex = m_SplineClusterSpawners.at(splineID).color;
+
+                        // Start of the new spline
+                        XMVECTOR start =
+                            playerTransform->transform.translation + 2.0f * playerTransform->transform.GetForward();
+
+                        // Direction of the new spline
+                        XMVECTOR dir = SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] - start;
+
+                        // End point of the new spline
+                        XMVECTOR end =
+                            SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] - 2.0f * XMVector3Normalize(dir);
+
+                        // Finish creation of new spline
+                        CreateRandomPath(start, end, goalIndex);
                 }
         }
 }
@@ -328,7 +370,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         {
                                 if (playerController->SpeedBoost(center, speedComp.color))
                                 {
-                                        //RequestDestroySpeedboost(&speedComp);
+                                        // RequestDestroySpeedboost(&speedComp);
                                         break;
                                 }
                         }
@@ -382,18 +424,26 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 float checkRadius = m_SplineLatchRadius;
                 bool  foundFriend = false;
                 float prevDistance;
+                float prevDot;
 
                 if (bIsLatchedToSpline == true)
                 {
                         SpeedboostSplineComponent* closestSplineComp = latchedSplineHandle.Get<SpeedboostSplineComponent>();
                         TransformComponent* transComp = closestSplineComp->GetParent().GetComponent<TransformComponent>();
-                        prevDistance                  = MathLibrary::CalulateDistance(transComp->transform.translation,
-                                                                     playerTransform->transform.translation);
+                        XMVECTOR prevVector = transComp->transform.translation - playerTransform->transform.translation;
+                        prevDistance        = MathLibrary::CalulateVectorLength(prevVector);
+                        prevVector          = XMVector3Normalize(prevVector);
+                        prevDot = MathLibrary::VectorDotProduct(prevVector, playerTransform->transform.GetForward());
                 }
                 else
                 {
                         prevDistance = INFINITY;
+                        prevDot      = -1.0f;
                 }
+
+                bool shouldLatch = false;
+
+
                 for (auto& splineComp : m_HandleManager->GetActiveComponents<SpeedboostSplineComponent>())
                 {
                         int index     = splineComp.index;
@@ -401,27 +451,28 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         auto clusterIt = m_SplineClusterSpawners.find(clusterID);
 
-                        int splineColor = m_SplineClusterSpawners.at(clusterID).color;
 
                         XMVECTOR pos = splineComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
-                        clusterIt->second.pointPositions[index] = pos;
+                        clusterIt->second.cachedPoints[index].pos   = pos;
+                        clusterIt->second.cachedPoints[index].color = splineComp.color;
+                        int splineColor                             = splineComp.color;
 
-                        float distance = MathLibrary::CalulateDistance(playerTransform->transform.translation, pos);
+                        XMVECTOR dirVector = pos - playerTransform->transform.translation;
+                        float    distance  = MathLibrary::CalulateVectorLength(dirVector);
+                        dirVector          = XMVector3Normalize(dirVector);
+                        float dot          = MathLibrary::VectorDotProduct(dirVector, playerTransform->transform.GetForward());
 
                         if (distance < (checkRadius))
                         {
-                                if ((bIsLatchedToSpline == false || prevDistance > distance) &&
-                                    (GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[splineColor]) ==
-                                     KeyState::Down))
+                                if ((bIsLatchedToSpline == false || dot > prevDot))
                                 {
-                                        bIsLatchedToSpline  = true;
                                         latchedSplineHandle = splineComp.GetHandle();
                                         shouldLatch         = true;
                                 }
                         }
                 }
 
-                if (bIsLatchedToSpline)
+                if (bIsLatchedToSpline || shouldLatch)
                 {
                         SpeedboostSplineComponent* latchedSplineComp = latchedSplineHandle.Get<SpeedboostSplineComponent>();
                         int                        index             = latchedSplineComp->index;
@@ -429,135 +480,144 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         auto clusterIt = m_SplineClusterSpawners.find(clusterID);
 
-                        XMVECTOR currPos = clusterIt->second.pointPositions[index];
-                        XMVECTOR nextPos;
-                        XMVECTOR prevPos;
-
-                        if (index <= 0)
+                        if (clusterIt == m_SplineClusterSpawners.end())
                         {
-                                prevPos = currPos;
-                        }
-                        else
-                        {
-                                prevPos = clusterIt->second.pointPositions[index - 1];
-                        }
-
-                        if (index >= clusterIt->second.pointPositions.size() - 1)
-                        {
-                                nextPos = currPos;
-                        }
-                        else
-                        {
-                                nextPos = clusterIt->second.pointPositions[index + 1];
-                        }
-
-
-                        Shapes::FCapsule capsuleA;
-                        Shapes::FCapsule capsuleB;
-
-                        bool inPath = false;
-
-                        capsuleA.startPoint = currPos + offset;
-                        capsuleA.endPoint   = nextPos + offset;
-                        capsuleA.radius     = m_SplineFallRadius;
-
-                        capsuleB.startPoint = capsuleA.startPoint;
-                        capsuleB.endPoint   = prevPos + offset;
-                        capsuleB.radius     = m_SplineFallRadius;
-
-                        inPath |= CollisionLibary::PointInCapsule(playerTransform->transform.translation, capsuleA);
-                        inPath |= CollisionLibary::PointInCapsule(playerTransform->transform.translation, capsuleB);
-                        inPath &= shouldLatch;
-
-                        if (inPath)
-                        {
-                                playerController->SetUseGravity(false);
-
-                                XMVECTOR dirNext = XMVector3Normalize(nextPos - currPos);
-                                XMVECTOR dirPrev = XMVector3Normalize(prevPos - currPos);
-
-                                XMVECTOR dirVel;
-                                XMVECTOR dir;
-                                bool     attached = false;
-                                if (MathLibrary::VectorDotProduct(playerTransform->transform.GetForward(), dirNext) > 0.3f)
-                                {
-                                        attached = true;
-                                        dir      = dirNext;
-                                        dirVel = XMVector3Normalize(capsuleA.endPoint - playerTransform->transform.translation);
-                                }
-                                else if (MathLibrary::VectorDotProduct(playerTransform->transform.GetForward(), dirPrev) > 0.3f)
-                                {
-                                        attached = true;
-                                        dir      = dirPrev;
-                                        dirVel = XMVector3Normalize(capsuleB.endPoint - playerTransform->transform.translation);
-                                }
-
-                                if (attached)
-                                {
-                                        XMVECTOR closestPointOnLine =
-                                            MathLibrary::GetClosestPointFromLine(capsuleA.startPoint,
-                                                                                 capsuleA.startPoint + dirVel,
-                                                                                 playerTransform->transform.translation);
-                                        float distanceToLine = MathLibrary::CalulateDistance(
-                                            closestPointOnLine, playerTransform->transform.translation);
-
-                                        XMVECTOR worldInput = XMVector3Normalize(XMVector3Rotate(
-                                            playerController->GetCurrentInput(), playerTransform->transform.rotation.data));
-
-                                        float inputDot = MathLibrary::VectorDotProduct(worldInput, dirVel);
-
-
-                                        inputDot = std::max(inputDot, 0.0f);
-
-                                        float forceAlpha      = std::min(1.0f, distanceToLine / m_SplineFallRadius);
-                                        float attractionForce = MathLibrary::lerp(
-                                            m_SplineAttractionForceMin, m_SplineAttractionForceMax, forceAlpha);
-
-                                        float strength = inputDot * attractionForce;
-
-                                        XMVECTOR currVel    = playerController->GetCurrentVelocity();
-                                        float    velMag     = MathLibrary::CalulateVectorLength(currVel);
-                                        XMVECTOR desiredVel = dirVel * velMag;
-
-                                        currVel = MathLibrary::MoveTowards(currVel, desiredVel, strength);
-                                        playerController->SetCurrentVelocity(currVel);
-                                        playerController->SetNextForward(dir);
-                                        playerController->SetCurrentMaxSpeed(6.0f);
-                                        // playerController->AddCurrentVelocity(dir * 10.0f * deltaTime);
-                                }
-                        }
-
-                        else
-                        {
-                                // Player has fallen off the spline
-                                playerController->SetUseGravity(true);
                                 bIsLatchedToSpline = false;
+                        }
+                        else
+                        {
+                                XMVECTOR currPos = clusterIt->second.cachedPoints[index].pos;
+                                XMVECTOR nextPos;
+                                XMVECTOR prevPos;
 
-                                // Destroy the old spline
-                                DestroySpline(latchedSplineComp->clusterID, latchedSplineComp->index);
+                                if (index <= 0)
+                                {
+                                        prevPos = currPos;
+                                }
+                                else
+                                {
+                                        prevPos = clusterIt->second.cachedPoints[index - 1].pos;
+                                }
 
-                                int splineID  = latchedSplineComp->clusterID;
-                                int goalIndex = m_SplineClusterSpawners.at(splineID).color;
+                                if (index >= clusterIt->second.cachedPoints.size() - 1)
+                                {
+                                        nextPos = currPos;
+                                }
+                                else
+                                {
+                                        nextPos = clusterIt->second.cachedPoints[index + 1].pos;
+                                }
 
-                                // Start of the new spline
-                                XMVECTOR start =
-                                    playerTransform->transform.translation + 2.0f * playerTransform->transform.GetForward();
 
-                                // Direction of the new spline
-                                XMVECTOR dir = SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] - start;
+                                Shapes::FCapsule capsuleA;
+                                Shapes::FCapsule capsuleB;
 
-                                // End point of the new spline
-                                XMVECTOR end = SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] -
-                                               2.0f * XMVector3Normalize(dir);
+                                bool inPath = false;
 
-                                // Finish creation of new spline
-                                CreateRandomPath(start, end, goalIndex);
+                                capsuleA.startPoint = currPos + offset;
+                                capsuleA.endPoint   = nextPos + offset;
+                                capsuleA.radius     = m_SplineFallRadius;
+
+                                capsuleB.startPoint = capsuleA.startPoint;
+                                capsuleB.endPoint   = prevPos + offset;
+                                capsuleB.radius     = m_SplineFallRadius;
+
+                                inPath |= CollisionLibary::PointInCapsule(playerTransform->transform.translation, capsuleA);
+                                inPath |= CollisionLibary::PointInCapsule(playerTransform->transform.translation, capsuleB);
+
+                                int correctColor = latchedSplineComp->color;
+
+                                for (int i = 0; i < E_LIGHT_ORBS::WHITE_LIGHTS; ++i)
+                                {
+                                        if (i == correctColor)
+                                        {
+                                                inPath &= (GCoreInput::GetKeyState(
+                                                               playerController->m_ColorInputKeyCodes[i]) ==
+                                                           KeyState::Down);
+                                        }
+                                        else
+                                        {
+                                                inPath &= ~(GCoreInput::GetKeyState(
+                                                                playerController->m_ColorInputKeyCodes[i]) ==
+                                                            KeyState::Down);
+                                        }
+                                }
+
+                                if (inPath)
+                                {
+                                        bIsLatchedToSpline = true;
+                                        mDelatchTimer      = mDelatchCD;
+                                        playerController->SetUseGravity(false);
+
+                                        XMVECTOR dirNext = XMVector3Normalize(nextPos - currPos);
+                                        XMVECTOR dirPrev = XMVector3Normalize(prevPos - currPos);
+
+                                        XMVECTOR dirVel;
+                                        XMVECTOR dir;
+                                        bool     attached = false;
+                                        if (MathLibrary::VectorDotProduct(playerTransform->transform.GetForward(), dirNext) >
+                                            0.3f)
+                                        {
+                                                attached = true;
+                                                dir      = dirNext;
+                                                dirVel   = XMVector3Normalize(capsuleA.endPoint -
+                                                                            playerTransform->transform.translation);
+                                        }
+                                        else if (MathLibrary::VectorDotProduct(playerTransform->transform.GetForward(),
+                                                                               dirPrev) > 0.3f)
+                                        {
+                                                attached = true;
+                                                dir      = dirPrev;
+                                                dirVel   = XMVector3Normalize(capsuleB.endPoint -
+                                                                            playerTransform->transform.translation);
+                                        }
+
+                                        if (attached)
+                                        {
+                                                XMVECTOR closestPointOnLine = MathLibrary::GetClosestPointFromLine(
+                                                    capsuleA.startPoint,
+                                                    capsuleA.startPoint + dirVel,
+                                                    playerTransform->transform.translation);
+                                                float distanceToLine = MathLibrary::CalulateDistance(
+                                                    closestPointOnLine, playerTransform->transform.translation);
+
+                                                XMVECTOR worldInput = XMVector3Normalize(
+                                                    XMVector3Rotate(playerController->GetCurrentInput(),
+                                                                    playerTransform->transform.rotation.data));
+
+                                                float inputDot = MathLibrary::VectorDotProduct(worldInput, dirVel);
+
+
+                                                inputDot = std::max(inputDot, 0.0f);
+
+                                                float forceAlpha      = std::min(1.0f, distanceToLine / m_SplineFallRadius);
+                                                float attractionForce = MathLibrary::lerp(
+                                                    m_SplineAttractionForceMin, m_SplineAttractionForceMax, forceAlpha);
+
+                                                float strength = inputDot * attractionForce;
+
+                                                XMVECTOR currVel    = playerController->GetCurrentVelocity();
+                                                float    velMag     = MathLibrary::CalulateVectorLength(currVel);
+                                                XMVECTOR desiredVel = dirVel * velMag;
+
+                                                currVel = MathLibrary::MoveTowards(currVel, desiredVel, strength);
+                                                playerController->SetCurrentVelocity(currVel);
+                                                playerController->SetNextForward(dir);
+                                                playerController->SetCurrentMaxSpeed(6.0f);
+                                                // playerController->AddCurrentVelocity(dir * 10.0f * deltaTime);
+                                        }
+                                }
+
+                                else
+                                {
+                                        // Player has fallen off the spline
+                                        RequestUnlatchFromSpline(playerController, deltaTime);
+                                }
                         }
                 }
                 else
                 {
-                        playerController->SetUseGravity(true);
-                        bIsLatchedToSpline = false;
+                        RequestUnlatchFromSpline(playerController, deltaTime);
                 }
         }
 
