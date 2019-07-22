@@ -76,7 +76,7 @@ void UIManager::AddSprite(ID3D11Device*        device,
 void UIManager::AddText(ID3D11Device*        device,
                         ID3D11DeviceContext* deviceContext,
                         int                  category,
-                        const wchar_t*       FileName,
+                        int                  fontType,
                         std::string          TextDisplay,
                         float                scale,
                         float                PositionX,
@@ -89,7 +89,7 @@ void UIManager::AddText(ID3D11Device*        device,
 {
         FontComponent cFont;
 
-        cFont.mSpriteFont  = std::make_unique<DirectX::SpriteFont>(device, FileName);
+        cFont.mFontType    = fontType;
         cFont.mTextDisplay = TextDisplay;
 
         // Set the Main Menu text to enabled
@@ -97,7 +97,7 @@ void UIManager::AddText(ID3D11Device*        device,
 
         // Create Dimensions
         XMFLOAT2 dimensions;
-        XMStoreFloat2(&dimensions, cFont.mSpriteFont->MeasureString(TextDisplay.c_str()));
+        XMStoreFloat2(&dimensions, instance->m_FontTypes[fontType]->MeasureString(TextDisplay.c_str()));
         float aspectRatio = dimensions.x / dimensions.y;
 
         cFont.mOrigin = XMVectorSet(dimensions.x * 0.5f, dimensions.y * 0.5f, 0.0f, 1.0f);
@@ -381,11 +381,18 @@ void UIManager::Initialize(native_handle_type hwnd)
         // Create supported resolutions
         instance->SupportedResolutions();
 
+        instance->m_FontTypes[E_FONT_TYPE::Angel] =
+            new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/angel.spritefont");
+        instance->m_FontTypes[E_FONT_TYPE::Calibri] =
+            new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/calibri.spritefont");
+        instance->m_FontTypes[E_FONT_TYPE::MyFile] =
+            new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/myfile.spritefont");
         // Main Menu
+
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
-                          L"../Assets/2d/Text/angel.spritefont",
+                          E_FONT_TYPE::Angel,
                           "INANIS",
                           0.06f,
                           0.0f,
@@ -397,7 +404,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
-                          L"../Assets/2d/Text/calibri.spritefont",
+                          E_FONT_TYPE::Calibri,
                           "Press A, S, and D to continue. . .",
                           0.06f,
                           0.0f,
@@ -409,7 +416,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
-                          L"../Assets/2d/Text/calibri.spritefont",
+                          E_FONT_TYPE::Calibri,
                           "Hold Left Click to Move",
                           0.06f,
                           0.0f,
@@ -433,7 +440,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          L"../Assets/2d/Text/angel.spritefont",
+                          E_FONT_TYPE::Angel,
                           "INANIS",
                           0.06f,
                           0.0f,
@@ -444,7 +451,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Resume",
                           0.05f,
                           0.0f,
@@ -458,7 +465,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Levels",
                           0.05f,
                           0.0f,
@@ -472,7 +479,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Options",
                           0.05f,
                           0.0f,
@@ -486,7 +493,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Controls",
                           0.05f,
                           0.0f,
@@ -500,7 +507,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Exit",
                           0.05f,
                           0.0f,
@@ -515,7 +522,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Back",
                           0.05f,
                           0.0f,
@@ -529,7 +536,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Windowed",
                           0.04f,
                           0.0f,
@@ -543,7 +550,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Resolution",
                           0.04f,
                           0.0f,
@@ -557,7 +564,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Apply",
                           0.05f,
                           0.0f,
@@ -572,7 +579,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Off",
                           0.04f,
                           0.0f,
@@ -583,7 +590,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "On",
                           0.04f,
                           0.0f,
@@ -594,7 +601,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "<",
                           0.04f,
                           -0.12f,
@@ -605,7 +612,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           ">",
                           0.04f,
                           0.12f,
@@ -618,7 +625,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::OptionsSubmenu,
-                                  L"../Assets/2d/Text/myfile.spritefont",
+                                  E_FONT_TYPE::MyFile,
                                   std::to_string(instance->resDescriptors[i].Width) + "x" +
                                       std::to_string(instance->resDescriptors[i].Height),
                                   0.04f,
@@ -632,7 +639,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Back",
                           0.05f,
                           0.0f,
@@ -642,11 +649,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           pauseButtonWidth,
                           pauseButtonHeight);
-        
+
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Tutorial",
                           0.05f,
                           0.0f,
@@ -660,7 +667,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Level 1",
                           0.05f,
                           0.0f,
@@ -674,7 +681,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Level 2",
                           0.05f,
                           0.0f,
@@ -688,7 +695,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Level 3",
                           0.05f,
                           0.0f,
@@ -703,7 +710,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
-                          L"../Assets/2d/Text/myfile.spritefont",
+                          E_FONT_TYPE::MyFile,
                           "Back",
                           0.05f,
                           0.0f,
@@ -716,10 +723,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         // Pause Menu
         {
                 // Resume Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e)
-                {
-	                instance->Unpause();
-                });
+                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][1].OnMouseDown.AddEventListener(
+                    [](UIMouseEvent* e) { instance->Unpause(); });
 
                 // Level Select Button
                 instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
@@ -835,10 +840,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                 });
 
                 // Exit Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][5].OnMouseDown.AddEventListener([](UIMouseEvent* e)
-                {
-	                GEngine::Get()->RequestGameExit();
-                });
+                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][5].OnMouseDown.AddEventListener(
+                    [](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
         }
 
         // Options
@@ -1034,11 +1037,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
                         }
                 });
-                
+
                 // Tutorial Button
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         instance->Unpause();
-					    //Load Level Function
+                        // Load Level Function
                 });
 
                 // Level 1 Button
@@ -1210,13 +1213,13 @@ void UIManager::Update()
                                                              0.0f,
                                                              0.0f);
 
-                                font.mSpriteFont->DrawString(instance->m_SpriteBatch.get(),
-                                                             font.mTextDisplay.c_str(),
-                                                             position,
-                                                             DirectX::Colors::White,
-                                                             0.0f,
-                                                             font.mOrigin,
-                                                             scale);
+                                instance->m_FontTypes[font.mFontType]->DrawString(instance->m_SpriteBatch.get(),
+                                                                                  font.mTextDisplay.c_str(),
+                                                                                  position,
+                                                                                  DirectX::Colors::White,
+                                                                                  0.0f,
+                                                                                  font.mOrigin,
+                                                                                  scale);
 
                                 instance->m_SpriteBatch->End();
                         }
@@ -1240,9 +1243,12 @@ void UIManager::Shutdown()
                 for (auto& font : it.second)
                 {
                         SAFE_RELEASE(font.mTexture);
-                        font.mSpriteFont.reset();
                 }
 
+        for (int i = 0; i < E_FONT_TYPE::COUNT; ++i)
+        {
+                delete instance->m_FontTypes[i];
+        }
         assert(instance);
         delete instance;
 }

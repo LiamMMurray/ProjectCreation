@@ -29,17 +29,28 @@ struct E_MENU_CATEGORIES
         };
 };
 
+struct E_FONT_TYPE
+{
+        enum
+        {
+                Angel,
+                Calibri,
+                MyFile,
+                COUNT
+        };
+};
+
 struct PrevSettings
 {
         bool m_IsFullscreen = false;
-        int  m_Resolution = 8; // 0-8 Representing the resDescriptors resolutions
-        int  Volume = 100;
+        int  m_Resolution   = 8; // 0-8 Representing the resDescriptors resolutions
+        int  Volume         = 100;
 };
 struct CurrSettings
 {
         bool m_IsFullscreen = false;
         int  m_Resolution   = 8; // 0-8 Representing the resDescriptors resolutions
-        int  Volume = 100;
+        int  Volume         = 100;
 };
 
 class UIManager
@@ -66,7 +77,7 @@ class UIManager
         void AddText(ID3D11Device*        device,
                      ID3D11DeviceContext* deviceContext,
                      int                  category,
-                     const wchar_t*       FileName,
+                     int                  fontType,
                      std::string          TextDisplay,
                      float                scale,
                      float                PositionX,
@@ -99,9 +110,9 @@ class UIManager
         static UIManager* instance;
 
     private:
-        bool m_FirstFull = true; // Turns false when the game is put to fullscreen on launch
-        bool m_InMenu         = false;
-        bool m_AdjustedScreen = false;
+        bool         m_FirstFull      = true; // Turns false when the game is put to fullscreen on launch
+        bool         m_InMenu         = false;
+        bool         m_AdjustedScreen = false;
         PrevSettings PSettings;
         CurrSettings CSettings;
 
@@ -121,4 +132,6 @@ class UIManager
 
         std::unordered_map<int, std::vector<SpriteComponent>> m_AllSprites;
         std::unordered_map<int, std::vector<FontComponent>>   m_AllFonts;
+
+       DirectX::SpriteFont*     m_FontTypes[E_FONT_TYPE::COUNT];
 };
