@@ -1,15 +1,19 @@
 #include "SystemManager.h"
-
+#include "../Engine/GEngine.h"
+#include "../Utility/Profiling.h"
 void SystemManager::Update(float deltaTime)
 {
         auto queue = GetSystemQueue();
         while (!queue.empty())
         {
                 ISystem* system = queue.top();
+                GEngine::Get()->m_MainThreadProfilingContext.Begin("Systems", system->m_SystemName);
                 system->OnPreUpdate(deltaTime);
                 system->OnUpdate(deltaTime);
                 system->OnPostUpdate(deltaTime);
                 queue.pop();
+                GEngine::Get()->m_MainThreadProfilingContext.End();
+
         }
 }
 

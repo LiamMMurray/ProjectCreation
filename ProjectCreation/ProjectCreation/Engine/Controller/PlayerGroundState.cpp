@@ -1,5 +1,6 @@
 #include "PlayerGroundState.h"
 #include <iostream>
+#include "..//..//Rendering/Components/DirectionalLightComponent.h"
 #include "..//GEngine.h"
 #include "..//GenericComponents/TransformComponent.h"
 #include "..//MathLibrary/MathLibrary.h"
@@ -15,21 +16,34 @@ void PlayerGroundState::Enter()
 
         _playerController->SetEulerAngles(playerTransformComponent->transform.rotation.ToEulerAngles());
 
+		_playerController->RequestCurrentLevel();
+
         // Sets the gravity vector for the player
         //_playerController->SetPlayerGravity(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f));
 }
 
 void PlayerGroundState::Update(float deltaTime)
 {
+        // Dev Cheat to test Reveal
+        if (GCoreInput::GetKeyState(KeyCode::N) == KeyState::DownFirst)
+        {
+                _playerController->SetCollectedPlanetCount(3);
+        }
+        // Check if the player has collected the three planets
+        if (_playerController->GetCollectedPlanetCount() >= 3)
+        {
+                _playerController->RequestNextLevel();
+        }
+
         XMVECTOR currentVelocity = _playerController->GetCurrentVelocity();
 
         currentVelocity += _playerController->GetJumpForce();
-        //currentVelocity += _playerController->GetPlayerGravity();
+        // currentVelocity += _playerController->GetPlayerGravity();
 
-        if (GCoreInput::GetKeyState(KeyCode::L) == KeyState::DownFirst) 
-		{
+        if (GCoreInput::GetKeyState(KeyCode::L) == KeyState::DownFirst)
+        {
                 ConsoleWindow::PrintVector(currentVelocity, "Current Velocity");
-		}
+        }
 
         // Get Delta Time
         float totalTime = (float)GEngine::Get()->GetTotalTime();
@@ -40,10 +54,14 @@ void PlayerGroundState::Update(float deltaTime)
         constexpr float pitchLimit   = XMConvertToRadians(90.0f);
         constexpr float rollLimit    = 20.0f;
 
+        float pitchDelta = eulerAngles.x;
         eulerAngles.x += GCoreInput::GetMouseY() * angularSpeed;
+        pitchDelta = eulerAngles.x - pitchDelta;
+
         float yawDelta = eulerAngles.y;
         eulerAngles.y += GCoreInput::GetMouseX() * angularSpeed;
         yawDelta = eulerAngles.y - yawDelta;
+
         eulerAngles.z += GCoreInput::GetMouseX() * angularSpeed;
 
         eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
@@ -57,6 +75,9 @@ void PlayerGroundState::Update(float deltaTime)
 
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, yawDelta));
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, yawDelta));
+
+        currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, pitchDelta));
+        currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, pitchDelta));
 
         // Get the Speed from the gathered input
         XMVECTOR currentInput = _playerController->GetCurrentInput();
@@ -103,7 +124,7 @@ void PlayerGroundState::Update(float deltaTime)
         float dist = MathLibrary::CalulateDistance(currentVelocity, desiredVelocity);
 
         // Calculate change based on the type of acceleration, the change in time, and the calculated distance
-        float delta = std::min(accel * deltaTime, dist);
+        float delta = min(accel * deltaTime, dist);
 
         // Normalize the difference of the desired velocity and the current velocity
         XMVECTOR deltaVec = XMVector3Normalize(desiredVelocity - currentVelocity);
@@ -137,14 +158,22 @@ void PlayerGroundState::Update(float deltaTime)
                 XMVECTOR offset = actualVelocity * deltaTime;
                 _cachedTransform.translation += offset;
                 float posY                   = XMVectorGetY(_cachedTransform.translation);
-                posY                         = std::max(posY, 0.0f);
+                posY                         = max(posY, 0.0f);
                 _cachedTransform.translation = XMVectorSetY(_cachedTransform.translation, posY);
         }
 
         _playerController->GetControlledEntity().GetComponent<TransformComponent>()->transform = _cachedTransform;
 
+        auto sunComp = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>();
+        sunComp->m_LightRotation =
+            sunComp->m_LightRotation *
+            XMQuaternionRotationAxis(VectorConstants::Up,
+                                     deltaTime * 0.14f * MathLibrary::CalulateVectorLength(XMVectorSetY(actualVelocity, 0.0f)));
+        // sunEuler.y    = MathLibrary::MoveTowardsAngle(sunEuler.y, MathLibrary::NormalizeAngle(eulerAngles.y + XM_PI), 1.0f *
+        // deltaTime);
+
         _playerController->SetCurrentVelocity(currentVelocity);
-        _playerController->SetEulerAngles(eulerAngles);
+        _playerController->SetEulerAngles(MathLibrary::NormalizeEulerAngles(eulerAngles));
 }
 
 void PlayerGroundState::Exit()

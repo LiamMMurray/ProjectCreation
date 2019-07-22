@@ -7,13 +7,17 @@
 
 #include "../ECS/HandleManager.h"
 #include "../ECS/SystemManager.h"
+#include "../Utility/Profiling.h"
 #include "ResourceManager/ResourceManager.h"
 #include "XTime.h"
+
+#include <DirectXMath.h>
+#include "Levels/LevelStateManager.h"
+
 class GEngine
 {
-
         static NMemory::memsize            s_PoolAllocSize;
-        NMemory::MemoryStack                m_PoolMemory;
+        NMemory::MemoryStack               m_PoolMemory;
         NMemory::NPools::RandomAccessPools m_ComponentPools;
         NMemory::NPools::RandomAccessPools m_EntityPools;
 
@@ -30,8 +34,39 @@ class GEngine
         bool m_GameIsPaused  = false;
         bool m_WantsGameExit = false;
 
+        LevelStateManager* m_LevelStateManager;
+
+        void Signal();
+
+        float m_PlayerRadius          = 0.0f;
+        float m_DesiredPlayerRadius   = 0.0f;
+        float m_RadiusTransitionSpeed = 5.0f;
+
     public:
-        float m_PlayerRadius = 0.0f;
+        DirectX::XMVECTOR m_OriginOffset = DirectX::XMVECTORF32{0.0f, 0.0f, 0.0f, 0.0f};
+        inline void SetPlayerRadius(float r)
+        {
+                m_PlayerRadius = m_DesiredPlayerRadius = r;
+        }
+
+        inline void SetDesiredPlayerRadius(float r)
+        {
+                m_DesiredPlayerRadius = r;
+        }
+
+        inline void SetTransitionSpeed(float s)
+        {
+                m_RadiusTransitionSpeed = s;
+        }
+
+        inline float GetCurrentPlayerRadius() const
+        {
+                return m_PlayerRadius;
+        }
+
+        float           m_TerrainAlpha = 0.0f;
+        EntityHandle    m_SunHandle;
+        ProfilerContext m_MainThreadProfilingContext;
 
         void        SetGamePaused(bool val);
         inline bool GetGamePaused()
@@ -44,13 +79,18 @@ class GEngine
 
         static GEngine* Get();
 
-        void Signal();
+        float Update();
 
         HandleManager*          GetHandleManager();
         SystemManager*          GetSystemManager();
         inline ResourceManager* GetResourceManager()
         {
                 return m_ResourceManager;
+        }
+
+        inline LevelStateManager* GetLevelStateManager()
+        {
+                return m_LevelStateManager;
         }
 
         inline void SetDebugMode(bool val)

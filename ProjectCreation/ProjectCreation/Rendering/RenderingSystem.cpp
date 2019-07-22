@@ -1,12 +1,12 @@
 #include "RenderingSystem.h"
+#include <algorithm>
 #include <iostream>
+#include "..//Engine/Entities/EntityFactory.h"
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
 #include "../Engine/MathLibrary/MathLibrary.h"
 #include "../FileIO/FileIO.h"
 #include "PostProcess/Bloom.h"
-
-#include <algorithm>
 
 #include <d3d11_1.h>
 #pragma comment(lib, "d3d11.lib")
@@ -159,7 +159,7 @@ void RenderSystem::CreateDeviceAndSwapChain()
         ID3D11Debug* debug = nullptr;
         hr                 = m_Device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&debug));
         assert(SUCCEEDED(hr));
-        //debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+        // debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
         debug->Release();
 #endif
 
@@ -191,15 +191,10 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
 
         m_Context->OMSetRenderTargets(0, 0, 0);
 
-        IDXGIOutput* pOutput;
-        m_Swapchain->GetContainingOutput(&pOutput);
-
-        // pOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, 0, &num, s)
 
         // Preserve the existing buffer count and format.
         // Automatically choose the width and height to match the client rect for HWNDs.
         hr = m_Swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
-        pOutput->Release();
 
         // Perform error handling here!
         assert(SUCCEEDED(hr));
@@ -680,6 +675,8 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         mainCamera->_cachedProjection     = m_CachedMainProjectionMatrix;
         mainCamera->_cachedViewProjection = m_CachedMainViewProjectionMatrix;
 
+        m_SkyHandle.Get<TransformComponent>()->transform.translation = mainTransform->transform.translation;
+
         XMStoreFloat3(&m_ConstantBuffer_SCENE.eyePosition, mainTransform->transform.translation);
         m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(m_CachedMainViewProjectionMatrix);
         m_ConstantBuffer_MVP.Projection     = XMMatrixTranspose(m_CachedMainProjectionMatrix);
@@ -825,7 +822,7 @@ void RenderSystem::OnUpdate(float deltaTime)
         m_ConstantBuffer_SCENE.aspectRatio  = m_BackBufferWidth / m_BackBufferHeight;
         m_ConstantBuffer_SCENE.time         = (float)GEngine::Get()->GetTotalTime();
         m_ConstantBuffer_SCENE.deltaTime    = deltaTime;
-        m_ConstantBuffer_SCENE.playerRadius = (float)GEngine::Get()->m_PlayerRadius;
+        m_ConstantBuffer_SCENE.playerRadius = (float)GEngine::Get()->GetCurrentPlayerRadius();
         UpdateConstantBuffer(m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE],
                              &m_ConstantBuffer_SCENE,
                              sizeof(m_ConstantBuffer_SCENE));
@@ -959,6 +956,11 @@ void RenderSystem::OnInitialize()
         UIManager::Initialize(m_WindowHandle);
         TerrainManager::Initialize(this);
         ParticleManager::Initialize();
+        {
+                EntityFactory::CreateStaticMeshEntity("SkyDome01", "SkyMat01", &m_SkyHandle);
+                auto transComp = m_SkyHandle.Get<TransformComponent>();
+                transComp->transform.SetScale(1400.0f);
+        }
 }
 
 void RenderSystem::OnShutdown()

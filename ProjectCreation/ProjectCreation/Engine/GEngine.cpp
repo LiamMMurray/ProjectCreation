@@ -1,5 +1,7 @@
 #include "GEngine.h"
 #include "../Utility/MemoryLeakDetection.h"
+#include "MathLibrary/MathLibrary.h"
+
 GEngine*         GEngine::instance        = 0;
 NMemory::memsize GEngine::s_PoolAllocSize = MB(64);
 
@@ -26,9 +28,11 @@ void GEngine::Initialize()
         instance->m_HandleManager =
             DBG_NEW HandleManager(instance->m_ComponentPools, instance->m_EntityPools, instance->m_PoolMemory);
 
+        instance->m_MainThreadProfilingContext.Initialize();
 
-        instance->m_SystemManager   = DBG_NEW   SystemManager;
-        instance->m_ResourceManager = DBG_NEW ResourceManager;
+        instance->m_SystemManager     = DBG_NEW     SystemManager;
+        instance->m_ResourceManager   = DBG_NEW   ResourceManager;
+        instance->m_LevelStateManager = DBG_NEW LevelStateManager;
 
         instance->m_SystemManager->Initialize();
         instance->m_ResourceManager->Initialize();
@@ -39,17 +43,30 @@ void GEngine::Shutdown()
         instance->m_SystemManager->Shutdown();
         instance->m_ResourceManager->Shutdown();
         instance->m_HandleManager->Shutdown();
+        instance->m_LevelStateManager->Shutdown();
         NMemory::FreeGameMemory(instance->m_PoolMemory);
-
         delete instance->m_HandleManager;
         delete instance->m_SystemManager;
         delete instance->m_ResourceManager;
+        delete instance->m_LevelStateManager;
+
+        GEngine::Get()->m_MainThreadProfilingContext.Dump();
 }
 
 GEngine* GEngine::Get()
 {
         assert(instance != nullptr);
         return instance;
+}
+
+float GEngine::Update()
+{
+        Signal();
+        float deltaTime = GetDeltaTime();
+
+        m_PlayerRadius = MathLibrary::MoveTowards(m_PlayerRadius, m_DesiredPlayerRadius, m_RadiusTransitionSpeed * deltaTime);
+        GetLevelStateManager()->Update(deltaTime);
+        return deltaTime;
 }
 
 void GEngine::Signal()

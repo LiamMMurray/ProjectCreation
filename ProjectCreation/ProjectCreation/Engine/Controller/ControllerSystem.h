@@ -1,8 +1,8 @@
 #pragma once
 
+#include "../../ECS/HandleManager.h"
 #include "../../Rendering/Components/CameraComponent.h"
 #include "../Controller/IController.h"
-#include "../../ECS/HandleManager.h"
 #include "../GEngine.h"
 #include "../Gameplay/LightOrbColors.h"
 
@@ -31,14 +31,19 @@ class ControllerSystem : public ISystem
                 return m_Controllers[m_CurrentController];
         }
 
+        inline int GetCurrentControllerIndex()
+        {
+                return (int)m_CurrentController;
+        }
+
         IController* m_Controllers[E_CONTROLLERS::COUNT] = {};
 
-        SystemManager*    m_SystemManager;
+        SystemManager* m_SystemManager;
         HandleManager* m_HandleManager;
 
         E_CONTROLLERS m_CurrentController;
 
-		int m_OrbCounts[E_LIGHT_ORBS::COUNT] = {};
+        int m_OrbCounts[E_LIGHT_ORBS::COUNT] = {};
 
         void DisplayConsoleMenu();
 

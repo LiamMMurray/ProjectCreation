@@ -1,13 +1,14 @@
 #pragma once
 
-#include "../MathLibrary/MathLibrary.h"
 #include "../../ECS/HandleManager.h"
+#include "../MathLibrary/MathLibrary.h"
 #include "PlayerControllerState.h"
 
 enum class E_TRANSITION_MODE
 {
         Simple,
         LookAt,
+        // Reveal,
 };
 
 class PlayerCinematicState : public IPlayerControllerState
@@ -25,6 +26,7 @@ class PlayerCinematicState : public IPlayerControllerState
         ComponentHandle m_lookAtTarget;
 
         float m_Delay                    = 0.0f;
+        float m_RevealRadius             = 0.0f;
         float m_LookAtTransitionDuration = 1.0f;
         float m_Duration                 = 1.0f;
         int   m_TargetState              = 0;
@@ -38,6 +40,7 @@ class PlayerCinematicState : public IPlayerControllerState
 
         void UpdateSimple(float deltaTime);
         void UpdateLookAt(float deltaTime);
+        // void UpdateReveal(float deltaTime);
 
         virtual void Exit() override;
 
@@ -63,7 +66,7 @@ class PlayerCinematicState : public IPlayerControllerState
                 m_lookAtTarget = val;
         }
 
-		inline void SetLookAtTransitionDuration(float val)
+        inline void SetLookAtTransitionDuration(float val)
         {
                 m_LookAtTransitionDuration = val;
         }

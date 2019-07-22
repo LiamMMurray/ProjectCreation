@@ -309,6 +309,45 @@ DirectX::XMFLOAT4 MathLibrary::GetRandomColorInRange(DirectX::XMFLOAT2 red,
         return output;
 }
 
+DirectX::XMFLOAT3 MathLibrary::NormalizeEulerAngles(const DirectX::XMFLOAT3& euler)
+{
+        return XMFLOAT3(NormalizeAngle(euler.x), NormalizeAngle(euler.y), NormalizeAngle(euler.z));
+}
+
+float MathLibrary::NormalizeAngle(float a0)
+{
+        // reduce the angle
+        float angle = fmodf(a0, 2 * XM_PI);
+
+        // force it to be the positive remainder, so that 0 <= angle < 360
+        angle = fmodf(angle + 2 * XM_PI, 2 * XM_PI);
+
+        // force into the minimum absolute value residue class, so that -180 < angle <= 180
+        if (angle > XM_PI)
+                angle -= 2 * XM_PI;
+
+        return angle;
+}
+
+float MathLibrary::ShortestAngle(float a0, float a1)
+{
+        float max = DirectX::XM_PI * 2.0f;
+        float da  = fmodf(a1 - a0, max);
+        return 2.0f * fmodf(da, max) - da;
+}
+
+float MathLibrary::LerpAngle(float a0, float a1, float t)
+{
+        return NormalizeAngle(a0 + ShortestAngle(a0, a1) * t);
+}
+
+float MathLibrary::MoveTowardsAngle(float a0, float a1, float speed)
+{
+        float dist  = ShortestAngle(a0, a1);
+        float alpha = clamp(fabsf(dist * speed), 0.0f, 1.0f);
+        return NormalizeAngle(LerpAngle(a0, a1, alpha));
+}
+
 float MathLibrary::MoveTowards(const float a, const float b, const float speed)
 {
         float output;

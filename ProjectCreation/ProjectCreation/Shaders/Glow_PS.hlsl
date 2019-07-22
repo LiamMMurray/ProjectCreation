@@ -38,10 +38,12 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         // return maskFresnel;
         // clip(f)
         float distance    = dot(posMinusEye, posMinusEye);
-        float modMask = sin(distance / 4.5f + _Time * 2.5f) * 0.5f + 0.5f;
+        float dotSelf     = dot(pIn.PosWS, pIn.PosWS);
+        float modMask = sin(dotSelf / 4.5f + _Time * 2.5f) * 0.5f + 0.5f;
         float modulation  = lerp(0.9f, 2.0f, modMask);
 
         float3 color = _emissiveColor * modulation;
+        color        = lerp(color, _emissiveColor, saturate(distance / 25.0f));
 
         return float4(color * alpha, saturate(alpha));
 }

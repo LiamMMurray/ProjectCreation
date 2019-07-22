@@ -46,6 +46,9 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
         float3 color  = float3(colorR, colorG, colorB);
         float3 bloom  = BloomTexture.Sample(sampleTypeClamp, texCoord).rgb * _brightness;
 
+
+        float3 bw     = 0.21 * color.r + 0.71 * color.g + 0.07 * color.b;
+        color         = lerp(color, bw, 0.1f);
         float3 dither = InterleavedGradientNoise(pos.xy + _time);
 
         color += bloom;

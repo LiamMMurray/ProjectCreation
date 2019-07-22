@@ -82,9 +82,6 @@ class active_range_iterator;
 template <typename T>
 class active_range
 {
-    private:
-        static NMemory::dynamic_bitset null_isActives;
-
     public:
         friend class active_range_iterator<T>;
         typedef active_range_iterator<T> iterator;
@@ -105,9 +102,14 @@ class active_range
             size(size),
             isActives(isActives)
         {}
+        active_range(pointer data, size_type size, NMemory::dynamic_bitset&& isActives) :
+            data(data),
+            size(size),
+            isActives(isActives)
+        {}
         static active_range<T> SGetNullActiveRange()
         {
-                return active_range(0, 0, null_isActives);
+                return active_range(0, 0, NMemory::dynamic_bitset());
         }
         iterator begin()
         {
@@ -125,8 +127,6 @@ class active_range
                 return data[index];
         }
 };
-template <typename T>
-NMemory::dynamic_bitset active_range<T>::null_isActives;
 
 template <typename T>
 class active_range_iterator

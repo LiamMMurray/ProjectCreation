@@ -1,3 +1,4 @@
+#include "Utility/StaticSentinelDumpMemoryLeaks.h"
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #define NOMINMAX
@@ -33,6 +34,9 @@
 /////testing -vic
 #include "Rendering/DebugRender/debug_renderer.h"
 ////testing -vic
+///
+
+#include "Engine/Levels/LevelStateManager.h"
 
 #include "Engine/Controller/ControllerSystem.h"
 
@@ -134,10 +138,8 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 )
 {
         ENABLE_LEAK_DETECTION();
-        //_CrtSetBreakAlloc(177);
-        _WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
-        _CrtDumpMemoryLeaks();
+        _WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
         return 0;
 }
@@ -171,7 +173,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         // register window class
         RegisterClassEx(&winInfo);
 
-        RECT wr = {0, 0, 1280, 720};                       // set the size
+        RECT wr = {0, 0, 1600, 900};                       // set the size
         AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE); // adjust the size
 
         int posX = GetSystemMetrics(SM_CXSCREEN) / 2 - (wr.right - wr.left) / 2;
@@ -214,7 +216,8 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
         // Joseph found an underwater abience music track and is replacing the old music with it for testing <06/19/19>
         // auto music = AudioManager::Get()->LoadMusic("extreme");
-        auto music = AudioManager::Get()->LoadMusic("AMBIENCE_Under_Water_Active_loop_stereo");
+
+        auto music = AudioManager::Get()->LoadMusic("Ambience 16-48k");
         AudioManager::Get()->ActivateMusicAndPause(music, true);
 
         music->ResumeStream();
@@ -232,6 +235,8 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
             ComponentHandle          transformHandle;
             EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
            
+
+
             TransformComponent* transformComp = HandleManager->GetComponent<TransformComponent>(transformHandle);
             transformComp->transform.SetScale(0.1f);*/
         }
@@ -253,9 +258,11 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
                 auto dirComp = dirLightEntityHandle.GetComponent<DirectionalLightComponent>();
                 dirComp->m_LightRotation =
-                    XMQuaternionRotationRollPitchYaw(XMConvertToRadians(20.0f), XMConvertToRadians(70.0f), 0.0f);
-                dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.8f, 1.0f, 2.0f);
-                dirComp->m_AmbientColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f);
+                    XMQuaternionRotationRollPitchYaw(XMConvertToRadians(25.0f), XMConvertToRadians(90.0f), 0.0f);
+                dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.85f, 0.7f, 5.0f);
+                dirComp->m_AmbientColor = XMFLOAT4(1.0f, 0.85f, 0.7f, 1.7f);
+
+                GEngine::Get()->m_SunHandle = dirLightEntityHandle;
         }
 
         // Create speedboost system
@@ -268,13 +275,15 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 OrbitSystem* orbitSystem;
                 systemManager->CreateSystem<OrbitSystem>(&orbitSystem);
                 systemManager->RegisterSystem(&sysInitProps, orbitSystem);
+                orbitSystem->m_SystemName = "OrbitSystem";
 
                 SpeedBoostSystem* speedBoostSystem;
                 systemManager->CreateSystem<SpeedBoostSystem>(&speedBoostSystem);
                 systemManager->RegisterSystem(&sysInitProps, speedBoostSystem);
+                speedBoostSystem->m_SystemName = "SpeedBoostSystem";
         }
 
-        // Create Animation System
+        // Create AI System
         {
                 FSystemProperties sysInitProps;
                 sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
@@ -283,17 +292,19 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 AISystem* aiSystem;
                 systemManager->CreateSystem<AISystem>(&aiSystem);
                 systemManager->RegisterSystem(&sysInitProps, aiSystem);
+                aiSystem->m_SystemName = "AISystem";
         }
 
 
         GEngine::Get()->SetGamePaused(true);
+        GEngine::Get()->GetLevelStateManager()->Init();
+        UIManager::instance->StartupResAdjust(handle);
 
         while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
-
-
         {
                 GCoreInput::UpdateInput();
 
+                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "PeekMessage");
                 while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
                 {
                         // translate keystroke messages into the right format
@@ -306,14 +317,19 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                         if (msg.message == WM_QUIT)
                                 break;
                 }
+                GEngine::Get()->m_MainThreadProfilingContext.End();
 
+                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "GEngine::Signal");
                 // Main application loop goes here.
-                GEngine::Get()->Signal();
+                float deltaTime = GEngine::Get()->Update();
+                GEngine::Get()->m_MainThreadProfilingContext.End();
 
+                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "Other");
                 if (GetActiveWindow() != handle && GEngine::Get()->GetGamePaused() == false)
                 {
                         UIManager::instance->Pause();
                 }
+
 
                 {
                         static DWORD frameCount = 0;
@@ -345,7 +361,8 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 }
 
                 debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
-                GEngine::Get()->GetSystemManager()->Update(GEngine::Get()->GetDeltaTime());
+                GEngine::Get()->GetSystemManager()->Update(deltaTime);
+                GEngine::Get()->m_MainThreadProfilingContext.End();
         }
         EngineHelpers::ShutdownEngineSystemManagers();
 

@@ -32,42 +32,54 @@ void PlayerController::GatherInput()
         if (IsEnabled())
         {
                 // requestedDirection = MoveDirections::NO_DIRECTION;
-                XMFLOAT4 tempDir  = {0.0f, 0.0f, 0.0f, 0.0f};
-                //XMFLOAT4 tempJump = {0.0f, 0.0f, 0.0f, 0.0f};
+                XMFLOAT4 tempDir = {0.0f, 0.0f, 0.0f, 0.0f};
+                // XMFLOAT4 tempJump = {0.0f, 0.0f, 0.0f, 0.0f};
 
-                // Changing movement so that the player will always move forward
+                // REVERTED: [Player will use 'W' 'A' 'S' 'D' for movement]
                 {
 
-                        // Check Forward speed
-                       // if (GCoreInput::GetKeyState(KeyCode::W) == KeyState::Down)
-                       // {
-                       //         tempDir.z += 1.0f;
-                       // }
-                       // // Backward
-                       // if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
-                       // {
-                       //         tempDir.z -= 1.0f;
-                       // }
-                       // // Left
-                       // if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
-                       // {
-                       //         tempDir.x -= 1.0f;
-                       // }
-                       // // Right
-                       // if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
-                       // {
-                       //         tempDir.x += 1.0f;
-                       // }
-                       // // Jump
-                       // if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::DownFirst)
-                       // {
-                       //         tempJump.y += 3.0f;
-                       // }
-					   //
-                       // m_JumpForce = XMLoadFloat4(&tempJump);
+                    // Check Forward speed
+                    // if (GCoreInput::GetKeyState(KeyCode::W) == KeyState::Down)
+                    // {
+                    //         tempDir.z += 1.0f;
+                    // }
+                    // // Backward
+                    // if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
+                    // {
+                    //         tempDir.z -= 1.0f;
+                    // }
+                    // // Left
+                    // if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
+                    // {
+                    //         tempDir.x -= 1.0f;
+                    // }
+                    // // Right
+                    // if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
+                    // {
+                    //         tempDir.x += 1.0f;
+                    // }
+                    // // Jump
+                    // if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::DownFirst)
+                    // {
+                    //         tempJump.y += 3.0f;
+                    // }
+                    //
+                    // m_JumpForce = XMLoadFloat4(&tempJump);
                 }
-							   
-                tempDir        = XMFLOAT4{0.0f, 0.0f, 2.0f, 0.0f};
+
+                // REVERTED: [Changing movement so that the player will always move forward]
+                {
+                    // tempDir = XMFLOAT4{0.0f, 0.0f, 2.0f, 0.0f};
+                }
+
+                // CURRENT: [Changing movement so that the player will click the left mouse button to move forward]
+                {
+                        if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
+                        {
+                                tempDir.z += 1.5f;
+                        }
+                }
+
                 m_CurrentInput = XMLoadFloat4(&tempDir);
         }
 }
@@ -83,8 +95,9 @@ void PlayerController::ApplyInput()
         FSphere fSpherePlayer;
         fSpherePlayer.center = _cachedControlledTransform.translation;
         fSpherePlayer.radius = 0.25f;
-
-        debug_renderer::AddSphere(fSpherePlayer, 36, XMMatrixIdentity());
+#ifdef _DEBUG
+        debug_renderer::AddSphere(fSpherePlayer, 4, XMMatrixIdentity());
+#endif
 }
 
 void PlayerController::DebugPrintSpeedBoostColor(int color)
@@ -142,6 +155,8 @@ void PlayerController::Init(EntityHandle h)
 
         // After you create the states, initialize the state machine. First created state is starting state
         m_StateMachine.Init(this);
+
+		
 
         // Init sound pool
         for (unsigned int color = 0; color < E_LIGHT_ORBS::COUNT; ++color)
@@ -237,6 +252,16 @@ void PlayerController::RequestCinematicTransitionLookAt(const ComponentHandle  l
         m_CinematicState->SetTransitionDelay(delay);
 
         m_StateMachine.Transition(E_PLAYERSTATE_EVENT::TO_TRANSITION);
+}
+
+void PlayerController::RequestCurrentLevel()
+{
+        GEngine::Get()->GetLevelStateManager()->RequestState(0);
+}
+
+void PlayerController::RequestNextLevel()
+{
+        GEngine::Get()->GetLevelStateManager()->RequestNextLevel();
 }
 
 void PlayerController::RequestPuzzleMode(ComponentHandle          goalHandle,

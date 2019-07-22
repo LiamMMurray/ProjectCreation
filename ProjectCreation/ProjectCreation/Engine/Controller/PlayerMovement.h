@@ -30,12 +30,14 @@ class PlayerController : public IController
 
         DirectX::XMFLOAT3 m_EulerAngles;
 
-        float minMaxSpeed     = 1.0f;
-        float maxMaxSpeed     = 2.0f;
+        float minMaxSpeed     = 2.5f;
+        float maxMaxSpeed     = 4.0f;
         float currentMaxSpeed = minMaxSpeed;
 
         float acceleration   = 1.0;
         float deacceleration = 8.0f;
+
+        int m_CollectedPlanetCount = 0;
 
         DirectX::XMVECTOR m_CurrentInput;
         DirectX::XMVECTOR m_CurrentVelocity;
@@ -46,8 +48,8 @@ class PlayerController : public IController
         PlayerCinematicState* m_CinematicState;
         PlayerGroundState*    m_GroundState;
 
-		DirectX::XMVECTOR m_JumpForce;
-		DirectX::XMVECTOR m_PlayerGravity;
+        DirectX::XMVECTOR m_JumpForce;
+        DirectX::XMVECTOR m_PlayerGravity;
 
         // Boolean values for the light collection keys
         // Names will most likely change later on
@@ -71,18 +73,25 @@ class PlayerController : public IController
 
         virtual void Shutdown() override;
 
-        KeyCode            m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT]   = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
+        KeyCode m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT] = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
 
-        const char*        m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"whiteSpeedBoost",
-																		  "whiteSpeedBoost",
-																		  "whiteSpeedBoost",
-																		  "whiteSpeedBoost"};
+        const char* m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"PianoC", "PianoE", "PianoF#", "whiteSpeedBoost"};
 
         GW::AUDIO::GSound* m_SpeedBoostSoundPool[E_LIGHT_ORBS::COUNT][MAX_SPEEDBOOST_SOUNDS];
         unsigned int       m_SpeedBoostPoolCounter[E_LIGHT_ORBS::COUNT] = {};
 
         virtual void Init(EntityHandle h) override;
         bool         SpeedBoost(DirectX::XMVECTOR boostPos, int color);
+
+        inline void SetCollectedPlanetCount(int val)
+        {
+                m_CollectedPlanetCount = val;
+        };
+
+        inline int GetCollectedPlanetCount()
+        {
+                return m_CollectedPlanetCount;
+        };
 
         inline void SetCurrentMaxSpeed(float val)
         {
@@ -98,8 +107,8 @@ class PlayerController : public IController
         {
                 minMaxSpeed = val;
         };
-				
-		inline float GetMinMaxSpeed() const
+
+        inline float GetMinMaxSpeed() const
         {
                 return minMaxSpeed;
         }
@@ -175,8 +184,8 @@ class PlayerController : public IController
         {
                 return m_JumpForce;
         }
-		
-		inline void SetPlayerGravity(DirectX::XMVECTOR val)
+
+        inline void SetPlayerGravity(DirectX::XMVECTOR val)
         {
                 m_PlayerGravity = val;
         }
@@ -216,6 +225,7 @@ class PlayerController : public IController
                                         int                    targetState,
                                         float                  duration,
                                         float                  delay = 0.0f);
+
         void RequestCinematicTransitionLookAt(ComponentHandle        lookAtTarget,
                                               int                    count,
                                               const ComponentHandle* handles,
@@ -224,6 +234,10 @@ class PlayerController : public IController
                                               float                  duration,
                                               float                  lookAtTransitionDuration = 1.0f,
                                               float                  delay                    = 0.0f);
+
+        void RequestCurrentLevel();
+        void RequestNextLevel();
+
         void RequestPuzzleMode(ComponentHandle          goalHandle,
                                const DirectX::XMVECTOR& puzzleCenter,
                                bool                     alignToGoal          = false,

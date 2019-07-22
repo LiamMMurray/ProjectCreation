@@ -1,5 +1,5 @@
 #include "CoreInput.h"
-
+#include "..//GEngine.h"
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #define NOMINMAX
 #include <Windows.h>
@@ -22,7 +22,7 @@ void GCoreInput::InitializeInput(HWND hwnd)
         Rid[0].dwFlags     = 0; // adds HID mouse and also ignores legacy mouse messages
         Rid[0].hwndTarget  = 0;
 
-        Rid[1].usUsagePage = 0x01;
+		Rid[1].usUsagePage = 0x01;
         Rid[1].usUsage     = 0x06;
         Rid[1].dwFlags     = 0; // adds HID keyboard and also ignores legacy keyboard messages
         Rid[1].hwndTarget  = 0;
@@ -90,6 +90,7 @@ void GCoreInput::GatherInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
 void GCoreInput::UpdateInput()
 {
+        GEngine::Get()->m_MainThreadProfilingContext.Begin("Message Processing", "Input");
         for (int i = 0; i < 256; i++)
         {
                 const uint8_t last = 1 & keyStates[i];
@@ -101,7 +102,7 @@ void GCoreInput::UpdateInput()
                 const uint8_t last = 1 & MouseStates[i];
                 MouseStates[i]     = (MouseStates[i] << 1) | last;
         }
-
+		GEngine::Get()->m_MainThreadProfilingContext.End();
 
         ResetAxes();
 }

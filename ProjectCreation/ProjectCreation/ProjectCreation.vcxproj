@@ -28,6 +28,7 @@
     <ClInclude Include="Engine\CollisionLibary\CollisionGrid.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionLibary.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionComponents.h" />
+    <ClInclude Include="Engine\Commands.h" />
     <ClInclude Include="Engine\Controller\ControllerSystem.h" />
     <ClInclude Include="Engine\Controller\DebugCameraController.h" />
     <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
@@ -55,6 +56,13 @@
     <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
     <ClInclude Include="Engine\GenericComponents\TransformSystem.h" />
+    <ClInclude Include="Engine\Levels\LevelState.h" />
+    <ClInclude Include="Engine\Levels\LevelStateEvents.h" />
+    <ClInclude Include="Engine\Levels\LevelStateMachine.h" />
+    <ClInclude Include="Engine\Levels\LevelStateManager.h" />
+    <ClInclude Include="Engine\Levels\Level_01.h" />
+    <ClInclude Include="Engine\Levels\Level_02.h" />
+    <ClInclude Include="Engine\Levels\TutorialLevel.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\Particle Systems\EmitterComponent.h" />
     <ClInclude Include="Engine\MathLibrary\Maze\MazeGenerator.h" />
@@ -125,6 +133,7 @@
     <ClInclude Include="Engine\ResourceManager\Texture2D.h" />
     <ClInclude Include="Engine\ResourceManager\VertexShader.h" />
     <ClInclude Include="Utility\Hashing\SpookyHashV2.h" />
+    <ClInclude Include="Utility\Profiling.h" />
     <ClInclude Include="Utility\TypeIndexFactory.h" />
     <FxCompile Include="Shaders\BloomCombine_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -241,6 +250,12 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.1</ShaderModel>
     </FxCompile>
+    <FxCompile Include="Shaders\Sky_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Shaders\Terrain_DS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Domain</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Domain</ShaderType>
@@ -302,6 +317,11 @@
     <ClCompile Include="Engine\Gameplay\StateMachine\IState.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
     <ClCompile Include="Engine\GenericComponents\TransformSystem.cpp" />
+    <ClCompile Include="Engine\Levels\LevelStateMachine.cpp" />
+    <ClCompile Include="Engine\Levels\LevelStateManager.cpp" />
+    <ClCompile Include="Engine\Levels\Level_01.cpp" />
+    <ClCompile Include="Engine\Levels\Level_02.cpp" />
+    <ClCompile Include="Engine\Levels\TutorialLevel.cpp" />
     <ClCompile Include="Engine\Particle Systems\ParticleData.cpp" />
     <ClCompile Include="Engine\Particle Systems\ParticleManager.cpp" />
     <ClCompile Include="Engine\MathLibrary\Maze\MazeGenerator.cpp" />
@@ -343,6 +363,7 @@
     <ClCompile Include="Engine\ResourceManager\VertexShader.cpp" />
     <ClCompile Include="UI\UICollision.cpp" />
     <ClCompile Include="Utility\Hashing\SpookyHashV2.cpp" />
+    <ClCompile Include="Utility\Profiling.cpp" />
     <ClCompile Include="Utility\RenderUtility.cpp" />
     <ClCompile Include="UI\UIManager.cpp" />
     <ClCompile Include="UI\SpriteComponent.cpp" />
@@ -430,6 +451,9 @@
     <FxCompile>
       <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
+    <ResourceCompile>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -454,6 +478,9 @@
     <FxCompile>
       <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
+    <ResourceCompile>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
