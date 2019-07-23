@@ -36,7 +36,7 @@ void TutorialLevel::Update(float deltaTime)
                 SpawnFirstGreenOrb();
                 // UI: Hold D to Collect Green Orbs
         }
-		
+
         for (auto& speedComp : m_HandleManager->GetActiveComponents<SpeedboostComponent>())
         {
                 XMVECTOR center = speedComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
@@ -143,9 +143,8 @@ TutorialLevel::TutorialLevel()
         m_SpeedBoostSystem = GEngine::Get()->GetSystemManager()->GetSystem<SpeedBoostSystem>();
         whiteCount = redCount = blueCount = greenCount = levelRequested = 0;
 
-        m_PlayerEntityHandle = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                   ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-                                   ->GetControlledEntity();
+        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+        m_PlayerEntityHandle = controllerSys->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]->GetControlledEntity();
 
 
         m_PlayerTransform = m_PlayerEntityHandle.GetComponent<TransformComponent>();

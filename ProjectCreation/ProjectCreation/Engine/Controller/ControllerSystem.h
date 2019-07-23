@@ -1,11 +1,11 @@
 #pragma once
 
+#include <DirectXMath.h>
 #include "../../ECS/HandleManager.h"
 #include "../../Rendering/Components/CameraComponent.h"
 #include "../Controller/IController.h"
 #include "../GEngine.h"
 #include "../Gameplay/LightOrbColors.h"
-
 class ControllerSystem : public ISystem
 {
         static ControllerSystem* instance;
@@ -15,8 +15,16 @@ class ControllerSystem : public ISystem
 
         void update(float delta);
 
+        DirectX::XMVECTOR desiredColor      = DirectX::XMVECTORF32{1.0f, 1.0f, 1.0f, 1.0f};
+        DirectX::XMVECTOR currentColor      = DirectX::XMVECTORF32{1.0f, 1.0f, 1.0f, 1.0f};
+        float             desiredColorAlpha = 0.0f;
+        float             currentColorAlpha = 0.0f;
+
     public:
         // bool m_toggleDebugCamera = false;
+
+        DirectX::XMFLOAT3 GetCurrentColorSelection() const;
+        float             GetCurrentColorAlpha() const;
 
         // Player Controller Entity
         enum E_CONTROLLERS

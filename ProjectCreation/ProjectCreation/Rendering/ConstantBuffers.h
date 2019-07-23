@@ -11,14 +11,14 @@ struct alignas(16) CTransformBuffer
 
 struct alignas(16) CSceneInfoBuffer
 {
-        DirectX::XMFLOAT3  eyePosition;
-        float              time;
-        DirectX::XMFLOAT3  directionalLightDirection;
-        float              playerRadius;
-        DirectX::XMFLOAT3  directionalLightColor;
-        float              aspectRatio;
+        DirectX::XMFLOAT3 eyePosition;
+        float             time;
+        DirectX::XMFLOAT3 directionalLightDirection;
+        float             playerRadius;
+        DirectX::XMFLOAT3 directionalLightColor;
+        float             aspectRatio;
         DirectX::XMFLOAT3 ambientColor;
-        float              deltaTime;
+        float             deltaTime;
 };
 
 struct alignas(16) CAnimationBuffer
@@ -32,4 +32,6 @@ struct alignas(16) CScreenSpaceBuffer
         DirectX::XMMATRIX invView;
         DirectX::XMFLOAT3 playerPosition;
         float             time;
+        DirectX::XMFLOAT3 selectionColor;
+        float             selectionAlpha;
 };

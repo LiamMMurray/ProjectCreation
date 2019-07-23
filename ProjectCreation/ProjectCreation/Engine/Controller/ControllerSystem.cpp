@@ -2,6 +2,7 @@
 #include "ControllerSystem.h"
 
 #include <iostream>
+#include "..//Gameplay/LightOrbColors.h"
 #include "../Controller/IController.h"
 #include "../CoreInput/CoreInput.h"
 #include "DebugCameraController.h"
@@ -17,6 +18,18 @@
 #include <WinUser.h>
 
 using namespace std;
+
+DirectX::XMFLOAT3 ControllerSystem::GetCurrentColorSelection() const
+{
+        DirectX::XMFLOAT3 output;
+        DirectX::XMStoreFloat3(&output, currentColor);
+        return output;
+}
+
+float ControllerSystem::GetCurrentColorAlpha() const
+{
+        return currentColorAlpha;
+}
 
 void ControllerSystem::DisplayConsoleMenu()
 {
@@ -90,6 +103,44 @@ void ControllerSystem::OnUpdate(float deltaTime)
                 renderSystem->SetMainCameraComponent(cameraHandle);
         }
 
+        if (GCoreInput::GetKeyState(KeyCode::Tab) == KeyState::DownFirst)
+        {
+                m_Controllers[m_CurrentController]->SetEnabled(false);
+                m_CurrentController = (E_CONTROLLERS)((m_CurrentController + 1) % E_CONTROLLERS::COUNT);
+                m_Controllers[m_CurrentController]->SetEnabled(true);
+                HandleManager*  handleManager    = GEngine::Get()->GetHandleManager();
+                EntityHandle    controllerHandle = m_Controllers[m_CurrentController]->GetControlledEntity();
+                ComponentHandle cameraHandle     = controllerHandle.GetComponentHandle<CameraComponent>();
+                RenderSystem*   renderSystem     = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
+
+                renderSystem->SetMainCameraComponent(cameraHandle);
+        }
+
+        int colorsPressed    = 0;
+        int lastColorPressed = -1;
+        for (int i = 0; i < 3; ++i)
+        {
+                if (GCoreInput::GetKeyState(E_LIGHT_ORBS::ColorInputKeyCodes[i]) == KeyState::Down)
+                {
+                        colorsPressed++;
+                        lastColorPressed = i;
+                }
+        }
+
+        if (colorsPressed == 1)
+        {
+                desiredColorAlpha = 1.0f;
+                desiredColor      = DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[lastColorPressed]);
+        }
+        else
+        {
+                desiredColorAlpha = 0.0f;
+                desiredColor      = DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[E_LIGHT_ORBS::WHITE_LIGHTS]);
+        }
+
+		currentColor = DirectX::XMVectorLerp(currentColor, desiredColor, deltaTime*8.0f);
+        currentColorAlpha = MathLibrary::lerp(currentColorAlpha, desiredColorAlpha, deltaTime * 2.0f);
+
         for (int i = 0; i < E_CONTROLLERS::COUNT; ++i)
         {
                 m_Controllers[i]->OnUpdate(deltaTime);
@@ -105,7 +156,7 @@ void ControllerSystem::OnInitialize()
         m_HandleManager = GEngine::Get()->GetHandleManager();
 
         m_Controllers[E_CONTROLLERS::PLAYER] = new PlayerController;
-        m_Controllers[E_CONTROLLERS::DEBUG]  = new  DebugCameraController;
+        m_Controllers[E_CONTROLLERS::DEBUG]  = new DebugCameraController;
 
 
         // Player entity setup
@@ -137,8 +188,8 @@ void ControllerSystem::OnInitialize()
                 ComponentHandle tHandle = eHandle.AddComponent<TransformComponent>();
                 ComponentHandle cHandle = eHandle.AddComponent<CameraComponent>();
 
-                auto tComp                   = eHandle.GetComponent<TransformComponent>();
-                tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+                auto tComp                             = eHandle.GetComponent<TransformComponent>();
+                tComp->transform.translation           = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
                 tComp->wrapping                        = false;
                 auto cameraComp                        = cHandle.Get<CameraComponent>();
                 cameraComp->m_Settings.m_HorizontalFOV = 90.0f;

@@ -73,7 +73,7 @@ class PlayerController : public IController
 
         virtual void Shutdown() override;
 
-        KeyCode m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT] = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
+         KeyCode m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT] = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
 
         const char* m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"PianoC", "PianoE", "PianoF#", "whiteSpeedBoost"};
 

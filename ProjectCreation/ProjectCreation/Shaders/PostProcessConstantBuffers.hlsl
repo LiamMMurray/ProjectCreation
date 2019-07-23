@@ -5,4 +5,6 @@ cbuffer CScreenSpaceBuffer : register(b0)
         matrix _invView;
         float3 _playerPosition;
         float  _time;
+        float3 _selectionColor;
+        float  _selectionAlpha;
 };

@@ -39,6 +39,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Terrain/TerrainManager.h"
 
+#include "..//Engine/Controller/ControllerSystem.h"
 #include "../Engine/MathLibrary/ColorConstants.h"
 #include "../Utility/MemoryLeakDetection.h"
 #include "DebugRender/debug_renderer.h"
@@ -660,6 +661,13 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         m_Context->PSSetShaderResources(E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, 5, srvs);
         m_Context->VSSetShaderResources(E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT + 3, 2, &srvs[3]);
 
+        /*********/
+        ControllerSystem* controllerSystem = GEngine::Get()->GetSystemManager()->GetSystem<ControllerSystem>();
+
+        m_ContstantBuffer_SCREENSPACE.selectionColor = controllerSystem->GetCurrentColorSelection();
+        m_ContstantBuffer_SCREENSPACE.selectionAlpha = controllerSystem->GetCurrentColorAlpha();
+
+        /*********/
 
         /** Update Camera Info **/
         CameraComponent*    mainCamera       = m_MainCameraHandle.Get<CameraComponent>();
