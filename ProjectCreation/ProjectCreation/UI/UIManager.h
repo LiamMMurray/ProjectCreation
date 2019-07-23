@@ -93,6 +93,10 @@ class UIManager
         void SupportedResolutions(); // Creates the supported resolutions for the game
         void DemoEnd();
 
+		void TooltipA();
+        void TooltipS();
+		void TooltipD();
+
 
         void        UIClipCursor();
         static void OnScreenResize();

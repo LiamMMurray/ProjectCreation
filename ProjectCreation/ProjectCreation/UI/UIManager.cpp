@@ -376,6 +376,28 @@ void UIManager::DemoEnd()
         }
 }
 
+
+void UIManager::TooltipA()
+{
+	//Display tooltip A (Hold A to collect Red)
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = false;
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][4].mEnabled = true;
+}
+
+void UIManager::TooltipS()
+{
+        // Display tooltip S (Hold S to collect Green)
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][4].mEnabled = false;
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][5].mEnabled = true;
+}
+
+void UIManager::TooltipD()
+{
+        // Display tooltip D (Hold D to collect Blue)
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][5].mEnabled = false;
+}
+
+
 // Core Function
 void UIManager::Initialize(native_handle_type hwnd)
 {
@@ -448,6 +470,39 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           L"../Assets/2d/Text/calibri.spritefont",
                           "Hold Left Click to Move",
+                          0.06f,
+                          0.0f,
+                          0.1f,
+                          false,
+                          false);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::MainMenu,
+                          L"../Assets/2d/Text/calibri.spritefont",
+                          "Hold A to get a boost from Red lights",
+                          0.06f,
+                          0.0f,
+                          0.1f,
+                          false,
+                          false);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::MainMenu,
+                          L"../Assets/2d/Text/calibri.spritefont",
+                          "Hold S to get a boost from Green lights",
+                          0.06f,
+                          0.0f,
+                          0.1f,
+                          false,
+                          false);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::MainMenu,
+                          L"../Assets/2d/Text/calibri.spritefont",
+                          "Hold D to get a boost from Blue lights",
                           0.06f,
                           0.0f,
                           0.1f,
@@ -1233,7 +1288,7 @@ void UIManager::Update()
         }
 
         // Pause & Unpause
-        if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled)
+        if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled == true)
         {
                 // Joseph Updated the main menu ui to match to input keys
                 // Changed 'Space', 'Q', and 'E' to 'A', 'S', and 'D'
@@ -1270,17 +1325,14 @@ void UIManager::Update()
                 }
         }
 
+		//Left Click
         if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled == true)
         {
                 if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
                 }
-        }
-
-        if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::Down)
-        {
-                instance->DemoEnd();
         }
 
         UIMouseEvent e;
