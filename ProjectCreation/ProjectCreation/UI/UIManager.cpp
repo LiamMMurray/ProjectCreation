@@ -377,26 +377,27 @@ void UIManager::DemoEnd()
 }
 
 
-void UIManager::TooltipA()
+void UIManager::WhiteOrbCollected()
 {
-	//Display tooltip A (Hold A to collect Red)
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
+}
+
+void UIManager::RedOrbCollected()
+{
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = false;
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][4].mEnabled = true;
 }
 
-void UIManager::TooltipS()
+void UIManager::GreenOrbCollected()
 {
-        // Display tooltip S (Hold S to collect Green)
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][4].mEnabled = false;
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][5].mEnabled = true;
 }
 
-void UIManager::TooltipD()
+void UIManager::BlueOrbCollected()
 {
-        // Display tooltip D (Hold D to collect Blue)
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][5].mEnabled = false;
 }
-
 
 // Core Function
 void UIManager::Initialize(native_handle_type hwnd)
@@ -1331,7 +1332,6 @@ void UIManager::Update()
                 if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
-                        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
                 }
         }
 

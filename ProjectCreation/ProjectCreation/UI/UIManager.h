@@ -93,9 +93,10 @@ class UIManager
         void SupportedResolutions(); // Creates the supported resolutions for the game
         void DemoEnd();
 
-		void TooltipA();
-        void TooltipS();
-		void TooltipD();
+		void WhiteOrbCollected();
+        void RedOrbCollected();
+        void GreenOrbCollected();
+        void BlueOrbCollected();
 
 
         void        UIClipCursor();

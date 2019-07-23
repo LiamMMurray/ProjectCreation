@@ -1,4 +1,5 @@
 #include "TutorialLevel.h"
+#include "../../UI/UIManager.h"
 
 using namespace DirectX;
 
@@ -21,18 +22,21 @@ void TutorialLevel::Update(float deltaTime)
 
         else if (m_RedCollected == false && redCount <= 0 && m_WhiteCollected == true)
         {
+                UIManager::instance->WhiteOrbCollected();
                 SpawnFirstRedOrb();
                 // UI: Hold A to Collect Red Orbs
         }
 
         else if (m_BlueCollected == false && blueCount <= 0 && m_RedCollected == true)
         {
+                UIManager::instance->RedOrbCollected();
                 SpawnFirstBlueOrb();
                 // UI: Hold S to Collect Blue Orbs
         }
 
         else if (m_GreenCollected == false && greenCount <= 0 && m_BlueCollected == true)
         {
+                UIManager::instance->GreenOrbCollected();
                 SpawnFirstGreenOrb();
                 // UI: Hold D to Collect Green Orbs
         }
@@ -109,6 +113,7 @@ void TutorialLevel::Update(float deltaTime)
 
         if ((m_WhiteCollected == true && m_RedCollected == true && m_BlueCollected == true && m_GreenCollected == true) && levelRequested <= 0)
         {
+                UIManager::instance->BlueOrbCollected();
                 levelRequested += 1;
                 GEngine::Get()->GetLevelStateManager()->RequestState(1);
         }
