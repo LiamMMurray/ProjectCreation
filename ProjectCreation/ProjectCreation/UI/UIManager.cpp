@@ -186,6 +186,30 @@ void UIManager::OnScreenResize()
 {}
 
 
+//UI Transitions
+void UIManager::WhiteOrbCollected()
+{
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
+}
+
+void UIManager::RedOrbCollected()
+{
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = false;
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][4].mEnabled = true;
+}
+
+void UIManager::GreenOrbCollected()
+{
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][4].mEnabled = false;
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][5].mEnabled = true;
+}
+
+void UIManager::BlueOrbCollected()
+{
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][5].mEnabled = false;
+}
+
+
 // Pausing and Unpausing
 void UIManager::MainTilteUnpause()
 {
@@ -376,28 +400,6 @@ void UIManager::DemoEnd()
         }
 }
 
-
-void UIManager::WhiteOrbCollected()
-{
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
-}
-
-void UIManager::RedOrbCollected()
-{
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = false;
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][4].mEnabled = true;
-}
-
-void UIManager::GreenOrbCollected()
-{
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][4].mEnabled = false;
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][5].mEnabled = true;
-}
-
-void UIManager::BlueOrbCollected()
-{
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][5].mEnabled = false;
-}
 
 // Core Function
 void UIManager::Initialize(native_handle_type hwnd)
