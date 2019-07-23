@@ -28,7 +28,6 @@ class SpeedBoostSystem : public ISystem
 
         static constexpr uint32_t m_MaxSpeedBoosts = 10;
 
-        std::unordered_map<int, SplineCluster> m_SplineClusterSpawners;
         int                                    m_ClusterCounter = 0;
 
         static constexpr int PathCount = 9;
@@ -88,6 +87,7 @@ class SpeedBoostSystem : public ISystem
         int colorCount = 0;
 
     protected:
+
         // Inherited via ISystem
         virtual void OnPreUpdate(float deltaTime) override;
         virtual void OnUpdate(float deltaTime) override;
@@ -98,6 +98,8 @@ class SpeedBoostSystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
+        std::unordered_map<int, SplineCluster> m_SplineClusterSpawners;
+
         EntityHandle SpawnSpeedOrb();
         EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
         EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);

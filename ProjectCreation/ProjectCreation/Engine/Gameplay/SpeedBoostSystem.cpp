@@ -94,10 +94,8 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
                 colorCount = 0;
         }
 
-        SplineCluster::CachedSplinePointData pointData;
-        pointData.pos   = curr;
-        pointData.color = cluster.color;
-        cluster.cachedPoints.emplace_back(pointData);
+        cluster.cachedPoints.push_back(curr);
+        cluster.cachedColors.push_back(cluster.color);
         auto entityH = SpawnLightOrb(curr, cluster.color);
         auto splineH = entityH.AddComponent<SpeedboostSplineComponent>();
 
@@ -282,6 +280,7 @@ void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
         it.first->second.spiralCount   = waveCount;
         it.first->second.maxHeight     = heightvar;
         it.first->second.color         = color;
+        it.first->second.targetColor   = color;
         it.first->second.current       = 0;
         it.first->second.shouldDestroy = false;
         it.first->second.spawnTimer = it.first->second.spawnCD = m_SplineSpawnCD;
@@ -453,8 +452,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
 
                         XMVECTOR pos = splineComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
-                        clusterIt->second.cachedPoints[index].pos   = pos;
-                        clusterIt->second.cachedPoints[index].color = splineComp.color;
+                        clusterIt->second.cachedPoints[index]   = pos;
+                        clusterIt->second.cachedColors[index] = splineComp.color;
                         int splineColor                             = splineComp.color;
 
                         XMVECTOR dirVector = pos - playerTransform->transform.translation;
@@ -486,7 +485,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         }
                         else
                         {
-                                XMVECTOR currPos = clusterIt->second.cachedPoints[index].pos;
+                                XMVECTOR currPos = clusterIt->second.cachedPoints[index];
                                 XMVECTOR nextPos;
                                 XMVECTOR prevPos;
 
@@ -496,7 +495,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 }
                                 else
                                 {
-                                        prevPos = clusterIt->second.cachedPoints[index - 1].pos;
+                                        prevPos = clusterIt->second.cachedPoints[index - 1];
                                 }
 
                                 if (index >= clusterIt->second.cachedPoints.size() - 1)
@@ -505,7 +504,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 }
                                 else
                                 {
-                                        nextPos = clusterIt->second.cachedPoints[index + 1].pos;
+                                        nextPos = clusterIt->second.cachedPoints[index + 1];
                                 }
 
 
@@ -531,15 +530,13 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 {
                                         if (i == correctColor)
                                         {
-                                                inPath &= (GCoreInput::GetKeyState(
-                                                               playerController->m_ColorInputKeyCodes[i]) ==
+                                                inPath &= (GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[i]) ==
                                                            KeyState::Down);
                                         }
                                         else
                                         {
                                                 inPath &= ~(GCoreInput::GetKeyState(
-                                                                playerController->m_ColorInputKeyCodes[i]) ==
-                                                            KeyState::Down);
+                                                                playerController->m_ColorInputKeyCodes[i]) == KeyState::Down);
                                         }
                                 }
 

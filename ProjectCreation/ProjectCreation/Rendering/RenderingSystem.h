@@ -101,6 +101,7 @@ struct E_VERTEX_SHADERS
                 DEFAULT = 0,
                 SKINNED,
                 DEBUG,
+                LINE,
                 COUNT
         };
 };
@@ -111,6 +112,7 @@ struct E_PIXEL_SHADERS
         {
                 DEFAULT = 0,
                 DEBUG,
+                LINE,
                 COUNT
         };
 };
@@ -158,6 +160,7 @@ struct E_INPUT_LAYOUT
                 DEFAULT = 0,
                 SKINNED,
                 DEBUG,
+                LINE,
                 COUNT
         };
 };
@@ -168,6 +171,7 @@ struct E_RASTERIZER_STATE
         {
                 DEFAULT = 0,
                 WIREFRAME,
+                LINE,
                 COUNT
         };
 };
@@ -265,8 +269,10 @@ class RenderSystem : public ISystem
 
         /** Debug Renderer **/
         ID3D11Buffer* m_DebugVertexBuffer;
+        ID3D11Buffer* m_LineVertexBuffer;
         void          CreateDebugBuffers();
         void          DrawDebug();
+        void          DrawLines();
 
         ID3D11RenderTargetView*   m_DefaultRenderTargets[E_RENDER_TARGET::COUNT]{};
         ID3D11ShaderResourceView* m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::COUNT]{};

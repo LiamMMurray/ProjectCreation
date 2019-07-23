@@ -15,9 +15,14 @@ class OrbitSystem : public ISystem
         int         m_Stage          = 0;
         void        CreateGoal(int color, DirectX::XMVECTOR position);
 
-        DirectX::XMVECTORF32 orbitCenter = {0.0f, 1000.0f, 0.0f, 1.0f};
-        FTransform           m_ClosestGoalTransform;
+        float             orbitOffset = 1300.0f;
+        FQuaternion sunRotation;
+        DirectX::XMVECTOR orbitCenter;
+        FTransform        m_ClosestGoalTransform;
 
+        std::vector<ComponentHandle> sunAlignedTransforms;
+
+		void UpdateSunAlignedObjects();
     protected:
         // Inherited via ISystem
         virtual void OnPreUpdate(float deltaTime) override;

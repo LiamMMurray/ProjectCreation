@@ -103,19 +103,6 @@ void ControllerSystem::OnUpdate(float deltaTime)
                 renderSystem->SetMainCameraComponent(cameraHandle);
         }
 
-        if (GCoreInput::GetKeyState(KeyCode::Tab) == KeyState::DownFirst)
-        {
-                m_Controllers[m_CurrentController]->SetEnabled(false);
-                m_CurrentController = (E_CONTROLLERS)((m_CurrentController + 1) % E_CONTROLLERS::COUNT);
-                m_Controllers[m_CurrentController]->SetEnabled(true);
-                HandleManager*  handleManager    = GEngine::Get()->GetHandleManager();
-                EntityHandle    controllerHandle = m_Controllers[m_CurrentController]->GetControlledEntity();
-                ComponentHandle cameraHandle     = controllerHandle.GetComponentHandle<CameraComponent>();
-                RenderSystem*   renderSystem     = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
-
-                renderSystem->SetMainCameraComponent(cameraHandle);
-        }
-
         int colorsPressed    = 0;
         int lastColorPressed = -1;
         for (int i = 0; i < 3; ++i)
