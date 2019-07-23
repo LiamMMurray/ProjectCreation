@@ -17,6 +17,7 @@
 #include "../ResourceManager/VertexShader.h"
 #include "EmitterComponent.h"
 #include "ParticleBufferSetup.h"
+#include"EmitterComponent.h"
 using namespace ParticleData;
 using namespace DirectX;
 using namespace Pools;
@@ -32,11 +33,12 @@ void             ParticleManager::UpdateResources(ID3D11Resource* resource)
 
 void ParticleManager::update(float deltaTime)
 {
-        GEngine::Get()->m_MainThreadProfilingContext.Begin("ParticleManager", "ParticleManager");
-        // update partilce data time
-        // m_ParticleInfo->time = deltaTime;
-        // update emitter container
+        ID3D11ShaderResourceView* nullSRV = nullptr;
 
+        GEngine::Get()->m_MainThreadProfilingContext.Begin("ParticleManager", "ParticleManager");
+
+        // update emitter container
+        m_RenderSystem->m_Context->OMSetRenderTargets(0, nullptr, nullptr);
         // Build update list
         {
                 for (auto emitterComponent : GEngine::Get()->GetHandleManager()->GetActiveComponents<EmitterComponent>())
@@ -61,15 +63,26 @@ void ParticleManager::update(float deltaTime)
         m_RenderSystem->m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
         // Set Compute Shaders
         m_RenderSystem->m_Context->CSSetConstantBuffers(
+            0, 1, &m_RenderSystem->m_PostProcessConstantBuffers[E_CONSTANT_BUFFER_POST_PROCESS::SCREENSPACE]);
+        m_RenderSystem->m_Context->CSSetConstantBuffers(
             1, 1, &m_RenderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE]);
         m_RenderSystem->m_Context->CSSetShader(computeShader->m_ComputerShader, nullptr, 0);
         m_RenderSystem->m_Context->CSSetUnorderedAccessViews(0, 1, &m_ParticleBuffer.m_UAV, 0);
         m_RenderSystem->m_Context->CSSetShaderResources(0, 1, &m_EmitterBuffer.m_StructuredView);
+        m_RenderSystem->m_Context->CSSetShaderResources(
+            1, 1, &m_RenderSystem->m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::BASE_DEPTH]);
         m_RenderSystem->m_Context->CSSetUnorderedAccessViews(1, 1, &m_SegmentBuffer.m_UAV, 0);
-        // m_RenderSystem->m_Context->CSSetShaderResources(0, 1, &texture->m_SRV);
+        /* m_RenderSystem->m_Context->CSSetSamplers(0, 1, nullptr);
+         m_RenderSystem->m_Context->CSSetSamplers(1, 1, nullptr);*/
+
         // dispatch before setting UAV to null
         m_RenderSystem->m_Context->Dispatch(1000, 1, 1);
 
+
+        m_RenderSystem->m_Context->CSSetShaderResources(1, 1, &nullSRV);
+        m_RenderSystem->m_Context->OMSetRenderTargets(1,
+                                                      &m_RenderSystem->m_DefaultRenderTargets[E_RENDER_TARGET::BASE_PASS],
+                                                      m_RenderSystem->m_DefaultDepthStencil[E_DEPTH_STENCIL::BASE_PASS]);
         // set compute shader's UAV to null after dispatch
         ID3D11UnorderedAccessView* nullUAV = NULL;
 
@@ -100,17 +113,21 @@ void ParticleManager::update(float deltaTime)
                                              &m_RenderSystem->m_ConstantBuffer_SCENE,
                                              sizeof(m_RenderSystem->m_ConstantBuffer_SCENE));
 
+		m_RenderSystem->UpdateConstantBuffer(
+            m_RenderSystem->m_PostProcessConstantBuffers[E_CONSTANT_BUFFER_POST_PROCESS::SCREENSPACE],
+            &m_RenderSystem->m_ContstantBuffer_SCREENSPACE,
+            sizeof(m_RenderSystem->m_ContstantBuffer_SCREENSPACE));
+
         m_RenderSystem->m_Context->VSSetShader(vertexShader->m_VertexShader, 0, 0);
         m_RenderSystem->m_Context->PSSetShader(pixelShader->m_PixelShader, 0, 0);
         m_RenderSystem->m_Context->PSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_RenderSystem->m_DefaultSamplerStates);
         m_RenderSystem->m_Context->PSSetShaderResources(0, 1, &texture->m_SRV);
         // draw call;
-	//TODO: uncomment after showing Audio Students
-        //m_RenderSystem->m_Context->Draw(100000, 0);
+        // TODO: uncomment after showing Audio Students
+        m_RenderSystem->m_Context->Draw(100000, 0);
 
         // reset srv null for geometry shader
 
-        ID3D11ShaderResourceView* nullSRV = nullptr;
         m_RenderSystem->m_Context->GSSetShaderResources(1, 1, &nullSRV);
         ID3D11Buffer* nullBuffer = nullptr;
         m_RenderSystem->m_Context->GSSetConstantBuffers(0, 1, &nullBuffer);
@@ -131,13 +148,14 @@ void ParticleManager::init()
         m_EnitterInfo->active               = true;
         m_EnitterInfo->initialColor         = {10.0f, 10.0f, 0.0f, 1.0f};
         m_EnitterInfo->finalColor           = {1.0f, 1.0f, 1.0f, 1.0f};
-        m_EnitterInfo->position             = {0.0f, 0.0f, 0.0f, 0.0f};
+        m_EnitterInfo->position             = {0.0f, 10.0f, 0.0f, 0.0f};
         m_EnitterInfo->uv                   = {0.0f, 0.0f};
         m_EnitterInfo->minVelocity          = {-30.0f, -0.0f, -30.0f};
         m_EnitterInfo->maxVelocity          = {30.0f, 20.0f, 30.0f};
-        m_EnitterInfo->accumulatedTime      = 15.0f;
+        m_EnitterInfo->accumulatedTime      = 12.0f;
         m_EnitterInfo->scale.x              = 1.0f;
-
+        m_EnitterInfo->acceleration         = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        m_EnitterInfo->index                = 2;
         AddEmitter(*m_EnitterInfo);
         m_EmitterCpuInfo               = new FEmitterCPU;
         m_EmitterCpuInfo->maxParticles = 1000;
@@ -152,7 +170,7 @@ void ParticleManager::init()
         //{
 
         //}
-        ParticleBufferInit(m_RenderSystem->GetDevice(), nullptr, m_EnitterInfo, &m_SegmentInfo, gMaxParticleCount);
+        ParticleBufferInit(m_RenderSystem->GetDevice(), nullptr, m_Emitters[0], &m_SegmentInfo, gMaxParticleCount);
         // Load Computer Shader
         m_ComputeShaderHandle  = RESOURCE_MANAGER->LoadComputeShader("ComputeShaderTesting");
         m_PixelShaderHandle    = RESOURCE_MANAGER->LoadPixelShader("PurePixelShader");
@@ -321,33 +339,13 @@ void ParticleManager::ParticleBufferShutdown(ParticleBuffer* buffer)
         SAFE_RELEASE(buffer->m_StructuredView);
 }
 
-void ParticleManager::SetTextureDepth(ID3D11Device1* device1, ID3D11Texture2D* texture)
-{
 
-        HREFTYPE hr;
-        // Create the depth stencil view
-        D3D11_DEPTH_STENCIL_VIEW_DESC descDSV{};
-        descDSV.Format             = DXGI_FORMAT_D24_UNORM_S8_UINT;
-        descDSV.ViewDimension      = D3D11_DSV_DIMENSION_TEXTURE2D;
-        descDSV.Texture2D.MipSlice = 0;
-        hr                         = device1->CreateDepthStencilView(
-            texture, &descDSV, &m_RenderSystem->m_DefaultDepthStencil[E_DEPTH_STENCIL::BASE_PASS]);
-
-        D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc{};
-        viewDesc.Format              = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-        viewDesc.ViewDimension       = D3D11_SRV_DIMENSION_TEXTURE2D;
-        viewDesc.Texture2D.MipLevels = 1;
-        hr                           = device1->CreateShaderResourceView(
-            texture, &viewDesc, &m_RenderSystem->m_PostProcessSRVs[E_POSTPROCESS_PIXEL_SRV::BASE_DEPTH]);
-        texture->Release();
-}
-
-EntityHandle ParticleManager::CreateEmitter(ParticleData::FEmitterCPU& emitter)
+EntityHandle ParticleManager::CreateEmitter(ParticleData::FEmitterGPU& emitter)
 {
         EntityHandle      eHandle    = GEngine::Get()->GetHandleManager()->CreateEntity();
         ComponentHandle   cHandle    = GEngine::Get()->GetHandleManager()->AddComponent<EmitterComponent>(eHandle);
         EmitterComponent* eComponent = GEngine::Get()->GetHandleManager()->GetComponent<EmitterComponent>(cHandle);
-        eComponent->mEmitterData     = emitter;
+        eComponent->EmitterData     = emitter;
 
         return eHandle;
 }

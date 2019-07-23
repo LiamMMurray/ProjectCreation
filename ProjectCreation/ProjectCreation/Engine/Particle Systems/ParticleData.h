@@ -47,6 +47,7 @@ namespace ParticleData
                 DirectX::XMFLOAT3 maxVelocity;
                 DirectX::XMFLOAT2 scale; // min sclae and max scale
                 DirectX::XMFLOAT3 acceleration;
+                int               index; // type of particles;
         };
 
         struct FParticleGPU
@@ -58,7 +59,7 @@ namespace ParticleData
                 DirectX::XMFLOAT2 texture;
                 float             time = 0.0f;
                 bool              active;
-                int               index;
+                
                 float             scale;
                 DirectX::XMFLOAT3 acceleration;
         };

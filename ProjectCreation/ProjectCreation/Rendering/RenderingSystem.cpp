@@ -771,6 +771,7 @@ void RenderSystem::OnUpdate(float deltaTime)
         m_Context->PSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
         m_Context->HSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
         m_Context->DSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
+        m_Context->CSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
 
         // Set base pass texture as render target
         m_Context->OMSetRenderTargets(

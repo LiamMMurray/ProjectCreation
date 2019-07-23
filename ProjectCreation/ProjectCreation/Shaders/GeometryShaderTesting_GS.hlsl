@@ -10,7 +10,6 @@ struct FParticleGPU
         float2 uv;
         float  time;
         bool   active;
-        int    index;
         float  scale;
         float3 acceleration;
 };
