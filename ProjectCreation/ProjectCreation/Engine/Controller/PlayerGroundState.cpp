@@ -196,7 +196,7 @@ void PlayerGroundState::Update(float deltaTime)
         sunComp->m_LightRotation =
             sunComp->m_LightRotation *
             XMQuaternionRotationAxis(VectorConstants::Up,
-                                     deltaTime * 0.14f * MathLibrary::CalulateVectorLength(XMVectorSetY(actualVelocity, 0.0f)));
+                                     deltaTime * 0.04f * MathLibrary::CalulateVectorLength(XMVectorSetY(actualVelocity, 0.0f)));
         // sunEuler.y    = MathLibrary::MoveTowardsAngle(sunEuler.y, MathLibrary::NormalizeAngle(eulerAngles.y + XM_PI), 1.0f *
         // deltaTime);
 

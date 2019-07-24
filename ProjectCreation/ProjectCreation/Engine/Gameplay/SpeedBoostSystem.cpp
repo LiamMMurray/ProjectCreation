@@ -193,38 +193,47 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
 
         XMVECTOR start = XMVectorZero();
 
+        bool shouldSpawnPath = false;
 
-        static bool goals[4] = {};
+        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+
+        for (int i = 0; i < 3; ++i)
         {
-                for (int i = 0; i < 3; ++i)
+
+                if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
                 {
-                        if (!goals[i])
+
+                        collectEventTimestamps[i] = controllerSys->GetCollectOrbEventID(i);
+
+                        start =
+                            playerTransform->transform.translation + 5.0f * playerTransform->transform.rotation.GetForward2D();
+
+                        XMVECTOR endPos;
+                        if (orbitSystem->activeGoal.hasActiveGoal && i == orbitSystem->activeGoal.activeColor)
                         {
-                                int count = controllerSystem->GetOrbCount(i);
-                                if (count >= 3)
-                                {
-                                        start = playerTransform->transform.translation +
-                                                2.0f * playerTransform->transform.GetForward();
-
-                                        XMVECTOR dir = orbitSystem->GoalPositions[i] - start;
-
-                                        XMVECTOR end = orbitSystem->GoalPositions[i] - 2.0f * XMVector3Normalize(dir);
-
-                                        CreateRandomPath(start, end, i, splineWidth, 5, splineHeight);
-										
-                                        // XMVECTOR randStart = MathLibrary::GetRandomPointInRadius2D(XMVectorZero(), 0, 50);
-                                        // XMVECTOR randEnd   = MathLibrary::GetRandomPointInRadius2D(XMVectorZero(), -50, 0);
-                                        //
-                                        // CreateRandomPath(randStart, end, i);
-                                        //
-                                        // randStart = MathLibrary::GetRandomPointInRadius2D(XMVectorZero(), 0, 50);
-                                        // randEnd   = MathLibrary::GetRandomPointInRadius2D(XMVectorZero(), -50, 0);
-                                        //
-                                        // CreateRandomPath(randStart, end, i);
-
-                                        goals[i] = true;
-                                }
+                                endPos = orbitSystem->activeGoal.activeGoalGround.GetComponent<TransformComponent>()
+                                             ->transform.translation;
                         }
+                        else
+                        {
+                                endPos = start + maxPathLength * playerTransform->transform.rotation.GetForward2D();
+                        }
+
+                        XMVECTOR delta    = endPos - start;
+                        float    distance = MathLibrary::CalulateVectorLength(delta);
+                        XMVECTOR dir      = XMVector3Normalize(delta);
+
+                        float actualDistance = std::min(maxPathLength, distance - 5.0f);
+
+                        XMVECTOR end = start + dir * actualDistance;
+
+                        float width     = splineWidth * actualDistance / maxPathLength;
+                        float height    = splineHeight * actualDistance / maxPathLength;
+                        int   waveCount = std::lroundf(3.0f * actualDistance / maxPathLength);
+
+                        start = XMVectorSetY(start, 0.0f);
+                        end   = XMVectorSetY(end, 0.0f);
+                        CreateRandomPath(start, end, i, width, waveCount, height);
                 }
         }
 }
@@ -246,33 +255,7 @@ void SpeedBoostSystem::RequestUnlatchFromSpline(PlayerController* playerControll
                         TransformComponent*        playerTransform =
                             playerController->GetControlledEntity().GetComponent<TransformComponent>();
                         // Destroy the old spline
-                        return;
-
                         DestroySpline(latchedSplineComp->clusterID, latchedSplineComp->index);
-
-                        int splineID  = latchedSplineComp->clusterID;
-                        int goalIndex = m_SplineClusterSpawners.at(splineID).color;
-
-                        ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-
-                        //controllerSystem->ResetOrbCount(goalIndex);
-
-                        // controllerSystem->m_OrbCounts = 0;
-
-                        // Start of the new spline
-                        XMVECTOR start =
-                            playerTransform->transform.translation + 2.0f * playerTransform->transform.GetForward();
-                        
-                        // Direction of the new spline
-                        XMVECTOR dir = SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] - start;
-                        
-                        // End point of the new spline
-                        XMVECTOR end =
-                            SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[goalIndex] - 2.0f *
-                            XMVector3Normalize(dir);
-                        
-                        // Finish creation of new spline
-                        CreateRandomPath(start, end, goalIndex);
                 }
         }
 }
@@ -285,9 +268,10 @@ void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
                                         float                    heightvar)
 {
         FGoodSpline spline(m_Paths[MathLibrary::GetRandomIntInRange(0, PathCount - 1)]);
-        float       length   = spline.GetLength() * MathLibrary::CalulateDistance(start, end);
-        int         segments = length / m_SplineLengthPerOrb;
-        auto        it       = m_SplineClusterSpawners.emplace(std::make_pair(m_ClusterCounter, SplineCluster(spline)));
+        float       lengthMultiplier = std::max(1.0f, waveCount * sqrtf(width * width + heightvar * heightvar) / 100.0f);
+        float       length           = spline.GetLength() * MathLibrary::CalulateDistance(start, end) * lengthMultiplier;
+        int         segments         = length / m_SplineLengthPerOrb;
+        auto        it               = m_SplineClusterSpawners.emplace(std::make_pair(m_ClusterCounter, SplineCluster(spline)));
 
 
         XMVECTOR   dir      = end - start;
@@ -395,7 +379,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         {
                                 if (playerController->SpeedBoost(center, speedComp.color))
                                 {
-                                        // RequestDestroySpeedboost(&speedComp);
+                                        RequestDestroySpeedboost(&speedComp);
                                         break;
                                 }
                         }
@@ -626,7 +610,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                 currVel = MathLibrary::MoveTowards(currVel, desiredVel, strength);
                                                 playerController->SetCurrentVelocity(currVel);
                                                 playerController->SetNextForward(dir);
-                                                playerController->SetCurrentMaxSpeed(6.0f);
+                                                playerController->SetCurrentMaxSpeed(5.0f);
                                                 // playerController->AddCurrentVelocity(dir * 10.0f * deltaTime);
                                         }
                                 }

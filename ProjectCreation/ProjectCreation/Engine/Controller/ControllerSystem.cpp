@@ -31,6 +31,14 @@ float ControllerSystem::GetCurrentColorAlpha() const
         return currentColorAlpha;
 }
 
+void ControllerSystem::ResetLightOrbCounters()
+{
+        for (int i = 0; i < E_LIGHT_ORBS::COUNT; ++i)
+        {
+                m_OrbCounts[i] = 0;
+        }
+}
+
 void ControllerSystem::DisplayConsoleMenu()
 {
         cout << "Switching Active Controller To : ";
@@ -65,6 +73,8 @@ int ControllerSystem::GetOrbCount(int color)
 void ControllerSystem::IncreaseOrbCount(int color)
 {
         m_OrbCounts[color]++;
+        if (m_OrbCounts[color] % 3 == 0 && m_OrbCounts[color] > 0)
+                CollectOrbEventIDs[color]++;
 }
 
 void ControllerSystem::ResetOrbCount(int color)
@@ -130,7 +140,7 @@ void ControllerSystem::OnUpdate(float deltaTime)
                 desiredColor      = DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[E_LIGHT_ORBS::WHITE_LIGHTS]);
         }
 
-		currentColor = DirectX::XMVectorLerp(currentColor, desiredColor, deltaTime*8.0f);
+        currentColor      = DirectX::XMVectorLerp(currentColor, desiredColor, deltaTime * 8.0f);
         currentColorAlpha = MathLibrary::lerp(currentColorAlpha, desiredColorAlpha, deltaTime * 2.0f);
 
         for (int i = 0; i < E_CONTROLLERS::COUNT; ++i)
@@ -165,7 +175,7 @@ void ControllerSystem::OnInitialize()
                 tComp->wrapping              = false;
                 tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
                 tComp->transform.rotation =
-                    DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
+                    DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(0.0f), 0.0f, 0.0f);
 
                 CameraComponent* cameraComp            = cHandle.Get<CameraComponent>();
                 cameraComp->m_Settings.m_HorizontalFOV = 90.0f;

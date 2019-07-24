@@ -54,14 +54,15 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
 
         // get and uncompress the flow vector for this pixel
         float skySpeed        = 0.004f * _Time;
-        float distortionSpeed = 0.0015f * _Time;
+        float distortionSpeed = 0.0135f * _Time;
         // Sample normal map.
         float noiseA = Mask1.Sample(sampleTypeWrap, pIn.Tex * 8.0f + distortionSpeed).r;
         float noiseB = Mask1.Sample(sampleTypeWrap, pIn.Tex * 16.0f - distortionSpeed / 4.0f).r;
         float noiseC = Mask1.Sample(sampleTypeWrap, pIn.Tex * 32.0f + distortionSpeed / 8.0f).r;
         float noise  = noiseA * noiseB * noiseC;
         // return noise;
-        float skyA = diffuseMap.SampleLevel(sampleTypeWrap, rotateUV(pIn.Tex, skySpeed + 0.1f * flowMap) + 0.01f * noise, 0).b;
+        float skyA =
+            diffuseMap.SampleLevel(sampleTypeWrap, rotateUV(pIn.Tex, skySpeed + 0.15f * flowMap + noiseA*0.01f) + 0.01f * noise, 0).b;
 
         float cloudSample = skyA;
         // return cloudSample;
@@ -117,12 +118,12 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
 
         float3 horizonColor = float3(0.7f, 0.7f, 0.85f);
 
-        float horizonMask = saturate(pow(skyCenter, 8.0f));
-        // return horizonMask;
+        float horizonMask = saturate(pow(skyCenter, 8.0f) - min(pIn.PosWS.y, 0.0f));
+        //return horizonMask;
 
         color = lerp(color, horizonColor, horizonMask);
         //return color.xyzz;
-        float revealAlpha = _playerRadius / 500.0f;
+        float revealAlpha = _playerRadius / 250.0f;
         revealAlpha       = saturate(pow(revealAlpha, 4.0f));
 
         return float4(color * revealAlpha, 1.0f);

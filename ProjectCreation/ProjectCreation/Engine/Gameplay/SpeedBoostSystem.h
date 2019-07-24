@@ -28,7 +28,7 @@ class SpeedBoostSystem : public ISystem
 
         static constexpr uint32_t m_MaxSpeedBoosts = 10;
 
-        int                                    m_ClusterCounter = 0;
+        int m_ClusterCounter = 0;
 
         static constexpr int PathCount = 9;
 
@@ -69,13 +69,15 @@ class SpeedBoostSystem : public ISystem
         float m_BoostLifespan         = 25.0f;
         float m_BoostLifespanVariance = 2.0f;
         float m_BoostShrinkSpeed      = m_BoostRadius;
-        float m_targetTerrain           = 0.0f;
+        float m_targetTerrain         = 0.0f;
 
-        static constexpr float m_SplineLengthPerOrb       = 4.5f;
+        float maxPathLength = 100.0f;
+
+        static constexpr float m_SplineLengthPerOrb       = 2.5f;
         static constexpr float m_SplineLatchRadius        = 0.2f;
         static constexpr float m_SplineFallRadius         = 0.3f;
-        static constexpr float m_MaxSpawnDistance         = 15.0f;
-        static constexpr float m_MinSpawnDistance         = 1.0f;
+        static constexpr float m_MaxSpawnDistance         = 16.0f;
+        static constexpr float m_MinSpawnDistance         = 5.0f;
         static constexpr float m_SpawnAngle               = DirectX::XMConvertToRadians(110.0f);
         static constexpr float m_DespawnDistanceOffset    = 5.0f;
         static constexpr float m_BoostRadius              = 0.1f;
@@ -88,7 +90,6 @@ class SpeedBoostSystem : public ISystem
         int colorCount = 0;
 
     protected:
-
         // Inherited via ISystem
         virtual void OnPreUpdate(float deltaTime) override;
         virtual void OnUpdate(float deltaTime) override;
@@ -98,9 +99,11 @@ class SpeedBoostSystem : public ISystem
         virtual void OnResume() override;
         virtual void OnSuspend() override;
 
+        int collectEventTimestamps[3] = {-1, -1, -1};
+
     public:
         float splineHeight = 0.25f;
-        float splineWidth = 40.0f;
+        float splineWidth  = 40.0f;
         bool  changeColor  = false;
 
         std::unordered_map<int, SplineCluster> m_SplineClusterSpawners;
@@ -118,7 +121,7 @@ class SpeedBoostSystem : public ISystem
 
         void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
 
-		void RequestDestroyAllSpeedboosts();
+        void RequestDestroyAllSpeedboosts();
 
         inline void SetRandomSpawnEnabled(bool val)
         {
