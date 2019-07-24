@@ -471,7 +471,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
-                          "Press A, S, and D to continue. . .",
+                          "Press Enter to continue. . .",
                           0.06f,
                           0.0f,
                           0.1f,
@@ -758,7 +758,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 0.2f,
                                 0.5f,
                                 false);
-                                
+                                
+
+
+
+
             instance->AddSprite(instance->m_RenderSystem->m_Device,
                                 instance->m_RenderSystem->m_Context,
                                 E_MENU_CATEGORIES::PauseMenu,
@@ -789,7 +793,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           E_FONT_TYPE::MyFile,
-                          "Tutorial: Inti",
+                          "Tutorial",
                           0.05f,
                           0.0f,
                           -0.1f,
@@ -803,7 +807,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           E_FONT_TYPE::MyFile,
-                          "Level 1: Yaku",
+                          "Level 1",
                           0.05f,
                           0.0f,
                           0.0f,
@@ -817,7 +821,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           E_FONT_TYPE::MyFile,
-                          "Level 2: Pacha",
+                          "Level 2",
                           0.05f,
                           0.0f,
                           0.1f,
@@ -831,7 +835,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           E_FONT_TYPE::MyFile,
-                          "Level 3: Yura",
+                          "Level 3",
                           0.05f,
                           0.0f,
                           0.2f,
@@ -855,6 +859,50 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           pauseButtonWidth,
                           pauseButtonHeight);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::ControlsMenu,
+                          E_FONT_TYPE::MyFile,
+                          "Red Boost: A",
+                          0.03f,
+                          0.0f,
+                          -0.1f,
+                          false,
+                          false);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::ControlsMenu,
+                          E_FONT_TYPE::MyFile,
+                          "Green Boost: S",
+                          0.03f,
+                          0.0f,
+                          0.0f,
+                          false,
+                          false);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::ControlsMenu,
+                          E_FONT_TYPE::MyFile,
+                          "Blue Boost: D",
+                          0.03f,
+                          0.0f,
+                          0.1f,
+                          false,
+                          false);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::ControlsMenu,
+                          E_FONT_TYPE::MyFile,
+                          "Movement: Left Mouse ",
+                          0.03f,
+                          0.0f,
+                          0.2f,
+                          false,
+                          false);
 
         // Demo
         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -896,14 +944,14 @@ void UIManager::Initialize(native_handle_type hwnd)
                           pauseButtonWidth,
                           pauseButtonHeight);
 
-        // Pause Menu
-        {
-                // Resume Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][1].OnMouseDown.AddEventListener(
-                    [](UIMouseEvent* e) { instance->Unpause(); });
 
-                // Level Select Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+			// Pause Menu
+        // Resume Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][1].OnMouseDown.AddEventListener(
+            [](UIMouseEvent* e) { instance->Unpause(); });
+
+        // Level Select Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         // Sprites
                         for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
                         {
@@ -930,8 +978,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                         }
                 });
 
-                // Options Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+        // Options Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         // Sprites
                         for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
                         {
@@ -987,8 +1035,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                             true;
                 });
 
-                // Controls Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][4].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+        // Controls Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][4].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         // Sprites
                         for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
                         {
@@ -1015,15 +1063,14 @@ void UIManager::Initialize(native_handle_type hwnd)
                         }
                 });
 
-                // Exit Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][5].OnMouseDown.AddEventListener(
-                    [](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
-        }
+        // Exit Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][5].OnMouseDown.AddEventListener(
+            [](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
+        
 
-        // Options
-        {
-                // Back Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+			// Options
+        // Back Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         // Back button to go from the options menu to the pause menu
 
                         // Disable all sprites for the options
@@ -1071,8 +1118,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_RenderSystem->SetFullscreen(instance->PSettings.m_IsFullscreen);
                 });
 
-                // Window Mode
-                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+        // Window Mode
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         if (instance->CSettings.m_IsFullscreen == false)
                         {
                                 instance->CSettings.m_IsFullscreen                                  = true;
@@ -1089,8 +1136,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_RenderSystem->SetFullscreen(instance->CSettings.m_IsFullscreen);
                 });
 
-                // Apply Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+        // Apply Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         // Back button to go from the options menu to the pause menu
 
                         // Disable all sprites for the options
@@ -1138,11 +1185,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_RenderSystem->SetFullscreen(instance->CSettings.m_IsFullscreen);
                 });
 
-                // Left Resolution Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+        // Left Resolution Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         if (instance->CSettings.m_Resolution - 1 <= -1)
                         {
-                                instance->CSettings.m_Resolution = 8;
+                                instance->CSettings.m_Resolution = instance->resDescriptors.size();
                         }
                         else
                         {
@@ -1161,9 +1208,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                                                    instance->resDescriptors[instance->CSettings.m_Resolution].Height);
                 });
 
-                // Right Resolution Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                        if (instance->CSettings.m_Resolution + 1 >= 9)
+        // Right Resolution Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+						if (instance->CSettings.m_Resolution + 1 >= instance->resDescriptors.size())
                         {
                                 instance->CSettings.m_Resolution = 0;
                         }
@@ -1183,12 +1230,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                                                    instance->resDescriptors[instance->CSettings.m_Resolution].Width,
                                                    instance->resDescriptors[instance->CSettings.m_Resolution].Height);
                 });
-        }
+        
 
-        // Level Select
-        {
-                // Back Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+			// Level Select
+		// Back Button
+		instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         // Back button to go from the options menu to the pause menu
 
                         // Disable all sprites for the options
@@ -1213,9 +1259,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
                         }
                 });
-
-                // Tutorial Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+		
+		// Tutorial Button
+		instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         instance->Unpause();
                         // Load Level Function
                         auto curLevel = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState();
@@ -1243,9 +1289,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     E_LevelStateEvents::LEVEL_03_TO_TUTORIAL_LEVEL);
                         }
                 });
-
-                // Level 1 Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+		
+		// Level 1 Button
+		instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         instance->Unpause();
                         // Load Level Function
                         auto curLevel = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState();
@@ -1271,9 +1317,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_01);
                         }
                 });
-
-                // Level 2 Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+		
+		// Level 2 Button
+		instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         instance->Unpause();
                         // Load Level Function
                         auto curLevel = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState();
@@ -1299,9 +1345,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_02);
                         }
                 });
-
-                // Level 3 Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][4].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+		
+		// Level 3 Button
+		instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][4].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         instance->Unpause();
                         // Load Level Function
                         auto curLevel = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState();
@@ -1327,12 +1373,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_03);
                         }
                 });
-        }
+        
 
-        // Controls Select
-        {
-                // Back Button
-                instance->m_AllSprites[E_MENU_CATEGORIES::ControlsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+			// Controls Select
+		// Back Button
+		instance->m_AllSprites[E_MENU_CATEGORIES::ControlsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         // Back button to go from the options menu to the pause menu
 
                         // Disable all sprites for the options
@@ -1357,15 +1402,20 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
                         }
                 });
-        }
+        
 
-        // Demo
+			// Demo
         // Continue
-        instance->m_AllSprites[E_MENU_CATEGORIES::Demo][0].OnMouseDown.AddEventListener(
-            [](UIMouseEvent* e) { instance->Unpause(); });
+        instance->m_AllSprites[E_MENU_CATEGORIES::Demo][0].OnMouseDown.AddEventListener([](UIMouseEvent* e)
+        {
+	        instance->Unpause();
+        });
+
         // Exit
-        instance->m_AllSprites[E_MENU_CATEGORIES::Demo][1].OnMouseDown.AddEventListener(
-            [](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
+        instance->m_AllSprites[E_MENU_CATEGORIES::Demo][1].OnMouseDown.AddEventListener([](UIMouseEvent* e)
+        {
+	        GEngine::Get()->RequestGameExit();
+        });
 }
 
 void UIManager::Update()
@@ -1393,9 +1443,7 @@ void UIManager::Update()
         {
                 // Joseph Updated the main menu ui to match to input keys
                 // Changed 'Space', 'Q', and 'E' to 'A', 'S', and 'D'
-                if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down &&
-                    GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down &&
-                    GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
+                if (GCoreInput::GetKeyState(KeyCode::Enter) == KeyState::Down)
                 {
                         instance->MainTilteUnpause();
                 }
