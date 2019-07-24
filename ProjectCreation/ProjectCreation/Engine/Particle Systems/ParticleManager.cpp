@@ -16,8 +16,8 @@
 #include "../ResourceManager/Texture2D.h"
 #include "../ResourceManager/VertexShader.h"
 #include "EmitterComponent.h"
+#include "EmitterComponent.h"
 #include "ParticleBufferSetup.h"
-#include"EmitterComponent.h"
 using namespace ParticleData;
 using namespace DirectX;
 using namespace Pools;
@@ -113,7 +113,7 @@ void ParticleManager::update(float deltaTime)
                                              &m_RenderSystem->m_ConstantBuffer_SCENE,
                                              sizeof(m_RenderSystem->m_ConstantBuffer_SCENE));
 
-		m_RenderSystem->UpdateConstantBuffer(
+        m_RenderSystem->UpdateConstantBuffer(
             m_RenderSystem->m_PostProcessConstantBuffers[E_CONSTANT_BUFFER_POST_PROCESS::SCREENSPACE],
             &m_RenderSystem->m_ContstantBuffer_SCREENSPACE,
             sizeof(m_RenderSystem->m_ContstantBuffer_SCREENSPACE));
@@ -140,6 +140,7 @@ void ParticleManager::update(float deltaTime)
 void ParticleManager::init()
 {
 
+        m_HandleManager = GEngine::Get()->GetHandleManager();
 
         // data set up //shoulde be ab;e to set the particle data somewhere else
         m_EnitterInfo = new FEmitterGPU;
@@ -166,10 +167,10 @@ void ParticleManager::init()
 
         // init
         m_RenderSystem = SYSTEM_MANAGER->GetSystem<RenderSystem>();
-        // for (int i = 0; i < m_Emitters.size(); ++i)
-        //{
-
-        //}
+        for (auto& emitterComp : m_HandleManager->GetActiveComponents<EmitterComponent>())
+         {
+                 ParticleBufferInit(m_RenderSystem->GetDevice(), nullptr, &emitterComp.EmitterData, &m_SegmentInfo, gMaxParticleCount);
+         }
         ParticleBufferInit(m_RenderSystem->GetDevice(), nullptr, m_Emitters[0], &m_SegmentInfo, gMaxParticleCount);
         // Load Computer Shader
         m_ComputeShaderHandle  = RESOURCE_MANAGER->LoadComputeShader("ComputeShaderTesting");
@@ -345,8 +346,8 @@ EntityHandle ParticleManager::CreateEmitter(ParticleData::FEmitterGPU& emitter)
         EntityHandle      eHandle    = GEngine::Get()->GetHandleManager()->CreateEntity();
         ComponentHandle   cHandle    = GEngine::Get()->GetHandleManager()->AddComponent<EmitterComponent>(eHandle);
         EmitterComponent* eComponent = GEngine::Get()->GetHandleManager()->GetComponent<EmitterComponent>(cHandle);
-        eComponent->EmitterData     = emitter;
-
+        eComponent->EmitterData      = emitter;
+        eHandle.GetComponent<EmitterComponent>();
         return eHandle;
 }
 
