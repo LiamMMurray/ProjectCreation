@@ -494,7 +494,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
-                          "Hold A to get a boost from Red lights",
+                          "Hold R to get a boost from Red lights",
                           0.06f,
                           0.0f,
                           0.1f,
@@ -505,7 +505,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
-                          "Hold S to get a boost from Green lights",
+                          "Hold G to get a boost from Green lights",
                           0.06f,
                           0.0f,
                           0.1f,
@@ -516,7 +516,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
-                          "Hold D to get a boost from Blue lights",
+                          "Hold B to get a boost from Blue lights",
                           0.06f,
                           0.0f,
                           0.1f,
@@ -859,6 +859,50 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           pauseButtonWidth,
                           pauseButtonHeight);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::ControlsMenu,
+                          E_FONT_TYPE::MyFile,
+                          "Red Boost: R",
+                          0.03f,
+                          0.0f,
+                          -0.1f,
+                          false,
+                          false);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::ControlsMenu,
+                          E_FONT_TYPE::MyFile,
+                          "Green Boost: G",
+                          0.03f,
+                          0.0f,
+                          0.0f,
+                          false,
+                          false);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::ControlsMenu,
+                          E_FONT_TYPE::MyFile,
+                          "Blue Boost: B",
+                          0.03f,
+                          0.0f,
+                          0.1f,
+                          false,
+                          false);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::ControlsMenu,
+                          E_FONT_TYPE::MyFile,
+                          "Movement: Left Mouse",
+                          0.03f,
+                          0.0f,
+                          0.2f,
+                          false,
+                          false);
 
         // Demo
         instance->AddText(instance->m_RenderSystem->m_Device,
