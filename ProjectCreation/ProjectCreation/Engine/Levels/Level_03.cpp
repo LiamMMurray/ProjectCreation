@@ -16,7 +16,7 @@ void Level_03::Enter()
         }
         m_SpeedBoostSystem->ResetLevel();
 
-        m_SpeedBoostSystem->splineWidth  = 25.0f;
+        m_SpeedBoostSystem->splineWidth  = 18.0f;
         m_SpeedBoostSystem->splineHeight = 1.5f;
         m_SpeedBoostSystem->changeColor  = true;
 

@@ -190,7 +190,7 @@ void TutorialLevel::SpawnFirstGreenOrb()
 
         TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
 
-        XMVECTOR pos    = m_PlayerTransform->transform.translation + 12.0f * VectorConstants::Forward;
+        XMVECTOR pos = m_PlayerTransform->transform.translation + 12.0f * m_PlayerTransform->transform.rotation.GetForward2D();
         auto     handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::GREEN_LIGHTS);
 
         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
