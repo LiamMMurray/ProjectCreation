@@ -76,27 +76,9 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
 
         if (changeColor)
         {
-                colorCount++;
-
-                if (colorCount < 5)
-                {
-                        cluster.color = E_LIGHT_ORBS::RED_LIGHTS;
-                }
-
-                else if (colorCount >= 5 && colorCount < 10)
-                {
-                        cluster.color = E_LIGHT_ORBS::BLUE_LIGHTS;
-                }
-
-                else if (colorCount >= 10 && colorCount < 15)
-                {
-                        cluster.color = E_LIGHT_ORBS::GREEN_LIGHTS;
-                }
-
-                else
-                {
-                        colorCount = 0;
-                }
+                int div       = cluster.current / 10;
+                int color     = (cluster.targetColor + div) % 3;
+                cluster.color = color;
         }
 
         cluster.cachedPoints.push_back(curr);

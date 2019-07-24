@@ -165,6 +165,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
         goalsCollected       = std::min<unsigned int>(goalsCollected, 3);
         XMVECTOR nextGoalPos = playerTransform->transform.translation +
                                goalDistances[goalsCollected] * playerTransform->transform.rotation.GetForward2D();
+        nextGoalPos = XMVectorSetY(nextGoalPos, 0.0f);
 
         ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         for (int i = 0; i < 3; ++i)

@@ -758,7 +758,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 0.2f,
                                 0.5f,
                                 false);
-                                
+                                
+
+
+
+
             instance->AddSprite(instance->m_RenderSystem->m_Device,
                                 instance->m_RenderSystem->m_Context,
                                 E_MENU_CATEGORIES::PauseMenu,

@@ -68,11 +68,11 @@ float4 main(DomainOutput pIn) : SV_TARGET
         float3 diffuseA = diffuseMapA.Sample(sampleTypeWrap, pIn.Tex2).rgb;
         float3 diffuseB = diffuseMapB.Sample(sampleTypeWrap, pIn.Tex2).rgb;
 
-        float3 normalA = normalMapA.Sample(sampleTypeWrap, pIn.Tex2 * 0.7f - 0.12f * _Time).rgb * 2.0f - 1.0f;
+        float3 normalA = normalMapA.Sample(sampleTypeWrap, pIn.Tex2 * 0.7f - 0.04f * _Time).rgb * 2.0f - 1.0f;
         normalA.z      = sqrt(1.0f - normalA.x * normalA.x - normalA.y * normalA.y);
         // normalA        = normalize(normalA);
         // return normalA.xyzz*0.5f + 0.5f;
-        float3 normalB = normalMapA.Sample(sampleTypeWrap, -pIn.Tex2 * 0.8f + 0.12 * _Time).rgb * 2.0f - 1.0f;
+        float3 normalB = normalMapA.Sample(sampleTypeWrap, -pIn.Tex2 * 0.8f + 0.03 * _Time).rgb * 2.0f - 1.0f;
         normalB.z      = sqrt(1 - normalB.x * normalB.x - normalB.y * normalB.y);
 
 
