@@ -12,17 +12,29 @@ class OrbitSystem : public ISystem
         HandleManager* m_HandleManager;
 
         const char* materialNames[3] = {"GlowMatPlanet01", "GlowMatPlanet03", "GlowMatPlanet02"};
+        const char* spawnNames[3]    = {"redPlanetSpawn", "greenPlanetSpawn", "bluePlanetSpawn"};
         int         m_Stage          = 0;
         void        CreateGoal(int color, DirectX::XMVECTOR position);
 
         float             orbitOffset = 1300.0f;
-        FQuaternion sunRotation;
+        FQuaternion       sunRotation;
         DirectX::XMVECTOR orbitCenter;
-        FTransform        m_ClosestGoalTransform;
+
+        struct FActiveGoalInfo
+        {
+                EntityHandle activeGoalGround;
+                EntityHandle activeGoalOrbit;
+                int          activeColor;
+                bool         hasActiveGoal = false;
+        };
+
+        static constexpr float goalDistances[3] = {110.0f, 300.0f, 600.0f};
 
         std::vector<ComponentHandle> sunAlignedTransforms;
 
-		void UpdateSunAlignedObjects();
+
+        void UpdateSunAlignedObjects();
+
     protected:
         // Inherited via ISystem
         virtual void OnPreUpdate(float deltaTime) override;
@@ -33,13 +45,10 @@ class OrbitSystem : public ISystem
         virtual void OnResume() override;
         virtual void OnSuspend() override;
 
-    public:
-        inline FTransform GetClosestGoalTransform() const
-        {
-                return m_ClosestGoalTransform;
-        }
+        int collectEventTimestamps[3] = {-1, -1, -1};
 
-        static constexpr DirectX::XMVECTORF32 GoalPositions[3] = {{0.0f, 0.0f, 100.0f, 1.0f},
-                                                                  {-100.0f, 0.0f, -11.0f, 1.0f},
-                                                                  {100.0f, 0.0f, -11.0f, 1.0f}};
+    public:
+        unsigned int    goalsCollected   = 0;
+        bool            collectedMask[3] = {};
+        FActiveGoalInfo activeGoal;
 };

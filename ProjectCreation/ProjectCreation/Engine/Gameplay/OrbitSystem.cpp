@@ -17,6 +17,12 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
 {
         color = std::min(2, color);
 
+        if (activeGoal.hasActiveGoal)
+        {
+                activeGoal.activeGoalGround.Free();
+                activeGoal.activeGoalOrbit.Free();
+        }
+
         /*** REFACTORING CODE START ***/
         ComponentHandle transHandle, transHandle2;
 
@@ -45,6 +51,10 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
         goalComp->goalTransform.translation = orbitCenter + offset1 * 150.f * (color + 1.0f);
         transComp2->transform               = goalComp->goalTransform;
 
+        activeGoal.hasActiveGoal    = true;
+        activeGoal.activeGoalGround = entityH1;
+        activeGoal.activeGoalOrbit  = entityH2;
+        activeGoal.activeColor      = color;
         /*** REFACTORING CODE END ***/
 }
 
@@ -52,7 +62,7 @@ void OrbitSystem::UpdateSunAlignedObjects()
 {
         for (auto& h : sunAlignedTransforms)
         {
-                TransformComponent* tc  = h.Get<TransformComponent>();
+                TransformComponent* tc    = h.Get<TransformComponent>();
                 tc->transform.translation = orbitCenter;
                 tc->transform.rotation    = sunRotation;
         }
@@ -85,30 +95,8 @@ void OrbitSystem::OnUpdate(float deltaTime)
 
         double totalTime = GEngine::Get()->GetTotalTime();
 
-        m_ClosestGoalTransform = playerTransform->transform;
-
-
         TransformComponent* closestGoalTransform = nullptr;
 
-        for (auto& goalComp : m_HandleManager->GetActiveComponents<GoalComponent>())
-        {
-                EntityHandle        goalParent  = goalComp.GetParent();
-                ComponentHandle     transHandle = goalParent.GetComponentHandle<TransformComponent>();
-                TransformComponent* transComp   = transHandle.Get<TransformComponent>();
-
-                float distancePrev = closestGoalTransform ?
-                                         MathLibrary::CalulateDistanceSq(closestGoalTransform->transform.translation,
-                                                                         playerTransform->transform.translation) :
-                                         FLT_MAX;
-
-                float distanceNew =
-                    MathLibrary::CalulateDistanceSq(transComp->transform.translation, playerTransform->transform.translation);
-
-                if (goalComp.goalState == E_GOAL_STATE::Idle && (closestGoalTransform == nullptr || distanceNew < distancePrev))
-                {
-                        m_ClosestGoalTransform = transComp->transform;
-                }
-        }
 
         for (auto& goalComp : m_HandleManager->GetActiveComponents<GoalComponent>())
         {
@@ -127,7 +115,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 offset1          = XMVector3Rotate(offset1, sunRotation.data);
 
                 goalComp.goalTransform.translation = orbitCenter + offset1 * 150.f * (goalComp.color + 1.0f);
-                transCompPuzzle->transform = goalComp.goalTransform;
+                transCompPuzzle->transform         = goalComp.goalTransform;
 
                 if (goalComp.goalState == E_GOAL_STATE::Spawning)
                 {
@@ -174,55 +162,29 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 }
         }
 
-        if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) >= 3)
+        goalsCollected       = std::min<unsigned int>(goalsCollected, 3);
+        XMVECTOR nextGoalPos = playerTransform->transform.translation +
+                               goalDistances[goalsCollected] * playerTransform->transform.rotation.GetForward2D();
+
+        ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+        for (int i = 0; i < 3; ++i)
         {
-                static bool done = false;
 
-
-                if (!done)
+                if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
                 {
-                        // play sfx when spawned
-                        auto redSpawn = AudioManager::Get()->CreateSFX("redPlanetSpawn");
-                        redSpawn->SetVolume(0.8f);
-                        CreateGoal(0, GoalPositions[0]);
-                        redSpawn->Play();
+                        collectEventTimestamps[i] = controllerSystem->GetCollectOrbEventID(i);
+                        if (collectedMask[i] == false)
+                        {
+
+                                if (activeGoal.hasActiveGoal == false || activeGoal.activeColor != i)
+                                { // play sfx when spawned
+                                        auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
+                                        spawnSound->SetVolume(0.8f);
+                                        CreateGoal(i, nextGoalPos);
+                                        spawnSound->Play();
+                                }
+                        }
                 }
-
-                done = true;
-        }
-
-
-        if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) >= 3)
-        {
-                static bool done = false;
-
-
-                if (!done)
-                {
-                        // play sfx when spawned
-                        auto greenSpawn = AudioManager::Get()->CreateSFX("greenPlanetSpawn");
-                        greenSpawn->SetVolume(0.8f);
-                        CreateGoal(1, GoalPositions[1]);
-                        greenSpawn->Play();
-                }
-                done = true;
-        }
-        if (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) >= 3)
-        {
-                static bool done = false;
-
-
-                if (!done)
-                {
-                        CreateGoal(2, GoalPositions[2]);
-                        // play sfx when spawned
-                        auto blueSpawn = AudioManager::Get()->CreateSFX("bluePlanetSpawn");
-                        blueSpawn->SetVolume(0.8f);
-                        blueSpawn->Play();
-                }
-
-
-                done = true;
         }
 }
 
@@ -235,7 +197,6 @@ void OrbitSystem::OnInitialize()
 
         PlayerController* playerController = (PlayerController*)SYSTEM_MANAGER->GetSystem<ControllerSystem>()
                                                  ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
-        m_ClosestGoalTransform = playerController->GetControlledEntity().GetComponent<TransformComponent>()->transform;
 
         ComponentHandle playerTransformHandle =
             playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();

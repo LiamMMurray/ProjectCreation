@@ -28,6 +28,7 @@
 #include "../Engine/ResourceManager/VertexShader.h"
 
 // Will refactor this
+#include "../Engine/Gameplay/OrbitSystem.h"
 #include "../Engine/Gameplay/SpeedboostSystem.h"
 
 #include "../Engine/GenericComponents/TransformComponent.h"
@@ -361,7 +362,7 @@ void RenderSystem::CreateCommonShaders()
         m_CommonVertexShaderHandles[E_VERTEX_SHADERS::LINE]    = m_ResourceManager->LoadVertexShader("Line");
         m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEFAULT]   = m_ResourceManager->LoadPixelShader("Default");
         m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEBUG]     = m_ResourceManager->LoadPixelShader("Debug");
-        m_CommonPixelShaderHandles[E_PIXEL_SHADERS::LINE]     = m_ResourceManager->LoadPixelShader("LINE");
+        m_CommonPixelShaderHandles[E_PIXEL_SHADERS::LINE]      = m_ResourceManager->LoadPixelShader("LINE");
 }
 
 void RenderSystem::CreateCommonConstantBuffers()
@@ -578,6 +579,8 @@ void RenderSystem::DrawLines()
         m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::LINE]);
 
         SpeedBoostSystem* speedboostSystem = GEngine::Get()->GetSystemManager()->GetSystem<SpeedBoostSystem>();
+        OrbitSystem*      orbitSystem      = GEngine::Get()->GetSystemManager()->GetSystem<OrbitSystem>();
+
         m_Context->IASetVertexBuffers(0, 1, &m_LineVertexBuffer, &stride, &offset);
         m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
         m_Context->IASetInputLayout(m_DefaultInputLayouts[E_INPUT_LAYOUT::LINE]);
@@ -608,6 +611,29 @@ void RenderSystem::DrawLines()
 
                 XMStoreFloat3(&surf.emissiveColor,
                               2.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[it.second.targetColor]));
+
+                UpdateConstantBuffer(
+                    m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE], &surf, sizeof(FSurfaceProperties));
+
+                m_Context->Draw(vertexCount, 0);
+        }
+
+        if (orbitSystem->activeGoal.hasActiveGoal)
+        {
+                int vertexCount = 2;
+
+                XMVECTOR vec[2];
+                vec[0] = orbitSystem->activeGoal.activeGoalGround.GetComponent<TransformComponent>()->transform.translation;
+                vec[1] = orbitSystem->activeGoal.activeGoalOrbit.GetComponent<TransformComponent>()->transform.translation;
+
+                D3D11_MAPPED_SUBRESOURCE mappedResource{};
+                m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+                memcpy(mappedResource.pData, vec, vertexCount * sizeof(XMVECTOR));
+                m_Context->Unmap(m_LineVertexBuffer, 0);
+
+                XMStoreFloat3(
+                    &surf.emissiveColor,
+                              1.2f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[E_LIGHT_ORBS::WHITE_LIGHTS]));
 
                 UpdateConstantBuffer(
                     m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE], &surf, sizeof(FSurfaceProperties));
