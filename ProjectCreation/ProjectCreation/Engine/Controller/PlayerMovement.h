@@ -61,6 +61,7 @@ class PlayerController : public IController
         DirectX::XMVECTOR mNextForward;
 
     public:
+
         inline void SetNextForward(const DirectX::XMVECTOR& _val)
         {
                 mNextForward = _val;

@@ -17,6 +17,17 @@ DirectX::XMVECTOR FQuaternion::GetForward() const
         return XMVector3Rotate(VectorConstants::Forward, data);
 }
 
+DirectX::XMVECTOR FQuaternion::GetForward2D() const
+{
+		XMVECTOR fw = GetForward();
+        float    distance = MathLibrary::CalulateDistance(fw, VectorConstants::Up);
+
+		if (distance < 0.001f)
+                return -GetUp();
+
+        return XMVector3Normalize(XMVectorSetY(fw, 0.0f));
+}
+
 DirectX::XMVECTOR FQuaternion::GetRight() const
 {
         return XMVector3Rotate(VectorConstants::Right, data);

@@ -1,5 +1,6 @@
 #include "TutorialLevel.h"
 #include "../../UI/UIManager.h"
+#include "../Controller/ControllerSystem.h"
 
 using namespace DirectX;
 
@@ -18,6 +19,9 @@ void TutorialLevel::Enter()
 
         m_WhiteCollected = m_RedCollected = m_GreenCollected = m_BlueCollected = false;
         whiteCount = redCount = greenCount = blueCount = levelRequested = 0;
+
+        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+        controllerSys->ResetLightOrbCounters();
 
         m_LevelType = E_Level_States::TUTORIAL_LEVEL;
 }
@@ -60,98 +64,31 @@ void TutorialLevel::Update(float deltaTime)
                 // UI: Hold D to Collect Green Orbs
         }
 
-        for (auto& speedComp : m_HandleManager->GetActiveComponents<SpeedboostComponent>())
+        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+
+
+        // whiteCount = controllerSys->m_OrbCounts[E_LIGHT_ORBS::WHITE_LIGHTS];
+        // redCount   = controllerSys->m_OrbCounts[E_LIGHT_ORBS::RED_LIGHTS];
+        // greenCount = controllerSys->m_OrbCounts[E_LIGHT_ORBS::GREEN_LIGHTS];
+        // blueCount  = controllerSys->m_OrbCounts[E_LIGHT_ORBS::BLUE_LIGHTS];
+
+        if (controllerSys->m_OrbCounts[E_LIGHT_ORBS::WHITE_LIGHTS] > 0)
         {
-                XMVECTOR center = speedComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
-
-                XMVECTOR dir        = center - m_PlayerTransform->transform.translation;
-                float    distanceSq = MathLibrary::VectorDotProduct(dir, dir);
-
-                float checkRadius = speedComp.collisionRadius;
-
-                if (speedComp.lifetime >= 0.0f && distanceSq < (checkRadius * checkRadius) && m_WhiteCollected == false)
-                {
-                        ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-
-                        XMVECTOR center = speedComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
-                        m_PlayerController->SpeedBoost(center, E_LIGHT_ORBS::WHITE_LIGHTS);
-
-                        int count = 1;
-                        if (count >= 1)
-                        {
-                                m_WhiteCollected = true;
-                        }
-                        else
-                        {
-                                int error = 0;
-                        }
-                        m_SpeedBoostSystem->RequestDestroySpeedboost(&speedComp);
-                        break;
-                }
-
-                if (speedComp.lifetime >= 0.0f && distanceSq < (checkRadius * checkRadius) && m_WhiteCollected == true &&
-                    m_RedCollected == false)
-                {
-                        ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-
-                        XMVECTOR center = speedComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
-                        m_PlayerController->SpeedBoost(center, E_LIGHT_ORBS::RED_LIGHTS);
-
-                        int count = 1;
-                        if (count >= 1)
-                        {
-                                m_RedCollected = true;
-                        }
-                        else
-                        {
-                                int error = 0;
-                        }
-                        m_SpeedBoostSystem->RequestDestroySpeedboost(&speedComp);
-                        break;
-                }
-
-                if (speedComp.lifetime >= 0.0f && distanceSq < (checkRadius * checkRadius) && m_RedCollected == true &&
-                    m_GreenCollected == false)
-                {
-                        ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-
-                        XMVECTOR center = speedComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
-                        m_PlayerController->SpeedBoost(center, E_LIGHT_ORBS::GREEN_LIGHTS);
-
-                        int count = 1;
-                        if (count >= 1)
-                        {
-                                m_GreenCollected = true;
-                        }
-                        else
-                        {
-                                int error = 0;
-                        }
-                        m_SpeedBoostSystem->RequestDestroySpeedboost(&speedComp);
-                        break;
-                }
-
-                if (speedComp.lifetime >= 0.0f && distanceSq < (checkRadius * checkRadius) && m_GreenCollected == true &&
-                    m_BlueCollected == false)
-                {
-                        ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-
-                        XMVECTOR center = speedComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
-                        m_PlayerController->SpeedBoost(center, E_LIGHT_ORBS::BLUE_LIGHTS);
-
-                        int count = 1;
-                        if (count >= 1)
-                        {
-                                m_BlueCollected = true;
-                        }
-                        else
-                        {
-                                int error = 0;
-                        }
-                        m_SpeedBoostSystem->RequestDestroySpeedboost(&speedComp);
-                        break;
-                }
+                m_WhiteCollected = true;
         }
+        if (controllerSys->m_OrbCounts[E_LIGHT_ORBS::RED_LIGHTS] > 0)
+        {
+                m_RedCollected = true;
+        }
+        if (controllerSys->m_OrbCounts[E_LIGHT_ORBS::GREEN_LIGHTS] > 0)
+        {
+                m_GreenCollected = true;
+        }
+        if (controllerSys->m_OrbCounts[E_LIGHT_ORBS::BLUE_LIGHTS] > 0)
+        {
+                m_BlueCollected = true;
+        }
+
 
         if ((m_WhiteCollected == true && m_RedCollected == true && m_BlueCollected == true && m_GreenCollected == true) &&
             levelRequested <= 0)
@@ -192,7 +129,7 @@ void TutorialLevel::SpawnFirstWhiteOrb()
 
         TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
 
-        XMVECTOR pos    = m_PlayerTransform->transform.translation + 2.0f * VectorConstants::Forward;
+        XMVECTOR pos = m_PlayerTransform->transform.translation + 8.0f * m_PlayerTransform->transform.rotation.GetForward2D();
         auto     handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::WHITE_LIGHTS);
 
         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
@@ -212,7 +149,7 @@ void TutorialLevel::SpawnFirstRedOrb()
 
         TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
 
-        XMVECTOR pos    = m_PlayerTransform->transform.translation + 2.0f * VectorConstants::Forward;
+        XMVECTOR pos = m_PlayerTransform->transform.translation + 12.0f * m_PlayerTransform->transform.rotation.GetForward2D();
         auto     handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::RED_LIGHTS);
 
         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
@@ -232,7 +169,7 @@ void TutorialLevel::SpawnFirstBlueOrb()
 
         TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
 
-        XMVECTOR pos    = m_PlayerTransform->transform.translation + 2.0f * VectorConstants::Forward;
+        XMVECTOR pos = m_PlayerTransform->transform.translation + 12.0f * m_PlayerTransform->transform.rotation.GetForward2D();
         auto     handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::BLUE_LIGHTS);
 
         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
@@ -252,7 +189,7 @@ void TutorialLevel::SpawnFirstGreenOrb()
 
         TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
 
-        XMVECTOR pos    = m_PlayerTransform->transform.translation + 2.0f * VectorConstants::Forward;
+        XMVECTOR pos    = m_PlayerTransform->transform.translation + 12.0f * VectorConstants::Forward;
         auto     handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::GREEN_LIGHTS);
 
         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();

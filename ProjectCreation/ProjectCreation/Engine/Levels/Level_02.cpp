@@ -1,6 +1,9 @@
 #include "Level_02.h"
 #include "../GEngine.h"
 
+#include "../Controller/ControllerSystem.h"
+
+
 void Level_02::Enter()
 {
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);
@@ -8,12 +11,16 @@ void Level_02::Enter()
         GEngine::Get()->SetTransitionSpeed(15.0f);
         GEngine::Get()->Update();
 
-        m_SpeedBoostSystem->splineWidth  = 20.0f;
-        m_SpeedBoostSystem->splineHeight = 1.25f;
-        m_SpeedBoostSystem->changeColor  = true;
+        m_SpeedBoostSystem->splineWidth  = 6.0f;
+        m_SpeedBoostSystem->splineHeight = 0.7f;
+        m_SpeedBoostSystem->changeColor  = false;
 
         m_SpeedBoostSystem->SetTargetTerrain(0.0f);
         GEngine::Get()->m_TerrainAlpha = 0.0f;
+
+		ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+        controllerSys->ResetLightOrbCounters();
+
         m_LevelType = E_Level_States::LEVEL_02;
 }
 

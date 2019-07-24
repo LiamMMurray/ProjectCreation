@@ -411,3 +411,22 @@ Collision::FOverlapResult CollisionLibary::ScreenSpaceOverlap(const Shapes::FSph
 
         return output;
 }
+
+DirectX::XMVECTOR CollisionLibary::ClampToScreen(const DirectX::XMVECTOR& vec, const DirectX::XMMATRIX& ViewProjection)
+{
+        XMVECTOR screenPos = XMVector4Transform(vec, ViewProjection);
+
+		XMMATRIX invViewProjection = XMMatrixInverse(nullptr, ViewProjection);
+
+        float z = XMVectorGetZ(screenPos);
+        float w = XMVectorGetW(screenPos);
+
+        XMVECTOR minScreen = XMVectorSet(-1.0f, -1.0f, z, w);
+        XMVECTOR maxScreen = XMVectorSet(1.0f, 1.0f, z, w);
+
+		XMVECTOR clampedScreenPos = XMVectorClamp(screenPos, minScreen, maxScreen);
+
+        XMVECTOR output = XMVector4Transform(clampedScreenPos, invViewProjection);
+
+        return output;
+}

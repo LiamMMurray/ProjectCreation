@@ -8,8 +8,8 @@ class PlayerPuzzleState : public IPlayerControllerState
     private:
         float             goalDragMaxSpeed = 0.5f;
         DirectX::XMVECTOR dragVelocity;
-        float             dragAcceleration   = 0.3f;
-        float             dragDeacceleration = 0.3f;
+        float             dragAcceleration   = 0.6f;
+        float             dragDeacceleration = 0.9f;
 
         int m_CollectedPlanetCount = 0;
 

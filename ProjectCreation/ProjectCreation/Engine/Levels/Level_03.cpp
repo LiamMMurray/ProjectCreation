@@ -2,6 +2,8 @@
 #include "../GEngine.h"
 #include "../MathLibrary/MathLibrary.h"
 
+#include "../Controller/ControllerSystem.h"
+
 void Level_03::Enter()
 {
 
@@ -13,9 +15,12 @@ void Level_03::Enter()
                 GEngine::Get()->Update();
         }
 
-        m_SpeedBoostSystem->splineWidth  = 40.0f;
-        m_SpeedBoostSystem->splineHeight = 1.25f;
+        m_SpeedBoostSystem->splineWidth  = 25.0f;
+        m_SpeedBoostSystem->splineHeight = 1.5f;
         m_SpeedBoostSystem->changeColor  = true;
+
+		ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+        controllerSys->ResetLightOrbCounters();
 
         m_SpeedBoostSystem->SetTargetTerrain(1.0f);
 }

@@ -53,7 +53,7 @@ void PlayerCinematicState::Update(float deltaTime)
                         UpdateLookAt(deltaTime);
                         break;
                 }
-                //case E_TRANSITION_MODE::Reveal:
+                // case E_TRANSITION_MODE::Reveal:
                 //{
                 //      //  UpdateReveal(deltaTime);
                 //        break;
@@ -103,14 +103,16 @@ void PlayerCinematicState::UpdateLookAt(float deltaTime)
         TransformComponent* playerTransformComponent = eHandle.GetComponent<TransformComponent>();
         TransformComponent* lookAtTransformComponent = m_lookAtTarget.Get<TransformComponent>();
 
-        FQuaternion desiredRotation = FQuaternion::LookAtWithRoll(playerTransformComponent->transform.translation,
-                                                                  lookAtTransformComponent->transform.translation);
+        XMVECTOR fw = XMVector3Normalize(lookAtTransformComponent->transform.translation -
+                                         playerTransformComponent->transform.translation);
+
+        FQuaternion desiredRotation = FQuaternion::LookAt(fw);
 
         playerTransformComponent->transform.rotation =
             FQuaternion::Lerp(_playerInitialLookAtRot, desiredRotation, min(1.0f, m_lookAtAlpha));
 }
 
-//void PlayerCinematicState::UpdateReveal(float deltaTime)
+// void PlayerCinematicState::UpdateReveal(float deltaTime)
 //{
 //        m_RevealRadius += 1.0f;
 //        GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_RevealRadius, deltaTime * 15.0f);
