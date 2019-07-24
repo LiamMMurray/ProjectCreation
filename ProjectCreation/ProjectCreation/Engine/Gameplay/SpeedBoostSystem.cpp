@@ -76,19 +76,20 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
 
         if (changeColor)
         {
+                //if ((E_Level_States)GEngine::Get()->GetLevelStateManager() == E_Level_States::LEVEL_02)
                 colorCount++;
 
-                if (colorCount < 5)
+                if (colorCount < 15)
                 {
                         cluster.color = E_LIGHT_ORBS::RED_LIGHTS;
                 }
 
-                else if (colorCount >= 5 && colorCount < 10)
+                else if (colorCount >= 15 && colorCount < 30)
                 {
                         cluster.color = E_LIGHT_ORBS::BLUE_LIGHTS;
                 }
 
-                else if (colorCount >= 10 && colorCount < 15)
+                else if (colorCount >= 30 && colorCount < 45)
                 {
                         cluster.color = E_LIGHT_ORBS::GREEN_LIGHTS;
                 }
@@ -148,6 +149,24 @@ void SpeedBoostSystem::RequestDestroyAllSpeedboosts()
         for (auto& iter : m_HandleManager->GetActiveComponents<SpeedboostComponent>())
         {
                 RequestDestroySpeedboost(&iter);
+        }
+}
+
+void SpeedBoostSystem::RequestDestroyAllSplines()
+{
+
+        for (auto& iter : m_SplineClusterSpawners)
+        {
+                DestroySpline(iter.first, 0);
+        }
+}
+
+void SpeedBoostSystem::RequestDestroyAllPlanets()
+{
+        auto orbitSystem = SYSTEM_MANAGER->GetSystem<OrbitSystem>();
+        for (auto& iter : m_HandleManager->GetActiveComponents<GoalComponent>())
+        {
+                orbitSystem->DestroyPlanet(&iter);
         }
 }
 

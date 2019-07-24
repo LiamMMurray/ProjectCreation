@@ -8,7 +8,6 @@
 #include "../Controller/ControllerSystem.h"
 #include "../GenericComponents/TransformComponent.h"
 #include "../ResourceManager/Material.h"
-#include "GoalComponent.h"
 
 
 using namespace DirectX;
@@ -259,3 +258,10 @@ void OrbitSystem::OnResume()
 
 void OrbitSystem::OnSuspend()
 {}
+
+void OrbitSystem::DestroyPlanet(GoalComponent* toDestroy)
+{
+        toDestroy->collisionHandle.Get<TransformComponent>()->GetParent().Free();
+        toDestroy->GetParent().Free();
+        activeGoal.hasActiveGoal = false;
+}
