@@ -1189,7 +1189,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         if (instance->CSettings.m_Resolution - 1 <= -1)
                         {
-                                instance->CSettings.m_Resolution = 8;
+                                instance->CSettings.m_Resolution = instance->resDescriptors.size();
                         }
                         else
                         {
@@ -1210,7 +1210,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         // Right Resolution Button
         instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                        if (instance->CSettings.m_Resolution + 1 >= 9)
+						if (instance->CSettings.m_Resolution + 1 >= instance->resDescriptors.size())
                         {
                                 instance->CSettings.m_Resolution = 0;
                         }
