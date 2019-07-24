@@ -368,7 +368,7 @@ void UIManager::SupportedResolutions()
         {
                 std::pair<UINT, UINT> newRes =
                     std::make_pair(instance->resDescriptors[i].Width, instance->resDescriptors[i].Height);
-                if (checkedResolutions.find(newRes) != checkedResolutions.end())
+                if (checkedResolutions.find(newRes) != checkedResolutions.end() || newRes.first < 640)
                 {
                         instance->resDescriptors.erase(instance->resDescriptors.begin() + i);
                 }
