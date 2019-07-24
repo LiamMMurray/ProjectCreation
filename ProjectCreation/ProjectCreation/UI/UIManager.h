@@ -26,7 +26,6 @@ struct E_MENU_CATEGORIES
                 LevelMenu,
                 ControlsMenu,
 				Demo,
-				Profiler,
                 COUNT
         };
 };

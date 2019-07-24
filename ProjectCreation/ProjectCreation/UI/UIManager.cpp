@@ -471,7 +471,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
-                          "Press any button to continue. . .",
+                          "Press Enter to continue. . .",
                           0.06f,
                           0.0f,
                           0.1f,
@@ -758,7 +758,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 0.2f,
                                 0.5f,
                                 false);
-                                
+                                
+
+
+
+
             instance->AddSprite(instance->m_RenderSystem->m_Device,
                                 instance->m_RenderSystem->m_Context,
                                 E_MENU_CATEGORIES::PauseMenu,
@@ -1395,9 +1399,7 @@ void UIManager::Update()
         {
                 // Joseph Updated the main menu ui to match to input keys
                 // Changed 'Space', 'Q', and 'E' to 'A', 'S', and 'D'
-                if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down &&
-                    GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down &&
-                    GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
+                if (GCoreInput::GetKeyState(KeyCode::Enter) == KeyState::Down)
                 {
                         instance->MainTilteUnpause();
                 }
