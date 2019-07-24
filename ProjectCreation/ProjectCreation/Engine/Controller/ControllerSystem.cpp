@@ -67,6 +67,11 @@ void ControllerSystem::IncreaseOrbCount(int color)
         m_OrbCounts[color]++;
 }
 
+void ControllerSystem::ResetOrbCount(int color)
+{
+        m_OrbCounts[color] = 0;
+}
+
 void ControllerSystem::OnPreUpdate(float deltaTime)
 {}
 

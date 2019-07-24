@@ -22,4 +22,5 @@ class PlayerGroundState : public IPlayerControllerState
         float m_SpeedboostTransitionSpeed = 1.0f;
         float m_ExtraYSpeed               = 0.0f;
         float m_YRestorationSpeed         = 0.1f;
+        int   count                       = 0;
 };

@@ -56,12 +56,18 @@ class ControllerSystem : public ISystem
         void DisplayConsoleMenu();
 
         // Returns the number of orbs collected of a certain color based on passed in parameter
-        // 0 = Red Lights, 1 = Blue Lights, 2 = Green Lights
+        // 0 = Red Lights, 1 = Green Lights, 2 = Blue Lights
         int GetOrbCount(int color);
 
         // Adds one orb to a certain color based on passed in parameter
-        // 0 = Red Lights, 1 = Blue Lights, 2 = Green Lights
+        // 0 = Red Lights, 1 = Green Lights, 2 = Blue Lights
         void IncreaseOrbCount(int color);
+
+        // Resets the orb count of a certain color based on passed in parameter
+        // 0 = Red Lights, 1 = Green Lights, 2 = Blue Lights
+        void ResetOrbCount(int color);
+
+
 
         // Inherited via ISystem
         virtual void OnPreUpdate(float deltaTime) override;

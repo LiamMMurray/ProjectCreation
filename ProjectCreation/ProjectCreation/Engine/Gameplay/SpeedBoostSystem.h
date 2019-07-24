@@ -38,7 +38,7 @@ class SpeedBoostSystem : public ISystem
         std::string speedboostMaterialNames[E_LIGHT_ORBS::COUNT] = {"SpeedboostR", "SpeedboostG", "SpeedboostB", "SpeedboostW"};
 
 
-        //void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
+        // void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
         void RequestDestroySplineOrb(SpeedboostSplineComponent* speedComp);
 
         ComponentHandle latchedSplineHandle;
@@ -48,15 +48,15 @@ class SpeedBoostSystem : public ISystem
 
         std::vector<float> x;
 
-		void  RequestUnlatchFromSpline(PlayerController* playerController, float deltaTime);
+        void  RequestUnlatchFromSpline(PlayerController* playerController, float deltaTime);
         float mDelatchTimer = 0.0f;
         float mDelatchCD    = 0.5f;
-        void CreateRandomPath(const DirectX::XMVECTOR& start,
-                              const DirectX::XMVECTOR& end,
-                              int                      color,
-                              float                    width     = 0.0f, // 50.0f
-                              unsigned int             waveCount = 5,
-                              float                    heightvar = 0.0f); // 1.6f
+        void  CreateRandomPath(const DirectX::XMVECTOR& start,
+                               const DirectX::XMVECTOR& end,
+                               int                      color,
+                               float                    width     = 40.0f, // 50.0f
+                               unsigned int             waveCount = 5,
+                               float                    heightvar = 0.25f); // 1.6f
 
         void DestroySpline(int SplineID, int curr);
 
@@ -69,6 +69,7 @@ class SpeedBoostSystem : public ISystem
         float m_BoostLifespan         = 25.0f;
         float m_BoostLifespanVariance = 2.0f;
         float m_BoostShrinkSpeed      = m_BoostRadius;
+        float m_targetTerrain           = 0.0f;
 
         static constexpr float m_SplineLengthPerOrb       = 4.5f;
         static constexpr float m_SplineLatchRadius        = 0.2f;
@@ -83,7 +84,7 @@ class SpeedBoostSystem : public ISystem
         static constexpr float m_SplineAttractionForceMax = 1.5f;
         static constexpr float m_SplineHeightOffset       = 0.06f;
 
-	//TESTING
+        // TESTING
         int colorCount = 0;
 
     protected:
@@ -98,15 +99,26 @@ class SpeedBoostSystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
+        float splineHeight = 0.25f;
+        float splineWidth = 40.0f;
+        bool  changeColor  = false;
+
         std::unordered_map<int, SplineCluster> m_SplineClusterSpawners;
 
         EntityHandle SpawnSpeedOrb();
         EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
         EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
 
+        inline void SetTargetTerrain(float val)
+        {
+                m_targetTerrain = val;
+        };
+
         void UpdateSpeedboostEvents();
 
         void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
+
+		void RequestDestroyAllSpeedboosts();
 
         inline void SetRandomSpawnEnabled(bool val)
         {

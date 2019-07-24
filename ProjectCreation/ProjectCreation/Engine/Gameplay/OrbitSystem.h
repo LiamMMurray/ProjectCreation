@@ -11,7 +11,7 @@ class OrbitSystem : public ISystem
     private:
         HandleManager* m_HandleManager;
 
-        const char* materialNames[3] = {"GlowMatPlanet01", "GlowMatPlanet02", "GlowMatPlanet03"};
+        const char* materialNames[3] = {"GlowMatPlanet01", "GlowMatPlanet03", "GlowMatPlanet02"};
         int         m_Stage          = 0;
         void        CreateGoal(int color, DirectX::XMVECTOR position);
 

@@ -1,13 +1,25 @@
 #include "TutorialLevel.h"
+#include "../../UI/UIManager.h"
 
 using namespace DirectX;
 
 class SpeedBoostSystem;
 class SpeedBoostComponent;
 
+
 void TutorialLevel::Enter()
 {
         // Update(GEngine::Get()->GetDeltaTime());
+        GEngine::Get()->SetPlayerRadius(0);
+        m_SpeedBoostSystem->SetRandomSpawnEnabled(false);
+        m_SpeedBoostSystem->RequestDestroyAllSpeedboosts();
+
+        m_PlayerController->SetCollectedPlanetCount(0);
+
+        m_WhiteCollected = m_RedCollected = m_GreenCollected = m_BlueCollected = false;
+        whiteCount = redCount = greenCount = blueCount = levelRequested = 0;
+
+        m_LevelType = E_Level_States::TUTORIAL_LEVEL;
 }
 
 void TutorialLevel::Update(float deltaTime)
@@ -21,18 +33,29 @@ void TutorialLevel::Update(float deltaTime)
 
         else if (redCount <= 0 && m_WhiteCollected == true)
         {
+                UIManager::instance->WhiteOrbCollected();
                 SpawnFirstRedOrb();
                 // UI: Hold A to Collect Red Orbs
         }
 
-        else if (blueCount <= 0 && m_RedCollected == true)
+        else if (greenCount <= 0 && m_RedCollected == true)
         {
+                UIManager::instance->RedOrbCollected();
+                SpawnFirstGreenOrb();
+                // UI: Hold D to Collect Green Orbs
+        }
+
+        else if (blueCount <= 0 && m_GreenCollected == true)
+        {
+
+                UIManager::instance->GreenOrbCollected();
                 SpawnFirstBlueOrb();
                 // UI: Hold S to Collect Blue Orbs
         }
 
-        else if (greenCount <= 0 && m_BlueCollected == true)
+        else if (m_GreenCollected == false && greenCount <= 0 && m_BlueCollected == true)
         {
+                UIManager::instance->BlueOrbCollected();
                 SpawnFirstGreenOrb();
                 // UI: Hold D to Collect Green Orbs
         }
@@ -50,7 +73,8 @@ void TutorialLevel::Update(float deltaTime)
                 {
                         ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
 
-                        XMVECTOR pos = m_PlayerTransform->transform.translation + 2.0f * VectorConstants::Forward;
+                        XMVECTOR center = speedComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
+                        m_PlayerController->SpeedBoost(center, E_LIGHT_ORBS::WHITE_LIGHTS);
 
                         int count = 1;
                         if (count >= 1)
@@ -70,7 +94,8 @@ void TutorialLevel::Update(float deltaTime)
                 {
                         ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
 
-                        XMVECTOR pos = m_PlayerTransform->transform.translation + 2.0f * VectorConstants::Forward;
+                        XMVECTOR center = speedComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
+                        m_PlayerController->SpeedBoost(center, E_LIGHT_ORBS::RED_LIGHTS);
 
                         int count = 1;
                         if (count >= 1)
@@ -86,31 +111,12 @@ void TutorialLevel::Update(float deltaTime)
                 }
 
                 if (speedComp.lifetime >= 0.0f && distanceSq < (checkRadius * checkRadius) && m_RedCollected == true &&
-                    m_BlueCollected == false)
-                {
-                        ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-
-                        XMVECTOR pos = m_PlayerTransform->transform.translation + 2.0f * VectorConstants::Forward;
-
-                        int count = 1;
-                        if (count >= 1)
-                        {
-                                m_BlueCollected = true;
-                        }
-                        else
-                        {
-                                int error = 0;
-                        }
-                        m_SpeedBoostSystem->RequestDestroySpeedboost(&speedComp);
-                        break;
-                }
-
-                if (speedComp.lifetime >= 0.0f && distanceSq < (checkRadius * checkRadius) && m_BlueCollected == true &&
                     m_GreenCollected == false)
                 {
                         ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
 
-                        XMVECTOR pos = m_PlayerTransform->transform.translation + 2.0f * VectorConstants::Forward;
+                        XMVECTOR center = speedComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
+                        m_PlayerController->SpeedBoost(center, E_LIGHT_ORBS::GREEN_LIGHTS);
 
                         int count = 1;
                         if (count >= 1)
@@ -124,12 +130,35 @@ void TutorialLevel::Update(float deltaTime)
                         m_SpeedBoostSystem->RequestDestroySpeedboost(&speedComp);
                         break;
                 }
+
+                if (speedComp.lifetime >= 0.0f && distanceSq < (checkRadius * checkRadius) && m_GreenCollected == true &&
+                    m_BlueCollected == false)
+                {
+                        ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+
+                        XMVECTOR center = speedComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
+                        m_PlayerController->SpeedBoost(center, E_LIGHT_ORBS::BLUE_LIGHTS);
+
+                        int count = 1;
+                        if (count >= 1)
+                        {
+                                m_BlueCollected = true;
+                        }
+                        else
+                        {
+                                int error = 0;
+                        }
+                        m_SpeedBoostSystem->RequestDestroySpeedboost(&speedComp);
+                        break;
+                }
         }
 
         if ((m_WhiteCollected == true && m_RedCollected == true && m_BlueCollected == true && m_GreenCollected == true) &&
             levelRequested <= 0)
         {
-                GEngine::Get()->GetLevelStateManager()->RequestState(1);
+                UIManager::instance->BlueOrbCollected();
+                levelRequested += 1;
+                GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_01);
         }
 }
 
@@ -144,8 +173,9 @@ TutorialLevel::TutorialLevel()
         whiteCount = redCount = blueCount = greenCount = levelRequested = 0;
 
         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+        m_PlayerController              = static_cast<PlayerController*>(controllerSys->GetCurrentController());
         m_PlayerEntityHandle = controllerSys->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]->GetControlledEntity();
-
+        // m_PlayerController = m_PlayerEntityHandle.GetComponent<PlayerController>();
 
         m_PlayerTransform = m_PlayerEntityHandle.GetComponent<TransformComponent>();
 
