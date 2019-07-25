@@ -453,8 +453,8 @@ void UIManager::Initialize(native_handle_type hwnd)
             new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/calibri.spritefont");
         instance->m_FontTypes[E_FONT_TYPE::MyFile] =
             new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/myfile.spritefont");
-        // Main Menu
 
+		// Main Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
@@ -466,7 +466,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           false);
 
-        // "Press A, S, and D to continue. . . "
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
@@ -478,7 +477,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           false);
 
-        // "Hold Left Click to Move. . . "
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
@@ -522,6 +520,16 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.1f,
                           false,
                           false);
+
+        instance->AddSprite(instance->m_RenderSystem->m_Device,
+                            instance->m_RenderSystem->m_Context,
+                            E_MENU_CATEGORIES::MainMenu,
+                            L"../Assets/2d/Sprite/Cirle Thirds.dds",
+                            0.0f,
+                            0.0f,
+                            0.3f,
+                            0.3f,
+                            true);
 
         // Pause Menu
         instance->AddSprite(instance->m_RenderSystem->m_Device,
