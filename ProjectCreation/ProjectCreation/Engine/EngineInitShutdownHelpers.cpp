@@ -67,7 +67,7 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
         // Create Transform System
         {
                 FSystemProperties sysInitProps;
-                sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::LOW;
+                sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::VERY_HIGH;
                 sysInitProps.m_UpdateRate = 0.0f;
 
                 TransformSystem* transformSystem;
