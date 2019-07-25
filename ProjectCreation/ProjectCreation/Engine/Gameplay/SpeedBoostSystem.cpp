@@ -81,9 +81,10 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
                 cluster.color = color;
         }
 
-        cluster.cachedPoints.push_back(curr);
+		XMVECTOR correctedCurr = curr + GEngine::Get()->m_OriginOffset - cluster.originalWorldOffset;
+        cluster.cachedPoints.push_back(correctedCurr);
         cluster.cachedColors.push_back(cluster.color);
-        auto entityH = SpawnLightOrb(curr, cluster.color);
+        auto entityH = SpawnLightOrb(correctedCurr, cluster.color);
         auto splineH = entityH.AddComponent<SpeedboostSplineComponent>();
 
         cluster.splineComponentList.push_back((splineH));
@@ -271,6 +272,7 @@ void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
         it.first->second.targetColor   = color;
         it.first->second.current       = 0;
         it.first->second.shouldDestroy = false;
+        it.first->second.originalWorldOffset = GEngine::Get()->m_OriginOffset;
         it.first->second.spawnTimer = it.first->second.spawnCD = m_SplineSpawnCD;
         XMVECTOR dummy;
         it.first->second.BakeNextPointOnSpline(dummy, dummy, dummy);
@@ -282,10 +284,10 @@ void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
 
 void SpeedBoostSystem::DestroySpline(int SplineID, int start)
 {
-        SplineCluster& toDelete = m_SplineClusterSpawners.at(SplineID);
-        toDelete.shouldDestroy  = true;
-        toDelete.current        = start;
-        toDelete.deleteIndex    = 0;
+        SplineCluster& toDelete   = m_SplineClusterSpawners.at(SplineID);
+        toDelete.shouldDestroy    = true;
+        toDelete.deleteSeparation = 0;
+        toDelete.deleteIndex      = start;
 }
 
 
@@ -544,12 +546,14 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                         XMVECTOR dirVel;
                                         XMVECTOR dir;
                                         bool     attached = false;
+
+
                                         if (MathLibrary::VectorDotProduct(playerTransform->transform.GetForward(), dirNext) >
                                             0.3f)
                                         {
                                                 attached = true;
                                                 dir      = dirNext;
-                                                dirVel   = XMVector3Normalize(capsuleA.endPoint -
+                                                dirVel   = (capsuleA.endPoint -
                                                                             playerTransform->transform.translation);
                                         }
                                         else if (MathLibrary::VectorDotProduct(playerTransform->transform.GetForward(),
@@ -557,10 +561,13 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                         {
                                                 attached = true;
                                                 dir      = dirPrev;
-                                                dirVel   = XMVector3Normalize(capsuleB.endPoint -
+                                                dirVel   = (capsuleB.endPoint -
                                                                             playerTransform->transform.translation);
                                         }
 
+
+										float dist = MathLibrary::CalulateVectorLength(dirVel);
+										dirVel = XMVector3Normalize(dirVel);
                                         if (attached)
                                         {
                                                 XMVECTOR closestPointOnLine = MathLibrary::GetClosestPointFromLine(
@@ -633,34 +640,43 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 else
                 {
                         size_t size = it->second.splineComponentList.size();
-                        int    next = it->second.current + it->second.deleteIndex;
-                        int    prev = it->second.current - it->second.deleteIndex;
+                        int    next = it->second.deleteIndex + it->second.deleteSeparation;
+                        int    prev = it->second.deleteIndex - it->second.deleteSeparation;
 
                         bool done = true;
 
-                        if (next < size)
+                        if (it->second.spawnTimer <= 0.0f)
                         {
-                                SpeedboostSplineComponent* comp =
-                                    it->second.splineComponentList[next].Get<SpeedboostSplineComponent>();
-                                RequestDestroySplineOrb(comp);
-                                done = false;
-                        }
+                                it->second.spawnTimer = it->second.spawnCD;
 
-                        if (prev >= 0 && prev != next)
-                        {
-                                SpeedboostSplineComponent* comp =
-                                    it->second.splineComponentList[prev].Get<SpeedboostSplineComponent>();
-                                RequestDestroySplineOrb(comp);
-                                done = false;
-                        }
+                                if (next < size)
+                                {
+                                        SpeedboostSplineComponent* comp =
+                                            it->second.splineComponentList[next].Get<SpeedboostSplineComponent>();
+                                        RequestDestroySplineOrb(comp);
+                                        done = false;
+                                }
 
-                        it->second.deleteIndex++;
-                        if (done)
+                                if (prev >= 0 && prev != next)
+                                {
+                                        SpeedboostSplineComponent* comp =
+                                            it->second.splineComponentList[prev].Get<SpeedboostSplineComponent>();
+                                        RequestDestroySplineOrb(comp);
+                                        done = false;
+                                }
+
+                                it->second.deleteSeparation++;
+                                if (done)
+                                {
+                                        int id = it->first;
+                                        ++it;
+                                        m_SplineClusterSpawners.erase(id);
+                                        continue;
+                                }
+                        }
+                        else
                         {
-                                int id = it->first;
-                                ++it;
-                                m_SplineClusterSpawners.erase(id);
-                                continue;
+                                it->second.spawnTimer -= deltaTime * 0.5f;
                         }
                 }
                 ++it;

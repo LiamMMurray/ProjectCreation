@@ -598,16 +598,15 @@ void RenderSystem::DrawLines()
         for (auto& it : speedboostSystem->m_SplineClusterSpawners)
         {
                 int vertexCount = it.second.cachedPoints.size() - 1;
+				
+                int separator = it.second.deleteIndex;
+                int separation = it.second.deleteSeparation;
 
-                if (vertexCount <= 0)
-                        continue;
+                int lengthA = separator - separation;
 
-                vertexCount = std::min(2000, vertexCount);
+				int startB = separator + separation;
+                int lengthB = vertexCount - startB + 1;
 
-                D3D11_MAPPED_SUBRESOURCE mappedResource{};
-                m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-                memcpy(mappedResource.pData, it.second.cachedPoints.data(), vertexCount * sizeof(XMVECTOR));
-                m_Context->Unmap(m_LineVertexBuffer, 0);
 
                 XMStoreFloat3(&surf.emissiveColor,
                               2.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[it.second.targetColor]));
@@ -615,7 +614,26 @@ void RenderSystem::DrawLines()
                 UpdateConstantBuffer(
                     m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE], &surf, sizeof(FSurfaceProperties));
 
-                m_Context->Draw(vertexCount, 0);
+                if (lengthA > 0)
+                {
+                        D3D11_MAPPED_SUBRESOURCE mappedResource{};
+                        m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+                        memcpy(mappedResource.pData, it.second.cachedPoints.data(), lengthA * sizeof(XMVECTOR));
+                        m_Context->Unmap(m_LineVertexBuffer, 0);
+
+                        m_Context->Draw(lengthA, 0);
+                }
+
+                if (lengthB > 0)
+                {
+                        D3D11_MAPPED_SUBRESOURCE mappedResource{};
+                        m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+                        memcpy(mappedResource.pData,
+                               it.second.cachedPoints.data() + startB, (lengthB) * sizeof(XMVECTOR));
+                        m_Context->Unmap(m_LineVertexBuffer, 0);
+
+                        m_Context->Draw(lengthB, 0);
+                }
         }
 
         if (orbitSystem->activeGoal.hasActiveGoal)
@@ -631,8 +649,7 @@ void RenderSystem::DrawLines()
                 memcpy(mappedResource.pData, vec, vertexCount * sizeof(XMVECTOR));
                 m_Context->Unmap(m_LineVertexBuffer, 0);
 
-                XMStoreFloat3(
-                    &surf.emissiveColor,
+                XMStoreFloat3(&surf.emissiveColor,
                               1.2f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[E_LIGHT_ORBS::WHITE_LIGHTS]));
 
                 UpdateConstantBuffer(
@@ -971,8 +988,6 @@ void RenderSystem::OnUpdate(float deltaTime)
                 }
         }
 
-        DrawLines();
-
 
         /** Render transluscent meshes **/
         m_Context->OMSetDepthStencilState(m_DepthStencilStates[E_DEPTH_STENCIL_STATE::TRANSLUSCENT], 1);
@@ -993,6 +1008,8 @@ void RenderSystem::OnUpdate(float deltaTime)
                         DrawSkeletalMesh(mesh, mat, &m_TransluscentDraws[i].mtx, &meshComp->m_Skeleton);
                 }
         }
+        DrawLines();
+
         m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
 
         ParticleManager::Update(deltaTime);

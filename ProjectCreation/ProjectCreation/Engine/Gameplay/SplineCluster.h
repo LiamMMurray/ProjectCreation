@@ -15,10 +15,12 @@ struct SplineCluster
         DirectX::XMMATRIX              transform;
         DirectX::XMVECTOR              currPos;
         DirectX::XMVECTOR              nextPos;
+        DirectX::XMVECTOR              originalWorldOffset;
         float                          spawnTimer;
         float                          spawnCD;
         int                            current;
-        int                            deleteIndex = 0;
+        int                            deleteIndex      = 0;
+        int                            deleteSeparation = 0;
         int                            segments;
         int                            spiralCount;
         float                          maxHeight;
