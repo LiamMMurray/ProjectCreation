@@ -17,10 +17,10 @@ float4 main(PS_INPUT input) : SV_TARGET
 {
 
         float4 output = input.color;
-       // output        = tex1.Sample(objSamplerState, input.uv);
+        output        = tex1.Sample(objSamplerState, input.uv).xyzx;
 		//Transparency
-        output.a      *= 0.5;
-        clip(output.a > 0.1);
+        output.xyz *= output.a; // pre multiply alpha
+		//clip(output.a > 0.1);
 
         return output;
 }

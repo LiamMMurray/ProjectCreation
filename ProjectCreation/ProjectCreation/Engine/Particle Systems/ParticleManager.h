@@ -26,8 +26,7 @@ class ParticleManager
         HandleManager*                          m_HandleManager;
         ID3D11InputLayout*                      m_VertexInputLayout;
         ParticleData::FParticleGPU*             m_ParticleInfo;
-        ParticleData::FEmitterGPU*              m_EnitterInfo;
-        ParticleData::FEmitterCPU*              m_EmitterCpuInfo;
+        ParticleData::FEmitterGPU               m_EmittersCPU[gMaxEmitterCount];
         std::vector<ParticleData::FEmitterGPU*> m_Emitters;
         ParticleData::FSegmentBuffer            m_SegmentInfo;
         void                                    UpdateResources(ID3D11Resource* resource);

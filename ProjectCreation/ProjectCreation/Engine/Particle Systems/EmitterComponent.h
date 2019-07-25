@@ -5,4 +5,5 @@ class EmitterComponent : public Component<EmitterComponent>
 {
     public:
         ParticleData::FEmitterGPU EmitterData;
+        DirectX::XMVECTOR offset = DirectX::XMVectorZero();
 };

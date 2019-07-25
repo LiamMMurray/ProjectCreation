@@ -16,8 +16,9 @@
 #include "../ResourceManager/Texture2D.h"
 #include "../ResourceManager/VertexShader.h"
 #include "EmitterComponent.h"
-#include "EmitterComponent.h"
+
 #include "ParticleBufferSetup.h"
+#include "..//GenericComponents/TransformComponent.h"
 using namespace ParticleData;
 using namespace DirectX;
 using namespace Pools;
@@ -39,11 +40,18 @@ void ParticleManager::update(float deltaTime)
 
         // update emitter container
         m_RenderSystem->m_Context->OMSetRenderTargets(0, nullptr, nullptr);
+        int emitterCount = 0;
         // Build update list
         {
                 for (auto emitterComponent : GEngine::Get()->GetHandleManager()->GetActiveComponents<EmitterComponent>())
                 {
-                        int x = 5;
+                        EntityHandle parent = emitterComponent.GetParent();
+                        TransformComponent* transformComponent = parent.GetComponent<TransformComponent>();
+                        XMVECTOR            emitterPos = transformComponent->transform.translation + emitterComponent.offset;
+                        m_EmittersCPU[emitterCount] = emitterComponent.EmitterData;
+                        XMStoreFloat4(&m_EmittersCPU[emitterCount].position, emitterPos);
+                            
+                        emitterCount++;
                 }
         }
         // Send data to gpu
@@ -54,7 +62,7 @@ void ParticleManager::update(float deltaTime)
         Texture2D*      texture        = RESOURCE_MANAGER->GetResource<Texture2D>(m_TextureHandle);
 
         m_RenderSystem->UpdateConstantBuffer(
-            m_EmitterBuffer.m_StructuredBuffer, m_EnitterInfo, sizeof(ParticleData::FEmitterGPU) * 1);
+            m_EmitterBuffer.m_StructuredBuffer, m_EmittersCPU, sizeof(ParticleData::FEmitterGPU)*emitterCount);
 
         ID3D11ShaderResourceView* null[]{nullptr};
         m_RenderSystem->m_Context->VSSetShaderResources(0, 1, null);
@@ -143,27 +151,21 @@ void ParticleManager::init()
         m_HandleManager = GEngine::Get()->GetHandleManager();
 
         // data set up //shoulde be ab;e to set the particle data somewhere else
-        m_EnitterInfo = new FEmitterGPU;
 
-        m_EnitterInfo->currentParticleCount = 0;
-        m_EnitterInfo->active               = true;
-        m_EnitterInfo->initialColor         = {10.0f, 10.0f, 0.0f, 1.0f};
-        m_EnitterInfo->finalColor           = {1.0f, 1.0f, 1.0f, 1.0f};
-        m_EnitterInfo->position             = {0.0f, 10.0f, 0.0f, 0.0f};
-        m_EnitterInfo->uv                   = {0.0f, 0.0f};
-        m_EnitterInfo->minVelocity          = {-30.0f, -0.0f, -30.0f};
-        m_EnitterInfo->maxVelocity          = {30.0f, 20.0f, 30.0f};
-        m_EnitterInfo->accumulatedTime      = 12.0f;
-        m_EnitterInfo->scale.x              = 1.0f;
-        m_EnitterInfo->acceleration         = XMFLOAT3(0.0f, 0.0f, 0.0f);
-        m_EnitterInfo->index                = 2;
-        AddEmitter(*m_EnitterInfo);
-        m_EmitterCpuInfo               = new FEmitterCPU;
-        m_EmitterCpuInfo->maxParticles = 1000;
+        m_EmittersCPU->currentParticleCount = 0;
+        m_EmittersCPU->active               = true;
+        m_EmittersCPU->initialColor         = {10.0f, 10.0f, 0.0f, 1.0f};
+        m_EmittersCPU->finalColor           = {1.0f, 1.0f, 1.0f, 1.0f};
+        m_EmittersCPU->position             = {0.0f, 10.0f, 0.0f, 0.0f};
+        m_EmittersCPU->uv                   = {0.0f, 0.0f};
+        m_EmittersCPU->minVelocity          = {-30.0f, -0.0f, -30.0f};
+        m_EmittersCPU->maxVelocity          = {30.0f, 20.0f, 30.0f};
+        m_EmittersCPU->accumulatedTime      = 12.0f;
+        m_EmittersCPU->scale                = XMFLOAT2(1.0f, 0.0f);
 
+		m_EmittersCPU->acceleration         = XMFLOAT3(0.0f, -9.8f, 0.0f);
+        m_EmittersCPU->index                = 2;
 
-        m_SegmentInfo.index[0] = gMaxParticleCount;
-        m_SegmentInfo.index[1] = m_EmitterCpuInfo->maxParticles + m_SegmentInfo.index[0];
 
         // init
         m_RenderSystem = SYSTEM_MANAGER->GetSystem<RenderSystem>();
@@ -177,7 +179,7 @@ void ParticleManager::init()
         m_PixelShaderHandle    = RESOURCE_MANAGER->LoadPixelShader("PurePixelShader");
         m_VertexShaderHandle   = RESOURCE_MANAGER->LoadVertexShader("PureVertexShader");
         m_GeometryShaderHandle = RESOURCE_MANAGER->LoadGeometryShader("GeometryShaderTesting");
-        m_TextureHandle        = RESOURCE_MANAGER->LoadTexture2D("Teddy_D");
+        m_TextureHandle        = RESOURCE_MANAGER->LoadTexture2D("spheretest");
 
 
         D3D11_INPUT_ELEMENT_DESC layout1[] = {
@@ -201,10 +203,6 @@ void ParticleManager::shutdown()
         ParticleBufferShutdown(&m_ParticleBuffer);
         ParticleBufferShutdown(&m_EmitterBuffer);
         ParticleBufferShutdown(&m_SegmentBuffer);
-
-
-        delete m_EnitterInfo;
-        delete m_EmitterCpuInfo;
 }
 
 void ParticleManager::ParticleBufferInit(ID3D11Device1*                device1,

@@ -61,6 +61,7 @@ Texture2D                          tex2d : register(t1);
 
         float wValue = 1.0f;
 
+		float3 direction;
         if (ParticleBuffer[id].time <= 0.0f)
         {
                 ParticleBuffer[id].scale = EmitterBuffer[0].particleScale.x;
@@ -93,9 +94,9 @@ Texture2D                          tex2d : register(t1);
         {
                 float alpha              = 1.0f - ParticleBuffer[id].time / EmitterBuffer[0].accumulatedTime;
                 ParticleBuffer[id].color = lerp(EmitterBuffer[0].initialColor, EmitterBuffer[0].finalColor, alpha);
-                /*ParticleBuffer[id].scale = lerp(EmitterBuffer[0].particleScale.x,
-                 * EmitterBuffer[0].particleScale.y, alpha);*/
+               // ParticleBuffer[id].scale = lerp(EmitterBuffer[0].particleScale.x,EmitterBuffer[0].particleScale.y, alpha);
                 ParticleBuffer[DTid.x].time -= _DeltaTime;
+
                 // ParticleBuffer[DTid.x].position += 1.0f*float4(ParticleBuffer[DTid.x].velocity * _DeltaTime,
                 // 0.0f);
 
@@ -116,13 +117,13 @@ Texture2D                          tex2d : register(t1);
                 ParticleBuffer[id].velocity = ParticleBuffer[id].velocity + ParticleBuffer[id].acceleration * _DeltaTime;
 
 				//bounce based on texture depth
-             /*   if (ParticleBuffer[id].position.y <= depth)
+               if (ParticleBuffer[id].position.y <= depth)
                 {
                         ParticleBuffer[id].velocity = float3(3.0f, 10.0f, 1.0f);
 
                         ParticleBuffer[id].position =
                             ParticleBuffer[id].position + float4(ParticleBuffer[id].velocity, 1.0f) * _DeltaTime;
-                }*/
+                }
         }
 }
 
