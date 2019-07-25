@@ -521,14 +521,15 @@ void UIManager::Initialize(native_handle_type hwnd)
                           false,
                           false);
 
+		//Cross-hair
         instance->AddSprite(instance->m_RenderSystem->m_Device,
                             instance->m_RenderSystem->m_Context,
                             E_MENU_CATEGORIES::MainMenu,
-                            L"../Assets/2d/Sprite/Cirle Thirds.dds",
+                            L"../Assets/2d/Sprite/Circle Thirds.dds",
                             0.0f,
                             0.0f,
-                            0.3f,
-                            0.3f,
+                            0.04f,
+                            0.04f,
                             true);
 
         // Pause Menu
@@ -1197,7 +1198,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                         if (instance->CSettings.m_Resolution - 1 <= -1)
                         {
-                                instance->CSettings.m_Resolution = instance->resDescriptors.size();
+                                instance->CSettings.m_Resolution = instance->resDescriptors.size()-1;
                         }
                         else
                         {
