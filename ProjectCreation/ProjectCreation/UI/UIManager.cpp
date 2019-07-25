@@ -751,7 +751,7 @@ void UIManager::Initialize(native_handle_type hwnd)
             instance->m_SliderHandle = 0.0f;
             instance->AddSprite(instance->m_RenderSystem->m_Device,
                                 instance->m_RenderSystem->m_Context,
-                                E_MENU_CATEGORIES::PauseMenu,
+                                E_MENU_CATEGORIES::OptionsMenu,
                                 L"../Assets/2d/Sprite/Slider_BG.dds",
                                 0.0f,
                                 -0.35f,
@@ -765,7 +765,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
             instance->AddSprite(instance->m_RenderSystem->m_Device,
                                 instance->m_RenderSystem->m_Context,
-                                E_MENU_CATEGORIES::PauseMenu,
+                                E_MENU_CATEGORIES::OptionsMenu,
                                 L"../Assets/2d/Sprite/Slider_FG.dds",
                                 0.0f,
                                 -0.35f,
@@ -773,8 +773,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 0.5f,
                                 false);
         */
-        // Level Menu
 
+        // Level Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
