@@ -108,10 +108,10 @@ void PlayerController::DebugPrintSpeedBoostColor(int color)
                         ConsoleWindow::PrintMessage("Boosting on red light", "PlayerMovement");
                         break;
                 case 1:
-                        ConsoleWindow::PrintMessage("Boosting on blue light", "PlayerMovement");
+                        ConsoleWindow::PrintMessage("Boosting on green light", "PlayerMovement");
                         break;
                 case 2:
-                        ConsoleWindow::PrintMessage("Boosting on green light", "PlayerMovement");
+                        ConsoleWindow::PrintMessage("Boosting on blue light", "PlayerMovement");
                         break;
                 case 3:
                         ConsoleWindow::PrintMessage("Boosting on white light", "PlayerMovement");
@@ -177,12 +177,12 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 bool isPlaying;
                 // m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->isSoundPlaying(isPlaying);
                 m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->Play();
-                DebugPrintSpeedBoostColor(color);
+                //DebugPrintSpeedBoostColor(color);
                 currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
                 XMVECTOR currentInput = XMVector3Rotate(m_CurrentInput, _cachedControlledTransform.rotation.data);
                 if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
                 {
-                        m_CurrentVelocity += 2.0f * XMVector3Normalize(m_CurrentVelocity);
+                        m_CurrentVelocity += 1.0f * XMVector3Normalize(m_CurrentVelocity);
                         m_CurrentVelocity = XMVector3ClampLength(m_CurrentVelocity, 0.0f, currentMaxSpeed);
                         m_GroundState->AddSpeedBoost();
                 }

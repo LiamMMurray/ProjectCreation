@@ -46,6 +46,8 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
         euler.x                             = 0.0f;
         FQuaternion quat                    = FQuaternion::FromEulerAngles(euler);
         int         color                   = MathLibrary::GetRandomIntInRange(0, 4);
+
+
         XMVECTOR    pos                     = MathLibrary::GetRandomPointInArc(playerTransform->transform.translation,
                                                         quat.GetForward(),
                                                         VectorConstants::Up,
@@ -561,7 +563,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                         XMVECTOR dirNext = XMVector3Normalize(nextPos - currPos);
                                         XMVECTOR dirPrev = XMVector3Normalize(prevPos - currPos);
 
-                                        XMVECTOR dirVel;
+                                        XMVECTOR dirVel = XMVectorZero();
                                         XMVECTOR dir;
                                         bool     attached = false;
 
@@ -579,8 +581,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                         {
                                                 attached = true;
                                                 dir      = dirPrev;
-                                                dirVel   = (capsuleB.endPoint -
-                                                                            playerTransform->transform.translation);
+                                                dirVel   = (capsuleB.endPoint - playerTransform->transform.translation);
                                         }
 
 
@@ -617,7 +618,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                 currVel = MathLibrary::MoveTowards(currVel, desiredVel, strength);
                                                 playerController->SetCurrentVelocity(currVel);
                                                 playerController->SetNextForward(dir);
-                                                playerController->SetCurrentMaxSpeed(5.0f);
+                                                playerController->SetCurrentMaxSpeed(4.5f);
                                                 // playerController->AddCurrentVelocity(dir * 10.0f * deltaTime);
                                         }
                                 }

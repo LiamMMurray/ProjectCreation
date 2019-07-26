@@ -72,9 +72,19 @@ int ControllerSystem::GetOrbCount(int color)
 
 void ControllerSystem::IncreaseOrbCount(int color)
 {
+        if (m_PrevOrbColor != color)
+        {
+                ResetOrbCount(m_PrevOrbColor);
+        }
+
         m_OrbCounts[color]++;
+
         if (m_OrbCounts[color] % 3 == 0 && m_OrbCounts[color] > 0)
+        {
                 CollectOrbEventIDs[color]++;
+        }
+
+        m_PrevOrbColor = color;
 }
 
 void ControllerSystem::ResetOrbCount(int color)

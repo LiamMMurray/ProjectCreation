@@ -62,6 +62,7 @@ class ControllerSystem : public ISystem
 
 
         int m_OrbCounts[E_LIGHT_ORBS::COUNT] = {};
+        int m_PrevOrbColor;
 
         void DisplayConsoleMenu();
 
