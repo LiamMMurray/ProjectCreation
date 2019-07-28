@@ -5,11 +5,11 @@
 
 struct ParticleBuffer
 {
-        ID3D11Buffer*              m_StructuredBuffer;
-        ID3D11UnorderedAccessView* m_UAV;
-        ID3D11ShaderResourceView*  m_StructuredView;
+        ID3D11Buffer*              m_StructuredBuffer = nullptr;
+        ID3D11UnorderedAccessView* m_UAV              = nullptr;
+        ID3D11ShaderResourceView*  m_StructuredView   = nullptr;
 };
-//struct Emitterbuffer
+// struct Emitterbuffer
 //{
 //        ID3D11Buffer* m_StructuredBuffer;
 //        ID3D11ShaderResourceView* m_StructuredView;

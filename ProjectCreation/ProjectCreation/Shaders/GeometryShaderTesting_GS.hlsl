@@ -9,7 +9,7 @@ struct FParticleGPU
         float3 velocity;
         float2 uv;
         float  time;
-        bool   active;
+        int    active;
         float  scale;
         float3 acceleration;
 };
@@ -19,10 +19,9 @@ struct FTextureSetting
         int index;
         int col;
         int row;
-
 };
 StructuredBuffer<FParticleGPU> buffer : register(t1);
-//StructuredBuffer<FTextureSetting> Texbuffer : register(t2);
+// StructuredBuffer<FTextureSetting> Texbuffer : register(t2);
 
 struct VS_OUTPUT
 {
@@ -41,42 +40,47 @@ struct GSOutput
                               : SV_PrimitiveID) {
         GSOutput verts[4] = {(GSOutput)0, (GSOutput)0, (GSOutput)0, (GSOutput)0};
 
-        for (int i = 0; i < 4; ++i)
+        if (buffer[InstanceID].time > 0.0f)
         {
-                verts[i].pos = buffer[InstanceID].position;
-                // verts[i].pos   = float4(0.0f, 0.0f, 0.0f, 1.0f);
-                verts[i].color = buffer[InstanceID].color;
-        }
 
-        uint numStructs = 0;
-        uint stride     = 0;
-        buffer.GetDimensions(numStructs, stride);
+                for (int i = 0; i < 4; ++i)
+                {
+                        verts[i].pos = buffer[InstanceID].position;
+                        // verts[i].pos   = float4(0.0f, 0.0f, 0.0f, 1.0f);
+                        verts[i].color = buffer[InstanceID].color;
+                }
 
-        float scale = buffer[InstanceID].scale;
-        // scale       = 1.0f;
-        // verts[j].pos = mul(float4(verts[j].pos.xyz, 1.0f), World);
-        verts[0].pos = mul(float4(verts[0].pos.xyz, 1.0f), ViewProjection);
-        verts[0].pos = verts[0].pos + float4(-1.0f / _AspectRatio, 1.0f, 0.0f, 0.0f) *	scale;
-        verts[0].uv  = float2(0.0f, 0.0f);
-
-        verts[1].pos = mul(float4(verts[1].pos.xyz, 1.0f), ViewProjection);
-        verts[1].pos = verts[1].pos + float4(1.0f / _AspectRatio, 1.0f, 0.0f, 0.0f) * scale;
-        verts[1].uv  = float2(1.0f, 0.0f);
+                uint numStructs = 0;
+                uint stride     = 0;
+                buffer.GetDimensions(numStructs, stride);
 
 
-        verts[2].pos = mul(float4(verts[2].pos.xyz, 1.0f), ViewProjection);
-        verts[2].pos = verts[2].pos + float4(-1.0f / _AspectRatio, -1.0f, 0.0f, 0.0f) * scale;
-        verts[2].uv  = float2(0.0f, 1.0f);
+                float scale = buffer[InstanceID].scale;
+                // scale       = 1.0f;
+                // verts[j].pos = mul(float4(verts[j].pos.xyz, 1.0f), World);
+                verts[0].pos = mul(float4(verts[0].pos.xyz, 1.0f), ViewProjection);
+                verts[0].pos = verts[0].pos + float4(-1.0f / _AspectRatio, 1.0f, 0.0f, 0.0f) * scale;
+                verts[0].uv  = float2(0.0f, 0.0f);
+
+                verts[1].pos = mul(float4(verts[1].pos.xyz, 1.0f), ViewProjection);
+                verts[1].pos = verts[1].pos + float4(1.0f / _AspectRatio, 1.0f, 0.0f, 0.0f) * scale;
+                verts[1].uv  = float2(1.0f, 0.0f);
 
 
-        verts[3].pos = mul(float4(verts[3].pos.xyz, 1.0f), ViewProjection);
-        verts[3].pos = verts[3].pos + float4(1.0f / _AspectRatio, -1.0f, 0.0f, 0.0f) * scale;
-        verts[3].uv  = float2(1.0f, 1.0f);
+                verts[2].pos = mul(float4(verts[2].pos.xyz, 1.0f), ViewProjection);
+                verts[2].pos = verts[2].pos + float4(-1.0f / _AspectRatio, -1.0f, 0.0f, 0.0f) * scale;
+                verts[2].uv  = float2(0.0f, 1.0f);
 
 
-        for (int j = 0; j < 4; ++j)
-        {
-                output.Append(verts[j]);
+                verts[3].pos = mul(float4(verts[3].pos.xyz, 1.0f), ViewProjection);
+                verts[3].pos = verts[3].pos + float4(1.0f / _AspectRatio, -1.0f, 0.0f, 0.0f) * scale;
+                verts[3].uv  = float2(1.0f, 1.0f);
+
+
+                for (int j = 0; j < 4; ++j)
+                {
+                        output.Append(verts[j]);
+                }
         }
 }
 

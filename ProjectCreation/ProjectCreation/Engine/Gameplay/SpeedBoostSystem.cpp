@@ -28,6 +28,8 @@
 #include "..//CollisionLibary/CollisionLibary.h"
 #include "../AI/AIComponent.h"
 
+#include "../Particle Systems/EmitterComponent.h"
+
 using namespace DirectX;
 
 std::random_device                    r;
@@ -62,6 +64,8 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
                                                                         m_BoostLifespan + m_BoostLifespanVariance);
         speedboostComponent->decay           = 1.0f;
         speedboostComponent->color           = color;
+
+
         return entityH;
 }
 
@@ -128,6 +132,21 @@ EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int c
         orbComp->m_CurrentRadius = 0.0f;
         orbComp->m_Color         = color;
         orbComp->m_TargetRadius  = m_BoostRadius;
+
+        ComponentHandle emitterComponentHandle = entityHandle.AddComponent<EmitterComponent>();
+        EmitterComponent* emitterComponent                 = emitterComponentHandle.Get<EmitterComponent>();
+        emitterComponent->EmitterData.currentParticleCount = 0;
+        emitterComponent->EmitterData.active               = true;
+        emitterComponent->EmitterData.initialColor         = {2.0f, 2.0f, 0.0f, 1.0f};
+        emitterComponent->EmitterData.finalColor           = {0.0f, 2.0f, 2.0f, 0.0f};
+        emitterComponent->EmitterData.uv                   = {0.0f, 0.0f};
+        emitterComponent->EmitterData.minVelocity          = {-3.0f, -0.0f, -3.0f};
+        emitterComponent->EmitterData.maxVelocity          = {3.0f, 6.0f, 3.0f};
+        emitterComponent->EmitterData.lifeSpan             = 3.0f;
+        emitterComponent->EmitterData.scale                = XMFLOAT2(1.0f, 0.0f);
+
+        emitterComponent->EmitterData.acceleration = XMFLOAT3(0.0f, -0.0f, 0.0f);
+        emitterComponent->EmitterData.index        = 2;
 
         return entityHandle;
 }
@@ -531,15 +550,13 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 {
                                         if (i == correctColor)
                                         {
-                                                inPath &= (GCoreInput::GetKeyState(
-                                                               playerController->m_ColorInputKeyCodes[i]) ==
+                                                inPath &= (GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[i]) ==
                                                            KeyState::Down);
                                         }
                                         else
                                         {
                                                 inPath &= ~(GCoreInput::GetKeyState(
-                                                                playerController->m_ColorInputKeyCodes[i]) ==
-                                                            KeyState::Down);
+                                                                playerController->m_ColorInputKeyCodes[i]) == KeyState::Down);
                                         }
                                 }
 
@@ -711,6 +728,7 @@ void SpeedBoostSystem::OnInitialize()
                               2.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[i]));
         }
 
+
         MazeGenerator mazeGenerator;
         m_Paths.resize(PathCount);
         for (int i = 0; i < PathCount; ++i)
@@ -720,25 +738,25 @@ void SpeedBoostSystem::OnInitialize()
 
         std::random_shuffle(m_Paths.begin(), m_Paths.end());
 
-        // EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-        //                                 ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-        //                                 ->GetControlledEntity();
-        //
-        // TransformComponent* playerTransform = playerEntity.GetComponent<TransformComponent>();
-        //
-        // XMVECTOR pos    = playerTransform->transform.translation + 2.0f * VectorConstants::Forward;
-        // auto     handle = SpawnLightOrb(pos, E_LIGHT_ORBS::WHITE_LIGHTS);
-        //
-        // auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
-        // speedboostComponent->collisionRadius = m_BoostRadius;
-        // speedboostComponent->lifetime        = 1.0f;
-        // speedboostComponent->decay           = 0.0f;
-        // speedboostComponent->color           = E_LIGHT_ORBS::WHITE_LIGHTS;
-        /*CreateRandomPath(playerTransform->transform.translation,
-                         SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[0],
-                         E_LIGHT_ORBS::BLUE_LIGHTS,
-                         5.0f,
-                         4);*/
+        EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+                                        ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
+                                        ->GetControlledEntity();
+
+        EmitterComponent* emitterComponent = playerEntity.AddComponent<EmitterComponent>().Get<EmitterComponent>();
+        emitterComponent->EmitterData.currentParticleCount = 0;
+        emitterComponent->EmitterData.active               = true;
+        emitterComponent->EmitterData.initialColor         = {1.0f, 1.0f, 1.0f, 1.0f};
+        emitterComponent->EmitterData.finalColor           = {1.0f, 1.0f, 1.0f, 0.0f};
+        emitterComponent->EmitterData.uv                   = {0.0f, 0.0f};
+        emitterComponent->EmitterData.minVelocity          = {-3.0f, -0.0f, -3.0f};
+        emitterComponent->EmitterData.maxVelocity          = {3.0f, 6.0f, 3.0f};
+        emitterComponent->EmitterData.lifeSpan             = 10.0f;
+        emitterComponent->EmitterData.scale                = XMFLOAT2(1.0f, 0.0f);
+
+        emitterComponent->EmitterData.acceleration = XMFLOAT3(0.0f, -9.8f, 0.0f);
+        emitterComponent->EmitterData.index        = 2;
+
+
         bIsLatchedToSpline = false;
 }
 
