@@ -130,9 +130,10 @@ float4 main(DomainOutput pIn) : SV_TARGET
 
         float modulatedDistance = dist / .1f + InterleavedGradientNoise(pIn.Pos.xy + _Time);
 
-        float mask         = saturate(dist / 0.1f - _playerRadius*2.0f);
-        float bandA        = saturate(dist / 0.1f - _playerRadius*2.0f + 0.5f);
-        float bandB        = saturate(dist / 0.1f - _playerRadius*2.0f - 0.5f);
+        float playerRadius = _playerRadius * gTerrainAlpha;
+        float mask         = saturate(dist / 0.1f - playerRadius * 2.0f);
+        float bandA        = saturate(dist / 0.1f - playerRadius * 2.0f + 0.5f);
+        float bandB        = saturate(dist / 0.1f - playerRadius * 2.0f - 0.5f);
         float bandCombined = saturate(5.0f * (bandA - bandB));
         color *= (1 - mask);
 
@@ -148,6 +149,8 @@ float4 main(DomainOutput pIn) : SV_TARGET
         clip((1 - bandA) < 0.01f ? -1 : 1);
 
         color += surface.emissiveColor + band;
+        float revealAlpha = _playerRadius / 500.0f;
+        revealAlpha       = saturate(pow(revealAlpha, 2.0f));
 
-        return float4(color, 1.0f);
+        return float4(color * revealAlpha, 1.0f);
 }

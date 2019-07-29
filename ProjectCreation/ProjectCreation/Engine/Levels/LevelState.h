@@ -8,6 +8,7 @@ enum E_Level_States
         TUTORIAL_LEVEL = 0,
         LEVEL_01,
         LEVEL_02,
+		LEVEL_03,
         COUNT
 };
 

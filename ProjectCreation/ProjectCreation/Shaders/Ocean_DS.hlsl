@@ -22,7 +22,7 @@ static Wave  waves[8]  = {{normalize(float2(1.0f, 2.0f)), 5.5f, 200.0f},
                         {normalize(float2(2.0f, 2.0f)), 0.3f, 12.0f},
                         {normalize(float2(2.0f, 1.4f)), 0.3f, 10.0f}};
 static float steepness = 1.6;
-static float speed     = 1.5f;
+static float speed     = 0.75f;
 
 
 struct DomainOutput
@@ -76,8 +76,16 @@ DomainOutput CalcGerstnerWaveOffset(float3 v)
         output.Tex          = inPos.xz / (float2(gScale, gScale)) - 0.5f;
         output.PosWS        = inPos;
         output.NormalWS = output.TangentWS = float3(0.0f, 1.0f, 0.0f);
+
+        float dist          = distance(_EyePosition, v) - 50.0f;
+        float distanceBlend = 1.0f - saturate(dist / 200.0f);
+
+
         [unroll] for (int i = 0; i < NUM_WAVES; i++)
         {
+                float distanceFactor = saturate(i / (NUM_WAVES - 6));
+                float alpha          = lerp(1.0f, distanceBlend, distanceFactor);
+
                 Wave  wave = waves[i];
                 float wi   = 2 / (wave.waveLength * scale);
                 float Qi   = steepness / (scale * wave.amplitude * wi * NUM_WAVES);
@@ -91,11 +99,11 @@ DomainOutput CalcGerstnerWaveOffset(float3 v)
 
                 float wa = wi * wave.amplitude * scale;
 
-                output.PosWS.y += (s + 1.0f) * wave.amplitude * scale;
-                output.PosWS.xz += (c + 1.0f) * wave.amplitude * scale * Qi * wave.dir;
+                output.PosWS.y += alpha * (s + 1.0f) * wave.amplitude * scale;
+                output.PosWS.xz += alpha * (c + 1.0f) * wave.amplitude * scale * Qi * wave.dir;
 
-                output.NormalWS += wave.amplitude * GerstnerWaveNormal(wave.dir, wa, Qi, c, s);
-                output.TangentWS += GerstnerWaveTangent(wave.dir, wa, Qi, c, s);
+                output.NormalWS += alpha * wave.amplitude * GerstnerWaveNormal(wave.dir, wa, Qi, c, s);
+                output.TangentWS += alpha * GerstnerWaveTangent(wave.dir, wa, Qi, c, s);
         }
 
         output.TangentWS  = normalize(output.TangentWS);
@@ -123,7 +131,7 @@ DomainOutput CalcGerstnerWaveOffset(float3 v)
 
 
         dOut = CalcGerstnerWaveOffset(pos);
-        //dOut.Tex  = Bilerp(texs, domain);
+        // dOut.Tex  = Bilerp(texs, domain);
         dOut.Tex2 = dOut.Tex * gTexScale;
 
         dOut.PosWS += gOriginOffset;

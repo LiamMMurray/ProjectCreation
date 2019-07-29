@@ -49,6 +49,7 @@ void PlayerPuzzleState::Update(float deltaTime)
         dragVelocity = XMVector3ClampLength(dragVelocity, 0.0f, goalDragMaxSpeed);
 
         offset += XMVector3Rotate(dragVelocity, playerTransformComp->transform.rotation.data);
+        offset = CollisionLibary::ClampToScreen(offset, cameraComponent->_cachedViewProjection);
         goalTransform->transform.translation += offset;
 
         Shapes::FSphere sphereA(goalTransform->transform.translation, goalComp->initialTransform.GetRadius());
@@ -60,36 +61,24 @@ void PlayerPuzzleState::Update(float deltaTime)
         if (result.hasOverlap)
         {
                 // stateMachine->Transition();
-                auto closestTransform = GEngine::Get()->GetSystemManager()->GetSystem<OrbitSystem>()->GetClosestGoalTransform();
-                auto currGoalComp     = goalComp->GetParent().GetComponent<TransformComponent>();
+                auto currGoalComp = goalComp->GetParent().GetComponent<TransformComponent>();
 
-                float distanceToPlayer =
-                    MathLibrary::CalulateDistance(closestTransform.translation, _cachedTransform.translation);
+                FTransform targetTransform;
+                targetTransform.translation = XMVectorSetY(playerTransformComp->transform.translation, 0.0f);
+                targetTransform.rotation    = FQuaternion::FromEulerAngles(0.0f, 0.0f, 0.0f);
+                _playerController->RequestCinematicTransition(
+                    1, &playerTransformHandle, &targetTransform, E_PLAYERSTATE_EVENT::TO_GROUND, 4.0f, 1.0f);
 
-                if (distanceToPlayer < 20.0f)
-                {
-                        FTransform targetTransform;
-                        targetTransform.translation = XMVectorSetY(closestTransform.translation, 0.0f);
-                        targetTransform.rotation    = FQuaternion::FromEulerAngles(0.0f, 0.0f, 0.0f);
-                        _playerController->RequestCinematicTransition(
-                            1, &playerTransformHandle, &targetTransform, E_PLAYERSTATE_EVENT::TO_GROUND, 4.0f, 1.0f);
-                }
-                else
-                {
-                        FTransform targetTransform;
-                        targetTransform.translation = playerTransformComp->transform.translation;
-                        targetTransform.translation = XMVectorSetY(targetTransform.translation, 0.0f);
-
-                        targetTransform.rotation =
-                            FQuaternion::LookAt(XMVector3Normalize(closestTransform.translation - targetTransform.translation));
-
-                        _playerController->RequestCinematicTransition(
-                            1, &playerTransformHandle, &targetTransform, E_PLAYERSTATE_EVENT::TO_GROUND, 4.0f, 1.0f);
-                        m_CollectedPlanetCount++;
-                        _playerController->SetCollectedPlanetCount(m_CollectedPlanetCount);
-                }
+                m_CollectedPlanetCount++;
+                _playerController->SetCollectedPlanetCount(m_CollectedPlanetCount);
                 goalComp->initialTransform = goalTransform->transform;
                 goalComp->goalState        = E_GOAL_STATE::Done;
+                goalComp->goalState        = E_GOAL_STATE::Done;
+
+                auto orbitSystem                      = SYSTEM_MANAGER->GetSystem<OrbitSystem>();
+                orbitSystem->activeGoal.hasActiveGoal = false;
+                orbitSystem->goalsCollected++;
+                orbitSystem->collectedMask[orbitSystem->activeGoal.activeColor] = true;
         }
 }
 

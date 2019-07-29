@@ -1,4 +1,5 @@
 #include "SplineCluster.h"
+#include "../../Rendering/Terrain/TerrainManager.h"
 #include "..//MathLibrary/MathLibrary.h"
 
 using namespace DirectX;
@@ -17,7 +18,7 @@ void SplineCluster::BakeNextPointOnSpline(DirectX::XMVECTOR& prev, DirectX::XMVE
         nextPos     = spline.GetCurrentPoint();
         nextPos     = XMVector3Transform(nextPos, transform);
         float alpha = 1.0f - (cosf(spiralCount * XM_2PI * ((float)current / segments)) * 0.5f + 0.5f);
-        nextPos     = XMVectorSetY(nextPos, maxHeight * alpha);
+        nextPos     = XMVectorSetY(nextPos, maxHeight * alpha + TerrainManager::Get()->GetGroundOffset());
         spline.AdvanceDistance(baseLength / segments);
         current++;
 

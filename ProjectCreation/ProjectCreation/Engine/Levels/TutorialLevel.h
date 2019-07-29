@@ -12,6 +12,7 @@
 #include "../../ECS/HandleManager.h"
 #include "../../ECS/EntityHandle.h"
 #include "LevelState.h"
+#include "../Controller/ControllerSystem.h"
 
 class TutorialLevel : public ILevelState
 {
@@ -19,7 +20,7 @@ class TutorialLevel : public ILevelState
         HandleManager*    m_HandleManager;
         TransformComponent* m_PlayerTransform;
         EntityHandle        m_PlayerEntityHandle;
-        
+        PlayerController*   m_PlayerController;
 
         bool m_WhiteCollected = false;
         bool m_RedCollected   = false;

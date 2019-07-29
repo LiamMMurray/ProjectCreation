@@ -34,4 +34,6 @@ struct alignas(16) CScreenSpaceBuffer
         DirectX::XMMATRIX invView;
         DirectX::XMFLOAT3 playerPosition;
         float             time;
+        DirectX::XMFLOAT3 selectionColor;
+        float             selectionAlpha;
 };

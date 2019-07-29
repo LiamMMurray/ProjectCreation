@@ -3,6 +3,7 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+.json
 *.vcxproj.filters
 *.cso
 # User-specific files
@@ -358,3 +359,4 @@ x64
 ProjectCreation/ProjectCreation/profiling\.json
 
 *.json
+/ProjectCreation/ProjectCreation/*.json

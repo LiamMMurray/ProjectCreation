@@ -4,19 +4,22 @@
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 
+#include "..//CoreInput/CoreInput.h"
+
 struct E_LIGHT_ORBS
 {
         enum
         {
                 RED_LIGHTS = 0,
-                BLUE_LIGHTS,
                 GREEN_LIGHTS,
+                BLUE_LIGHTS,
                 WHITE_LIGHTS,
                 COUNT
         };
 
         // BGRA colors
         static const DirectX::PackedVector::XMCOLOR ORB_COLORS[E_LIGHT_ORBS::COUNT];
+        static const KeyCode ColorInputKeyCodes[E_LIGHT_ORBS::COUNT];
 };
 
 // Red Color

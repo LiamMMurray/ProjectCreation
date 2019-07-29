@@ -61,6 +61,7 @@ class PlayerController : public IController
         DirectX::XMVECTOR mNextForward;
 
     public:
+
         inline void SetNextForward(const DirectX::XMVECTOR& _val)
         {
                 mNextForward = _val;
@@ -73,9 +74,9 @@ class PlayerController : public IController
 
         virtual void Shutdown() override;
 
-        KeyCode m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT] = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
+         KeyCode m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT] = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
 
-        const char* m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"PianoC", "PianoE", "PianoF#", "whiteSpeedBoost"};
+        const char* m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"Basic_Light_PickUp_Red", "Basic_Light_PickUp_Green", "Basic_Light_PickUp_Blue", "Basic_Light_PickUp_White"};
 
         GW::AUDIO::GSound* m_SpeedBoostSoundPool[E_LIGHT_ORBS::COUNT][MAX_SPEEDBOOST_SOUNDS];
         unsigned int       m_SpeedBoostPoolCounter[E_LIGHT_ORBS::COUNT] = {};

@@ -1,11 +1,11 @@
 #pragma once
 
+#include <DirectXMath.h>
 #include "../../ECS/HandleManager.h"
 #include "../../Rendering/Components/CameraComponent.h"
 #include "../Controller/IController.h"
 #include "../GEngine.h"
 #include "../Gameplay/LightOrbColors.h"
-
 class ControllerSystem : public ISystem
 {
         static ControllerSystem* instance;
@@ -15,8 +15,23 @@ class ControllerSystem : public ISystem
 
         void update(float delta);
 
+        DirectX::XMVECTOR desiredColor      = DirectX::XMVECTORF32{1.0f, 1.0f, 1.0f, 1.0f};
+        DirectX::XMVECTOR currentColor      = DirectX::XMVECTORF32{1.0f, 1.0f, 1.0f, 1.0f};
+        float             desiredColorAlpha = 0.0f;
+        float             currentColorAlpha = 0.0f;
+
+        int CollectOrbEventIDs[3] = {-1, -1, -1};
+
     public:
         // bool m_toggleDebugCamera = false;
+
+		inline int GetCollectOrbEventID(int color) const
+        {
+                return CollectOrbEventIDs[color];
+		}
+
+        DirectX::XMFLOAT3 GetCurrentColorSelection() const;
+        float             GetCurrentColorAlpha() const;
 
         // Player Controller Entity
         enum E_CONTROLLERS
@@ -43,17 +58,25 @@ class ControllerSystem : public ISystem
 
         E_CONTROLLERS m_CurrentController;
 
+        void ResetLightOrbCounters();
+
+
         int m_OrbCounts[E_LIGHT_ORBS::COUNT] = {};
 
         void DisplayConsoleMenu();
 
         // Returns the number of orbs collected of a certain color based on passed in parameter
-        // 0 = Red Lights, 1 = Blue Lights, 2 = Green Lights
+        // 0 = Red Lights, 1 = Green Lights, 2 = Blue Lights
         int GetOrbCount(int color);
 
         // Adds one orb to a certain color based on passed in parameter
-        // 0 = Red Lights, 1 = Blue Lights, 2 = Green Lights
+        // 0 = Red Lights, 1 = Green Lights, 2 = Blue Lights
         void IncreaseOrbCount(int color);
+
+        // Resets the orb count of a certain color based on passed in parameter
+        // 0 = Red Lights, 1 = Green Lights, 2 = Blue Lights
+        void ResetOrbCount(int color);
+
 
         // Inherited via ISystem
         virtual void OnPreUpdate(float deltaTime) override;

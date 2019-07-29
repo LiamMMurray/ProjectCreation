@@ -7,6 +7,8 @@
 #include "../CoreInput/CoreInput.h"
 #include "PlayerControllerStateMachine.h"
 #include "PlayerMovement.h"
+#include "../../UI/UIManager.h"
+
 using namespace DirectX;
 
 void PlayerGroundState::Enter()
@@ -27,12 +29,38 @@ void PlayerGroundState::Update(float deltaTime)
         // Dev Cheat to test Reveal
         if (GCoreInput::GetKeyState(KeyCode::N) == KeyState::DownFirst)
         {
-                _playerController->SetCollectedPlanetCount(3);
+                count += 1;
+                _playerController->SetCollectedPlanetCount(count);
         }
-        // Check if the player has collected the three planets
-        if (_playerController->GetCollectedPlanetCount() >= 3)
+        // Check if the player has collected the three planets : Changed for play testing
+        if (_playerController->GetCollectedPlanetCount() == 1)
         {
-                _playerController->RequestNextLevel();
+
+                // Changed for play testing
+                // _playerController->RequestNextLevel();
+
+                // Reveal Ocean once first planet placed
+                GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_02);
+        }
+
+        if (_playerController->GetCollectedPlanetCount() == 2)
+        {
+
+                // Changed for play testing
+                // _playerController->RequestNextLevel();
+
+                // Reveal Ocean once first planet placed
+                GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_03);
+        }
+
+        if (_playerController->GetCollectedPlanetCount() == 3)
+        {
+
+                // Changed for play testing
+                // _playerController->RequestNextLevel();
+
+                // Reveal Ocean once first planet placed
+                UIManager::instance->DemoEnd();
         }
 
         XMVECTOR currentVelocity = _playerController->GetCurrentVelocity();
@@ -168,7 +196,7 @@ void PlayerGroundState::Update(float deltaTime)
         sunComp->m_LightRotation =
             sunComp->m_LightRotation *
             XMQuaternionRotationAxis(VectorConstants::Up,
-                                     deltaTime * 0.14f * MathLibrary::CalulateVectorLength(XMVectorSetY(actualVelocity, 0.0f)));
+                                     deltaTime * 0.04f * MathLibrary::CalulateVectorLength(XMVectorSetY(actualVelocity, 0.0f)));
         // sunEuler.y    = MathLibrary::MoveTowardsAngle(sunEuler.y, MathLibrary::NormalizeAngle(eulerAngles.y + XM_PI), 1.0f *
         // deltaTime);
 

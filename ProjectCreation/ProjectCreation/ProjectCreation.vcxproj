@@ -62,6 +62,7 @@
     <ClInclude Include="Engine\Levels\LevelStateManager.h" />
     <ClInclude Include="Engine\Levels\Level_01.h" />
     <ClInclude Include="Engine\Levels\Level_02.h" />
+    <ClInclude Include="Engine\Levels\Level_03.h" />
     <ClInclude Include="Engine\Levels\TutorialLevel.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\Particle Systems\EmitterComponent.h" />
@@ -134,6 +135,7 @@
     <ClInclude Include="Engine\ResourceManager\VertexShader.h" />
     <ClInclude Include="Utility\Hashing\SpookyHashV2.h" />
     <ClInclude Include="Utility\Profiling.h" />
+    <ClInclude Include="Utility\StaticSentinelDumpMemoryLeaks.h" />
     <ClInclude Include="Utility\TypeIndexFactory.h" />
     <FxCompile Include="Shaders\BloomCombine_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -215,9 +217,24 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
+    <ClInclude Include="Shaders\GlowingEffects.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <FileType>Document</FileType>
+    </ClInclude>
     <FxCompile Include="Shaders\Glow_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shaders\Line_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shaders\Line_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\Ocean_DS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Domain</ShaderType>
@@ -249,6 +266,10 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\SimpleGlow_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\Sky_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -321,6 +342,7 @@
     <ClCompile Include="Engine\Levels\LevelStateManager.cpp" />
     <ClCompile Include="Engine\Levels\Level_01.cpp" />
     <ClCompile Include="Engine\Levels\Level_02.cpp" />
+    <ClCompile Include="Engine\Levels\Level_03.cpp" />
     <ClCompile Include="Engine\Levels\TutorialLevel.cpp" />
     <ClCompile Include="Engine\Particle Systems\ParticleData.cpp" />
     <ClCompile Include="Engine\Particle Systems\ParticleManager.cpp" />

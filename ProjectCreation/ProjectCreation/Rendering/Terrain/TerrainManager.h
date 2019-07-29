@@ -91,6 +91,10 @@ class TerrainManager
         DirectX::XMMATRIX InverseTerrainMatrix;
 
     public:
+        inline float GetGroundOffset() const
+        {
+                return groundOffset;
+        }
         static TerrainManager* Get();
         DirectX::XMVECTOR      AlignPositionToTerrain(const DirectX::XMVECTOR& pos);
         static void            Initialize(RenderSystem* rs);
