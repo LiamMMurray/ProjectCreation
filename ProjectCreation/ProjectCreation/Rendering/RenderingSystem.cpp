@@ -814,6 +814,7 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         m_ConstantBuffer_MVP.Projection     = XMMatrixTranspose(m_CachedMainProjectionMatrix);
         // get scale
         m_ConstantBuffer_SCENE.scale = TerrainManager::Get()->GetScale();
+        m_ConstantBuffer_SCENE.screenDimensions = XMFLOAT2(m_BackBufferWidth,m_BackBufferHeight);
 
         /** Prepare draw calls **/
         m_TransluscentDraws.clear();

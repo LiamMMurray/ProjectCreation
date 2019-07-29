@@ -42,24 +42,35 @@ void ParticleManager::update(float deltaTime)
         m_RenderSystem->m_Context->OMSetRenderTargets(0, nullptr, nullptr);
         int emitterIndex = 0;
         // Build update list
+
+        for (auto& emitterComponent : GEngine::Get()->GetHandleManager()->GetActiveComponents<EmitterComponent>())
         {
-                for (auto& emitterComponent : GEngine::Get()->GetHandleManager()->GetActiveComponents<EmitterComponent>())
+                if (emitterIndex > gMaxEmitterCount)
                 {
-                        EntityHandle        parent             = emitterComponent.GetParent();
-                        TransformComponent* transformComponent = parent.GetComponent<TransformComponent>();
-                        XMVECTOR            emitterPos = transformComponent->transform.translation + emitterComponent.offset;
-                        m_EmittersCPU[emitterIndex]    = emitterComponent.EmitterData;
-                        XMStoreFloat4(&m_EmittersCPU[emitterIndex].position, emitterPos);
-
-                        emitterComponent.desiredCount += emitterComponent.spawnRate * deltaTime * 0.5f;
-                        emitterComponent.desiredCount =
-                            std::min<float>(emitterComponent.desiredCount, (float)emitterComponent.maxCount);
-
-                        m_SegmentBufferCPU.desiredCount[emitterIndex] = (int)emitterComponent.desiredCount;
-
-                        emitterIndex++;
+                        break;
                 }
+                EntityHandle        parent             = emitterComponent.GetParent();
+                TransformComponent* transformComponent = parent.GetComponent<TransformComponent>();
+                XMVECTOR            emitterPos         = transformComponent->transform.translation + emitterComponent.offset;
+                m_EmittersCPU[emitterIndex]            = emitterComponent.EmitterData;
+                XMStoreFloat4(&m_EmittersCPU[emitterIndex].position, emitterPos);
+
+                emitterComponent.desiredCount += emitterComponent.spawnRate * deltaTime * 0.5f;
+                emitterComponent.desiredCount =
+                    std::min<float>(emitterComponent.desiredCount, (float)emitterComponent.maxCount);
+
+                m_SegmentBufferCPU.desiredCount[emitterIndex] = (int)emitterComponent.desiredCount;
+
+                emitterIndex++;
         }
+
+        for (int i = emitterIndex; i < m_PreviousEmitterCount; i++)
+        {
+                m_SegmentBufferCPU.desiredCount[emitterIndex] = 0;
+        }
+        m_PreviousEmitterCount = emitterIndex;
+
+
         // Send data to gpu
         ComputeShader*  simComputeShader      = RESOURCE_MANAGER->GetResource<ComputeShader>(m_SimulationComputeShaderHandle);
         ComputeShader*  EmittionComputeShader = RESOURCE_MANAGER->GetResource<ComputeShader>(m_EmittionComputeShaderHandle);
@@ -78,7 +89,7 @@ void ParticleManager::update(float deltaTime)
         m_RenderSystem->m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
         // Set Compute Shaders
         m_RenderSystem->m_Context->CSSetConstantBuffers(
-            0, 1, &m_RenderSystem->m_PostProcessConstantBuffers[E_CONSTANT_BUFFER_POST_PROCESS::SCREENSPACE]);
+            2, 1, &m_RenderSystem->m_PostProcessConstantBuffers[E_CONSTANT_BUFFER_POST_PROCESS::SCREENSPACE]);
         m_RenderSystem->m_Context->CSSetConstantBuffers(
             1, 1, &m_RenderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE]);
 
@@ -94,6 +105,10 @@ void ParticleManager::update(float deltaTime)
         m_RenderSystem->m_Context->CSSetShader(EmittionComputeShader->m_ComputerShader, nullptr, 0);
         m_RenderSystem->UpdateConstantBuffer(
             m_SegmentBufferGPU.m_StructuredBuffer, &m_SegmentBufferCPU, sizeof(m_SegmentBufferCPU));
+
+        m_RenderSystem->m_Context->CSSetConstantBuffers(
+            0, 1, &m_RenderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP]);
+
         m_RenderSystem->m_Context->Dispatch(256, 1, 1);
 
         m_RenderSystem->m_Context->CSSetShader(simComputeShader->m_ComputerShader, nullptr, 0);

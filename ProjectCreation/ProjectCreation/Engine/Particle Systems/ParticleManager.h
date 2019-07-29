@@ -30,6 +30,7 @@ class ParticleManager
         ParticleData::FParticleGPU*             m_ParticleInfo;
         ParticleData::FEmitterGPU               m_EmittersCPU[ParticleData::gMaxEmitterCount];
         std::vector<ParticleData::FEmitterGPU*> m_Emitters;
+        int                                     m_PreviousEmitterCount = 0;
         void                                    UpdateResources(ID3D11Resource* resource);
         void                                    update(float deltaTime);
         void                                    init();

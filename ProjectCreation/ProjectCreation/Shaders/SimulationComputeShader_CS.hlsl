@@ -1,9 +1,10 @@
+#include "MVPBuffer.hlsl"
 #include "Math.hlsl"
 #include "Samplers.hlsl"
 #include "SceneBuffer.hlsl"
 #include "Wrap.hlsl"
-static const unsigned int gMaxEmitterCount  = 2 << 10;
-static const unsigned int gMaxParticleCount = 2 << 16;
+static const unsigned int gMaxEmitterCount       = 2 << 10;
+static const unsigned int gMaxParticleCount      = 2 << 16;
 static const unsigned int gMaxParticlePerEmitter = gMaxParticleCount / gMaxEmitterCount;
 
 struct FParticleGPU
@@ -40,7 +41,7 @@ struct FSegmentBuffer
 {
         int desiredCount;
 };
-cbuffer CScreenSpaceBuffer : register(b0)
+cbuffer CScreenSpaceBuffer : register(b2)
 {
         matrix _invProj;
         matrix _invView;
@@ -48,26 +49,64 @@ cbuffer CScreenSpaceBuffer : register(b0)
         float  _time;
 };
 
+
 RWStructuredBuffer<FParticleGPU> ParticleBuffer : register(u0);
 StructuredBuffer<FEmitterGPU>    EmitterBuffer : register(t0);
-Texture2D                        tex2d : register(t1);
+Texture2D                        SceneDepth : register(t1);
 StructuredBuffer<FSegmentBuffer> SegmentBuffer : register(t2);
+
+float3 VSPositionFromDepth(float2 vTexCoord)
+{
+        // Get the depth value for this pixel
+        float z = SceneDepth.SampleLevel(sampleTypeClamp, vTexCoord, 0).r;
+        // Get x/w and y/w from the viewport position
+        float  x             = vTexCoord.x * 2 - 1;
+        float  y             = (1 - vTexCoord.y) * 2 - 1;
+        float4 vProjectedPos = float4(x, y, z, 1.0f);
+        // Transform by the inverse projection matrix
+        float4 vPositionVS = mul(vProjectedPos, _invProj);
+        // Divide by w to get the view-space position
+        return vPositionVS.xyz / vPositionVS.w;
+}
+
 
 [numthreads(512, 1, 1)] void main(uint3 DTid
                                   : SV_DispatchThreadID) {
         float3 direction;
-        int    id = DTid.x;
+        int    id           = DTid.x;
         int    emitterIndex = id / gMaxParticlePerEmitter;
+
+        ParticleBuffer[id].acceleration = EmitterBuffer[emitterIndex].acceleration;
+        ParticleBuffer[id].prevPos      = ParticleBuffer[id].position;
+
+        ParticleBuffer[id].velocity = ParticleBuffer[id].velocity + ParticleBuffer[id].acceleration * _DeltaTime;
+
+        float3 particleNextPos = ParticleBuffer[id].position.xyz + ParticleBuffer[id].velocity * _DeltaTime;
+        float4 ndc             = mul(float4(particleNextPos, 1.0f), ViewProjection);
+        ndc.xy /= ndc.w;
+        ndc.xy = ndc.xy * 0.5f + 0.5f;
+        ndc.y  = 1.0f - ndc.y;
+
+        float2 invScreen = 1.0f / _ScreenDimensions;
+        float3 posVS     = VSPositionFromDepth(ndc.xy);
+        float3 posVS1    = VSPositionFromDepth(ndc.xy + float2(invScreen.x, 0.0f));
+        float3 posVS2    = VSPositionFromDepth(ndc.xy + float2(0.0f, invScreen.y));
+        float3 normalVS  = normalize(cross(posVS1 - posVS, posVS2 - posVS));
+
+        float depth = posVS.z;
+
 
         if (ParticleBuffer[id].time > 0.0f)
         {
-                float depth = tex2d.SampleLevel(sampleTypeClamp, EmitterBuffer[emitterIndex].uv, 0).r * 5.0f; // heigth mapset up
+
 
                 float wValue = 1.0f;
 
-                float alpha              = 1.0f - ParticleBuffer[id].time / EmitterBuffer[emitterIndex].lifeSpan;
-                ParticleBuffer[id].color = lerp(EmitterBuffer[emitterIndex].initialColor, EmitterBuffer[emitterIndex].finalColor, alpha);
-                // ParticleBuffer[id].scale = lerp(EmitterBuffer[emitterIndex].particleScale.x,EmitterBuffer[emitterIndex].particleScale.y, alpha);
+                float alpha = 1.0f - ParticleBuffer[id].time / EmitterBuffer[emitterIndex].lifeSpan;
+                ParticleBuffer[id].color =
+                    lerp(EmitterBuffer[emitterIndex].initialColor, EmitterBuffer[emitterIndex].finalColor, alpha);
+                // ParticleBuffer[id].scale =
+                // lerp(EmitterBuffer[emitterIndex].particleScale.x,EmitterBuffer[emitterIndex].particleScale.y, alpha);
                 ParticleBuffer[DTid.x].time -= _DeltaTime;
 
                 // ParticleBuffer[DTid.x].position += 1.0f*float4(ParticleBuffer[DTid.x].velocity * _DeltaTime,
@@ -78,38 +117,14 @@ StructuredBuffer<FSegmentBuffer> SegmentBuffer : register(t2);
                 float2 Max = -Min;
                 // ParticleBuffer[id].position.xyz =
                 //  WrapPosition(ParticleBuffer[id].position.xyz, _EyePosition + Min, _EyePosition + Max);
+                // bounce based on texture depth
+                if (ndc.w >= depth)
+                {
+                        ParticleBuffer[id].velocity     = reflect(ParticleBuffer[id].velocity, normalVS);
+                        ParticleBuffer[id].acceleration = reflect(ParticleBuffer[id].acceleration, normalVS);
+                }
+                ParticleBuffer[id].position.xyz += ParticleBuffer[id].velocity * _DeltaTime;
                 ParticleBuffer[id].position.xz =
                     wrap(ParticleBuffer[id].position.xz, _EyePosition.xz + Min, _EyePosition.xz + Max);
-
-                ParticleBuffer[id].acceleration = EmitterBuffer[emitterIndex].acceleration;
-                ParticleBuffer[id].prevPos      = ParticleBuffer[id].position;
-
-
-                ParticleBuffer[id].position =
-                    ParticleBuffer[id].position + float4(ParticleBuffer[id].velocity, 1.0f) * _DeltaTime;
-                ParticleBuffer[id].velocity = ParticleBuffer[id].velocity + ParticleBuffer[id].acceleration * _DeltaTime;
-
-                // bounce based on texture depth
-                if (ParticleBuffer[id].position.y <= depth)
-                {
-                        ParticleBuffer[id].velocity = float3(3.0f, 10.0f, 1.0f);
-
-                        ParticleBuffer[id].position =
-                            ParticleBuffer[id].position + float4(ParticleBuffer[id].velocity, 1.0f) * _DeltaTime;
-                }
         }
-}
-
-float3 WorldPositionFromDepth(float depth, float2 uv)
-{
-        float x = uv.x * 2.0f - 1.0f;
-        float y = (1 - uv.y) * 2.0f - 1.0f;
-
-        float4 clipSpacePosition = float4(x, y, depth, 1.0f);
-        // float4 clipSpacePosition = float4(uv * 2.0f - 1.0f, z, 1.0f);
-        float4 viewSpacePosition = mul(clipSpacePosition, _invProj);
-        return viewSpacePosition.xyz /= viewSpacePosition.w;
-        /* float4 worldPosition = mul(viewSpacePosition, _invView);
-
-         return worldPosition.xyz;*/
 }

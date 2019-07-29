@@ -8,5 +8,6 @@ cbuffer SceneInfoBuffer : register(b1)
         float  _AspectRatio;
         float3 _AmbientColor;
         float  _DeltaTime;
+        float2 _ScreenDimensions;
         float  _Scale;
 };

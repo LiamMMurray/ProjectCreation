@@ -8,6 +8,7 @@ static const unsigned int gMaxParticlePerEmitter = gMaxParticleCount / gMaxEmitt
 struct FParticleGPU
 {
         float4 position;
+		//init position min && max
         float4 prevPos;
         float4 color;
         float3 velocity;
@@ -39,7 +40,7 @@ struct FSegmentBuffer
 {
         int desiredCount;
 };
-cbuffer CScreenSpaceBuffer : register(b0)
+cbuffer CScreenSpaceBuffer : register(b2)
 {
         matrix _invProj;
         matrix _invView;
@@ -59,9 +60,9 @@ StructuredBuffer<FSegmentBuffer> SegmentBuffer : register(t2);
         int emitterOffset = id % gMaxParticlePerEmitter;
         int desired       = SegmentBuffer[emitterIndex].desiredCount;
 
-        if (emitterOffset < desired)
+        if (ParticleBuffer[id].time <= 0.0f)
         {
-                if (ParticleBuffer[id].time <= 0.0f)
+                if (emitterOffset < desired)
                 {
                         ParticleBuffer[id].scale = EmitterBuffer[emitterIndex].particleScale.x;
                         ParticleBuffer[id].time  = EmitterBuffer[emitterIndex].lifeSpan;
@@ -71,28 +72,26 @@ StructuredBuffer<FSegmentBuffer> SegmentBuffer : register(t2);
                         float alphaB = rand(alphaA);
                         float alphaC = rand(alphaB);
 
-                        ParticleBuffer[id].velocity.x =
-                            lerp(EmitterBuffer[emitterIndex].minInitialVelocity.x, EmitterBuffer[emitterIndex].maxInitialVelocity.x, alphaA);
-                        ParticleBuffer[id].velocity.y =
-                            lerp(EmitterBuffer[emitterIndex].minInitialVelocity.y, EmitterBuffer[emitterIndex].maxInitialVelocity.y, alphaB);
-                        ParticleBuffer[id].velocity.z =
-                            lerp(EmitterBuffer[emitterIndex].minInitialVelocity.z, EmitterBuffer[emitterIndex].maxInitialVelocity.z, alphaC);
+                        ParticleBuffer[id].velocity.x = lerp(EmitterBuffer[emitterIndex].minInitialVelocity.x,
+                                                             EmitterBuffer[emitterIndex].maxInitialVelocity.x,
+                                                             alphaA);
+                        ParticleBuffer[id].velocity.y = lerp(EmitterBuffer[emitterIndex].minInitialVelocity.y,
+                                                             EmitterBuffer[emitterIndex].maxInitialVelocity.y,
+                                                             alphaB);
+                        ParticleBuffer[id].velocity.z = lerp(EmitterBuffer[emitterIndex].minInitialVelocity.z,
+                                                             EmitterBuffer[emitterIndex].maxInitialVelocity.z,
+                                                             alphaC);
 
                         ParticleBuffer[id].uv    = EmitterBuffer[emitterIndex].uv;
                         ParticleBuffer[id].color = EmitterBuffer[emitterIndex].initialColor;
 
                         ParticleBuffer[id].position = float4(startPos + ParticleBuffer[id].velocity, 1.0f);
 
-                        ParticleBuffer[id].prevPos  = ParticleBuffer[id].position;
-                        ParticleBuffer[id].position = ParticleBuffer[id].prevPos;
-                }
-                else
-                {
-                        ParticleBuffer[id].time -= _DeltaTime;
+                        ParticleBuffer[id].prevPos = ParticleBuffer[id].position;
                 }
         }
         else
         {
-                ParticleBuffer[id].time = 0.0f;
+                ParticleBuffer[id].time -= _DeltaTime;
         }
 }
