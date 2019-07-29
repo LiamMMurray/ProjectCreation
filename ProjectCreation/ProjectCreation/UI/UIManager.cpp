@@ -19,7 +19,7 @@ class TutorialLevel;
 
 UIManager* UIManager::instance;
 using namespace DirectX;
-// Adding UI
+// Adds Sprites to the vector of Sprites
 void UIManager::AddSprite(ID3D11Device*        device,
                           ID3D11DeviceContext* deviceContext,
                           int                  category,
@@ -66,7 +66,7 @@ void UIManager::AddSprite(ID3D11Device*        device,
         cSprite.mEnabled = enabled;
 
         cSprite.mRectangle.center  = XMVectorSet(PositionX, PositionY, 0.0f, 1.0f);
-        cSprite.mRectangle.extents = XMVectorSet(scaleX * 0.5f, scaleY * 0.5f, 0.0f, 1.0f);
+        cSprite.mRectangle.extents = XMVectorSet(scaleX * 0.5f, scaleY * 0.8f, 0.0f, 1.0f);
         // Push back to the vector
         m_AllSprites[category].emplace_back(cSprite);
 
@@ -75,8 +75,7 @@ void UIManager::AddSprite(ID3D11Device*        device,
         resource.Reset();
 }
 
-// Adds a sprite to the vector of text
-// Currently PositionX and PositionY are not used
+// Adds text to the vector of text
 void UIManager::AddText(ID3D11Device*        device,
                         ID3D11DeviceContext* deviceContext,
                         int                  category,
@@ -441,11 +440,11 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         instance->m_WindowHandle = hwnd;
 
-        constexpr float pauseButtonWidth  = 0.25f;
-        constexpr float pauseButtonHeight = 0.05f;
-
         // Create supported resolutions
         instance->SupportedResolutions();
+
+        constexpr float pauseButtonWidth  = 0.25f;
+        constexpr float pauseButtonHeight = 0.05f;
 
         instance->m_FontTypes[E_FONT_TYPE::Angel] =
             new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/angel.spritefont");
@@ -1520,8 +1519,7 @@ void UIManager::Update()
                                 XMVECTOR position = XMVectorSet(sprite.mScreenOffset.x * instance->m_ScreenSize.x,
                                                                 sprite.mScreenOffset.y * instance->m_ScreenSize.y,
                                                                 0.0f,
-                                                                1.0f) +
-                                                    instance->m_ScreenCenter;
+                                                                1.0f) + instance->m_ScreenCenter;
 
                                 XMVECTOR scale = XMVectorSet(sprite.mScaleX * instance->m_ScreenSize.x,
                                                              aspectRatio * sprite.mScaleY * instance->m_ScreenSize.y,
