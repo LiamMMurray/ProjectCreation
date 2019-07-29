@@ -1200,8 +1200,8 @@ void RenderSystem::SetFullscreen(bool val)
         {
                 DXGI_MODE_DESC desc{};
                 desc.Format  = DXGI_FORMAT_B8G8R8A8_UNORM;
-                desc.Height  = 1920;
-                desc.Width   = 1080;
+                desc.Height  = m_BackBufferHeight;
+                desc.Width   = m_BackBufferHeight;
                 desc.Scaling = DXGI_MODE_SCALING_STRETCHED;
 
                 IDXGIOutput* target = nullptr;
