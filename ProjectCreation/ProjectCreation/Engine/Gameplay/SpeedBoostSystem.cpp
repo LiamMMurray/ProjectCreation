@@ -121,14 +121,13 @@ EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int c
 
         ComponentHandle emitterComponentHandle = entityHandle.AddComponent<EmitterComponent>();
         EmitterComponent* emitterComponent                 = emitterComponentHandle.Get<EmitterComponent>();
-        emitterComponent->EmitterData.currentParticleCount = 0;
-        emitterComponent->EmitterData.active               = true;
+        emitterComponent->EmitterData.flags               = 1;
         emitterComponent->EmitterData.initialColor         = {2.0f, 2.0f, 0.0f, 1.0f};
         emitterComponent->EmitterData.finalColor           = {0.0f, 2.0f, 2.0f, 0.0f};
         emitterComponent->EmitterData.uv                   = {0.0f, 0.0f};
         emitterComponent->EmitterData.minVelocity          = {-3.0f, -0.0f, -3.0f};
         emitterComponent->EmitterData.maxVelocity          = {3.0f, 6.0f, 3.0f};
-        emitterComponent->EmitterData.lifeSpan             = 3.0f;
+        emitterComponent->EmitterData.lifeSpan             = XMFLOAT3(3.0f, 2.0f, 2.0f);
         emitterComponent->EmitterData.scale                = XMFLOAT2(1.0f, 0.0f);
 
         emitterComponent->EmitterData.acceleration = XMFLOAT3(0.0f, -0.0f, 0.0f);
@@ -750,14 +749,13 @@ void SpeedBoostSystem::OnInitialize()
                                         ->GetControlledEntity();
 
         EmitterComponent* emitterComponent = playerEntity.AddComponent<EmitterComponent>().Get<EmitterComponent>();
-        emitterComponent->EmitterData.currentParticleCount = 0;
-        emitterComponent->EmitterData.active               = true;
+        emitterComponent->EmitterData.flags               = 1;
         emitterComponent->EmitterData.initialColor         = {1.0f, 1.0f, 1.0f, 1.0f};
         emitterComponent->EmitterData.finalColor           = {1.0f, 1.0f, 1.0f, 0.0f};
         emitterComponent->EmitterData.uv                   = {0.0f, 0.0f};
         emitterComponent->EmitterData.minVelocity          = {-3.0f, -0.0f, -3.0f};
         emitterComponent->EmitterData.maxVelocity          = {3.0f, 6.0f, 3.0f};
-        emitterComponent->EmitterData.lifeSpan             = 10.0f;
+        emitterComponent->EmitterData.lifeSpan             = XMFLOAT3(10.0f, 2.0f, 2.0f);
         emitterComponent->EmitterData.scale                = XMFLOAT2(1.0f, 0.0f);
 
         emitterComponent->EmitterData.acceleration = XMFLOAT3(0.0f, -9.8f, 0.0f);

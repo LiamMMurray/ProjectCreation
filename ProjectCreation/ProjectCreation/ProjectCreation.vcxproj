@@ -344,6 +344,7 @@
     <ClCompile Include="Engine\Levels\Level_02.cpp" />
     <ClCompile Include="Engine\Levels\Level_03.cpp" />
     <ClCompile Include="Engine\Levels\TutorialLevel.cpp" />
+    <ClCompile Include="Engine\Particle Systems\EmitterComponent.cpp" />
     <ClCompile Include="Engine\Particle Systems\ParticleData.cpp" />
     <ClCompile Include="Engine\Particle Systems\ParticleManager.cpp" />
     <ClCompile Include="Engine\MathLibrary\Maze\MazeGenerator.cpp" />

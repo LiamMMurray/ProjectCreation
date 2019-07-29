@@ -36,10 +36,10 @@ namespace ParticleData
 
         struct FEmitterGPU
         {
-                int               currentParticleCount;
-                float             lifeSpan; // life time
-                bool              active;
-                DirectX::XMFLOAT4 position;
+                DirectX::XMFLOAT3 lifeSpan; // life time
+                int               flags;
+                DirectX::XMFLOAT4 initialPosition;
+                DirectX::XMFLOAT4 endPosition;
                 DirectX::XMFLOAT4 initialColor;
                 DirectX::XMFLOAT4 finalColor;
                 DirectX::XMFLOAT2 uv;
@@ -48,12 +48,7 @@ namespace ParticleData
                 DirectX::XMFLOAT2 scale; // min sclae and max scale
                 DirectX::XMFLOAT3 acceleration;
                 int               index; // type of particles;
-				//defult values for emitters
-				void Zero(FEmitterGPU& emitterGPU); //Set all values to ZERO
-                void FloatParticle(FEmitterGPU&      emitterGPU,
-                                   DirectX::XMFLOAT4 position,
-                                   DirectX::XMFLOAT4 initialColor,
-                                   DirectX::XMFLOAT4 finalColor); // Floating particles
+    
         };
 
         struct FParticleGPU
@@ -77,8 +72,8 @@ namespace ParticleData
                 int row;
         };
 
-		struct FSegmentBuffer
-		{
+        struct FSegmentBuffer
+        {
                 int desiredCount[gMaxEmitterCount];
-		};
+        };
 }; // namespace ParticleData

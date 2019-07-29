@@ -53,7 +53,7 @@ void ParticleManager::update(float deltaTime)
                 TransformComponent* transformComponent = parent.GetComponent<TransformComponent>();
                 XMVECTOR            emitterPos         = transformComponent->transform.translation + emitterComponent.offset;
                 m_EmittersCPU[emitterIndex]            = emitterComponent.EmitterData;
-                XMStoreFloat4(&m_EmittersCPU[emitterIndex].position, emitterPos);
+                XMStoreFloat4(&m_EmittersCPU[emitterIndex].initialPosition, emitterPos);
 
                 emitterComponent.desiredCount += emitterComponent.spawnRate * deltaTime * 0.5f;
                 emitterComponent.desiredCount =
@@ -180,11 +180,11 @@ void ParticleManager::init()
 
         // data set up //shoulde be ab;e to set the particle data somewhere else
 
-        m_EmittersCPU->currentParticleCount = 0;
-        m_EmittersCPU->active               = true;
+
+    /*    m_EmittersCPU->flags               = 1;
         m_EmittersCPU->initialColor         = {10.0f, 10.0f, 0.0f, 1.0f};
         m_EmittersCPU->finalColor           = {1.0f, 1.0f, 1.0f, 1.0f};
-        m_EmittersCPU->position             = {0.0f, 10.0f, 0.0f, 0.0f};
+        m_EmittersCPU->initialPosition      = {0.0f, 10.0f, 0.0f, 0.0f};
         m_EmittersCPU->uv                   = {0.0f, 0.0f};
         m_EmittersCPU->minVelocity          = {-30.0f, -0.0f, -30.0f};
         m_EmittersCPU->maxVelocity          = {30.0f, 20.0f, 30.0f};
@@ -192,7 +192,7 @@ void ParticleManager::init()
         m_EmittersCPU->scale                = XMFLOAT2(1.0f, 0.0f);
 
         m_EmittersCPU->acceleration = XMFLOAT3(0.0f, -9.8f, 0.0f);
-        m_EmittersCPU->index        = 2;
+        m_EmittersCPU->index        = 2;*/
         // init
         m_RenderSystem = SYSTEM_MANAGER->GetSystem<RenderSystem>();
 
