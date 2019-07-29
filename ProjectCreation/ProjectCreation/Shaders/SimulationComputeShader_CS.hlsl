@@ -3,44 +3,9 @@
 #include "Samplers.hlsl"
 #include "SceneBuffer.hlsl"
 #include "Wrap.hlsl"
-static const unsigned int gMaxEmitterCount       = 2 << 10;
-static const unsigned int gMaxParticleCount      = 2 << 16;
-static const unsigned int gMaxParticlePerEmitter = gMaxParticleCount / gMaxEmitterCount;
 
-struct FParticleGPU
-{
-        float4 position;
-        float4 prevPos;
-        float4 color;
-        float3 velocity;
-        float2 uv;
-        float  time;
-        int    active;
-        float  scale;
-        float3 acceleration;
-};
+#include "ParticleData.hlsl"
 
-
-struct FEmitterGPU
-{
-        int    currentParticleCount;
-        float  lifeSpan;
-        bool   active;
-        float4 position;
-        float4 initialColor;
-        float4 finalColor;
-        float2 uv;
-        float3 minInitialVelocity;
-        float3 maxInitialVelocity;
-        float2 particleScale;
-        float3 acceleration;
-        int    index; // tpye of particles
-};
-
-struct FSegmentBuffer
-{
-        int desiredCount;
-};
 cbuffer CScreenSpaceBuffer : register(b2)
 {
         matrix _invProj;
@@ -48,12 +13,6 @@ cbuffer CScreenSpaceBuffer : register(b2)
         float3 _playerPosition;
         float  _time;
 };
-
-
-RWStructuredBuffer<FParticleGPU> ParticleBuffer : register(u0);
-StructuredBuffer<FEmitterGPU>    EmitterBuffer : register(t0);
-Texture2D                        SceneDepth : register(t1);
-StructuredBuffer<FSegmentBuffer> SegmentBuffer : register(t2);
 
 float3 VSPositionFromDepth(float2 vTexCoord)
 {
@@ -102,9 +61,18 @@ float3 VSPositionFromDepth(float2 vTexCoord)
 
                 float wValue = 1.0f;
 
-                float alpha = 1.0f - ParticleBuffer[id].time / EmitterBuffer[emitterIndex].lifeSpan;
+                float alpha = 1.0f - ParticleBuffer[id].time / ParticleBuffer[id].lifeSpan;
                 ParticleBuffer[id].color =
                     lerp(EmitterBuffer[emitterIndex].initialColor, EmitterBuffer[emitterIndex].finalColor, alpha);
+
+                if (EmitterBuffer[emitterIndex].lifeSpan.z > 0)
+                        ParticleBuffer[id].color.a =
+                            lerp(0.0f, ParticleBuffer[id].color.a, saturate(alpha / EmitterBuffer[emitterIndex].lifeSpan.z));
+
+                if (EmitterBuffer[emitterIndex].lifeSpan.w > 0)
+                        ParticleBuffer[id].color.a = lerp(0.0f,
+                                                          ParticleBuffer[id].color.a,
+                                                          saturate((1.0f - alpha) / EmitterBuffer[emitterIndex].lifeSpan.w));
                 // ParticleBuffer[id].scale =
                 // lerp(EmitterBuffer[emitterIndex].particleScale.x,EmitterBuffer[emitterIndex].particleScale.y, alpha);
                 ParticleBuffer[DTid.x].time -= _DeltaTime;

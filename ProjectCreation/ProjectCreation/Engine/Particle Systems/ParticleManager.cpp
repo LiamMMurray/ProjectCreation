@@ -47,13 +47,14 @@ void ParticleManager::update(float deltaTime)
         {
                 if (emitterIndex > gMaxEmitterCount)
                 {
+                        emitterIndex--;
                         break;
                 }
                 EntityHandle        parent             = emitterComponent.GetParent();
                 TransformComponent* transformComponent = parent.GetComponent<TransformComponent>();
                 XMVECTOR            emitterPos         = transformComponent->transform.translation + emitterComponent.offset;
                 m_EmittersCPU[emitterIndex]            = emitterComponent.EmitterData;
-                XMStoreFloat4(&m_EmittersCPU[emitterIndex].initialPosition, emitterPos);
+                XMStoreFloat3(&m_EmittersCPU[emitterIndex].emitterPosition, emitterPos);
 
                 emitterComponent.desiredCount += emitterComponent.spawnRate * deltaTime * 0.5f;
                 emitterComponent.desiredCount =

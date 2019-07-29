@@ -85,7 +85,7 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
                 cluster.color = color;
         }
 
-		XMVECTOR correctedCurr = curr + GEngine::Get()->m_OriginOffset - cluster.originalWorldOffset;
+        XMVECTOR correctedCurr = curr + GEngine::Get()->m_OriginOffset - cluster.originalWorldOffset;
         cluster.cachedPoints.push_back(correctedCurr);
         cluster.cachedColors.push_back(cluster.color);
         auto entityH = SpawnLightOrb(correctedCurr, cluster.color);
@@ -98,6 +98,35 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
         splineComp->color     = cluster.color;
         splineComp->index     = cluster.current - 1;
         splineComp->clusterID = clusterID;
+
+        XMVECTOR fw = (next - curr);
+        XMVECTOR rt = XMVector3Cross(XMVector3Normalize(fw), VectorConstants::Up);
+
+        XMFLOAT3 posMin;
+        XMFLOAT3 posMax;
+
+        XMFLOAT3 velMin;
+        XMFLOAT3 velMax;
+
+        XMFLOAT3 accel;
+
+        XMStoreFloat3(&posMin, XMVectorZero());
+        XMStoreFloat3(&posMax, fw);
+
+        XMStoreFloat3(&velMin, -rt * 0.05f);
+        XMStoreFloat3(&velMax, +rt * 0.05f + VectorConstants::Up * 1.0f);
+
+        XMStoreFloat3(&accel, fw * 1.5f - VectorConstants::Up * 0.5f);
+
+        auto emitterComponent      = entityH.GetComponent<EmitterComponent>();
+        emitterComponent->maxCount = 10;
+
+        emitterComponent->EmitterData.minOffset          = posMin;
+        emitterComponent->EmitterData.maxOffset          = posMax;
+        emitterComponent->EmitterData.minInitialVelocity = velMin;
+        emitterComponent->EmitterData.maxInitialVelocity = velMax;
+        emitterComponent->EmitterData.acceleration       = accel;
+        emitterComponent->EmitterData.particleScale      = XMFLOAT2(0.05f, 0.05f);
 
         return entityH;
 }
@@ -119,19 +148,18 @@ EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int c
         orbComp->m_Color         = color;
         orbComp->m_TargetRadius  = m_BoostRadius;
 
-        ComponentHandle emitterComponentHandle = entityHandle.AddComponent<EmitterComponent>();
-        EmitterComponent* emitterComponent                 = emitterComponentHandle.Get<EmitterComponent>();
-        emitterComponent->EmitterData.flags               = 1;
-        emitterComponent->EmitterData.initialColor         = {2.0f, 2.0f, 0.0f, 1.0f};
-        emitterComponent->EmitterData.finalColor           = {0.0f, 2.0f, 2.0f, 0.0f};
-        emitterComponent->EmitterData.uv                   = {0.0f, 0.0f};
-        emitterComponent->EmitterData.minVelocity          = {-3.0f, -0.0f, -3.0f};
-        emitterComponent->EmitterData.maxVelocity          = {3.0f, 6.0f, 3.0f};
-        emitterComponent->EmitterData.lifeSpan             = XMFLOAT3(3.0f, 2.0f, 2.0f);
-        emitterComponent->EmitterData.scale                = XMFLOAT2(1.0f, 0.0f);
+        ComponentHandle   emitterComponentHandle = entityHandle.AddComponent<EmitterComponent>();
+        EmitterComponent* emitterComponent       = emitterComponentHandle.Get<EmitterComponent>();
 
-        emitterComponent->EmitterData.acceleration = XMFLOAT3(0.0f, -0.0f, 0.0f);
-        emitterComponent->EmitterData.index        = 2;
+        XMFLOAT4 orbColor;
+        XMStoreFloat4(&orbColor, 4.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[color]));
+
+        emitterComponent->FloatParticle(XMFLOAT3(), XMFLOAT3(), orbColor, orbColor, XMFLOAT4(3.0f, 1.0f, 0.1f, 0.1f));
+        emitterComponent->EmitterData.acceleration  = XMFLOAT3(0.0f, -9.80f, 0.0f);
+        emitterComponent->EmitterData.index         = 2;
+        emitterComponent->EmitterData.particleScale = XMFLOAT2(0.1f, 0.1f);
+        emitterComponent->maxCount                  = 50;
+        emitterComponent->spawnRate                 = 15.0f;
 
         return entityHandle;
 }
@@ -279,17 +307,17 @@ void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
         float      distance = MathLibrary::CalulateVectorLength(dir);
         XMVECTOR   scale    = XMVectorSet(width, 1.0f, distance, 1.0f);
         FTransform transform;
-        transform.translation          = start;
-        transform.rotation             = FQuaternion::LookAt(XMVector3Normalize(dir));
-        transform.scale                = scale;
-        it.first->second.transform     = transform.CreateMatrix();
-        it.first->second.segments      = length / m_SplineLengthPerOrb;
-        it.first->second.spiralCount   = waveCount;
-        it.first->second.maxHeight     = heightvar;
-        it.first->second.color         = color;
-        it.first->second.targetColor   = color;
-        it.first->second.current       = 0;
-        it.first->second.shouldDestroy = false;
+        transform.translation                = start;
+        transform.rotation                   = FQuaternion::LookAt(XMVector3Normalize(dir));
+        transform.scale                      = scale;
+        it.first->second.transform           = transform.CreateMatrix();
+        it.first->second.segments            = length / m_SplineLengthPerOrb;
+        it.first->second.spiralCount         = waveCount;
+        it.first->second.maxHeight           = heightvar;
+        it.first->second.color               = color;
+        it.first->second.targetColor         = color;
+        it.first->second.current             = 0;
+        it.first->second.shouldDestroy       = false;
         it.first->second.originalWorldOffset = GEngine::Get()->m_OriginOffset;
         it.first->second.spawnTimer = it.first->second.spawnCD = m_SplineSpawnCD;
         XMVECTOR dummy;
@@ -571,21 +599,19 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                         {
                                                 attached = true;
                                                 dir      = dirNext;
-                                                dirVel   = (capsuleA.endPoint -
-                                                                            playerTransform->transform.translation);
+                                                dirVel   = (capsuleA.endPoint - playerTransform->transform.translation);
                                         }
                                         else if (MathLibrary::VectorDotProduct(playerTransform->transform.GetForward(),
                                                                                dirPrev) > 0.3f)
                                         {
                                                 attached = true;
                                                 dir      = dirPrev;
-                                                dirVel   = (capsuleB.endPoint -
-                                                                            playerTransform->transform.translation);
+                                                dirVel   = (capsuleB.endPoint - playerTransform->transform.translation);
                                         }
 
 
-										float dist = MathLibrary::CalulateVectorLength(dirVel);
-										dirVel = XMVector3Normalize(dirVel);
+                                        float dist = MathLibrary::CalulateVectorLength(dirVel);
+                                        dirVel     = XMVector3Normalize(dirVel);
                                         if (attached)
                                         {
                                                 XMVECTOR closestPointOnLine = MathLibrary::GetClosestPointFromLine(
@@ -747,19 +773,6 @@ void SpeedBoostSystem::OnInitialize()
         EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
                                         ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
                                         ->GetControlledEntity();
-
-        EmitterComponent* emitterComponent = playerEntity.AddComponent<EmitterComponent>().Get<EmitterComponent>();
-        emitterComponent->EmitterData.flags               = 1;
-        emitterComponent->EmitterData.initialColor         = {1.0f, 1.0f, 1.0f, 1.0f};
-        emitterComponent->EmitterData.finalColor           = {1.0f, 1.0f, 1.0f, 0.0f};
-        emitterComponent->EmitterData.uv                   = {0.0f, 0.0f};
-        emitterComponent->EmitterData.minVelocity          = {-3.0f, -0.0f, -3.0f};
-        emitterComponent->EmitterData.maxVelocity          = {3.0f, 6.0f, 3.0f};
-        emitterComponent->EmitterData.lifeSpan             = XMFLOAT3(10.0f, 2.0f, 2.0f);
-        emitterComponent->EmitterData.scale                = XMFLOAT2(1.0f, 0.0f);
-
-        emitterComponent->EmitterData.acceleration = XMFLOAT3(0.0f, -9.8f, 0.0f);
-        emitterComponent->EmitterData.index        = 2;
 
 
         bIsLatchedToSpline = false;

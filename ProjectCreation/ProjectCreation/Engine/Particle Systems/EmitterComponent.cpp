@@ -2,40 +2,39 @@
 using namespace ParticleData;
 using namespace DirectX;
 
-void EmitterComponent::Zero(FEmitterGPU& emitterGPU)
+void EmitterComponent::Zero()
 {
-        emitterGPU.lifeSpan        = XMFLOAT3(0.0f, 0.0f, 0.0f);
-        emitterGPU.flags           = 0;
-        emitterGPU.initialPosition = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-        emitterGPU.endPosition     = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-        emitterGPU.initialColor    = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-        emitterGPU.finalColor      = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-        emitterGPU.uv              = XMFLOAT2(0.0f, 0.0f);
-        emitterGPU.minVelocity     = XMFLOAT3(0.0f, 0.0f, 0.0f);
-        emitterGPU.maxVelocity     = XMFLOAT3(0.0f, 0.0f, 0.0f);
-        emitterGPU.scale           = XMFLOAT2(0.0f, 0.0f); // min sclae and max scale
-        emitterGPU.acceleration    = XMFLOAT3(0.0f, 0.0f, 0.0f);
-        emitterGPU.index           = 0; // type of particles;
+        EmitterData.lifeSpan           = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+        EmitterData.flags              = 0;
+        EmitterData.minOffset          = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        EmitterData.maxOffset          = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        EmitterData.initialColor       = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+        EmitterData.finalColor         = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+        EmitterData.uv                 = XMFLOAT2(0.0f, 0.0f);
+        EmitterData.minInitialVelocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        EmitterData.maxInitialVelocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        EmitterData.particleScale      = XMFLOAT2(0.0f, 0.0f); // min sclae and max scale
+        EmitterData.acceleration       = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        EmitterData.index              = 0; // type of particles;
 }
 
-void EmitterComponent::FloatParticle(FEmitterGPU&      emitterGPU,
-                                              DirectX::XMFLOAT4 initPosition,
-                                              DirectX::XMFLOAT4 endPosition,
-                                              DirectX::XMFLOAT4 initialColor,
-                                              DirectX::XMFLOAT4 finalColor,
-                                              XMFLOAT3          lifeSpan)
+void EmitterComponent::FloatParticle(DirectX::XMFLOAT3 minOffset,
+                                     DirectX::XMFLOAT3 maxOffset,
+                                     DirectX::XMFLOAT4 initialColor,
+                                     DirectX::XMFLOAT4 finalColor,
+                                     DirectX::XMFLOAT4 lifeSpan)
 {
 
-        emitterGPU.lifeSpan        = lifeSpan; // life time
-        emitterGPU.flags           = 1;
-        emitterGPU.initialPosition = initPosition;
-        emitterGPU.endPosition     = endPosition;
-        emitterGPU.initialColor    = initialColor;
-        emitterGPU.finalColor      = finalColor;
-        emitterGPU.uv              = XMFLOAT2(0.0f, 0.0f);
-        emitterGPU.minVelocity     = {-3.0f, -0.0f, -3.0f};
-        emitterGPU.maxVelocity     = {3.0f, 6.0f, 3.0f};
-        emitterGPU.scale           = XMFLOAT2(1.0f, 1.0f); // min sclae and max scale
-        emitterGPU.acceleration    = XMFLOAT3(0.0f, 0.0f, 0.0f);
-        emitterGPU.index           = 0; // type of particles;
+        EmitterData.lifeSpan           = lifeSpan; // life time
+        EmitterData.flags              = 1;
+        EmitterData.minOffset          = minOffset;
+        EmitterData.maxOffset          = maxOffset;
+        EmitterData.initialColor       = initialColor;
+        EmitterData.finalColor         = finalColor;
+        EmitterData.uv                 = XMFLOAT2(0.0f, 0.0f);
+        EmitterData.minInitialVelocity = {-3.0f, -0.0f, -3.0f};
+        EmitterData.maxInitialVelocity = {3.0f, 6.0f, 3.0f};
+        EmitterData.particleScale      = XMFLOAT2(1.0f, 1.0f); // min sclae and max scale
+        EmitterData.acceleration       = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        EmitterData.index              = 0; // type of particles;
 }
