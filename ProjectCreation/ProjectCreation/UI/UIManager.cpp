@@ -757,37 +757,28 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   false);
         }
 
-        /*
-            //Options Volume Slider
-            instance->m_SliderHandle = 0.0f;
-            instance->AddSprite(instance->m_RenderSystem->m_Device,
-                                instance->m_RenderSystem->m_Context,
-                                E_MENU_CATEGORIES::OptionsMenu,
-                                L"../Assets/2d/Sprite/Slider_BG.dds",
-                                0.0f,
-                                -0.35f,
-                                0.2f,
-                                0.5f,
-                                false);
-                                
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::OptionsSubmenu,
+                          E_FONT_TYPE::MyFile,
+                          "<",
+                          0.04f,
+                          -0.12f,
+                          -0.01f,
+                          false,
+                          true);
 
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::OptionsSubmenu,
+                          E_FONT_TYPE::MyFile,
+                          ">",
+                          0.04f,
+                          0.12f,
+                          -0.01f,
+                          false,
+                          true);
 
-
-
-
-
-
-
-            instance->AddSprite(instance->m_RenderSystem->m_Device,
-                                instance->m_RenderSystem->m_Context,
-                                E_MENU_CATEGORIES::OptionsMenu,
-                                L"../Assets/2d/Sprite/Slider_FG.dds",
-                                0.0f,
-                                -0.35f,
-                                0.2f,
-                                0.5f,
-                                false);
-        */
 
         // Level Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -879,7 +870,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::MyFile,
-                          "Red Boost: A",
+                          "Collect Red: A",
                           0.03f,
                           0.0f,
                           -0.1f,
@@ -890,7 +881,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::MyFile,
-                          "Green Boost: S",
+                          "Collect Green: S",
                           0.03f,
                           0.0f,
                           0.0f,
@@ -901,7 +892,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::MyFile,
-                          "Blue Boost: D",
+                          "Collect Blue: D",
                           0.03f,
                           0.0f,
                           0.1f,
