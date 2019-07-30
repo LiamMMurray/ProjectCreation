@@ -14,6 +14,7 @@ void Level_03::Enter()
                 GEngine::Get()->SetTransitionSpeed(15.0f);
                 GEngine::Get()->Update();
         }
+        m_SpeedBoostSystem->ResetLevel();
 
         m_SpeedBoostSystem->splineWidth  = 18.0f;
         m_SpeedBoostSystem->splineHeight = 1.5f;

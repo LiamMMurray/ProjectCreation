@@ -3,6 +3,7 @@
 #include "../../ECS/HandleManager.h"
 #include "../../ECS/SystemManager.h"
 #include "../MathLibrary/MathLibrary.h"
+#include "GoalComponent.h"
 
 class TransformComponent;
 
@@ -51,4 +52,5 @@ class OrbitSystem : public ISystem
         unsigned int    goalsCollected   = 0;
         bool            collectedMask[3] = {};
         FActiveGoalInfo activeGoal;
+        void            DestroyPlanet(GoalComponent* toDestroy);
 };

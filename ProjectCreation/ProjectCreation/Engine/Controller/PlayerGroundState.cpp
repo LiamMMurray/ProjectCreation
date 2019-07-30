@@ -53,7 +53,8 @@ void PlayerGroundState::Update(float deltaTime)
                 GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_03);
         }
 
-        if (_playerController->GetCollectedPlanetCount() == 3)
+	static bool doOnce = false;
+        if (!doOnce && _playerController->GetCollectedPlanetCount() == 3)
         {
 
                 // Changed for play testing
@@ -61,6 +62,7 @@ void PlayerGroundState::Update(float deltaTime)
 
                 // Reveal Ocean once first planet placed
                 UIManager::instance->DemoEnd();
+                doOnce = true;
         }
 
         XMVECTOR currentVelocity = _playerController->GetCurrentVelocity();

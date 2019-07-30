@@ -123,6 +123,17 @@ class SpeedBoostSystem : public ISystem
 
         void RequestDestroyAllSpeedboosts();
 
+        void RequestDestroyAllSplines();
+
+        void RequestDestroyAllPlanets();
+
+        inline void ResetLevel()
+        {
+                RequestDestroyAllSplines();
+                RequestDestroyAllSpeedboosts();
+                //RequestDestroyAllPlanets();
+        }
+
         inline void SetRandomSpawnEnabled(bool val)
         {
                 m_EnableRandomSpawns = val;

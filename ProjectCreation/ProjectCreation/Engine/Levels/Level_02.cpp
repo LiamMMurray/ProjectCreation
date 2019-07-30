@@ -14,6 +14,7 @@ void Level_02::Enter()
         m_SpeedBoostSystem->splineWidth  = 6.0f;
         m_SpeedBoostSystem->splineHeight = 0.7f;
         m_SpeedBoostSystem->changeColor  = false;
+        m_SpeedBoostSystem->ResetLevel();
 
         m_SpeedBoostSystem->SetTargetTerrain(0.0f);
         GEngine::Get()->m_TerrainAlpha = 0.0f;

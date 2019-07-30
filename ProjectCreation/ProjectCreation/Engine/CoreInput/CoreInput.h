@@ -44,6 +44,7 @@ typedef HWND__* HWND;
 // https://docs.microsoft.com/en-us/windows/desktop/inputdev/virtual-key-codes
 enum class KeyCode
 {
+        Enter   = 0x0D,
         Space   = 0x20,
         Control = 0x11,
         Tab     = 0x09,
@@ -102,8 +103,8 @@ enum class KeyCode
         Up,
         Right,
         Down,
-		Any = -2,
-		None = -1
+        Any  = -2,
+        None = -1
 };
 
 enum class MouseCode
@@ -146,8 +147,8 @@ class GCoreInput
         {
                 return mouseY;
         };
-        static int32_t         GetMouseWindowPosX();
-        static int32_t         GetMouseWindowPosY();
+        static int32_t  GetMouseWindowPosX();
+        static int32_t  GetMouseWindowPosY();
         static KeyState GetKeyState(KeyCode target);
         static KeyState GetMouseState(MouseCode target);
 

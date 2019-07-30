@@ -17,6 +17,8 @@ void Level_01::Enter()
         m_SpeedBoostSystem->changeColor = false;
         m_SpeedBoostSystem->SetTargetTerrain(0.0f);
 
+		m_SpeedBoostSystem->ResetLevel();
+
 		ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         controllerSys->ResetLightOrbCounters();
 }

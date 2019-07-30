@@ -13,7 +13,8 @@ void TutorialLevel::Enter()
         // Update(GEngine::Get()->GetDeltaTime());
         GEngine::Get()->SetPlayerRadius(0);
         m_SpeedBoostSystem->SetRandomSpawnEnabled(false);
-        m_SpeedBoostSystem->RequestDestroyAllSpeedboosts();
+
+		m_SpeedBoostSystem->ResetLevel();
 
         m_PlayerController->SetCollectedPlanetCount(0);
 

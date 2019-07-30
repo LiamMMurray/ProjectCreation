@@ -180,6 +180,24 @@ void SpeedBoostSystem::RequestDestroyAllSpeedboosts()
         }
 }
 
+void SpeedBoostSystem::RequestDestroyAllSplines()
+{
+
+        for (auto& iter : m_SplineClusterSpawners)
+        {
+                DestroySpline(iter.first, 0);
+        }
+}
+
+void SpeedBoostSystem::RequestDestroyAllPlanets()
+{
+        auto orbitSystem = SYSTEM_MANAGER->GetSystem<OrbitSystem>();
+        for (auto& iter : m_HandleManager->GetActiveComponents<GoalComponent>())
+        {
+                orbitSystem->DestroyPlanet(&iter);
+        }
+}
+
 void SpeedBoostSystem::RequestDestroySplineOrb(SpeedboostSplineComponent* speedComp)
 {
         auto orbComp            = speedComp->GetParent().GetComponent<OrbComponent>();
