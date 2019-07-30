@@ -38,3 +38,35 @@ void EmitterComponent::FloatParticle(DirectX::XMFLOAT3 minOffset,
         EmitterData.acceleration       = XMFLOAT3(0.0f, 0.0f, 0.0f);
         EmitterData.index              = 0; // type of particles;
 }
+
+void EmitterComponent::ParticleswithGravity(DirectX::XMFLOAT3 minOffset,
+                                            DirectX::XMFLOAT3 maxOffset,
+                                            DirectX::XMFLOAT4 initialColor,
+                                            DirectX::XMFLOAT4 finalColor,
+                                            DirectX::XMFLOAT4 lifeSpan)
+{
+
+        EmitterData.lifeSpan           = lifeSpan; // life time
+        EmitterData.flags              = 1;
+        EmitterData.minOffset          = minOffset;
+        EmitterData.maxOffset          = maxOffset;
+        EmitterData.initialColor       = initialColor;
+        EmitterData.finalColor         = finalColor;
+        EmitterData.uv                 = XMFLOAT2(0.0f, 0.0f);
+        EmitterData.minInitialVelocity = {-3.0f, -0.0f, -3.0f};
+        EmitterData.maxInitialVelocity = {3.0f, 6.0f, 3.0f};
+        EmitterData.particleScale      = XMFLOAT2(1.0f, 1.0f); // min sclae and max scale
+        EmitterData.acceleration       = XMFLOAT3(0.0f, -9.8f, 0.0f);
+        EmitterData.index              = 0; // type of particles;
+}
+
+void EmitterComponent::ParticleFloatUp(DirectX::XMFLOAT3 minOffset,
+                                       DirectX::XMFLOAT3 maxOffset,
+                                       DirectX::XMFLOAT4 initialColor,
+                                       DirectX::XMFLOAT4 finalColor,
+                                       DirectX::XMFLOAT4 lifeSpan)
+{
+
+
+}
+

@@ -144,6 +144,10 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         playerController->SetCollectedPlanetCount(1 + playerController->GetCollectedPlanetCount());
                         std::cout << "Orbit System: Planet count = " << playerController->GetCollectedPlanetCount()
                                   << std::endl;
+
+						//check if player is in range
+						// particle fly up
+
                 }
 
                 if (goalComp.goalState == E_GOAL_STATE::Done)
