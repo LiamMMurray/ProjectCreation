@@ -173,8 +173,8 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         // register window class
         RegisterClassEx(&winInfo);
 
-        RECT wr = {0, 0, 1600, 900};                       // set the size
-        AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE); // adjust the size
+        RECT wr = {0, 0, 1920, 1080};                        // set the size
+        AdjustWindowRect(&wr, WS_POPUP, FALSE); // adjust the size
 
         int posX = GetSystemMetrics(SM_CXSCREEN) / 2 - (wr.right - wr.left) / 2;
         int posY = GetSystemMetrics(SM_CYSCREEN) / 2 - (wr.bottom - wr.top) / 2;
@@ -183,7 +183,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         HWND handle = CreateWindowEx(WS_EX_APPWINDOW,
                                      appName, // Window class name again
                                      appName, // window title text
-                                     WS_OVERLAPPED | WS_SYSMENU,
+                                     WS_POPUP,
                                      posX,                // x pos
                                      posY,                // y pos
                                      wr.right - wr.left,  // width of the window
@@ -234,7 +234,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
             /*std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
             ComponentHandle          transformHandle;
             EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
-           
+           
 
 
 
