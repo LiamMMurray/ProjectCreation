@@ -185,14 +185,43 @@ void UIManager::UIClipCursor()
         ClipCursor(&rect);
 }
 
-void UIManager::OnScreenResize()
-{}
+void UIManager::CrosshairFlip()
+{
+	if (instance->m_UICrosshair == false)
+	{
+            for (size_t i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair].size(); i++)
+            {
+                    instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair][i].mEnabled = false;
+            }
+    }
+    else if (instance->m_UICrosshair == true && instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair][0].mEnabled == true)
+    {
+            for (size_t i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair].size(); i++)
+            {
+                    instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair][i].mEnabled = false;
+            }
+    }
+	else
+	{
+            for (size_t i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair].size(); i++)
+            {
+                    instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair][i].mEnabled = true;
+            }
+	}
+}
 
 
 // UI Transitions
 void UIManager::WhiteOrbCollected()
 {
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
+        instance->m_UICrosshair                                       = true;
+
+        for (size_t i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair].size(); i++)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair][i].mEnabled = true;
+        }
 }
 
 void UIManager::RedOrbCollected()
@@ -272,6 +301,18 @@ void UIManager::Pause()
         {
                 instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
         }
+
+		// Main Menu
+        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu].size(); i++)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][i].mEnabled = false;
+        }
+        // Text
+        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu].size(); i++)
+        {
+                instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][i].mEnabled = false;
+        }
+		instance->CrosshairFlip();
 }
 
 void UIManager::Unpause()
@@ -293,7 +334,10 @@ void UIManager::Unpause()
         {
                 for (auto& sprite : it.second)
                 {
-                        sprite.mEnabled = false;
+                        if (it.first != E_MENU_CATEGORIES::MainMenu)
+                        {
+                                sprite.mEnabled = false;
+						}
                 }
         }
 
@@ -304,6 +348,8 @@ void UIManager::Unpause()
                         font.mEnabled = false;
                 }
         }
+
+		instance->CrosshairFlip();
 }
 
 void UIManager::CheckResolution()
@@ -472,9 +518,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
                           "Press Enter to continue. . .",
-                          0.06f,
+                          0.04f,
                           0.0f,
-                          0.1f,
+                          0.15f,
                           true,
                           false);
 
@@ -483,9 +529,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
                           "Hold Left Click to Move",
-                          0.06f,
+                          0.04f,
                           0.0f,
-                          0.1f,
+                          0.15f,
                           false,
                           false);
 
@@ -493,10 +539,10 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
-                          "Hold A to get a boost from Red lights",
-                          0.06f,
+                          "Hold A to collect Red lights",
+                          0.04f,
                           0.0f,
-                          0.1f,
+                          0.15f,
                           false,
                           false);
 
@@ -504,10 +550,10 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
-                          "Hold S to get a boost from Green lights",
-                          0.06f,
+                          "Hold S to collect Green lights",
+                          0.04f,
                           0.0f,
-                          0.1f,
+                          0.15f,
                           false,
                           false);
 
@@ -515,23 +561,23 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
-                          "Hold D to get a boost from Blue lights",
-                          0.06f,
+                          "Hold D to collect Blue lights",
+                          0.04f,
                           0.0f,
-                          0.1f,
+                          0.15f,
                           false,
                           false);
 
         // Cross-hair
         instance->AddSprite(instance->m_RenderSystem->m_Device,
                             instance->m_RenderSystem->m_Context,
-                            E_MENU_CATEGORIES::MainMenu,
+                            E_MENU_CATEGORIES::Crosshair,
                             L"../Assets/2d/Sprite/Circle Thirds.dds",
                             0.0f,
                             0.0f,
                             0.04f,
                             0.04f,
-                            true);
+                            false);
 
         // Pause Menu
         instance->AddSprite(instance->m_RenderSystem->m_Device,
@@ -1440,8 +1486,6 @@ void UIManager::Update()
         // Pause & Unpause
         if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled == true)
         {
-                // Joseph Updated the main menu ui to match to input keys
-                // Changed 'Space', 'Q', and 'E' to 'A', 'S', and 'D'
                 if (GCoreInput::GetKeyState(KeyCode::Enter) == KeyState::Down)
                 {
                         instance->MainTilteUnpause();
@@ -1451,8 +1495,6 @@ void UIManager::Update()
         {
                 if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
                 {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
-
                         for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::Demo].size(); i++)
                         {
                                 instance->m_AllFonts[E_MENU_CATEGORIES::Demo][i].mEnabled = false;
@@ -1470,15 +1512,6 @@ void UIManager::Update()
                         {
                                 instance->Unpause();
                         }
-                }
-        }
-
-        // Left Click
-        if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled == true)
-        {
-                if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
                 }
         }
 
