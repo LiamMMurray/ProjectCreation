@@ -45,15 +45,27 @@ void ParticleManager::update(float deltaTime)
 
         for (auto& emitterComponent : GEngine::Get()->GetHandleManager()->GetActiveComponents<EmitterComponent>())
         {
-                if (emitterIndex > gMaxEmitterCount)
+                if (emitterIndex >= gMaxEmitterCount)
                 {
-                        emitterIndex--;
+                        // emitterIndex--;
                         break;
                 }
                 EntityHandle        parent             = emitterComponent.GetParent();
                 TransformComponent* transformComponent = parent.GetComponent<TransformComponent>();
-                XMVECTOR            emitterPos         = transformComponent->transform.translation + emitterComponent.offset;
-                m_EmittersCPU[emitterIndex]            = emitterComponent.EmitterData;
+
+                if (emitterComponent.rotate == true)
+                {
+                        XMVECTOR minVel = XMLoadFloat3(&emitterComponent.EmitterData.minInitialVelocity);
+                        XMVECTOR maxVel = XMLoadFloat3(&emitterComponent.EmitterData.maxInitialVelocity);
+                        XMVECTOR accel  = XMLoadFloat3(&emitterComponent.EmitterData.acceleration);
+                        XMVECTOR rotation =
+                            XMQuaternionRotationAxis(emitterComponent.rotationAxis, emitterComponent.rotationRate * deltaTime);
+                        XMStoreFloat3(&emitterComponent.EmitterData.minInitialVelocity, XMVector3Rotate(minVel, rotation));
+                        XMStoreFloat3(&emitterComponent.EmitterData.maxInitialVelocity, XMVector3Rotate(maxVel, rotation));
+                        XMStoreFloat3(&emitterComponent.EmitterData.acceleration, XMVector3Rotate(accel, rotation));
+                }
+                XMVECTOR emitterPos         = transformComponent->transform.translation + emitterComponent.offset;
+                m_EmittersCPU[emitterIndex] = emitterComponent.EmitterData;
                 XMStoreFloat3(&m_EmittersCPU[emitterIndex].emitterPosition, emitterPos);
 
                 emitterComponent.desiredCount += emitterComponent.spawnRate * deltaTime * 0.5f;
@@ -67,7 +79,7 @@ void ParticleManager::update(float deltaTime)
 
         for (int i = emitterIndex; i < m_PreviousEmitterCount; i++)
         {
-                m_SegmentBufferCPU.desiredCount[emitterIndex] = 0;
+                m_SegmentBufferCPU.desiredCount[i] = 0;
         }
         m_PreviousEmitterCount = emitterIndex;
 
@@ -182,18 +194,18 @@ void ParticleManager::init()
         // data set up //shoulde be ab;e to set the particle data somewhere else
 
 
-    /*    m_EmittersCPU->flags               = 1;
-        m_EmittersCPU->initialColor         = {10.0f, 10.0f, 0.0f, 1.0f};
-        m_EmittersCPU->finalColor           = {1.0f, 1.0f, 1.0f, 1.0f};
-        m_EmittersCPU->initialPosition      = {0.0f, 10.0f, 0.0f, 0.0f};
-        m_EmittersCPU->uv                   = {0.0f, 0.0f};
-        m_EmittersCPU->minVelocity          = {-30.0f, -0.0f, -30.0f};
-        m_EmittersCPU->maxVelocity          = {30.0f, 20.0f, 30.0f};
-        m_EmittersCPU->lifeSpan             = 12.0f;
-        m_EmittersCPU->scale                = XMFLOAT2(1.0f, 0.0f);
+        /*    m_EmittersCPU->flags               = 1;
+            m_EmittersCPU->initialColor         = {10.0f, 10.0f, 0.0f, 1.0f};
+            m_EmittersCPU->finalColor           = {1.0f, 1.0f, 1.0f, 1.0f};
+            m_EmittersCPU->initialPosition      = {0.0f, 10.0f, 0.0f, 0.0f};
+            m_EmittersCPU->uv                   = {0.0f, 0.0f};
+            m_EmittersCPU->minVelocity          = {-30.0f, -0.0f, -30.0f};
+            m_EmittersCPU->maxVelocity          = {30.0f, 20.0f, 30.0f};
+            m_EmittersCPU->lifeSpan             = 12.0f;
+            m_EmittersCPU->scale                = XMFLOAT2(1.0f, 0.0f);
 
-        m_EmittersCPU->acceleration = XMFLOAT3(0.0f, -9.8f, 0.0f);
-        m_EmittersCPU->index        = 2;*/
+            m_EmittersCPU->acceleration = XMFLOAT3(0.0f, -9.8f, 0.0f);
+            m_EmittersCPU->index        = 2;*/
         // init
         m_RenderSystem = SYSTEM_MANAGER->GetSystem<RenderSystem>();
 

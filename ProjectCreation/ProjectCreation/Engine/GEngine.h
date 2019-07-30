@@ -44,6 +44,7 @@ class GEngine
 
     public:
         DirectX::XMVECTOR m_OriginOffset = DirectX::XMVECTORF32{0.0f, 0.0f, 0.0f, 0.0f};
+        DirectX::XMVECTOR m_WorldOffsetDelta = DirectX::XMVECTORF32{0.0f, 0.0f, 0.0f, 0.0f};
         inline void SetPlayerRadius(float r)
         {
                 m_PlayerRadius = m_DesiredPlayerRadius = r;

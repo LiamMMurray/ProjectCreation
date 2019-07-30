@@ -815,6 +815,7 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         // get scale
         m_ConstantBuffer_SCENE.scale = TerrainManager::Get()->GetScale();
         m_ConstantBuffer_SCENE.screenDimensions = XMFLOAT2(m_BackBufferWidth,m_BackBufferHeight);
+        XMStoreFloat3(&m_ConstantBuffer_SCENE.worldOffsetDelta, GEngine::Get()->m_WorldOffsetDelta);
 
         /** Prepare draw calls **/
         m_TransluscentDraws.clear();

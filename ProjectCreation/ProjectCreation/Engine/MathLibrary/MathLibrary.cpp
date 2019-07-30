@@ -288,6 +288,15 @@ DirectX::XMFLOAT4 MathLibrary::GetRandomColor()
         return output;
 }
 
+DirectX::XMFLOAT3 MathLibrary::MultiplyFLoat3(XMFLOAT3& a, XMFLOAT3& b)
+{
+        XMFLOAT3 output;
+        output.x = a.x * b.x;
+        output.y = a.y * b.y;
+        output.z = a.z * b.z;
+        return output;
+}
+
 DirectX::XMFLOAT4 MathLibrary::GetRandomColorInRange(DirectX::XMFLOAT2 red,
                                                      DirectX::XMFLOAT2 green,
                                                      DirectX::XMFLOAT2 blue,

@@ -7,6 +7,7 @@
 #include "..//GEngine.h"
 #include "../Controller/ControllerSystem.h"
 #include "../GenericComponents/TransformComponent.h"
+#include "../Particle Systems/EmitterComponent.h"
 #include "../ResourceManager/Material.h"
 
 
@@ -54,6 +55,19 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
         activeGoal.activeGoalGround = entityH1;
         activeGoal.activeGoalOrbit  = entityH2;
         activeGoal.activeColor      = color;
+
+        // check if player is in range
+        // particle fly up
+        XMFLOAT4 goalColor;
+        XMStoreFloat4(&goalColor, 4.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[color]));
+        goalHandle                         = entityH1.AddComponent<EmitterComponent>();
+        EmitterComponent* emitterComponent = goalHandle.Get<EmitterComponent>();
+        emitterComponent->ParticleFloatUp(
+            XMFLOAT3(-0.3f, -0.3f, -0.3f), XMFLOAT3(0.3f, 0.3f, 0.3f), goalColor, goalColor, XMFLOAT4(6.0f, 1.0f, 0.1f, 0.1f));
+        emitterComponent->EmitterData.index         = 2;
+        emitterComponent->EmitterData.particleScale = XMFLOAT2(0.2f, 0.2f);
+        emitterComponent->maxCount                  = 0;
+        emitterComponent->spawnRate                 = 0.0f;
         /*** REFACTORING CODE END ***/
 }
 
@@ -129,9 +143,21 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         return;
                 }
 
-
                 float distanceSq =
                     MathLibrary::CalulateDistanceSq(playerTransform->transform.translation, transComp->transform.translation);
+
+                auto emitterComponent = goalParent.GetComponent<EmitterComponent>();
+                if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 40.0f)
+                {
+
+                        emitterComponent->spawnRate = 50.0f;
+                        emitterComponent->maxCount  = 2048;
+                }
+                XMVECTOR deltaDistance = transCompPuzzle->transform.translation - transComp->transform.translation;
+                XMVECTOR offset        = 1.0f * XMVector3Normalize(deltaDistance);
+                XMStoreFloat3(&emitterComponent->EmitterData.minInitialVelocity, XMVectorZero());
+                XMStoreFloat3(&emitterComponent->EmitterData.maxInitialVelocity, +offset);
+                XMStoreFloat3(&emitterComponent->EmitterData.acceleration, deltaDistance / 100.0f);
 
                 if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 3.5f)
                 {
@@ -143,10 +169,6 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         playerController->SetCollectedPlanetCount(1 + playerController->GetCollectedPlanetCount());
                         std::cout << "Orbit System: Planet count = " << playerController->GetCollectedPlanetCount()
                                   << std::endl;
-
-						//check if player is in range
-						// particle fly up
-
                 }
 
                 if (goalComp.goalState == E_GOAL_STATE::Done)

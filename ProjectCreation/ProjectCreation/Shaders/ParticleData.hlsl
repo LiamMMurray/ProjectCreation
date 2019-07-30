@@ -1,5 +1,5 @@
 static const unsigned int gMaxEmitterCount       = 2 << 10;
-static const unsigned int gMaxParticleCount      = 2 << 16;
+static const unsigned int gMaxParticleCount      = 2 << 18;
 static const unsigned int gMaxParticlePerEmitter = gMaxParticleCount / gMaxEmitterCount;
 
 struct FParticleGPU

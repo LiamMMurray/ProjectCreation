@@ -115,12 +115,11 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
 
         XMStoreFloat3(&velMin, -rt * 0.05f);
         XMStoreFloat3(&velMax, +rt * 0.05f + VectorConstants::Up * 1.0f);
-
+        velMin = velMax;
         XMStoreFloat3(&accel, fw * 1.5f - VectorConstants::Up * 0.5f);
 
-        auto emitterComponent      = entityH.GetComponent<EmitterComponent>();
-        emitterComponent->maxCount = 10;
-
+        auto emitterComponent                            = entityH.GetComponent<EmitterComponent>();
+        emitterComponent->maxCount                       = 10;
         emitterComponent->EmitterData.minOffset          = posMin;
         emitterComponent->EmitterData.maxOffset          = posMax;
         emitterComponent->EmitterData.minInitialVelocity = velMin;
@@ -155,6 +154,14 @@ EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int c
         XMStoreFloat4(&orbColor, 4.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[color]));
 
         emitterComponent->FloatParticle(XMFLOAT3(), XMFLOAT3(), orbColor, orbColor, XMFLOAT4(3.0f, 1.0f, 0.1f, 0.1f));
+
+        XMFLOAT3 velMax;
+        XMStoreFloat3(&velMax, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f));
+        emitterComponent->EmitterData.minInitialVelocity = velMax;
+        emitterComponent->EmitterData.maxInitialVelocity = velMax;
+
+        emitterComponent->rotate                    = true;
+        emitterComponent->rotationAxis              = VectorConstants::Up;
         emitterComponent->EmitterData.acceleration  = XMFLOAT3(0.0f, -9.80f, 0.0f);
         emitterComponent->EmitterData.index         = 2;
         emitterComponent->EmitterData.particleScale = XMFLOAT2(0.1f, 0.1f);
@@ -628,10 +635,10 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                         }
 
 
-                                        float dist = MathLibrary::CalulateVectorLength(dirVel);
-                                        dirVel     = XMVector3Normalize(dirVel);
                                         if (attached)
                                         {
+                                                float dist                  = MathLibrary::CalulateVectorLength(dirVel);
+                                                dirVel                      = XMVector3Normalize(dirVel);
                                                 XMVECTOR closestPointOnLine = MathLibrary::GetClosestPointFromLine(
                                                     capsuleA.startPoint,
                                                     capsuleA.startPoint + dirVel,

@@ -5,15 +5,8 @@
 #include "Pools.h"
 namespace ParticleData
 {
-        /*  struct FParticleType
-          {
-                  DirectX::XMFLOAT4 position;
-                  DirectX::XMFLOAT4 prev_position;
-                  DirectX::XMFLOAT4 color;
-                  DirectX::XMFLOAT3 velocity;
-          };*/
 
-        static constexpr unsigned int gMaxParticleCount = 2 << 16;
+        static constexpr unsigned int gMaxParticleCount = 2 << 18;
         static constexpr unsigned int gMaxEmitterCount  = 2 << 10;
 
         struct FEmitterGPU
@@ -30,7 +23,7 @@ namespace ParticleData
                 DirectX::XMFLOAT3 maxInitialVelocity;
                 DirectX::XMFLOAT2 particleScale;
                 DirectX::XMFLOAT3 acceleration;
-                int               index; // tpye of particles
+                int index; // tpye of particles
         };
 
         struct FParticleGPU

@@ -35,7 +35,7 @@ float3 VSPositionFromDepth(float2 vTexCoord)
         int    id           = DTid.x;
         int    emitterIndex = id / gMaxParticlePerEmitter;
 
-        ParticleBuffer[id].prevPos      = ParticleBuffer[id].position;
+        ParticleBuffer[id].prevPos = ParticleBuffer[id].position;
 
         ParticleBuffer[id].velocity = ParticleBuffer[id].velocity + ParticleBuffer[id].acceleration * _DeltaTime;
 
@@ -84,6 +84,7 @@ float3 VSPositionFromDepth(float2 vTexCoord)
                 float2 Max = -Min;
                 // ParticleBuffer[id].position.xyz =
                 //  WrapPosition(ParticleBuffer[id].position.xyz, _EyePosition + Min, _EyePosition + Max);
+
                 // bounce based on texture depth
                 if (ndc.w >= depth)
                 {
@@ -91,7 +92,7 @@ float3 VSPositionFromDepth(float2 vTexCoord)
                         ParticleBuffer[id].acceleration = reflect(ParticleBuffer[id].acceleration, normalVS);
                 }
                 ParticleBuffer[id].position.xyz += ParticleBuffer[id].velocity * _DeltaTime;
-                ParticleBuffer[id].position.xz =
-                    wrap(ParticleBuffer[id].position.xz, _EyePosition.xz + Min, _EyePosition.xz + Max);
+
+                ParticleBuffer[id].position.xyz += _WorldOffsetDelta;
         }
 }
