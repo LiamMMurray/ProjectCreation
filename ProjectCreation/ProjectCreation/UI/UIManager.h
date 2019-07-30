@@ -25,7 +25,6 @@ struct E_MENU_CATEGORIES
                 OptionsSubmenu,
                 LevelMenu,
                 ControlsMenu,
-				Crosshair,
 				Demo,
                 COUNT
         };
@@ -110,8 +109,6 @@ class UIManager
         void GreenOrbCollected();
         void BlueOrbCollected();
 
-		void CrosshairFlip();
-
 
         void        UIClipCursor();
 
@@ -122,7 +119,6 @@ class UIManager
         bool         m_FirstFull      = true; // Turns false when the game is put to fullscreen on launch
         bool         m_InMenu         = false;
         bool         m_AdjustedScreen = false;
-        bool         m_UICrosshair    = false;
         PrevSettings PSettings;
         CurrSettings CSettings;
         float        m_SliderHandle;

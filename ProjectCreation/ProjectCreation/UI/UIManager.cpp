@@ -185,43 +185,12 @@ void UIManager::UIClipCursor()
         ClipCursor(&rect);
 }
 
-void UIManager::CrosshairFlip()
-{
-	if (instance->m_UICrosshair == false)
-	{
-            for (size_t i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair].size(); i++)
-            {
-                    instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair][i].mEnabled = false;
-            }
-    }
-    else if (instance->m_UICrosshair == true && instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair][0].mEnabled == true)
-    {
-            for (size_t i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair].size(); i++)
-            {
-                    instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair][i].mEnabled = false;
-            }
-    }
-	else
-	{
-            for (size_t i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair].size(); i++)
-            {
-                    instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair][i].mEnabled = true;
-            }
-	}
-}
-
 
 // UI Transitions
 void UIManager::WhiteOrbCollected()
 {
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
-        instance->m_UICrosshair                                       = true;
-
-        for (size_t i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair].size(); i++)
-        {
-                instance->m_AllSprites[E_MENU_CATEGORIES::Crosshair][i].mEnabled = true;
-        }
 }
 
 void UIManager::RedOrbCollected()
@@ -312,7 +281,6 @@ void UIManager::Pause()
         {
                 instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][i].mEnabled = false;
         }
-		instance->CrosshairFlip();
 }
 
 void UIManager::Unpause()
@@ -348,8 +316,6 @@ void UIManager::Unpause()
                         font.mEnabled = false;
                 }
         }
-
-		instance->CrosshairFlip();
 }
 
 void UIManager::CheckResolution()
@@ -567,17 +533,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.15f,
                           false,
                           false);
-
-        // Cross-hair
-        instance->AddSprite(instance->m_RenderSystem->m_Device,
-                            instance->m_RenderSystem->m_Context,
-                            E_MENU_CATEGORIES::Crosshair,
-                            L"../Assets/2d/Sprite/Circle Thirds.dds",
-                            0.0f,
-                            0.0f,
-                            0.04f,
-                            0.04f,
-                            false);
 
         // Pause Menu
         instance->AddSprite(instance->m_RenderSystem->m_Device,
@@ -814,7 +769,10 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 0.2f,
                                 0.5f,
                                 false);
-                                
+                                
+
+
+
 
 
 
