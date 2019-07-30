@@ -45,13 +45,13 @@ struct PrevSettings
 {
         bool m_IsFullscreen = false;
         int  m_Resolution = 8; // 0-8 Representing the resDescriptors resolutions
-        int  m_Volume = 100;
+        int  m_Volume       = 10; // 0-11 Representing the volume from 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100
 };
 struct CurrSettings
 {
         bool m_IsFullscreen = false;
         int  m_Resolution   = 8; // 0-8 Representing the resDescriptors resolutions
-        int  m_Volume = 100;
+        int  m_Volume = 10; //0-10 Representing the volume from 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100
 };
 
 class UIManager

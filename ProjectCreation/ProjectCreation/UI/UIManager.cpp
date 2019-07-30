@@ -742,21 +742,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                           false,
                           true);
 
-        for (auto i = 0; i < instance->resDescriptors.size(); i++)
-        {
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::OptionsSubmenu,
-                                  E_FONT_TYPE::MyFile,
-                                  std::to_string(instance->resDescriptors[i].Width) + "x" +
-                                      std::to_string(instance->resDescriptors[i].Height),
-                                  0.04f,
-                                  0.0f,
-                                  0.35f,
-                                  false,
-                                  false);
-        }
-
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
@@ -778,6 +763,36 @@ void UIManager::Initialize(native_handle_type hwnd)
                           -0.01f,
                           false,
                           true);
+		//Volumes
+        for (auto i = 0; i <= 100; i+=10)
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::MyFile,
+                                  std::to_string(i),
+                                  0.04f,
+                                  0.0f,
+                                  -0.01f,
+                                  false,
+                                  false);
+        }
+
+		//Any new options submenu should be put above this
+        for (auto i = 0; i < instance->resDescriptors.size(); i++)
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::MyFile,
+                                  std::to_string(instance->resDescriptors[i].Width) + "x" +
+                                      std::to_string(instance->resDescriptors[i].Height),
+                                  0.04f,
+                                  0.0f,
+                                  0.35f,
+                                  false,
+                                  false);
+        }
 
 
         // Level Menu
@@ -952,6 +967,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
 
         // Pause Menu
+
         // Resume Button
         instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][1].OnMouseDown.AddEventListener(
             [](UIMouseEvent* e) { instance->Unpause(); });
@@ -1033,11 +1049,32 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
                 }
 
-                for (int i = 4; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                
+                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                     i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
+                     i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 4].mEnabled = true;
+                instance
+                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                                [instance->CSettings.m_Resolution +
+                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                 instance->resDescriptors.size()]
+                    .mEnabled = true;
+			
+                
+                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size() - 10;
+                     i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                     i++)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                }
+                instance
+                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                                [instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                 instance->resDescriptors.size()-1]
+                    .mEnabled = true;
         });
 
         // Controls Button
@@ -1074,6 +1111,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
 
         // Options
+
         // Back Button
         instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
@@ -1201,11 +1239,16 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->CSettings.m_Resolution--;
                 }
 
-                for (int i = 4; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size(); i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 4].mEnabled = true;
+                instance
+                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                                [instance->CSettings.m_Resolution +
+                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                 instance->resDescriptors.size()]
+                    .mEnabled = true;
                 // Change Resolution HERE
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Width,
@@ -1223,19 +1266,63 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->CSettings.m_Resolution++;
                 }
 
-                for (int i = 4; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                     i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
+                     i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 4].mEnabled = true;
+                instance
+                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                                [instance->CSettings.m_Resolution +
+                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                 instance->resDescriptors.size()]
+                    .mEnabled = true;
                 // Change Resolution HERE
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Width,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Height);
         });
 
+        // Left Volume Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                if (instance->CSettings.m_Volume > 0)
+                {
+                        instance->CSettings.m_Volume--;
+                        int VolBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size() - 11;
+                        int VolEnd = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                        for (int i = VolBegin; i < VolEnd; i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                        }
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Volume + 6].mEnabled = true;
+                        // Change Volume HERE
+
+                }
+        });
+
+        // Right Volume Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                if (instance->CSettings.m_Volume < 10)
+                {
+                        instance->CSettings.m_Volume++;
+                        int VolBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                       instance->resDescriptors.size() - 11;
+                        int VolEnd =
+                            instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                        for (int i = VolBegin; i < VolEnd; i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                        }
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Volume + 6].mEnabled =
+                            true;
+                        // Change Volume HERE
+
+                }
+        });
 
         // Level Select
+
         // Back Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
@@ -1374,6 +1461,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
 
         // Controls Select
+
         // Back Button
         instance->m_AllSprites[E_MENU_CATEGORIES::ControlsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
@@ -1403,6 +1491,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
 
         // Demo
+
         // Continue
         instance->m_AllSprites[E_MENU_CATEGORIES::Demo][0].OnMouseDown.AddEventListener(
             [](UIMouseEvent* e) { instance->Unpause(); });
