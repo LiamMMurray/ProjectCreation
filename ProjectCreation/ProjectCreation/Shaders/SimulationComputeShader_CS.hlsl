@@ -35,7 +35,6 @@ float3 VSPositionFromDepth(float2 vTexCoord)
         int    id           = DTid.x;
         int    emitterIndex = id / gMaxParticlePerEmitter;
 
-        ParticleBuffer[id].acceleration = EmitterBuffer[emitterIndex].acceleration;
         ParticleBuffer[id].prevPos      = ParticleBuffer[id].position;
 
         ParticleBuffer[id].velocity = ParticleBuffer[id].velocity + ParticleBuffer[id].acceleration * _DeltaTime;

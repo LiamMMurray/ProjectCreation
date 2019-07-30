@@ -24,7 +24,7 @@ cbuffer CScreenSpaceBuffer : register(b2)
         {
                 if (emitterOffset < desired)
                 {
-                        float seed = _Time + id * 18.1999464f;
+                        float seed = _Time * 0.54843f + id * 0.547338f;
 
                         ParticleBuffer[id].scale = EmitterBuffer[emitterIndex].particleScale.x;
 
@@ -37,6 +37,8 @@ cbuffer CScreenSpaceBuffer : register(b2)
                         ParticleBuffer[id].velocity = RandomFloat3InRange(seed,
                                                                           EmitterBuffer[emitterIndex].minInitialVelocity,
                                                                           EmitterBuffer[emitterIndex].maxInitialVelocity);
+                        ParticleBuffer[id].acceleration = EmitterBuffer[emitterIndex].acceleration;
+
 
                         ParticleBuffer[id].uv    = EmitterBuffer[emitterIndex].uv;
                         ParticleBuffer[id].color = EmitterBuffer[emitterIndex].initialColor;
