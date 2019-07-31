@@ -1209,7 +1209,6 @@ void RenderSystem::OnWindowResize(WPARAM wParam, LPARAM lParam)
                 D3D11_TEXTURE2D_DESC desc;
                 CreateDefaultRenderTargets(&desc);
                 CreatePostProcessEffects(&desc);
-                UIManager::OnScreenResize();
                 RefreshMainCameraSettings();
 
                 std::cout << m_BackBufferHeight << "   " << m_BackBufferWidth << std::endl;
