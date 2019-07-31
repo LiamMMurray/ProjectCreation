@@ -71,7 +71,7 @@ class SpeedBoostSystem : public ISystem
         float m_BoostShrinkSpeed      = m_BoostRadius;
         float m_targetTerrain         = 0.0f;
 
-        float maxPathLength = 100.0f;
+        float maxPathLength[4] = {120.0f, 250.0f, 510.0f, 100.0f};
 
         static constexpr float m_SplineLengthPerOrb       = 2.5f;
         static constexpr float m_SplineLatchRadius        = 0.2f;
@@ -112,6 +112,13 @@ class SpeedBoostSystem : public ISystem
         EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
         EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
 
+		bool pathExists = false;
+
+        inline void ShouldSpawnColor(int color)
+        {
+	        
+        }
+
         inline void SetTargetTerrain(float val)
         {
                 m_targetTerrain = val;
@@ -131,7 +138,7 @@ class SpeedBoostSystem : public ISystem
         {
                 RequestDestroyAllSplines();
                 RequestDestroyAllSpeedboosts();
-                //RequestDestroyAllPlanets();
+                // RequestDestroyAllPlanets();
         }
 
         inline void SetRandomSpawnEnabled(bool val)

@@ -37,6 +37,7 @@ class PlayerController : public IController
         float acceleration   = 1.0;
         float deacceleration = 8.0f;
 
+
         int m_CollectedPlanetCount = 0;
 
         DirectX::XMVECTOR m_CurrentInput;
@@ -61,6 +62,7 @@ class PlayerController : public IController
         DirectX::XMVECTOR mNextForward;
 
     public:
+        float m_TimeOnSpline = 0.0f;
 
         inline void SetNextForward(const DirectX::XMVECTOR& _val)
         {
