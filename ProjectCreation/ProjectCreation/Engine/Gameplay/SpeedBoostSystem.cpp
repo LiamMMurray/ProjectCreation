@@ -116,7 +116,7 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
         XMStoreFloat3(&velMin, -rt * 0.05f);
         XMStoreFloat3(&velMax, +rt * 0.05f + VectorConstants::Up * 1.0f);
 
-        XMStoreFloat3(&accel, fw * 1.5f - VectorConstants::Up * 0.5f);
+        XMStoreFloat3(&accel, fw * 2.5f - VectorConstants::Up * 0.5f);
 
         auto emitterComponent      = entityH.GetComponent<EmitterComponent>();
         emitterComponent->maxCount = 10;
@@ -622,12 +622,12 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                         XMVECTOR dir;
                                         bool     attached = false;
 
-
                                         if (MathLibrary::VectorDotProduct(playerTransform->transform.GetForward(), dirNext) >
                                             0.3f)
                                         {
                                                 attached = true;
                                                 dir      = dirNext;
+                                                dirVel   = (capsuleA.endPoint - playerTransform->transform.translation);
                                                 dirVel   = (capsuleA.endPoint - playerTransform->transform.translation);
                                         }
                                         else if (MathLibrary::VectorDotProduct(playerTransform->transform.GetForward(),
@@ -641,8 +641,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                                         if (attached)
                                         {
-                                                float dist                  = MathLibrary::CalulateVectorLength(dirVel);
-                                                dirVel                      = XMVector3Normalize(dirVel);
+                                                dirVel = XMVector3Normalize(dirVel);
+
                                                 XMVECTOR closestPointOnLine = MathLibrary::GetClosestPointFromLine(
                                                     capsuleA.startPoint,
                                                     capsuleA.startPoint + dirVel,
@@ -669,10 +669,13 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                 float    velMag     = MathLibrary::CalulateVectorLength(currVel);
                                                 XMVECTOR desiredVel = dirVel * velMag;
 
+                                                float angle           = acosf(inputDot);
+                                                float speedMultiplier = MathLibrary::lerp(5.0f, 1.0f, angle / XM_PIDIV4);
+
                                                 currVel = MathLibrary::MoveTowards(currVel, desiredVel, strength);
                                                 playerController->SetCurrentVelocity(currVel);
                                                 playerController->SetNextForward(dir);
-                                                playerController->SetCurrentMaxSpeed(5.0f);
+                                                playerController->SetCurrentMaxSpeed(speedMultiplier);
                                                 // playerController->AddCurrentVelocity(dir * 10.0f * deltaTime);
                                         }
                                 }
