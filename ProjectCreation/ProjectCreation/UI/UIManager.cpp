@@ -5,6 +5,7 @@
 #include "../Engine/Controller/ControllerSystem.h"
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
+#include "../Engine/Audio/AudioManager.h"
 #include "../Rendering/RenderingSystem.h"
 #include "../Utility/Hashing/PairHash.h"
 #include "../Utility/Macros/DirectXMacros.h"
@@ -1049,7 +1050,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
                 }
 
-                
                 for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
                      i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
                      i++)
@@ -1060,21 +1060,17 @@ void UIManager::Initialize(native_handle_type hwnd)
                     ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
                                 [instance->CSettings.m_Resolution +
                                  instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                 instance->resDescriptors.size()]
-                    .mEnabled = true;
+                                 instance->resDescriptors.size()].mEnabled = true;
 			
                 
-                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size() - 10;
-                     i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
-                     i++)
+                int VolBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size() - 11;
+                int VolEnd = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                for (int i = VolBegin; i < VolEnd; i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance
-                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
-                                [instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                 instance->resDescriptors.size()-1]
-                    .mEnabled = true;
+
+                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Volume + 6].mEnabled = true;
         });
 
         // Controls Button
@@ -1159,6 +1155,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                            instance->resDescriptors[instance->PSettings.m_Resolution].Height);
 
                 instance->m_RenderSystem->SetFullscreen(instance->PSettings.m_IsFullscreen);
+
+                AudioManager::instance->SetMasterVolume(instance->PSettings.m_Volume * 10);
         });
 
         // Window Mode
@@ -1226,6 +1224,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Height);
 
                 instance->m_RenderSystem->SetFullscreen(instance->CSettings.m_IsFullscreen);
+
+                AudioManager::instance->SetMasterVolume(instance->CSettings.m_Volume * 10);
         });
 
         // Left Resolution Button
@@ -1297,7 +1297,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                         }
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Volume + 6].mEnabled = true;
                         // Change Volume HERE
-
+                        AudioManager::instance->SetMasterVolume(instance->CSettings.m_Volume * 10);
                 }
         });
 
@@ -1317,9 +1317,10 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Volume + 6].mEnabled =
                             true;
                         // Change Volume HERE
-
+                        AudioManager::instance->SetMasterVolume(instance->CSettings.m_Volume * 10);
                 }
         });
+
 
         // Level Select
 

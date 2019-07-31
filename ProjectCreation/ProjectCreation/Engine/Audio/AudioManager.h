@@ -30,9 +30,9 @@ class AudioManager
         std::unordered_map<std::string, GW::AUDIO::GMusic*> m_LoadedMusic;
         float                                               m_MasterVolume     = 1.0f;
         float                                               m_PrevMasterVolume = 1.0f;
-        static AudioManager*                                instance;
 
     public:
+        static AudioManager*                                instance;
         GW::AUDIO::GSound* CreateSFX(const char*);
         GW::AUDIO::GMusic* LoadMusic(const char*);
         void               SetMasterVolume(float val);
