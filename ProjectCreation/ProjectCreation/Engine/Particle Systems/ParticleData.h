@@ -5,62 +5,51 @@
 #include "Pools.h"
 namespace ParticleData
 {
-        /*  struct FParticleType
-          {
-                  DirectX::XMFLOAT4 position;
-                  DirectX::XMFLOAT4 prev_position;
-                  DirectX::XMFLOAT4 color;
-                  DirectX::XMFLOAT3 velocity;
-          };*/
 
-        static constexpr unsigned int gMaxParticleCount = 2 << 16;
+        static constexpr unsigned int gMaxParticleCount = 2 << 18;
         static constexpr unsigned int gMaxEmitterCount  = 2 << 10;
-
-        struct FEmitterCPU
-        {
-                bool              active;
-                int               maxParticles;
-                DirectX::XMFLOAT4 spawnPosition;
-                DirectX::XMFLOAT4 spawnColor;
-                DirectX::XMFLOAT3 velocity;
-                DirectX::XMFLOAT2 texture;
-                float             time;
-                FEmitterCPU();
-                FEmitterCPU(DirectX::XMFLOAT4 pos,
-                            DirectX::XMFLOAT4 color,
-                            DirectX::XMFLOAT3 vel,
-                            DirectX::XMFLOAT2 uv,
-                            float             t);
-        };
-
 
         struct FEmitterGPU
         {
-                int               currentParticleCount;
-                float             accumulatedTime; // life time
-                bool              active;
-                DirectX::XMFLOAT4 position;
-                DirectX::XMFLOAT4 color;
+                DirectX::XMFLOAT4 lifeSpan; // x is life time, y is variance, z,w is fade in ad out
+                int               flags;
+                DirectX::XMFLOAT3 emitterPosition;
+                DirectX::XMFLOAT3 minOffset;
+                DirectX::XMFLOAT3 maxOffset;
+                DirectX::XMFLOAT4 initialColor;
+                DirectX::XMFLOAT4 finalColor;
                 DirectX::XMFLOAT2 uv;
-                DirectX::XMFLOAT3 minVelocity;
-                DirectX::XMFLOAT3 maxVelocity;
+                DirectX::XMFLOAT3 minInitialVelocity;
+                DirectX::XMFLOAT3 maxInitialVelocity;
+                DirectX::XMFLOAT2 particleScale;
+                DirectX::XMFLOAT3 acceleration;
+                int index; // tpye of particles
         };
 
         struct FParticleGPU
         {
                 DirectX::XMFLOAT4 position;
+                DirectX::XMFLOAT4 prevPos;
                 DirectX::XMFLOAT4 color;
                 DirectX::XMFLOAT3 velocity;
                 DirectX::XMFLOAT2 texture;
-                float             time = 0.0f;
-                bool              active;
-                int               index;
+                float             time     = 0.0f;
+                float             lifeSpan = 1.0f;
+                int               active;
+                float             scale;
+                DirectX::XMFLOAT3 acceleration;
+        };
+
+
+        struct FTextureSetting
+        {
+                int index;
+                int col;
+                int row;
         };
 
         struct FSegmentBuffer
         {
-                int index[gMaxEmitterCount];
+                int desiredCount[gMaxEmitterCount];
         };
-
-
 }; // namespace ParticleData

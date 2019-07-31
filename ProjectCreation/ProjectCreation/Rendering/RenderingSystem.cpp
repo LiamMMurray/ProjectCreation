@@ -812,6 +812,10 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         XMStoreFloat3(&m_ConstantBuffer_SCENE.eyePosition, mainTransform->transform.translation);
         m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(m_CachedMainViewProjectionMatrix);
         m_ConstantBuffer_MVP.Projection     = XMMatrixTranspose(m_CachedMainProjectionMatrix);
+        // get scale
+        m_ConstantBuffer_SCENE.scale = TerrainManager::Get()->GetScale();
+        m_ConstantBuffer_SCENE.screenDimensions = XMFLOAT2(m_BackBufferWidth,m_BackBufferHeight);
+        XMStoreFloat3(&m_ConstantBuffer_SCENE.worldOffsetDelta, GEngine::Get()->m_WorldOffsetDelta);
 
         /** Prepare draw calls **/
         m_TransluscentDraws.clear();
@@ -901,6 +905,7 @@ void RenderSystem::OnUpdate(float deltaTime)
         m_Context->PSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
         m_Context->HSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
         m_Context->DSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
+        m_Context->CSSetSamplers(0, E_SAMPLER_STATE::COUNT, m_DefaultSamplerStates);
 
         // Set base pass texture as render target
         m_Context->OMSetRenderTargets(
@@ -1217,8 +1222,8 @@ void RenderSystem::SetFullscreen(bool val)
         {
                 DXGI_MODE_DESC desc{};
                 desc.Format  = DXGI_FORMAT_B8G8R8A8_UNORM;
-                desc.Height  = 1920;
-                desc.Width   = 1080;
+                desc.Height  = m_BackBufferHeight;
+                desc.Width   = m_BackBufferHeight;
                 desc.Scaling = DXGI_MODE_SCALING_STRETCHED;
 
                 IDXGIOutput* target = nullptr;

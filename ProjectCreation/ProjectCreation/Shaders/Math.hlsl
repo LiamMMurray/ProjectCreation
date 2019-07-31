@@ -39,3 +39,42 @@ float3 WrapPos(float3 pos, float3 min, float3 max)
 {
         return pos - (max - min) * floor(pos / (max - min));
 }
+
+float3 WrapPosition(float3 position, float3 Min, float3 Max)
+{
+        float3 output;
+        float3 firstMod;
+        float3 secondMod;
+
+        firstMod.xz  = fmod(position.xz - Min.xz, Max.xz - Min.xz);
+        secondMod.xz = fmod(Max.xz - Min.xz + firstMod.xz, Max.xz - Min.xz);
+        output.xz    = Min.xz + secondMod.xz;
+        output.y     = position.y;
+        return output;
+}
+
+float RandomFloatInRange(inout float seed, float min, float max)
+{
+        float alpha = rand(seed);
+        seed        = alpha;
+
+        float output;
+        output = lerp(min, max, alpha);
+
+        return output;
+}
+
+float3 RandomFloat3InRange(inout float seed, float3 min, float3 max)
+{
+        float alphaA = rand(seed);
+        float alphaB = rand(alphaA + seed);
+        float alphaC = rand(alphaB + alphaA);
+        seed         = alphaC;
+
+        float3 output;
+        output.x = lerp(min.x, max.x, alphaA);
+        output.y = lerp(min.y, max.y, alphaB);
+        output.z = lerp(min.z, max.z, alphaC);
+
+        return output;
+}

@@ -4,7 +4,7 @@
 #include "Constants.hlsl"
 #include "Math.hlsl"
 #include "Samplers.hlsl"
-
+#include"SceneBuffer.hlsl"
 cbuffer CSurfaceProperties : register(b2)
 {
         float3 _diffuseColor;
@@ -18,16 +18,6 @@ cbuffer CSurfaceProperties : register(b2)
         int    _textureFlags;
 };
 
-cbuffer SceneInfoBuffer : register(b1)
-{
-        float3 _EyePosition;
-        float  _Time;
-        float3 _DirectionalLightDirection;
-        float  _playerRadius;
-        float3 _DirectionalLightColor;
-        // float pad
-        float3 _AmbientColor;
-};
 
 float2 rotateUV(float2 uv, float rotation)
 {

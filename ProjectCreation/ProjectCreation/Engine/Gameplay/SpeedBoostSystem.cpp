@@ -28,6 +28,8 @@
 #include "..//CollisionLibary/CollisionLibary.h"
 #include "../AI/AIComponent.h"
 
+#include "../Particle Systems/EmitterComponent.h"
+
 using namespace DirectX;
 
 std::random_device                    r;
@@ -64,6 +66,8 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
                                                                         m_BoostLifespan + m_BoostLifespanVariance);
         speedboostComponent->decay           = 1.0f;
         speedboostComponent->color           = color;
+
+
         return entityH;
 }
 
@@ -97,6 +101,42 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
         splineComp->index     = cluster.current - 1;
         splineComp->clusterID = clusterID;
 
+        ComponentHandle   emitterComponentHandle = entityH.AddComponent<EmitterComponent>();
+        EmitterComponent* emitterComponent       = emitterComponentHandle.Get<EmitterComponent>();
+
+        XMFLOAT4 orbColor;
+        XMStoreFloat4(&orbColor, 4.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[cluster.color]));
+
+        emitterComponent->FloatParticle(XMFLOAT3(), XMFLOAT3(), orbColor, orbColor, XMFLOAT4(3.0f, 1.0f, 0.1f, 0.1f));
+
+        XMVECTOR fw = (next - curr);
+        XMVECTOR rt = XMVector3Cross(XMVector3Normalize(fw), VectorConstants::Up);
+
+        XMFLOAT3 posMin;
+        XMFLOAT3 posMax;
+
+        XMFLOAT3 velMin;
+        XMFLOAT3 velMax;
+
+        XMFLOAT3 accel;
+
+        XMStoreFloat3(&posMin, XMVectorZero());
+        XMStoreFloat3(&posMax, fw);
+
+        XMStoreFloat3(&velMin, -rt * 0.05f);
+        XMStoreFloat3(&velMax, +rt * 0.05f + VectorConstants::Up * 1.0f);
+        velMin = velMax;
+        XMStoreFloat3(&accel, fw * 1.5f - VectorConstants::Up * 0.5f);
+
+        //auto emitterComponent                            = entityH.GetComponent<EmitterComponent>();
+        emitterComponent->maxCount                       = 10;
+        emitterComponent->EmitterData.minOffset          = posMin;
+        emitterComponent->EmitterData.maxOffset          = posMax;
+        emitterComponent->EmitterData.minInitialVelocity = velMin;
+        emitterComponent->EmitterData.maxInitialVelocity = velMax;
+        emitterComponent->EmitterData.acceleration       = accel;
+        emitterComponent->EmitterData.particleScale      = XMFLOAT2(0.05f, 0.05f);
+
         return entityH;
 }
 
@@ -117,6 +157,20 @@ EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int c
         orbComp->m_Color         = color;
         orbComp->m_TargetRadius  = m_BoostRadius;
 
+
+        /*    XMFLOAT3 velMax;
+            XMStoreFloat3(&velMax, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f));
+            emitterComponent->EmitterData.minInitialVelocity = velMax;
+            emitterComponent->EmitterData.maxInitialVelocity = velMax;*/
+
+ /*       emitterComponent->rotate                    = true;
+        emitterComponent->rotationAxis              = VectorConstants::Up;
+        emitterComponent->EmitterData.acceleration  = XMFLOAT3(0.0f, -9.80f, 0.0f);
+        emitterComponent->EmitterData.index         = 2;
+        emitterComponent->EmitterData.particleScale = XMFLOAT2(0.1f, 0.1f);
+        emitterComponent->maxCount                  = 50;
+        emitterComponent->spawnRate                 = 15.0f;
+*/
         return entityHandle;
 }
 
@@ -392,6 +446,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         {
                                 if (playerController->SpeedBoost(center, speedComp.color))
                                 {
+                                        //
                                         RequestDestroySpeedboost(&speedComp);
                                         break;
                                 }
@@ -599,10 +654,10 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                         }
 
 
-                                        float dist = MathLibrary::CalulateVectorLength(dirVel);
-                                        dirVel     = XMVector3Normalize(dirVel);
                                         if (attached)
                                         {
+                                                float dist                  = MathLibrary::CalulateVectorLength(dirVel);
+                                                dirVel                      = XMVector3Normalize(dirVel);
                                                 XMVECTOR closestPointOnLine = MathLibrary::GetClosestPointFromLine(
                                                     capsuleA.startPoint,
                                                     capsuleA.startPoint + dirVel,
@@ -751,6 +806,7 @@ void SpeedBoostSystem::OnInitialize()
                               2.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[i]));
         }
 
+
         MazeGenerator mazeGenerator;
         m_Paths.resize(PathCount);
         for (int i = 0; i < PathCount; ++i)
@@ -760,25 +816,11 @@ void SpeedBoostSystem::OnInitialize()
 
         std::random_shuffle(m_Paths.begin(), m_Paths.end());
 
-        // EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-        //                                 ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-        //                                 ->GetControlledEntity();
-        //
-        // TransformComponent* playerTransform = playerEntity.GetComponent<TransformComponent>();
-        //
-        // XMVECTOR pos    = playerTransform->transform.translation + 2.0f * VectorConstants::Forward;
-        // auto     handle = SpawnLightOrb(pos, E_LIGHT_ORBS::WHITE_LIGHTS);
-        //
-        // auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
-        // speedboostComponent->collisionRadius = m_BoostRadius;
-        // speedboostComponent->lifetime        = 1.0f;
-        // speedboostComponent->decay           = 0.0f;
-        // speedboostComponent->color           = E_LIGHT_ORBS::WHITE_LIGHTS;
-        /*CreateRandomPath(playerTransform->transform.translation,
-                         SYSTEM_MANAGER->GetSystem<OrbitSystem>()->GoalPositions[0],
-                         E_LIGHT_ORBS::BLUE_LIGHTS,
-                         5.0f,
-                         4);*/
+        EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+                                        ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
+                                        ->GetControlledEntity();
+
+
         bIsLatchedToSpline = false;
 }
 

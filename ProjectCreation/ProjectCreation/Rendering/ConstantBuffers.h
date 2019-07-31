@@ -19,6 +19,11 @@ struct alignas(16) CSceneInfoBuffer
         float             aspectRatio;
         DirectX::XMFLOAT3 ambientColor;
         float             deltaTime;
+        DirectX::XMFLOAT2 screenDimensions;
+        float             scale;
+        float padding;
+        DirectX::XMFLOAT3 worldOffsetDelta;
+        float             otherPadding;
 };
 
 struct alignas(16) CAnimationBuffer
