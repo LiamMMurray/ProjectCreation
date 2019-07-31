@@ -45,36 +45,43 @@ void ParticleManager::update(float deltaTime)
 
         for (auto& emitterComponent : GEngine::Get()->GetHandleManager()->GetActiveComponents<EmitterComponent>())
         {
-                if (emitterIndex >= gMaxEmitterCount)
+                if (emitterComponent.active == true)
                 {
-                        // emitterIndex--;
-                        break;
+
+
+                        if (emitterIndex >= gMaxEmitterCount)
+                        {
+                                // emitterIndex--;
+                                break;
+                        }
+                        EntityHandle        parent             = emitterComponent.GetParent();
+                        TransformComponent* transformComponent = parent.GetComponent<TransformComponent>();
+
+                        if (emitterComponent.rotate == true)
+                        {
+                                XMVECTOR minVel   = XMLoadFloat3(&emitterComponent.EmitterData.minInitialVelocity);
+                                XMVECTOR maxVel   = XMLoadFloat3(&emitterComponent.EmitterData.maxInitialVelocity);
+                                XMVECTOR accel    = XMLoadFloat3(&emitterComponent.EmitterData.acceleration);
+                                XMVECTOR rotation = XMQuaternionRotationAxis(emitterComponent.rotationAxis,
+                                                                             emitterComponent.rotationRate * deltaTime);
+                                XMStoreFloat3(&emitterComponent.EmitterData.minInitialVelocity,
+                                              XMVector3Rotate(minVel, rotation));
+                                XMStoreFloat3(&emitterComponent.EmitterData.maxInitialVelocity,
+                                              XMVector3Rotate(maxVel, rotation));
+                                XMStoreFloat3(&emitterComponent.EmitterData.acceleration, XMVector3Rotate(accel, rotation));
+                        }
+                        XMVECTOR emitterPos         = transformComponent->transform.translation + emitterComponent.offset;
+                        m_EmittersCPU[emitterIndex] = emitterComponent.EmitterData;
+                        XMStoreFloat3(&m_EmittersCPU[emitterIndex].emitterPosition, emitterPos);
+
+                        emitterComponent.desiredCount += emitterComponent.spawnRate * deltaTime * 0.5f;
+                        emitterComponent.desiredCount =
+                            std::min<float>(emitterComponent.desiredCount, (float)emitterComponent.maxCount);
+
+                        m_SegmentBufferCPU.desiredCount[emitterIndex] = (int)emitterComponent.desiredCount;
+
+                        emitterIndex++;
                 }
-                EntityHandle        parent             = emitterComponent.GetParent();
-                TransformComponent* transformComponent = parent.GetComponent<TransformComponent>();
-
-                if (emitterComponent.rotate == true)
-                {
-                        XMVECTOR minVel = XMLoadFloat3(&emitterComponent.EmitterData.minInitialVelocity);
-                        XMVECTOR maxVel = XMLoadFloat3(&emitterComponent.EmitterData.maxInitialVelocity);
-                        XMVECTOR accel  = XMLoadFloat3(&emitterComponent.EmitterData.acceleration);
-                        XMVECTOR rotation =
-                            XMQuaternionRotationAxis(emitterComponent.rotationAxis, emitterComponent.rotationRate * deltaTime);
-                        XMStoreFloat3(&emitterComponent.EmitterData.minInitialVelocity, XMVector3Rotate(minVel, rotation));
-                        XMStoreFloat3(&emitterComponent.EmitterData.maxInitialVelocity, XMVector3Rotate(maxVel, rotation));
-                        XMStoreFloat3(&emitterComponent.EmitterData.acceleration, XMVector3Rotate(accel, rotation));
-                }
-                XMVECTOR emitterPos         = transformComponent->transform.translation + emitterComponent.offset;
-                m_EmittersCPU[emitterIndex] = emitterComponent.EmitterData;
-                XMStoreFloat3(&m_EmittersCPU[emitterIndex].emitterPosition, emitterPos);
-
-                emitterComponent.desiredCount += emitterComponent.spawnRate * deltaTime * 0.5f;
-                emitterComponent.desiredCount =
-                    std::min<float>(emitterComponent.desiredCount, (float)emitterComponent.maxCount);
-
-                m_SegmentBufferCPU.desiredCount[emitterIndex] = (int)emitterComponent.desiredCount;
-
-                emitterIndex++;
         }
 
         for (int i = emitterIndex; i < m_PreviousEmitterCount; i++)

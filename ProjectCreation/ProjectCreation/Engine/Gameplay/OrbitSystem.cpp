@@ -60,10 +60,11 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
         // particle fly up
         XMFLOAT4 goalColor;
         XMStoreFloat4(&goalColor, 4.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[color]));
+        goalColor.w                        = 0.4f;
         goalHandle                         = entityH1.AddComponent<EmitterComponent>();
         EmitterComponent* emitterComponent = goalHandle.Get<EmitterComponent>();
         emitterComponent->ParticleFloatUp(
-            XMFLOAT3(-0.3f, -0.3f, -0.3f), XMFLOAT3(0.3f, 0.3f, 0.3f), goalColor, goalColor, XMFLOAT4(6.0f, 1.0f, 0.1f, 0.1f));
+            XMFLOAT3(-0.3f, -0.3f, -0.3f), XMFLOAT3(0.3f, 0.3f, 0.3f), goalColor, goalColor, XMFLOAT4(3.0f, 1.0f, 0.1f, 0.1f));
         emitterComponent->EmitterData.index         = 2;
         emitterComponent->EmitterData.particleScale = XMFLOAT2(0.2f, 0.2f);
         emitterComponent->maxCount                  = 0;
@@ -147,7 +148,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                     MathLibrary::CalulateDistanceSq(playerTransform->transform.translation, transComp->transform.translation);
 
                 auto emitterComponent = goalParent.GetComponent<EmitterComponent>();
-                if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 40.0f)
+                if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 80.0f)
                 {
 
                         emitterComponent->spawnRate = 50.0f;
@@ -184,6 +185,8 @@ void OrbitSystem::OnUpdate(float deltaTime)
 
                         transComp->transform = FTransform::Lerp(
                             goalComp.initialTransform, goalComp.goalTransform, std::min(1.0f, goalComp.currAlpha));
+
+
                 }
         }
 

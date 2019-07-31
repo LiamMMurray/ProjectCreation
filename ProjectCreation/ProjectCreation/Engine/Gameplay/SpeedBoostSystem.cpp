@@ -99,6 +99,14 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
         splineComp->index     = cluster.current - 1;
         splineComp->clusterID = clusterID;
 
+        ComponentHandle   emitterComponentHandle = entityH.AddComponent<EmitterComponent>();
+        EmitterComponent* emitterComponent       = emitterComponentHandle.Get<EmitterComponent>();
+
+        XMFLOAT4 orbColor;
+        XMStoreFloat4(&orbColor, 4.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[cluster.color]));
+
+        emitterComponent->FloatParticle(XMFLOAT3(), XMFLOAT3(), orbColor, orbColor, XMFLOAT4(3.0f, 1.0f, 0.1f, 0.1f));
+
         XMVECTOR fw = (next - curr);
         XMVECTOR rt = XMVector3Cross(XMVector3Normalize(fw), VectorConstants::Up);
 
@@ -118,7 +126,7 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
         velMin = velMax;
         XMStoreFloat3(&accel, fw * 1.5f - VectorConstants::Up * 0.5f);
 
-        auto emitterComponent                            = entityH.GetComponent<EmitterComponent>();
+        //auto emitterComponent                            = entityH.GetComponent<EmitterComponent>();
         emitterComponent->maxCount                       = 10;
         emitterComponent->EmitterData.minOffset          = posMin;
         emitterComponent->EmitterData.maxOffset          = posMax;
@@ -147,27 +155,20 @@ EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int c
         orbComp->m_Color         = color;
         orbComp->m_TargetRadius  = m_BoostRadius;
 
-        ComponentHandle   emitterComponentHandle = entityHandle.AddComponent<EmitterComponent>();
-        EmitterComponent* emitterComponent       = emitterComponentHandle.Get<EmitterComponent>();
 
-        XMFLOAT4 orbColor;
-        XMStoreFloat4(&orbColor, 4.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[color]));
+        /*    XMFLOAT3 velMax;
+            XMStoreFloat3(&velMax, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f));
+            emitterComponent->EmitterData.minInitialVelocity = velMax;
+            emitterComponent->EmitterData.maxInitialVelocity = velMax;*/
 
-        emitterComponent->FloatParticle(XMFLOAT3(), XMFLOAT3(), orbColor, orbColor, XMFLOAT4(3.0f, 1.0f, 0.1f, 0.1f));
-
-        XMFLOAT3 velMax;
-        XMStoreFloat3(&velMax, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f));
-        emitterComponent->EmitterData.minInitialVelocity = velMax;
-        emitterComponent->EmitterData.maxInitialVelocity = velMax;
-
-        emitterComponent->rotate                    = true;
+ /*       emitterComponent->rotate                    = true;
         emitterComponent->rotationAxis              = VectorConstants::Up;
         emitterComponent->EmitterData.acceleration  = XMFLOAT3(0.0f, -9.80f, 0.0f);
         emitterComponent->EmitterData.index         = 2;
         emitterComponent->EmitterData.particleScale = XMFLOAT2(0.1f, 0.1f);
         emitterComponent->maxCount                  = 50;
         emitterComponent->spawnRate                 = 15.0f;
-
+*/
         return entityHandle;
 }
 
@@ -434,6 +435,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         {
                                 if (playerController->SpeedBoost(center, speedComp.color))
                                 {
+                                        //
                                         RequestDestroySpeedboost(&speedComp);
                                         break;
                                 }
