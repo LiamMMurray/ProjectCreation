@@ -47,24 +47,28 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
         FQuaternion quat                    = FQuaternion::FromEulerAngles(euler);
         int         color                   = MathLibrary::GetRandomIntInRange(0, 4);
 
+        if (ColorsCollected[color] == false)
+        {
 
-        XMVECTOR pos          = MathLibrary::GetRandomPointInArc(playerTransform->transform.translation,
-                                                        quat.GetForward(),
-                                                        VectorConstants::Up,
-                                                        m_SpawnAngle,
-                                                        m_MinSpawnDistance,
-                                                        m_MaxSpawnDistance);
-        pos                   = XMVectorSetY(pos, 0.0f);
-        auto entityH          = SpawnLightOrb(pos, color);
-        auto speedBoostHandle = entityH.AddComponent<SpeedboostComponent>();
-        entityH.AddComponent<AIComponent>();
-        auto speedboostComponent             = speedBoostHandle.Get<SpeedboostComponent>();
-        speedboostComponent->collisionRadius = m_BoostRadius;
-        speedboostComponent->lifetime        = MathLibrary::RandomFloatInRange(m_BoostLifespan - m_BoostLifespanVariance,
-                                                                        m_BoostLifespan + m_BoostLifespanVariance);
-        speedboostComponent->decay           = 1.0f;
-        speedboostComponent->color           = color;
-        return entityH;
+                XMVECTOR pos          = MathLibrary::GetRandomPointInArc(playerTransform->transform.translation,
+                                                                quat.GetForward(),
+                                                                VectorConstants::Up,
+                                                                m_SpawnAngle,
+                                                                m_MinSpawnDistance,
+                                                                m_MaxSpawnDistance);
+                pos                   = XMVectorSetY(pos, 0.0f);
+                auto entityH          = SpawnLightOrb(pos, color);
+                auto speedBoostHandle = entityH.AddComponent<SpeedboostComponent>();
+                entityH.AddComponent<AIComponent>();
+                auto speedboostComponent             = speedBoostHandle.Get<SpeedboostComponent>();
+                speedboostComponent->collisionRadius = m_BoostRadius;
+                speedboostComponent->lifetime = MathLibrary::RandomFloatInRange(m_BoostLifespan - m_BoostLifespanVariance,
+                                                                                m_BoostLifespan + m_BoostLifespanVariance);
+                speedboostComponent->decay    = 1.0f;
+                speedboostComponent->color    = color;
+                return entityH;
+        }
+        return NULL;
 }
 
 EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail, bool head)

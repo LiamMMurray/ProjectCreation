@@ -8,6 +8,7 @@
 #include "../Controller/ControllerSystem.h"
 #include "../GenericComponents/TransformComponent.h"
 #include "../ResourceManager/Material.h"
+#include "SpeedBoostSystem.h"
 
 
 using namespace DirectX;
@@ -141,8 +142,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         transComp->wrapping = false;
                         playerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
                         playerController->SetCollectedPlanetCount(1 + playerController->GetCollectedPlanetCount());
-                        std::cout << "Orbit System: Planet count = " << playerController->GetCollectedPlanetCount()
-                                  << std::endl;
+                        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->ColorsCollected[goalComp.color] = true;
                         playerController->m_TimeOnSpline = 0.0f;
                 }
 

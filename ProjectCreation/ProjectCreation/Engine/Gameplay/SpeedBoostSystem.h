@@ -108,16 +108,13 @@ class SpeedBoostSystem : public ISystem
 
         std::unordered_map<int, SplineCluster> m_SplineClusterSpawners;
 
+		bool ColorsCollected[4] = {false, false, false, false};
+
         EntityHandle SpawnSpeedOrb();
         EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
         EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
 
 		bool pathExists = false;
-
-        inline void ShouldSpawnColor(int color)
-        {
-	        
-        }
 
         inline void SetTargetTerrain(float val)
         {
