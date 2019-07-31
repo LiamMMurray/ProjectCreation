@@ -26,7 +26,7 @@ class SpeedBoostSystem : public ISystem
         SystemManager*   m_SystemManager;
         ResourceManager* m_ResourceManager;
 
-        static constexpr uint32_t m_MaxSpeedBoosts = 10;
+        static constexpr uint32_t m_MaxSpeedBoosts = 25;
 
         int m_ClusterCounter = 0;
 
