@@ -29,7 +29,7 @@ class OrbitSystem : public ISystem
                 bool         hasActiveGoal = false;
         };
 
-        static constexpr float goalDistances[3] = {65.0f, 130.0f, 260.0f};
+        static constexpr float goalDistances[3] = {65.0f, 65.0f, 65.0f};
 
         std::vector<ComponentHandle> sunAlignedTransforms;
 

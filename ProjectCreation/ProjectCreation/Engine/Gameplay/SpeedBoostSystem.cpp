@@ -220,9 +220,10 @@ void SpeedBoostSystem::RequestDestroySplineOrb(SpeedboostSplineComponent* speedC
 
                 SpeedboostSplineComponent* latchedSpline = latchedSplineHandle.Get<SpeedboostSplineComponent>();
 
-        if (latchedSpline == speedComp)
-        {
-                latchedSplineIndex = -1;
+                if (latchedSpline == speedComp)
+                {
+                        latchedSplineIndex = -1;
+                }
         }
         // speedComp->GetHandle().Free();
 }

@@ -2,16 +2,17 @@
 #include <Windows.h>
 #include <iostream>
 
+#include "../Engine/Audio/AudioManager.h"
 #include "../Engine/Controller/ControllerSystem.h"
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
-#include "../Engine/Audio/AudioManager.h"
 #include "../Rendering/RenderingSystem.h"
 #include "../Utility/Hashing/PairHash.h"
 #include "../Utility/Macros/DirectXMacros.h"
 #include "../Utility/MemoryLeakDetection.h"
 
 #include "../Engine/ConsoleWindow/ConsoleWindow.h"
+#include "../Engine/Gameplay/SpeedBoostSystem.h"
 
 class TutorialLevel;
 
@@ -272,7 +273,7 @@ void UIManager::Pause()
                 instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
         }
 
-		// Main Menu
+        // Main Menu
         for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu].size(); i++)
         {
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][i].mEnabled = false;
@@ -306,7 +307,7 @@ void UIManager::Unpause()
                         if (it.first != E_MENU_CATEGORIES::MainMenu)
                         {
                                 sprite.mEnabled = false;
-						}
+                        }
                 }
         }
 
@@ -764,8 +765,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                           -0.01f,
                           false,
                           true);
-		//Volumes
-        for (auto i = 0; i <= 100; i+=10)
+        // Volumes
+        for (auto i = 0; i <= 100; i += 10)
         {
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
@@ -779,7 +780,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   false);
         }
 
-		//Any new options submenu should be put above this
+        // Any new options submenu should be put above this
         for (auto i = 0; i < instance->resDescriptors.size(); i++)
         {
                 instance->AddText(instance->m_RenderSystem->m_Device,
@@ -1060,10 +1061,12 @@ void UIManager::Initialize(native_handle_type hwnd)
                     ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
                                 [instance->CSettings.m_Resolution +
                                  instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                 instance->resDescriptors.size()].mEnabled = true;
-			
-                
-                int VolBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size() - 11;
+                                 instance->resDescriptors.size()]
+                    .mEnabled = true;
+
+
+                int VolBegin =
+                    instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size() - 11;
                 int VolEnd = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
                 for (int i = VolBegin; i < VolEnd; i++)
                 {
@@ -1238,7 +1241,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->CSettings.m_Resolution--;
                 }
 
-                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size(); i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                     i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
+                     i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
@@ -1288,13 +1293,16 @@ void UIManager::Initialize(native_handle_type hwnd)
                 if (instance->CSettings.m_Volume > 0)
                 {
                         instance->CSettings.m_Volume--;
-                        int VolBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size() - 11;
-                        int VolEnd = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                        int VolBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                       instance->resDescriptors.size() - 11;
+                        int VolEnd =
+                            instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
                         for (int i = VolBegin; i < VolEnd; i++)
                         {
                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                         }
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Volume + 6].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Volume + 6].mEnabled =
+                            true;
                         // Change Volume HERE
                         AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
                 }
@@ -1493,8 +1501,14 @@ void UIManager::Initialize(native_handle_type hwnd)
         // Demo
 
         // Continue
-        instance->m_AllSprites[E_MENU_CATEGORIES::Demo][0].OnMouseDown.AddEventListener(
-            [](UIMouseEvent* e) { instance->Unpause(); });
+        instance->m_AllSprites[E_MENU_CATEGORIES::Demo][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                instance->Unpause();
+
+                for (int i = 0; i < 4; ++i)
+                {
+                        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->ColorsCollected[i] = false;
+                }
+        });
 
         // Exit
         instance->m_AllSprites[E_MENU_CATEGORIES::Demo][1].OnMouseDown.AddEventListener(
