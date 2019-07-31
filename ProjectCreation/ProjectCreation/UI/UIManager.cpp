@@ -1156,7 +1156,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 instance->m_RenderSystem->SetFullscreen(instance->PSettings.m_IsFullscreen);
 
-                AudioManager::instance->SetMasterVolume(instance->PSettings.m_Volume * 10);
+                AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
         });
 
         // Window Mode
@@ -1224,8 +1224,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Height);
 
                 instance->m_RenderSystem->SetFullscreen(instance->CSettings.m_IsFullscreen);
-
-                AudioManager::instance->SetMasterVolume(instance->CSettings.m_Volume * 10);
+                AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
         });
 
         // Left Resolution Button
@@ -1297,7 +1296,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                         }
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Volume + 6].mEnabled = true;
                         // Change Volume HERE
-                        AudioManager::instance->SetMasterVolume(instance->CSettings.m_Volume * 10);
+                        AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
                 }
         });
 
@@ -1317,7 +1316,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Volume + 6].mEnabled =
                             true;
                         // Change Volume HERE
-                        AudioManager::instance->SetMasterVolume(instance->CSettings.m_Volume * 10);
+                        AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
                 }
         });
 
