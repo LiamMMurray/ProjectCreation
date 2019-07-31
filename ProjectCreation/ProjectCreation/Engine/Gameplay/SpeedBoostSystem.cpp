@@ -208,7 +208,7 @@ void SpeedBoostSystem::RequestDestroySplineOrb(SpeedboostSplineComponent* speedC
 
         if (latchedSpline == speedComp)
         {
-                bIsLatchedToSpline = false;
+                latchedSplineIndex = -1;
         }
 
         // speedComp->GetHandle().Free();
@@ -295,9 +295,9 @@ void SpeedBoostSystem::RequestUnlatchFromSpline(PlayerController* playerControll
         {
                 playerController->SetUseGravity(true);
 
-                if (bIsLatchedToSpline)
+                if (latchedSplineIndex != -1)
                 {
-                        bIsLatchedToSpline                           = false;
+                        latchedSplineIndex                           = -1;
                         SpeedboostSplineComponent* latchedSplineComp = latchedSplineHandle.Get<SpeedboostSplineComponent>();
                         TransformComponent*        playerTransform =
                             playerController->GetControlledEntity().GetComponent<TransformComponent>();
@@ -483,7 +483,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 float prevDistance;
                 float prevDot;
 
-                if (bIsLatchedToSpline == true)
+                if (latchedSplineIndex != -1)
                 {
                         SpeedboostSplineComponent* closestSplineComp = latchedSplineHandle.Get<SpeedboostSplineComponent>();
                         TransformComponent* transComp = closestSplineComp->GetParent().GetComponent<TransformComponent>();
@@ -521,15 +521,17 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         if (distance < (checkRadius))
                         {
-                                if ((bIsLatchedToSpline == false || dot > prevDot))
+                                if ((latchedSplineIndex == -1 || distance < prevDistance))
                                 {
+                                        prevDistance        = distance;
+                                        prevDot             = dot;
                                         latchedSplineHandle = splineComp.GetHandle();
                                         shouldLatch         = true;
                                 }
                         }
                 }
 
-                if (bIsLatchedToSpline || shouldLatch)
+                if (latchedSplineIndex != -1 || shouldLatch)
                 {
                         SpeedboostSplineComponent* latchedSplineComp = latchedSplineHandle.Get<SpeedboostSplineComponent>();
                         int                        index             = latchedSplineComp->index;
@@ -539,7 +541,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         if (clusterIt == m_SplineClusterSpawners.end())
                         {
-                                bIsLatchedToSpline = false;
+                                latchedSplineIndex = -1;
                         }
                         else
                         {
@@ -600,7 +602,16 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                                 if (inPath)
                                 {
-                                        bIsLatchedToSpline = true;
+                                        if (latchedSplineIndex != latchedSplineComp->index)
+                                        {
+                                                SoundComponent3D::FSettings settings;
+                                                settings.m_SoundType =
+                                                    SOUND_COLOR_TYPE(correctColor, E_SOUND_TYPE::SPLINE_COLLECT);
+                                                settings.flags.set(SoundComponent3D::E_FLAGS::DestroyOnEnd, true);
+                                                AudioManager::Get()->PlaySoundAtLocation(currPos, settings);
+                                        }
+
+                                        latchedSplineIndex = latchedSplineComp->index;
                                         mDelatchTimer      = mDelatchCD;
                                         playerController->SetUseGravity(false);
 
@@ -628,10 +639,10 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                         }
 
 
-                                        float dist = MathLibrary::CalulateVectorLength(dirVel);
-                                        dirVel     = XMVector3Normalize(dirVel);
                                         if (attached)
                                         {
+                                                float dist                  = MathLibrary::CalulateVectorLength(dirVel);
+                                                dirVel                      = XMVector3Normalize(dirVel);
                                                 XMVECTOR closestPointOnLine = MathLibrary::GetClosestPointFromLine(
                                                     capsuleA.startPoint,
                                                     capsuleA.startPoint + dirVel,
@@ -793,7 +804,7 @@ void SpeedBoostSystem::OnInitialize()
                                         ->GetControlledEntity();
 
 
-        bIsLatchedToSpline = false;
+        latchedSplineIndex = -1;
 }
 
 void SpeedBoostSystem::OnShutdown()

@@ -42,7 +42,7 @@ class SpeedBoostSystem : public ISystem
         void RequestDestroySplineOrb(SpeedboostSplineComponent* speedComp);
 
         ComponentHandle latchedSplineHandle;
-        bool            bIsLatchedToSpline;
+        int             latchedSplineIndex = -1;
 
         bool m_EnableRandomSpawns = false;
 
@@ -131,7 +131,7 @@ class SpeedBoostSystem : public ISystem
         {
                 RequestDestroyAllSplines();
                 RequestDestroyAllSpeedboosts();
-                //RequestDestroyAllPlanets();
+                // RequestDestroyAllPlanets();
         }
 
         inline void SetRandomSpawnEnabled(bool val)

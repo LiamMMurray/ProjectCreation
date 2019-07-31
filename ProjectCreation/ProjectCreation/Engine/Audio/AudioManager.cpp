@@ -3,9 +3,19 @@
 #include <sstream>
 #include "../../Utility/MemoryLeakDetection.h"
 #include "../MathLibrary/MathLibrary.h"
+
+#include "..//GEngine.h"
+#include "ContinousSoundSystem.h"
+
 using namespace GW::AUDIO;
 
 AudioManager *AudioManager::instance;
+
+
+EntityHandle AudioManager::PlaySoundAtLocation(const DirectX::XMVECTOR &pos, SoundComponent3D::FSettings &settings)
+{
+        return GET_SYSTEM(SpatialSoundSystem)->PlaySoundAtLocation(pos, settings);
+}
 
 GW::AUDIO::GSound *AudioManager::CreateSFX(const char *name)
 {
@@ -77,10 +87,11 @@ void AudioManager::Shutdown()
         assert(instance);
         instance->_shutdown();
         delete instance;
+        instance = nullptr;
 }
 
 AudioManager *AudioManager::Get()
 {
-        assert(instance);
+        // assert(instance);
         return instance;
 }

@@ -83,8 +83,8 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
                 sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
                 sysInitProps.m_UpdateRate = 0.0f;
 
-                ContinousSoundSystem* continousAudioSystem;
-                systemManager->CreateSystem<ContinousSoundSystem>(&continousAudioSystem);
+                SpatialSoundSystem* continousAudioSystem;
+                systemManager->CreateSystem<SpatialSoundSystem>(&continousAudioSystem);
                 systemManager->RegisterSystem(&sysInitProps, continousAudioSystem);
                 continousAudioSystem->m_SystemName = "ContinousAudioSystem";
         }
