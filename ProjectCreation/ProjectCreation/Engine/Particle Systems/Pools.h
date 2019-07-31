@@ -131,8 +131,8 @@ namespace Pools
                         }
                         pool[size - 1].next = -1;
                 }
-				
-				dynamic_pool_t() = default;
+
+                dynamic_pool_t() = default;
 
                 ~dynamic_pool_t()
                 {
@@ -169,6 +169,11 @@ namespace Pools
                 const T& operator[](int16_t index) const
                 {
                         return pool[index].value;
+                }
+
+                size_t capacity() const
+                {
+                        return size;
                 }
 
             private:

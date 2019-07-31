@@ -604,10 +604,14 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 {
                                         if (latchedSplineIndex != latchedSplineComp->index)
                                         {
+                                                int                         pitch = (index / 20) % 3;
                                                 SoundComponent3D::FSettings settings;
                                                 settings.m_SoundType =
-                                                    SOUND_COLOR_TYPE(correctColor, E_SOUND_TYPE::SPLINE_COLLECT);
+                                                    SOUND_COLOR_TYPE(correctColor, E_SOUND_TYPE::SPLINE_COLLECT_0 + pitch);
+                                                settings.m_SoundVaration = MathLibrary::GetRandomIntInRange(
+                                                    0, E_SOUND_TYPE::variations[E_SOUND_TYPE::SPLINE_COLLECT_0]);
                                                 settings.flags.set(SoundComponent3D::E_FLAGS::DestroyOnEnd, true);
+                                                settings.m_Volume = 1.0f;
                                                 AudioManager::Get()->PlaySoundAtLocation(currPos, settings);
                                         }
 
