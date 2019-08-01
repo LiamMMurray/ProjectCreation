@@ -144,7 +144,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
         return 0;
 }
 
-
+#include <malloc.h>
 int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 
@@ -234,9 +234,6 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
             /*std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
             ComponentHandle          transformHandle;
             EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
-           
-
-
 
             TransformComponent* transformComp = HandleManager->GetComponent<TransformComponent>(transformHandle);
             transformComp->transform.SetScale(0.1f);*/
@@ -301,70 +298,57 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         GEngine::Get()->GetLevelStateManager()->Init();
         UIManager::instance->StartupResAdjust(handle);
 
-        while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
-        {
-                GCoreInput::UpdateInput();
 
-                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "PeekMessage");
-                while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-                {
-                        // translate keystroke messages into the right format
-                        TranslateMessage(&msg);
+        // NMemory::NPools::InsertPool(GEngine::Get()->m_ComponentPools,
+        //                            {sizeof(TransformComponent), TransformComponent::SGetMaxElements()},
+        //                            GEngine::Get()->GetHandleManager()->m_MemoryStack.m_MemCurr,
+        //                            TransformComponent::SGetTypeIndex());
 
-                        // send the message to the WindowProc function
-                        DispatchMessage(&msg);
+        // NMemory::NPools::InsertPool(GEngine::Get()->m_ComponentPools,
+        //                            {sizeof(SpeedboostComponent), SpeedboostComponent::SGetMaxElements()},
+        //                            GEngine::Get()->GetHandleManager()->m_MemoryStack.m_MemCurr,
+        //                            SpeedboostComponent::SGetTypeIndex());
 
-                        // check to see if it's time to quit
-                        if (msg.message == WM_QUIT)
-                                break;
-                }
-                GEngine::Get()->m_MainThreadProfilingContext.End();
+        // NMemory::NPools::InsertPool(GEngine::Get()->m_ComponentPools,
+        //                            {sizeof(StaticMeshComponent), StaticMeshComponent::SGetMaxElements()},
+        //                            GEngine::Get()->GetHandleManager()->m_MemoryStack.m_MemCurr,
+        //                            StaticMeshComponent::SGetTypeIndex());
 
-                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "GEngine::Signal");
-                // Main application loop goes here.
-                float deltaTime = GEngine::Get()->Update();
-                GEngine::Get()->m_MainThreadProfilingContext.End();
+        // NMemory::NPools::InsertPool(GEngine::Get()->m_ComponentPools,
+        //                            {sizeof(SkeletalMeshComponent), SkeletalMeshComponent::SGetMaxElements()},
+        //                            GEngine::Get()->GetHandleManager()->m_MemoryStack.m_MemCurr,
+        //                            SkeletalMeshComponent::SGetTypeIndex());
 
-                GEngine::Get()->m_MainThreadProfilingContext.Begin("Main Loop", "Other");
-                if (GetActiveWindow() != handle && GEngine::Get()->GetGamePaused() == false)
-                {
-                        UIManager::instance->Pause();
-                }
+        // NMemory::NPools::InsertPool(GEngine::Get()->m_ComponentPools,
+        //                            {sizeof(PhysicsComponent), PhysicsComponent::SGetMaxElements()},
+        //                            GEngine::Get()->GetHandleManager()->m_MemoryStack.m_MemCurr,
+        //                            PhysicsComponent::SGetTypeIndex());
+        auto e = GEngine::Get()->m_HandleManager->CreateEntity();
+        e.AddComponent<TransformComponent>();
+        e.AddComponent<SpeedboostComponent>();
+        e.AddComponent<StaticMeshComponent>();
+        e.AddComponent<SkeletalMeshComponent>();
+        e.AddComponent<PhysicsComponent>();
 
+        auto i0 = TransformComponent::SGetTypeIndex();
+        auto i1 = SpeedboostComponent::SGetTypeIndex();
+        auto i2 = StaticMeshComponent::SGetTypeIndex();
+        auto i3 = SkeletalMeshComponent::SGetTypeIndex();
+        auto i4 = PhysicsComponent::SGetTypeIndex();
 
-                {
-                        static DWORD frameCount = 0;
-                        ++frameCount;
-                        static DWORD framesPast = frameCount;
-                        static DWORD prevCount  = (DWORD)GEngine::Get()->GetTotalTime();
-                        if (GetTickCount() - prevCount > 1000) // only update every second
-                        {
-                                char buffer[256];
-                                sprintf_s(buffer, "DirectX Test. FPS: %d", frameCount - framesPast);
-                                SetWindowTextA(static_cast<HWND>(handle), buffer);
-                                framesPast = frameCount;
-                                prevCount  = GetTickCount();
-                        }
-                }
+		auto test = GEngine::Get()->m_HandleManager->m_ComponentRandomAccessPools.m_mem_starts;
 
-                if (GCoreInput::GetKeyState(KeyCode::P) == KeyState::DownFirst)
-                {
-                        boop->Play();
-                }
-                if (GCoreInput::GetKeyState(KeyCode::O) == KeyState::DownFirst)
-                {
-                        bool musicIsPlaying;
-                        music->isStreamPlaying(musicIsPlaying);
-                        if (!musicIsPlaying)
-                                music->ResumeStream();
-                        else
-                                music->PauseStream();
-                }
+        auto pool_c0 =
+            GEngine::Get()->m_HandleManager->m_ComponentRandomAccessPools.m_mem_starts[TransformComponent::SGetTypeIndex()];
+        auto pool_c1 =
+            GEngine::Get()->m_HandleManager->m_ComponentRandomAccessPools.m_mem_starts[SpeedboostComponent::SGetTypeIndex()];
+        auto pool_c2 =
+            GEngine::Get()->m_HandleManager->m_ComponentRandomAccessPools.m_mem_starts[StaticMeshComponent::SGetTypeIndex()];
+        auto pool_c3 =
+            GEngine::Get()->m_HandleManager->m_ComponentRandomAccessPools.m_mem_starts[SkeletalMeshComponent::SGetTypeIndex()];
+        auto pool_c4 =
+            GEngine::Get()->m_HandleManager->m_ComponentRandomAccessPools.m_mem_starts[PhysicsComponent::SGetTypeIndex()];
 
-                debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
-                GEngine::Get()->GetSystemManager()->Update(deltaTime);
-                GEngine::Get()->m_MainThreadProfilingContext.End();
-        }
         EngineHelpers::ShutdownEngineSystemManagers();
 
         return 0;

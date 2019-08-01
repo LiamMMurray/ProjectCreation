@@ -127,8 +127,7 @@ inline ComponentHandle HandleManager::AddComponent(EntityHandle parentHandle)
         if (m_ComponentRandomAccessPools.m_mem_starts.size() <= pool_index ||
             m_ComponentRandomAccessPools.m_element_capacities[pool_index] < T::SGetMaxElements())
         {
-                if (m_MemoryStack.m_MemCurr + sizeof(T) * T::SGetMaxElements() >= m_MemoryStack.m_MemMax)
-                        assert(false);
+                assert(m_MemoryStack.m_MemCurr + sizeof(T) * T::SGetMaxElements() < m_MemoryStack.m_MemMax);
                 InsertPool(
                     m_ComponentRandomAccessPools, {sizeof(T), T::SGetMaxElements()}, m_MemoryStack.m_MemCurr, pool_index);
         }

@@ -16,6 +16,7 @@
 
 class GEngine
 {
+    public:
         static NMemory::memsize            s_PoolAllocSize;
         NMemory::MemoryStack               m_PoolMemory;
         NMemory::NPools::RandomAccessPools m_ComponentPools;
