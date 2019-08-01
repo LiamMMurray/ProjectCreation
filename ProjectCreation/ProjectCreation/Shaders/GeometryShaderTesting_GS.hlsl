@@ -38,6 +38,29 @@ struct GSOutput
         float4 color : COLOR;
 };
 
+void TextureAddress(inout float2 UVcord[4], int index, int rowcol) // row and coll must be the same
+{
+        // index is the number texture you want to get. (Starts from 0!)
+        float cellSize;
+        // float cellSizeY;
+        int cells; // amount of cells
+        cells    = (rowcol - 1) * 2;
+        cellSize = 1 / (rowcol - 1);
+        // cellSizeY = 1 / (col - 1);
+
+        if (index <= (cells - 1) || index >= 0)
+        {
+                int   rowX   = fmod(index, rowcol);
+                int   colY   = index / rowcol;
+                float xValue = rowX * cellSize;
+                float yValue = colY * cellSize;
+                UVcord[0]    = float2(xValue, yValue);                       // top left
+                UVcord[1]    = float2(xValue + cellSize, yValue);            // top right
+                UVcord[2]    = float2(xValue, yValue + cellSize);            // bottom left
+                UVcord[3]    = float2(xValue + cellSize, yValue + cellSize); // bottom left
+        }
+}
+
 [maxvertexcount(4)] void main(point VS_OUTPUT input[1], inout TriangleStream<GSOutput> output, uint InstanceID
                               : SV_PrimitiveID) {
         GSOutput verts[4] = {(GSOutput)0, (GSOutput)0, (GSOutput)0, (GSOutput)0};
@@ -78,33 +101,11 @@ struct GSOutput
                 verts[3].pos = verts[3].pos + float4(1.0f / _AspectRatio, -1.0f, 0.0f, 0.0f) * scale;
                 verts[3].uv  = float2(1.0f, 1.0f);
 
+                //TextureAddress(verts.uv, int index, int rowcol);
 
                 for (int j = 0; j < 4; ++j)
                 {
                         output.Append(verts[j]);
                 }
-        }
-}
-
-void TextureAddress(inout float2 UVcord[4], int index, int rowcol) // row and coll must be the same
-{
-        // index is the number texture you want to get. (Starts from 0!)
-        float cellSize;
-        // float cellSizeY;
-        int cells; // amount of cells
-        cells    = (rowcol - 1) * 2;
-        cellSize = 1 / (rowcol - 1);
-        // cellSizeY = 1 / (col - 1);
-
-        if (index <= (cells - 1) || index >= 0)
-        {
-                int   rowX   = fmod(index, rowcol);
-                int   colY   = index / rowcol;
-                float xValue = rowX * cellSize;
-                float yValue = colY * cellSize;
-                UVcord[0]    = float2(xValue, yValue);                       // top left
-                UVcord[1]    = float2(xValue + cellSize, yValue);            // top right
-                UVcord[2]    = float2(xValue, yValue + cellSize);            // bottom left
-                UVcord[3]    = float2(xValue + cellSize, yValue + cellSize); // bottom left
         }
 }

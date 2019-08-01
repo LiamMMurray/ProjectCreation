@@ -126,7 +126,7 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
         velMin = velMax;
         XMStoreFloat3(&accel, fw * 1.5f - VectorConstants::Up * 0.5f);
 
-        //auto emitterComponent                            = entityH.GetComponent<EmitterComponent>();
+        // auto emitterComponent                            = entityH.GetComponent<EmitterComponent>();
         emitterComponent->maxCount                       = 10;
         emitterComponent->EmitterData.minOffset          = posMin;
         emitterComponent->EmitterData.maxOffset          = posMax;
@@ -155,20 +155,21 @@ EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int c
         orbComp->m_Color         = color;
         orbComp->m_TargetRadius  = m_BoostRadius;
 
+        ComponentHandle   emitterComponentHandle = entityHandle.AddComponent<EmitterComponent>();
+        EmitterComponent* emitterComponent       = emitterComponentHandle.Get<EmitterComponent>();
 
-        /*    XMFLOAT3 velMax;
-            XMStoreFloat3(&velMax, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f));
-            emitterComponent->EmitterData.minInitialVelocity = velMax;
-            emitterComponent->EmitterData.maxInitialVelocity = velMax;*/
+        XMFLOAT3 velMax;
+        XMStoreFloat3(&velMax, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f));
+        emitterComponent->EmitterData.minInitialVelocity = velMax;
+        emitterComponent->EmitterData.maxInitialVelocity = velMax;
+        emitterComponent->rotate                         = true;
+        emitterComponent->rotationAxis                   = VectorConstants::Up;
+        emitterComponent->EmitterData.acceleration       = XMFLOAT3(0.0f, -9.80f, 0.0f);
+        emitterComponent->EmitterData.index              = 2;
+        emitterComponent->EmitterData.particleScale      = XMFLOAT2(0.1f, 0.1f);
+        emitterComponent->maxCount                       = 0;
+        emitterComponent->spawnRate                      = 15.0f;
 
- /*       emitterComponent->rotate                    = true;
-        emitterComponent->rotationAxis              = VectorConstants::Up;
-        emitterComponent->EmitterData.acceleration  = XMFLOAT3(0.0f, -9.80f, 0.0f);
-        emitterComponent->EmitterData.index         = 2;
-        emitterComponent->EmitterData.particleScale = XMFLOAT2(0.1f, 0.1f);
-        emitterComponent->maxCount                  = 50;
-        emitterComponent->spawnRate                 = 15.0f;
-*/
         return entityHandle;
 }
 
@@ -465,7 +466,10 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
         for (auto& spawnComp : m_HandleManager->GetActiveComponents<OrbComponent>())
         {
-                TransformComponent* transComp = spawnComp.GetParent().GetComponent<TransformComponent>();
+                EmitterComponent*   emitterComp = spawnComp.GetParent().GetComponent<EmitterComponent>();
+                TransformComponent* transComp   = spawnComp.GetParent().GetComponent<TransformComponent>();
+
+                int redCount = SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
 
                 if (spawnComp.m_CurrentRadius != spawnComp.m_TargetRadius)
                 {
