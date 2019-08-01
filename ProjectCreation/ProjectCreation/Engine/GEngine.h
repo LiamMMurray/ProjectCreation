@@ -2,6 +2,7 @@
 
 #define COMPONENT_MANAGER GEngine::Get()->GetHandleManager()
 #define SYSTEM_MANAGER GEngine::Get()->GetSystemManager()
+#define GET_SYSTEM(x) GEngine::Get()->GetSystemManager()->GetSystem<x>()
 #define ENTITY_MANAGER GEngine::Get()->GetHandleManager()
 #define RESOURCE_MANAGER GEngine::Get()->GetResourceManager()
 

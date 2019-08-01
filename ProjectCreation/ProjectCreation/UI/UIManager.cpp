@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <iostream>
 
+#include "../Engine/Audio/AudioManager.h"
 #include "../Engine/Controller/ControllerSystem.h"
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
@@ -11,6 +12,7 @@
 #include "../Utility/MemoryLeakDetection.h"
 
 #include "../Engine/ConsoleWindow/ConsoleWindow.h"
+#include "../Engine/Gameplay/SpeedBoostSystem.h"
 
 class TutorialLevel;
 
@@ -185,13 +187,11 @@ void UIManager::UIClipCursor()
         ClipCursor(&rect);
 }
 
-void UIManager::OnScreenResize()
-{}
-
 
 // UI Transitions
 void UIManager::WhiteOrbCollected()
 {
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
 }
 
@@ -272,6 +272,17 @@ void UIManager::Pause()
         {
                 instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
         }
+
+        // Main Menu
+        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu].size(); i++)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][i].mEnabled = false;
+        }
+        // Text
+        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu].size(); i++)
+        {
+                instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][i].mEnabled = false;
+        }
 }
 
 void UIManager::Unpause()
@@ -293,7 +304,10 @@ void UIManager::Unpause()
         {
                 for (auto& sprite : it.second)
                 {
-                        sprite.mEnabled = false;
+                        if (it.first != E_MENU_CATEGORIES::MainMenu)
+                        {
+                                sprite.mEnabled = false;
+                        }
                 }
         }
 
@@ -472,9 +486,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
                           "Press Enter to continue. . .",
-                          0.06f,
+                          0.04f,
                           0.0f,
-                          0.1f,
+                          0.15f,
                           true,
                           false);
 
@@ -483,9 +497,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
                           "Hold Left Click to Move",
-                          0.06f,
+                          0.04f,
                           0.0f,
-                          0.1f,
+                          0.15f,
                           false,
                           false);
 
@@ -493,10 +507,10 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
-                          "Hold A to get a boost from Red lights",
-                          0.06f,
+                          "Hold A to collect Red lights",
+                          0.04f,
                           0.0f,
-                          0.1f,
+                          0.15f,
                           false,
                           false);
 
@@ -504,10 +518,10 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
-                          "Hold S to get a boost from Green lights",
-                          0.06f,
+                          "Hold S to collect Green lights",
+                          0.04f,
                           0.0f,
-                          0.1f,
+                          0.15f,
                           false,
                           false);
 
@@ -515,23 +529,12 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
-                          "Hold D to get a boost from Blue lights",
-                          0.06f,
+                          "Hold D to collect Blue lights",
+                          0.04f,
                           0.0f,
-                          0.1f,
+                          0.15f,
                           false,
                           false);
-
-        // Cross-hair
-        instance->AddSprite(instance->m_RenderSystem->m_Device,
-                            instance->m_RenderSystem->m_Context,
-                            E_MENU_CATEGORIES::MainMenu,
-                            L"../Assets/2d/Sprite/Circle Thirds.dds",
-                            0.0f,
-                            0.0f,
-                            0.04f,
-                            0.04f,
-                            true);
 
         // Pause Menu
         instance->AddSprite(instance->m_RenderSystem->m_Device,
@@ -741,6 +744,43 @@ void UIManager::Initialize(native_handle_type hwnd)
                           false,
                           true);
 
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::OptionsSubmenu,
+                          E_FONT_TYPE::MyFile,
+                          "<",
+                          0.04f,
+                          -0.12f,
+                          -0.01f,
+                          false,
+                          true);
+
+        instance->AddText(instance->m_RenderSystem->m_Device,
+                          instance->m_RenderSystem->m_Context,
+                          E_MENU_CATEGORIES::OptionsSubmenu,
+                          E_FONT_TYPE::MyFile,
+                          ">",
+                          0.04f,
+                          0.12f,
+                          -0.01f,
+                          false,
+                          true);
+        // Volumes
+        for (auto i = 0; i <= 100; i += 10)
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::MyFile,
+                                  std::to_string(i),
+                                  0.04f,
+                                  0.0f,
+                                  -0.01f,
+                                  false,
+                                  false);
+        }
+
+        // Any new options submenu should be put above this
         for (auto i = 0; i < instance->resDescriptors.size(); i++)
         {
                 instance->AddText(instance->m_RenderSystem->m_Device,
@@ -756,34 +796,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   false);
         }
 
-        /*
-            //Options Volume Slider
-            instance->m_SliderHandle = 0.0f;
-            instance->AddSprite(instance->m_RenderSystem->m_Device,
-                                instance->m_RenderSystem->m_Context,
-                                E_MENU_CATEGORIES::OptionsMenu,
-                                L"../Assets/2d/Sprite/Slider_BG.dds",
-                                0.0f,
-                                -0.35f,
-                                0.2f,
-                                0.5f,
-                                false);
-                                
-
-
-
-
-
-            instance->AddSprite(instance->m_RenderSystem->m_Device,
-                                instance->m_RenderSystem->m_Context,
-                                E_MENU_CATEGORIES::OptionsMenu,
-                                L"../Assets/2d/Sprite/Slider_FG.dds",
-                                0.0f,
-                                -0.35f,
-                                0.2f,
-                                0.5f,
-                                false);
-        */
 
         // Level Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -875,7 +887,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::MyFile,
-                          "Red Boost: A",
+                          "Collect Red: A",
                           0.03f,
                           0.0f,
                           -0.1f,
@@ -886,7 +898,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::MyFile,
-                          "Green Boost: S",
+                          "Collect Green: S",
                           0.03f,
                           0.0f,
                           0.0f,
@@ -897,7 +909,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::MyFile,
-                          "Blue Boost: D",
+                          "Collect Blue: D",
                           0.03f,
                           0.0f,
                           0.1f,
@@ -957,6 +969,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
 
         // Pause Menu
+
         // Resume Button
         instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][1].OnMouseDown.AddEventListener(
             [](UIMouseEvent* e) { instance->Unpause(); });
@@ -1038,11 +1051,29 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
                 }
 
-                for (int i = 4; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                     i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
+                     i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 4].mEnabled = true;
+                instance
+                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                                [instance->CSettings.m_Resolution +
+                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                 instance->resDescriptors.size()]
+                    .mEnabled = true;
+
+
+                int VolBegin =
+                    instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size() - 11;
+                int VolEnd = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                for (int i = VolBegin; i < VolEnd; i++)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                }
+
+                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Volume + 6].mEnabled = true;
         });
 
         // Controls Button
@@ -1079,6 +1110,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
 
         // Options
+
         // Back Button
         instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
@@ -1126,6 +1158,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                            instance->resDescriptors[instance->PSettings.m_Resolution].Height);
 
                 instance->m_RenderSystem->SetFullscreen(instance->PSettings.m_IsFullscreen);
+
+                AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
         });
 
         // Window Mode
@@ -1193,6 +1227,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Height);
 
                 instance->m_RenderSystem->SetFullscreen(instance->CSettings.m_IsFullscreen);
+                AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
         });
 
         // Left Resolution Button
@@ -1206,11 +1241,18 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->CSettings.m_Resolution--;
                 }
 
-                for (int i = 4; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                     i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
+                     i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 4].mEnabled = true;
+                instance
+                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                                [instance->CSettings.m_Resolution +
+                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                 instance->resDescriptors.size()]
+                    .mEnabled = true;
                 // Change Resolution HERE
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Width,
@@ -1228,19 +1270,67 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->CSettings.m_Resolution++;
                 }
 
-                for (int i = 4; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                     i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
+                     i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 4].mEnabled = true;
+                instance
+                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                                [instance->CSettings.m_Resolution +
+                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                 instance->resDescriptors.size()]
+                    .mEnabled = true;
                 // Change Resolution HERE
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Width,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Height);
         });
 
+        // Left Volume Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                if (instance->CSettings.m_Volume > 0)
+                {
+                        instance->CSettings.m_Volume--;
+                        int VolBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                       instance->resDescriptors.size() - 11;
+                        int VolEnd =
+                            instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                        for (int i = VolBegin; i < VolEnd; i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                        }
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Volume + 6].mEnabled =
+                            true;
+                        // Change Volume HERE
+                        AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
+                }
+        });
+
+        // Right Volume Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                if (instance->CSettings.m_Volume < 10)
+                {
+                        instance->CSettings.m_Volume++;
+                        int VolBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                       instance->resDescriptors.size() - 11;
+                        int VolEnd =
+                            instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                        for (int i = VolBegin; i < VolEnd; i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                        }
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Volume + 6].mEnabled =
+                            true;
+                        // Change Volume HERE
+                        AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
+                }
+        });
+
 
         // Level Select
+
         // Back Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
@@ -1379,6 +1469,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
 
         // Controls Select
+
         // Back Button
         instance->m_AllSprites[E_MENU_CATEGORIES::ControlsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
@@ -1408,9 +1499,16 @@ void UIManager::Initialize(native_handle_type hwnd)
 
 
         // Demo
+
         // Continue
-        instance->m_AllSprites[E_MENU_CATEGORIES::Demo][0].OnMouseDown.AddEventListener(
-            [](UIMouseEvent* e) { instance->Unpause(); });
+        instance->m_AllSprites[E_MENU_CATEGORIES::Demo][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                instance->Unpause();
+
+                for (int i = 0; i < 4; ++i)
+                {
+                        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->ColorsCollected[i] = false;
+                }
+        });
 
         // Exit
         instance->m_AllSprites[E_MENU_CATEGORIES::Demo][1].OnMouseDown.AddEventListener(
@@ -1440,8 +1538,6 @@ void UIManager::Update()
         // Pause & Unpause
         if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled == true)
         {
-                // Joseph Updated the main menu ui to match to input keys
-                // Changed 'Space', 'Q', and 'E' to 'A', 'S', and 'D'
                 if (GCoreInput::GetKeyState(KeyCode::Enter) == KeyState::Down)
                 {
                         instance->MainTilteUnpause();
@@ -1451,8 +1547,6 @@ void UIManager::Update()
         {
                 if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
                 {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
-
                         for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::Demo].size(); i++)
                         {
                                 instance->m_AllFonts[E_MENU_CATEGORIES::Demo][i].mEnabled = false;
@@ -1470,15 +1564,6 @@ void UIManager::Update()
                         {
                                 instance->Unpause();
                         }
-                }
-        }
-
-        // Left Click
-        if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled == true)
-        {
-                if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
                 }
         }
 

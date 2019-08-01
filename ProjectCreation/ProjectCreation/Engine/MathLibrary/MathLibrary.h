@@ -159,6 +159,11 @@ class MathLibrary
                 return std::max(lower, std::min(n, upper));
         }
 
+        static float saturate(float n)
+        {
+                return std::max(0.0f, std::min(n, 1.0f));
+        }
+
         template <typename T>
         static void NormalizeArray(size_t size, T* data)
         {

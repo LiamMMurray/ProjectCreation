@@ -9,6 +9,7 @@
 #include "../GenericComponents/TransformComponent.h"
 #include "../Particle Systems/EmitterComponent.h"
 #include "../ResourceManager/Material.h"
+#include "SpeedBoostSystem.h"
 
 
 using namespace DirectX;
@@ -168,8 +169,8 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         transComp->wrapping = false;
                         playerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
                         playerController->SetCollectedPlanetCount(1 + playerController->GetCollectedPlanetCount());
-                        std::cout << "Orbit System: Planet count = " << playerController->GetCollectedPlanetCount()
-                                  << std::endl;
+                        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->ColorsCollected[goalComp.color] = true;
+                        playerController->m_TimeOnSpline = 0.0f;
                 }
 
                 if (goalComp.goalState == E_GOAL_STATE::Done)
@@ -196,21 +197,22 @@ void OrbitSystem::OnUpdate(float deltaTime)
         nextGoalPos = XMVectorSetY(nextGoalPos, 0.0f);
 
         ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-        for (int i = 0; i < 3; ++i)
+        if (playerController->m_TimeOnSpline > (goalDistances[goalsCollected] / 4.5f))
         {
-
-                if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
+                for (int i = 0; i < 3; ++i)
                 {
-                        collectEventTimestamps[i] = controllerSystem->GetCollectOrbEventID(i);
-                        if (collectedMask[i] == false)
+                        if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
                         {
-
-                                if (activeGoal.hasActiveGoal == false || activeGoal.activeColor != i)
-                                { // play sfx when spawned
-                                        auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
-                                        spawnSound->SetVolume(0.8f);
-                                        CreateGoal(i, nextGoalPos);
-                                        spawnSound->Play();
+                                collectEventTimestamps[i] = controllerSystem->GetCollectOrbEventID(i);
+                                if (collectedMask[i] == false)
+                                {
+                                        if (activeGoal.hasActiveGoal == false || activeGoal.activeColor != i)
+                                        { // play sfx when spawned
+                                                auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
+                                                spawnSound->SetVolume(0.8f);
+                                                CreateGoal(i, nextGoalPos);
+                                                spawnSound->Play();
+                                        }
                                 }
                         }
                 }

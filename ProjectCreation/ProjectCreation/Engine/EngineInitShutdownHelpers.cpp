@@ -1,6 +1,7 @@
 #include "EngineInitShutdownHelpers.h"
 
 #include "..///Engine/GenericComponents/TransformSystem.h"
+#include "..//Engine/Audio/ContinousSoundSystem.h"
 #include "../Engine/Animation/AnimationSystem.h"
 #include "../Engine/Controller/ControllerSystem.h"
 #include "../Engine/CoreInput/CoreInput.h"
@@ -74,6 +75,18 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
                 systemManager->CreateSystem<TransformSystem>(&transformSystem);
                 systemManager->RegisterSystem(&sysInitProps, transformSystem);
                 transformSystem->m_SystemName = "TransformSystem";
+        }
+
+        // Create Transform System
+        {
+                FSystemProperties sysInitProps;
+                sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
+                sysInitProps.m_UpdateRate = 0.0f;
+
+                SpatialSoundSystem* continousAudioSystem;
+                systemManager->CreateSystem<SpatialSoundSystem>(&continousAudioSystem);
+                systemManager->RegisterSystem(&sysInitProps, continousAudioSystem);
+                continousAudioSystem->m_SystemName = "ContinousAudioSystem";
         }
 
         GCoreInput::InitializeInput((HWND)handle);

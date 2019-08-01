@@ -7,12 +7,14 @@ FGoodSpline::FGoodSpline(const std::vector<DirectX::XMVECTOR>& points)
 
         length      = 0.0f;
         size_t size = points.size();
+
         for (size_t i = 1; i < size; ++i)
         {
                 length += MathLibrary::CalulateDistance(points[i], points[i - 1]);
         }
-
+		
         m_Spline.set_ctrl_points(points);
+
 
         pointer = 0.0f;
 }

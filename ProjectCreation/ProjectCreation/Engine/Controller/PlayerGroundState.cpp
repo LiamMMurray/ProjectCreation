@@ -70,10 +70,6 @@ void PlayerGroundState::Update(float deltaTime)
         currentVelocity += _playerController->GetJumpForce();
         // currentVelocity += _playerController->GetPlayerGravity();
 
-        if (GCoreInput::GetKeyState(KeyCode::L) == KeyState::DownFirst)
-        {
-                ConsoleWindow::PrintVector(currentVelocity, "Current Velocity");
-        }
 
         // Get Delta Time
         float totalTime = (float)GEngine::Get()->GetTotalTime();

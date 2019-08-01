@@ -1,9 +1,12 @@
 #pragma once
 
 // Includes
+#include <DirectXMath.h>
 #include <Interface/G_Audio/GAudio.h>
 #include <string>
 #include <unordered_map>
+#include "..//..//ECS/ECSTypes.h"
+#include "3DSoundComponent.h"
 
 //! Macro used to determine if a function succeeded.
 /*!
@@ -33,17 +36,20 @@ class AudioManager
         static AudioManager*                                instance;
 
     public:
+        EntityHandle PlaySoundAtLocation(const DirectX::XMVECTOR& pos, SoundComponent3D::FSettings& settings);
+
         GW::AUDIO::GSound* CreateSFX(const char*);
         GW::AUDIO::GMusic* LoadMusic(const char*);
         void               SetMasterVolume(float val);
         void               ActivateMusicAndPause(GW::AUDIO::GMusic*, bool looping = false);
 
-            inline void GetMasterVolume(float val)
+        inline void GetMasterVolume(float val)
         {
                 m_MasterVolume;
         }
 
-		void _shutdown();
+        void _shutdown();
+
     public:
         static void          Initialize();
         static void          Shutdown();

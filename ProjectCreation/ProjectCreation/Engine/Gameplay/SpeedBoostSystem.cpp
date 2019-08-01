@@ -48,25 +48,29 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
         euler.x                             = 0.0f;
         FQuaternion quat                    = FQuaternion::FromEulerAngles(euler);
         int         color                   = MathLibrary::GetRandomIntInRange(0, 4);
-        XMVECTOR    pos                     = MathLibrary::GetRandomPointInArc(playerTransform->transform.translation,
-                                                        quat.GetForward(),
-                                                        VectorConstants::Up,
-                                                        m_SpawnAngle,
-                                                        m_MinSpawnDistance,
-                                                        m_MaxSpawnDistance);
-        pos                                 = XMVectorSetY(pos, 0.0f);
-        auto entityH                        = SpawnLightOrb(pos, color);
-        auto speedBoostHandle               = entityH.AddComponent<SpeedboostComponent>();
-        entityH.AddComponent<AIComponent>();
-        auto speedboostComponent             = speedBoostHandle.Get<SpeedboostComponent>();
-        speedboostComponent->collisionRadius = m_BoostRadius;
-        speedboostComponent->lifetime        = MathLibrary::RandomFloatInRange(m_BoostLifespan - m_BoostLifespanVariance,
-                                                                        m_BoostLifespan + m_BoostLifespanVariance);
-        speedboostComponent->decay           = 1.0f;
-        speedboostComponent->color           = color;
 
+        if (ColorsCollected[color] == false)
+        {
 
-        return entityH;
+                XMVECTOR pos          = MathLibrary::GetRandomPointInArc(playerTransform->transform.translation,
+                                                                quat.GetForward(),
+                                                                VectorConstants::Up,
+                                                                m_SpawnAngle,
+                                                                m_MinSpawnDistance,
+                                                                m_MaxSpawnDistance);
+                pos                   = XMVectorSetY(pos, 0.0f);
+                auto entityH          = SpawnLightOrb(pos, color);
+                auto speedBoostHandle = entityH.AddComponent<SpeedboostComponent>();
+                entityH.AddComponent<AIComponent>();
+                auto speedboostComponent             = speedBoostHandle.Get<SpeedboostComponent>();
+                speedboostComponent->collisionRadius = m_BoostRadius;
+                speedboostComponent->lifetime = MathLibrary::RandomFloatInRange(m_BoostLifespan - m_BoostLifespanVariance,
+                                                                                m_BoostLifespan + m_BoostLifespanVariance);
+                speedboostComponent->decay    = 1.0f;
+                speedboostComponent->color    = color;
+                return entityH;
+        }
+        return NULL;
 }
 
 EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail, bool head)
@@ -123,8 +127,8 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
 
         XMStoreFloat3(&velMin, -rt * 0.05f);
         XMStoreFloat3(&velMax, +rt * 0.05f + VectorConstants::Up * 1.0f);
-        velMin = velMax;
-        XMStoreFloat3(&accel, fw * 1.5f - VectorConstants::Up * 0.5f);
+
+        XMStoreFloat3(&accel, fw * 2.5f - VectorConstants::Up * 0.5f);
 
         // auto emitterComponent                            = entityH.GetComponent<EmitterComponent>();
         emitterComponent->maxCount                       = 10;
@@ -209,17 +213,19 @@ void SpeedBoostSystem::RequestDestroyAllPlanets()
 
 void SpeedBoostSystem::RequestDestroySplineOrb(SpeedboostSplineComponent* speedComp)
 {
-        auto orbComp            = speedComp->GetParent().GetComponent<OrbComponent>();
-        orbComp->m_WantsDestroy = true;
-        speedComp->GetHandle().SetIsActive(false);
-
-        SpeedboostSplineComponent* latchedSpline = latchedSplineHandle.Get<SpeedboostSplineComponent>();
-
-        if (latchedSpline == speedComp)
+        if (speedComp != NULL)
         {
-                bIsLatchedToSpline = false;
-        }
+                auto orbComp            = speedComp->GetParent().GetComponent<OrbComponent>();
+                orbComp->m_WantsDestroy = true;
+                speedComp->GetHandle().SetIsActive(false);
 
+                SpeedboostSplineComponent* latchedSpline = latchedSplineHandle.Get<SpeedboostSplineComponent>();
+
+                if (latchedSpline == speedComp)
+                {
+                        latchedSplineIndex = -1;
+                }
+        }
         // speedComp->GetHandle().Free();
 }
 
@@ -258,6 +264,7 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
 
                 if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
                 {
+                        float pathLength = maxPathLength[orbitSystem->goalsCollected];
 
                         collectEventTimestamps[i] = controllerSys->GetCollectOrbEventID(i);
 
@@ -272,24 +279,29 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                         }
                         else
                         {
-                                endPos = start + maxPathLength * playerTransform->transform.rotation.GetForward2D();
+                                endPos = start + pathLength * playerTransform->transform.rotation.GetForward2D();
                         }
 
                         XMVECTOR delta    = endPos - start;
                         float    distance = MathLibrary::CalulateVectorLength(delta);
                         XMVECTOR dir      = XMVector3Normalize(delta);
 
-                        float actualDistance = std::min(maxPathLength, distance - 5.0f);
+                        float actualDistance = std::min(pathLength, distance - 5.0f);
 
                         XMVECTOR end = start + dir * actualDistance;
 
-                        float width     = splineWidth * actualDistance / maxPathLength;
-                        float height    = splineHeight * actualDistance / maxPathLength;
-                        int   waveCount = std::lroundf(3.0f * actualDistance / maxPathLength);
+                        float width     = splineWidth * actualDistance / pathLength;
+                        float height    = splineHeight * actualDistance / pathLength;
+                        int   waveCount = std::lroundf(3.0f * actualDistance / pathLength);
 
                         start = XMVectorSetY(start, 0.0f);
                         end   = XMVectorSetY(end, 0.0f);
-                        CreateRandomPath(start, end, i, width, waveCount, height);
+
+                        if (pathExists == false)
+                        {
+                                CreateRandomPath(start, end, i, width, waveCount, height);
+                                pathExists = true;
+                        }
                 }
         }
 }
@@ -304,9 +316,9 @@ void SpeedBoostSystem::RequestUnlatchFromSpline(PlayerController* playerControll
         {
                 playerController->SetUseGravity(true);
 
-                if (bIsLatchedToSpline)
+                if (latchedSplineIndex != -1)
                 {
-                        bIsLatchedToSpline                           = false;
+                        latchedSplineIndex                           = -1;
                         SpeedboostSplineComponent* latchedSplineComp = latchedSplineHandle.Get<SpeedboostSplineComponent>();
                         TransformComponent*        playerTransform =
                             playerController->GetControlledEntity().GetComponent<TransformComponent>();
@@ -361,6 +373,7 @@ void SpeedBoostSystem::DestroySpline(int SplineID, int start)
         toDelete.shouldDestroy    = true;
         toDelete.deleteSeparation = 0;
         toDelete.deleteIndex      = start;
+        pathExists                = false;
 }
 
 
@@ -496,7 +509,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 float prevDistance;
                 float prevDot;
 
-                if (bIsLatchedToSpline == true)
+                if (latchedSplineIndex != -1)
                 {
                         SpeedboostSplineComponent* closestSplineComp = latchedSplineHandle.Get<SpeedboostSplineComponent>();
                         TransformComponent* transComp = closestSplineComp->GetParent().GetComponent<TransformComponent>();
@@ -534,15 +547,17 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         if (distance < (checkRadius))
                         {
-                                if ((bIsLatchedToSpline == false || dot > prevDot))
+                                if ((latchedSplineIndex == -1 || distance < prevDistance))
                                 {
+                                        prevDistance        = distance;
+                                        prevDot             = dot;
                                         latchedSplineHandle = splineComp.GetHandle();
                                         shouldLatch         = true;
                                 }
                         }
                 }
 
-                if (bIsLatchedToSpline || shouldLatch)
+                if (latchedSplineIndex != -1 || shouldLatch)
                 {
                         SpeedboostSplineComponent* latchedSplineComp = latchedSplineHandle.Get<SpeedboostSplineComponent>();
                         int                        index             = latchedSplineComp->index;
@@ -552,7 +567,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         if (clusterIt == m_SplineClusterSpawners.end())
                         {
-                                bIsLatchedToSpline = false;
+                                latchedSplineIndex = -1;
                         }
                         else
                         {
@@ -564,6 +579,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 {
                                         prevPos = currPos;
                                 }
+
                                 else
                                 {
                                         prevPos = clusterIt->second.cachedPoints[index - 1];
@@ -573,6 +589,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 {
                                         nextPos = currPos;
                                 }
+
                                 else
                                 {
                                         nextPos = clusterIt->second.cachedPoints[index + 1];
@@ -613,23 +630,39 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                                 if (inPath)
                                 {
-                                        bIsLatchedToSpline = true;
+                                        if (latchedSplineIndex != latchedSplineComp->index)
+                                        {
+                                                int                         pitch = (index / 20) % 3;
+                                                SoundComponent3D::FSettings settings;
+                                                settings.m_SoundType =
+                                                    SOUND_COLOR_TYPE(correctColor, E_SOUND_TYPE::SPLINE_COLLECT_0 + pitch);
+                                                settings.m_SoundVaration = MathLibrary::GetRandomIntInRange(
+                                                    0, E_SOUND_TYPE::variations[E_SOUND_TYPE::SPLINE_COLLECT_0]);
+                                                settings.flags.set(SoundComponent3D::E_FLAGS::DestroyOnEnd, true);
+                                                settings.m_Volume = 1.0f;
+                                                AudioManager::Get()->PlaySoundAtLocation(currPos, settings);
+                                        }
+
+                                        latchedSplineIndex = latchedSplineComp->index;
+                                        m_EnableRandomSpawns = false;
+                                        RequestDestroyAllSpeedboosts();
+                                        playerController->m_TimeOnSpline += deltaTime;
                                         mDelatchTimer      = mDelatchCD;
                                         playerController->SetUseGravity(false);
 
                                         XMVECTOR dirNext = XMVector3Normalize(nextPos - currPos);
                                         XMVECTOR dirPrev = XMVector3Normalize(prevPos - currPos);
 
-                                        XMVECTOR dirVel;
+                                        XMVECTOR dirVel = XMVectorZero();
                                         XMVECTOR dir;
                                         bool     attached = false;
-
 
                                         if (MathLibrary::VectorDotProduct(playerTransform->transform.GetForward(), dirNext) >
                                             0.3f)
                                         {
                                                 attached = true;
                                                 dir      = dirNext;
+                                                dirVel   = (capsuleA.endPoint - playerTransform->transform.translation);
                                                 dirVel   = (capsuleA.endPoint - playerTransform->transform.translation);
                                         }
                                         else if (MathLibrary::VectorDotProduct(playerTransform->transform.GetForward(),
@@ -643,8 +676,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                                         if (attached)
                                         {
-                                                float dist                  = MathLibrary::CalulateVectorLength(dirVel);
-                                                dirVel                      = XMVector3Normalize(dirVel);
+                                                dirVel = XMVector3Normalize(dirVel);
+
                                                 XMVECTOR closestPointOnLine = MathLibrary::GetClosestPointFromLine(
                                                     capsuleA.startPoint,
                                                     capsuleA.startPoint + dirVel,
@@ -671,10 +704,13 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                 float    velMag     = MathLibrary::CalulateVectorLength(currVel);
                                                 XMVECTOR desiredVel = dirVel * velMag;
 
+                                                float angle           = acosf(inputDot);
+                                                float speedMultiplier = MathLibrary::lerp(5.0f, 1.0f, angle / XM_PIDIV4);
+
                                                 currVel = MathLibrary::MoveTowards(currVel, desiredVel, strength);
                                                 playerController->SetCurrentVelocity(currVel);
                                                 playerController->SetNextForward(dir);
-                                                playerController->SetCurrentMaxSpeed(5.0f);
+                                                playerController->SetCurrentMaxSpeed(speedMultiplier);
                                                 // playerController->AddCurrentVelocity(dir * 10.0f * deltaTime);
                                         }
                                 }
@@ -683,6 +719,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 {
                                         // Player has fallen off the spline
                                         RequestUnlatchFromSpline(playerController, deltaTime);
+                                        m_EnableRandomSpawns = true;
                                 }
                         }
                 }
@@ -806,7 +843,7 @@ void SpeedBoostSystem::OnInitialize()
                                         ->GetControlledEntity();
 
 
-        bIsLatchedToSpline = false;
+        latchedSplineIndex = -1;
 }
 
 void SpeedBoostSystem::OnShutdown()
