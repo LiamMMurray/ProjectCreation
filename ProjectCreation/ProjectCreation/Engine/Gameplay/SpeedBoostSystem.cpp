@@ -717,6 +717,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                         RequestUnlatchFromSpline(playerController, deltaTime);
                                         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
                                         controllerSys->resetCollectedOrbEventID(correctColor);
+                                        collectEventTimestamps[correctColor] = -1;
                                         m_EnableRandomSpawns = true;
                                 }
                         }
