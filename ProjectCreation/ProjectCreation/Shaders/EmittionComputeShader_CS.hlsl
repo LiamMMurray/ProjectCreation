@@ -28,13 +28,16 @@ cbuffer CScreenSpaceBuffer : register(b2)
 
                         ParticleBuffer[id].scale = EmitterBuffer[emitterIndex].particleScale.x;
 
+                        ParticleBuffer[id].textureIndex = EmitterBuffer[emitterIndex].textureIndex;
+                        ParticleBuffer[id].textueRowCol = EmitterBuffer[emitterIndex].textueRowCol;
+
                         float timeMin = EmitterBuffer[emitterIndex].lifeSpan.x - EmitterBuffer[emitterIndex].lifeSpan.y;
                         float timeMax = EmitterBuffer[emitterIndex].lifeSpan.x + EmitterBuffer[emitterIndex].lifeSpan.y;
-                        ParticleBuffer[id].time = RandomFloatInRange(seed, timeMin, timeMax);
+                        ParticleBuffer[id].time     = RandomFloatInRange(seed, timeMin, timeMax);
                         ParticleBuffer[id].lifeSpan = ParticleBuffer[id].time;
-                        float3 startPos         = EmitterBuffer[emitterIndex].emitterPosition;
+                        float3 startPos             = EmitterBuffer[emitterIndex].emitterPosition;
 
-                        ParticleBuffer[id].velocity = RandomFloat3InRange(seed,
+                        ParticleBuffer[id].velocity     = RandomFloat3InRange(seed,
                                                                           EmitterBuffer[emitterIndex].minInitialVelocity,
                                                                           EmitterBuffer[emitterIndex].maxInitialVelocity);
                         ParticleBuffer[id].acceleration = EmitterBuffer[emitterIndex].acceleration;

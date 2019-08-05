@@ -14,6 +14,8 @@ struct FParticleGPU
         int    emitterIndex;
         float  scale;
         float3 acceleration;
+        int    textureIndex;
+        int    textueRowCol;
 };
 
 
@@ -32,6 +34,8 @@ struct FEmitterGPU
         float2 particleScale;
         float3 acceleration;
         int    index; // tpye of particles
+        int    textureIndex;
+        int    textueRowCol;
 };
 
 struct FSegmentBuffer

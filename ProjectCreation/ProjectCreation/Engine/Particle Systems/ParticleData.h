@@ -23,7 +23,9 @@ namespace ParticleData
                 DirectX::XMFLOAT3 maxInitialVelocity;
                 DirectX::XMFLOAT2 particleScale;
                 DirectX::XMFLOAT3 acceleration;
-                int index; // tpye of particles
+                int               index; // tpye of particles
+                int               textureIndex;
+                int               textueRowCol;
         };
 
         struct FParticleGPU
@@ -38,6 +40,8 @@ namespace ParticleData
                 int               active;
                 float             scale;
                 DirectX::XMFLOAT3 acceleration;
+                int               textureIndex = 0;
+                int               textueRowCol;
         };
 
 

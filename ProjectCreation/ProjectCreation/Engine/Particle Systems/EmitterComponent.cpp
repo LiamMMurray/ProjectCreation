@@ -17,6 +17,7 @@ void EmitterComponent::Zero()
         EmitterData.particleScale      = XMFLOAT2(0.0f, 0.0f); // min sclae and max scale
         EmitterData.acceleration       = XMFLOAT3(0.0f, 0.0f, 0.0f);
         EmitterData.index              = 0; // type of particles;
+        EmitterData.textureIndex       = 0;
 }
 
 void EmitterComponent::FloatParticle(DirectX::XMFLOAT3 minOffset,

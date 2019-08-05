@@ -1,7 +1,7 @@
 #include "MVPBuffer.hlsl"
+#include "ParticleData.hlsl"
 #include "SceneBuffer.hlsl"
-
-struct FParticleGPU
+/*struct FParticleGPU
 {
         float4 position;
         float4 prevPos;
@@ -13,7 +13,8 @@ struct FParticleGPU
         int    emitterIndex;
         float  scale;
         float3 acceleration;
-};
+
+};*/
 
 struct FTextureSetting
 {
@@ -38,33 +39,51 @@ struct GSOutput
         float4 color : COLOR;
 };
 
+struct RECT
+{
+        uint left;
+        uint right;
+        uint top;
+        uint bottom;
+};
+
 void TextureAddress(inout float2 UVcord[4], int index, int rowcol) // row and coll must be the same
 {
-        // index is the number texture you want to get. (Starts from 0!)
-        float cellSize;
-        // float cellSizeY;
-        int cells; // amount of cells
-        cells    = (rowcol - 1) * 2;
-        cellSize = 1 / (rowcol - 1);
-        // cellSizeY = 1 / (col - 1);
-
-        if (index <= (cells - 1) || index >= 0)
+        if (rowcol >= 1)
         {
-                int   rowX   = fmod(index, rowcol);
-                int   colY   = index / rowcol;
-                float xValue = rowX * cellSize;
-                float yValue = colY * cellSize;
-                UVcord[0]    = float2(xValue, yValue);                       // top left
-                UVcord[1]    = float2(xValue + cellSize, yValue);            // top right
-                UVcord[2]    = float2(xValue, yValue + cellSize);            // bottom left
-                UVcord[3]    = float2(xValue + cellSize, yValue + cellSize); // bottom left
+
+
+                // index is the number texture you want to get. (Starts from 0!)
+                float cellSize;
+                // float cellSizeY;
+                int cells; // amount of cells
+                cells    = (rowcol - 1) * 2;
+                cellSize = 1 / (rowcol - 1);
+                // cellSizeY = 1 / (col - 1);
+
+                if (index <= (cells - 1) || index >= 0)
+                {
+                        int   rowX   = fmod(index, rowcol);
+                        int   colY   = index / rowcol;
+                        float xValue = rowX * cellSize;
+                        float yValue = colY * cellSize;
+                        UVcord[0]    = float2(xValue, yValue);                       // top left
+                        UVcord[1]    = float2(xValue + cellSize, yValue);            // top right
+                        UVcord[2]    = float2(xValue, yValue + cellSize);            // bottom left
+                        UVcord[3]    = float2(xValue + cellSize, yValue + cellSize); // bottom left
+                }
         }
 }
 
-[maxvertexcount(4)] void main(point VS_OUTPUT input[1], inout TriangleStream<GSOutput> output, uint InstanceID
-                              : SV_PrimitiveID) {
-        GSOutput verts[4] = {(GSOutput)0, (GSOutput)0, (GSOutput)0, (GSOutput)0};
+void GetTexture(inout float2 UVcord[4], RECT points){
 
+}[maxvertexcount(4)] void main(point VS_OUTPUT input[1], inout TriangleStream<GSOutput> output, uint InstanceID
+                               : SV_PrimitiveID)
+{
+        GSOutput verts[4] = {(GSOutput)0, (GSOutput)0, (GSOutput)0, (GSOutput)0};
+        float2   uv[4]    = {float2(0.0f, 0.0f), float2(1.0f, 0.0f), float2(0.0f, 1.0f), float2(1.0f, 1.0f)}; //defult value\
+
+        TextureAddress(uv, buffer[InstanceID].textureIndex, 2); //buffer[InstanceID].textueRowCol
         if (buffer[InstanceID].time > 0.0f)
         {
 
@@ -85,23 +104,23 @@ void TextureAddress(inout float2 UVcord[4], int index, int rowcol) // row and co
                 // verts[j].pos = mul(float4(verts[j].pos.xyz, 1.0f), World);
                 verts[0].pos = mul(float4(verts[0].posWS, 1.0f), ViewProjection);
                 verts[0].pos = verts[0].pos + float4(-1.0f / _AspectRatio, 1.0f, 0.0f, 0.0f) * scale;
-                verts[0].uv  = float2(0.0f, 0.0f);
+                verts[0].uv  = uv[0];
 
                 verts[1].pos = mul(float4(verts[1].posWS, 1.0f), ViewProjection);
                 verts[1].pos = verts[1].pos + float4(1.0f / _AspectRatio, 1.0f, 0.0f, 0.0f) * scale;
-                verts[1].uv  = float2(1.0f, 0.0f);
+                verts[1].uv  = uv[1];
 
 
                 verts[2].pos = mul(float4(verts[2].posWS, 1.0f), ViewProjection);
                 verts[2].pos = verts[2].pos + float4(-1.0f / _AspectRatio, -1.0f, 0.0f, 0.0f) * scale;
-                verts[2].uv  = float2(0.0f, 1.0f);
+                verts[2].uv  = uv[2];
 
 
                 verts[3].pos = mul(float4(verts[3].posWS, 1.0f), ViewProjection);
                 verts[3].pos = verts[3].pos + float4(1.0f / _AspectRatio, -1.0f, 0.0f, 0.0f) * scale;
-                verts[3].uv  = float2(1.0f, 1.0f);
+                verts[3].uv  = uv[3];
 
-                //TextureAddress(verts.uv, int index, int rowcol);
+                // TextureAddress(verts.uv, int index, int rowcol);
 
                 for (int j = 0; j < 4; ++j)
                 {

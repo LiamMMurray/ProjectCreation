@@ -18,7 +18,12 @@ SamplerState objSamplerState : register(s0);
 float4 main(PS_INPUT input) : SV_TARGET
 {
         float4 output;
+        uint   width;
+        uint   height;
+        uint   mipLevel;
+        uint   numOfLevel;
         output = tex1.Sample(objSamplerState, input.uv).xyzx;
+        tex1.GetDimensions(width, height);
         output *= input.color;
         // Transparency
         float dist = distance(_EyePosition, input.posWS);
