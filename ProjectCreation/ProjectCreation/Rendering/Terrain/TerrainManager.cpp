@@ -183,12 +183,16 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 }
                 renderSystem->GetContext()->Unmap(stagingTextureResource, 0);
         }
+
+		GenerateInstanceTransforms(m_InstanceTransforms);
 }
 using namespace DirectX;
 
 void TerrainManager::_update(float deltaTime)
 {
         using namespace DirectX;
+
+		WrapInstanceTransforms();
 
         ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
 
@@ -307,6 +311,24 @@ void TerrainManager::_shutdown()
 
         terrainConstantBufferGPU->Release();
         stagingTextureResource->Release();
+}
+
+void TerrainManager::GenerateInstanceTransforms(FTransform tArray[gInstanceTransformsCount])
+{
+
+}
+
+void TerrainManager::WrapInstanceTransforms()
+{
+       /* playerTransform = currController->GetControlledEntity().GetComponentHandle<TransformComponent>();
+
+        XMVECTOR& playerPos = playerTransform.Get<TransformComponent>()->transform.translation;
+        float     scale     = TerrainManager::Get()->GetScale();
+        XMVECTOR  min       = XMVectorSet(-0.5f * scale, 0.0f, -0.5f * scale, 0.0f);
+        XMVECTOR  max       = -min;
+
+
+        XMVECTOR newPlayerPos = MathLibrary::WrapPosition(playerPos, min, max);*/
 }
 
 void TerrainManager::CreateVertexBuffer(ID3D11Buffer** buffer, unsigned int squareDimensions, float waterLevel, float scale)
