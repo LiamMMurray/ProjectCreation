@@ -3,6 +3,7 @@
 #include <DirectXMath.h>
 #include "..//..//Engine/ResourceManager/IResource.h"
 #include "..//..//Utility/ForwardDeclarations/D3DNativeTypes.h"
+#include "..//..//Engine/MathLibrary/Transform.h"
 class RenderSystem;
 
 struct ID3D11HullShader;
@@ -41,6 +42,7 @@ class TerrainManager
         void _update(float deltaTime);
         void _shutdown();
 
+        
 
         TerrainManager()  = default;
         ~TerrainManager() = default;
@@ -71,6 +73,12 @@ class TerrainManager
         CTerrainInfoBuffer terrainConstantBufferCPU;
         ID3D11Buffer*      terrainConstantBufferGPU;
 
+        static constexpr unsigned int gInstanceTransformsCount = 200;
+        FTransform                    m_InstanceTransforms[gInstanceTransformsCount];
+
+		void GenerateInstanceTransforms(FTransform tArray[gInstanceTransformsCount]);
+        void WrapInstanceTransforms();
+
         void CreateVertexBuffer(ID3D11Buffer** buffer, unsigned int squareDimensions, float waterLevel, float scale);
         void CreateIndexBuffer(ID3D11Buffer** buffer, unsigned int squareDimensions);
 
@@ -96,10 +104,12 @@ class TerrainManager
                 return groundOffset;
         }
         static TerrainManager* Get();
-        DirectX::XMVECTOR      AlignPositionToTerrain(const DirectX::XMVECTOR& pos);
-        static void            Initialize(RenderSystem* rs);
-        static void            Update(float deltaTime);
-        static void            Shutdown();
+
+
+        DirectX::XMVECTOR AlignPositionToTerrain(const DirectX::XMVECTOR& pos);
+        static void       Initialize(RenderSystem* rs);
+        static void       Update(float deltaTime);
+        static void       Shutdown();
 
         inline float GetScale()
         {
