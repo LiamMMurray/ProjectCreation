@@ -715,6 +715,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 {
                                         // Player has fallen off the spline
                                         RequestUnlatchFromSpline(playerController, deltaTime);
+                                        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+                                        controllerSys->resetCollectedOrbEventID(correctColor);
                                         m_EnableRandomSpawns = true;
                                 }
                         }

@@ -25,10 +25,15 @@ class ControllerSystem : public ISystem
     public:
         // bool m_toggleDebugCamera = false;
 
-		inline int GetCollectOrbEventID(int color) const
+        inline int GetCollectOrbEventID(int color) const
         {
                 return CollectOrbEventIDs[color];
-		}
+        }
+
+        inline void resetCollectedOrbEventID(int color)
+        {
+                CollectOrbEventIDs[color] = -1;
+        }
 
         DirectX::XMFLOAT3 GetCurrentColorSelection() const;
         float             GetCurrentColorAlpha() const;
