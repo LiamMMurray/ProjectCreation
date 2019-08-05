@@ -154,94 +154,6 @@ void TerrainManager::_initialize(RenderSystem* rs)
         mTextureHandles[3] = GEngine::Get()->GetResourceManager()->LoadTexture2D("Soil01_Normal");
         mTextureHandles[4] = GEngine::Get()->GetResourceManager()->LoadTexture2D("Terrain_Roughness");
         mTextureHandles[5] = GEngine::Get()->GetResourceManager()->LoadTexture2D("WaterHigh_NM");
-}
-using namespace DirectX;
-
-void TerrainManager::_update(float deltaTime)
-{
-        using namespace DirectX;
-
-        ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
-
-        XMVECTOR playerPos = GEngine::Get()
-                                  ->GetSystemManager()
-                                  ->GetSystem<TransformSystem>()
-                                  ->GetPlayerWrapTransformHandle()
-                                  .Get<TransformComponent>()
-                                  ->transform.translation;
-
-        XMVECTOR correctedTerrainPos = playerPos;
-        float    cellSize            = terrainConstantBufferCPU.gWorldCellSpace * scale * 8.0f;
-        XMVECTOR cellVector          = XMVectorSet(cellSize, 1.0f, cellSize, 1.0f);
-        XMVECTOR modCell             = XMVectorMod(correctedTerrainPos, cellVector);
-        modCell                      = XMVectorSetW(modCell, 0.0f);
-        correctedTerrainPos -= modCell;
-        correctedTerrainPos  = XMVectorSetY(correctedTerrainPos, 0.0f);
-        TerrainMatrix.r[3]   = correctedTerrainPos;
-        InverseTerrainMatrix = DirectX::XMMatrixInverse(nullptr, TerrainMatrix);
-
-        // GEngine::Get()->m_TerrainAlpha += deltaTime * 0.04f;
-        // GEngine::Get()->m_TerrainAlpha = std::min(1.0f, GEngine::Get()->m_TerrainAlpha);
-
-        UINT stride = sizeof(TerrainVertex);
-        UINT offset = 0;
-
-        renderSystem->m_ConstantBuffer_MVP.World = XMMatrixTranspose(TerrainMatrix);
-        terrainConstantBufferCPU.worldView       = XMMatrixTranspose(TerrainMatrix * renderSystem->m_CachedMainViewMatrix);
-        terrainConstantBufferCPU.gTerrainAlpha   = GEngine::Get()->m_TerrainAlpha;
-
-		XMStoreFloat3(&terrainConstantBufferCPU.gOriginOffset, GEngine::Get()->m_OriginOffset);
-        renderSystem->UpdateConstantBuffer(renderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP],
-                                           &renderSystem->m_ConstantBuffer_MVP,
-                                           sizeof(renderSystem->m_ConstantBuffer_MVP));
-
-        terrainConstantBufferCPU.gScreenDimensions =
-            XMFLOAT2(renderSystem->m_BackBufferWidth, renderSystem->m_BackBufferHeight);
-        terrainConstantBufferCPU.gTriangleSize = 8.0f;
-        renderSystem->UpdateConstantBuffer(
-            terrainConstantBufferGPU, &terrainConstantBufferCPU, sizeof(terrainConstantBufferCPU));
-        renderSystem->m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
-        renderSystem->m_Context->IASetInputLayout(inputLayout);
-        renderSystem->m_Context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-        renderSystem->m_Context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-        renderSystem->m_Context->VSSetShader(vertexShader, nullptr, 0);
-        renderSystem->m_Context->VSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
-        renderSystem->m_Context->VSSetShaderResources(9, 1, &terrainSourceSRV);
-
-        renderSystem->m_Context->HSSetShader(hullShader, nullptr, 0);
-        renderSystem->m_Context->HSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
-        renderSystem->m_Context->HSSetShaderResources(9, 1, &terrainSourceSRV);
-
-        renderSystem->m_Context->DSSetShader(domainShader, nullptr, 0);
-        renderSystem->m_Context->DSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
-        renderSystem->m_Context->DSSetShaderResources(9, 1, &terrainSourceSRV);
-
-        renderSystem->m_Context->PSSetShader(pixelShader, nullptr, 0);
-        renderSystem->m_Context->PSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
-        renderSystem->m_Context->PSSetShaderResources(9, 1, &terrainSourceSRV);
-
-        // Setup textures
-        ID3D11ShaderResourceView* srvs[6];
-        resourceManager->GetSRVs(6, mTextureHandles, srvs);
-        renderSystem->m_Context->PSSetShaderResources(0, 4, srvs);
-        renderSystem->m_Context->PSSetShaderResources(10, 1, &srvs[4]);
-
-        // if (GCoreInput::GetKeyState(KeyCode::T) == KeyState::Down)
-        renderSystem->m_Context->DrawIndexed(patchQuadCount * 4, 0, 0);
-
-        renderSystem->m_Context->DSSetShader(oceanDomainShader, nullptr, 0);
-        renderSystem->m_Context->PSSetShader(oceanPixelShader, nullptr, 0);
-        renderSystem->m_Context->PSSetShaderResources(1, 1, &srvs[5]);
-
-        XMMATRIX oceanMatrix = TerrainMatrix;
-        // oceanMatrix.r[3] = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-        renderSystem->m_ConstantBuffer_MVP.World = XMMatrixTranspose(oceanMatrix);
-        renderSystem->UpdateConstantBuffer(renderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP],
-                                           &renderSystem->m_ConstantBuffer_MVP,
-                                           sizeof(renderSystem->m_ConstantBuffer_MVP));
-
-        renderSystem->m_Context->DrawIndexed(patchQuadCount * 4, 0, 0);
 
         if (true)
         {
@@ -270,12 +182,99 @@ void TerrainManager::_update(float deltaTime)
                         buffer += intermediateMipDimensions * sizeof(float);
                 }
                 renderSystem->GetContext()->Unmap(stagingTextureResource, 0);
+        }
+}
+using namespace DirectX;
 
-                for (int i = 0; i < stagingTextureCPUElementCount; ++i)
-                {
-                        terrainHeightArray[i] = terrainConstantBufferCPU.gTerrainAlpha * 2625.f * terrainHeightArray[i] +
-                                                WaterLevel * terrainConstantBufferCPU.gTerrainAlpha;
-                }
+void TerrainManager::_update(float deltaTime)
+{
+        using namespace DirectX;
+
+        ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
+
+        XMVECTOR playerPos = GEngine::Get()
+                                 ->GetSystemManager()
+                                 ->GetSystem<TransformSystem>()
+                                 ->GetPlayerWrapTransformHandle()
+                                 .Get<TransformComponent>()
+                                 ->transform.translation;
+
+        XMVECTOR correctedTerrainPos = playerPos;
+        float    cellSize            = terrainConstantBufferCPU.gWorldCellSpace * scale * 8.0f;
+        XMVECTOR cellVector          = XMVectorSet(cellSize, 1.0f, cellSize, 1.0f);
+        XMVECTOR modCell             = XMVectorMod(correctedTerrainPos, cellVector);
+        modCell                      = XMVectorSetW(modCell, 0.0f);
+        correctedTerrainPos -= modCell;
+        correctedTerrainPos  = XMVectorSetY(correctedTerrainPos, 0.0f);
+        TerrainMatrix.r[3]   = correctedTerrainPos;
+        InverseTerrainMatrix = DirectX::XMMatrixInverse(nullptr, TerrainMatrix);
+
+        // GEngine::Get()->m_TerrainAlpha += deltaTime * 0.04f;
+        // GEngine::Get()->m_TerrainAlpha = std::min(1.0f, GEngine::Get()->m_TerrainAlpha);
+
+        UINT stride = sizeof(TerrainVertex);
+        UINT offset = 0;
+
+        terrainConstantBufferCPU.worldView     = XMMatrixTranspose(TerrainMatrix * renderSystem->m_CachedMainViewMatrix);
+        terrainConstantBufferCPU.gTerrainAlpha = GEngine::Get()->m_TerrainAlpha;
+
+        XMStoreFloat3(&terrainConstantBufferCPU.gOriginOffset, GEngine::Get()->m_OriginOffset);
+
+
+        terrainConstantBufferCPU.gScreenDimensions =
+            XMFLOAT2(renderSystem->m_BackBufferWidth, renderSystem->m_BackBufferHeight);
+        terrainConstantBufferCPU.gTriangleSize = 8.0f;
+        renderSystem->UpdateConstantBuffer(
+            terrainConstantBufferGPU, &terrainConstantBufferCPU, sizeof(terrainConstantBufferCPU));
+        renderSystem->m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
+        renderSystem->m_Context->IASetInputLayout(inputLayout);
+        renderSystem->m_Context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+        renderSystem->m_Context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+        renderSystem->m_Context->VSSetShader(vertexShader, nullptr, 0);
+        renderSystem->m_Context->VSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
+        renderSystem->m_Context->VSSetShaderResources(9, 1, &terrainSourceSRV);
+
+        renderSystem->m_Context->HSSetShader(hullShader, nullptr, 0);
+        renderSystem->m_Context->HSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
+        renderSystem->m_Context->HSSetShaderResources(9, 1, &terrainSourceSRV);
+
+        renderSystem->m_Context->DSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
+        renderSystem->m_Context->DSSetShaderResources(9, 1, &terrainSourceSRV);
+
+        renderSystem->m_Context->PSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
+        renderSystem->m_Context->PSSetShaderResources(9, 1, &terrainSourceSRV);
+
+        // Setup textures
+        ID3D11ShaderResourceView* srvs[6];
+        resourceManager->GetSRVs(6, mTextureHandles, srvs);
+        renderSystem->m_Context->PSSetShaderResources(0, 4, srvs);
+        renderSystem->m_Context->PSSetShaderResources(10, 1, &srvs[4]);
+
+        // if (GCoreInput::GetKeyState(KeyCode::T) == KeyState::Down)
+
+
+        { // Ocean
+                renderSystem->m_Context->DSSetShader(oceanDomainShader, nullptr, 0);
+                renderSystem->m_Context->PSSetShader(oceanPixelShader, nullptr, 0);
+                renderSystem->m_Context->PSSetShaderResources(1, 1, &srvs[5]);
+                // oceanMatrix.r[3] = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+                XMMATRIX oceanMatrix                     = TerrainMatrix;
+                renderSystem->m_ConstantBuffer_MVP.World = XMMatrixTranspose(oceanMatrix);
+                renderSystem->UpdateConstantBuffer(renderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP],
+                                                   &renderSystem->m_ConstantBuffer_MVP,
+                                                   sizeof(renderSystem->m_ConstantBuffer_MVP));
+                renderSystem->m_Context->DrawIndexed(patchQuadCount * 4, 0, 0);
+        }
+
+        { // Terrain
+                renderSystem->m_ConstantBuffer_MVP.World = XMMatrixTranspose(TerrainMatrix);
+                renderSystem->UpdateConstantBuffer(renderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP],
+                                                   &renderSystem->m_ConstantBuffer_MVP,
+                                                   sizeof(renderSystem->m_ConstantBuffer_MVP));
+                renderSystem->m_Context->PSSetShader(pixelShader, nullptr, 0);
+                renderSystem->m_Context->DSSetShader(domainShader, nullptr, 0);
+                renderSystem->m_Context->DrawIndexed(patchQuadCount * 4, 0, 0);
         }
 
         // debug_renderer::AddSphere(Shapes::FSphere(test, 0.1f), 32, XMMatrixIdentity());
@@ -435,6 +434,8 @@ DirectX::XMVECTOR TerrainManager::AlignPositionToTerrain(const DirectX::XMVECTOR
 
 
         float height = BilinearFilter(currX, currY, terrainHeightArray, intermediateMipDimensions, intermediateMipDimensions);
+
+        height = terrainConstantBufferCPU.gTerrainAlpha * 2625.f * height + WaterLevel * terrainConstantBufferCPU.gTerrainAlpha;
 
         return DirectX::XMVectorSetY(pos, std::max(height * scale, 0.0f) + groundOffset);
 }
