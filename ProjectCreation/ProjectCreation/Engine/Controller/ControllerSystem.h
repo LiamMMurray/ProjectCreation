@@ -6,8 +6,13 @@
 #include "../Controller/IController.h"
 #include "../GEngine.h"
 #include "../Gameplay/LightOrbColors.h"
+#include "GamePad.h"
+
 class ControllerSystem : public ISystem
 {
+
+        GamePad* gp = new GamePad();
+
         static ControllerSystem* instance;
 
         void init();

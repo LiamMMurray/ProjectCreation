@@ -34,6 +34,7 @@
     <ClInclude Include="Engine\Controller\ControllerSystem.h" />
     <ClInclude Include="Engine\Controller\DebugCameraController.h" />
     <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
+    <ClInclude Include="Engine\Controller\GamePad.h" />
     <ClInclude Include="Engine\Controller\PlayerCinematicState.h" />
     <ClInclude Include="Engine\Controller\PlayerControllerState.h" />
     <ClInclude Include="Engine\Controller\PlayerControllerStateMachine.h" />
@@ -332,6 +333,7 @@
     <ClCompile Include="Engine\CollisionLibary\Shapes.cpp" />
     <ClCompile Include="Engine\Controller\ControllerSystem.cpp" />
     <ClCompile Include="Engine\Controller\DebugCameraController.cpp" />
+    <ClCompile Include="Engine\Controller\GamePad.cpp" />
     <ClCompile Include="Engine\Controller\PlayerCinematicState.cpp" />
     <ClCompile Include="Engine\Controller\PlayerControllerStateMachine.cpp" />
     <ClCompile Include="Engine\Controller\PlayerGroundState.cpp" />
@@ -476,7 +478,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>GAudio_DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GAudio_DLL.lib;XInput.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
       <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>
@@ -503,7 +505,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
       <MapExports>true</MapExports>
-      <AdditionalDependencies>GAudio_DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GAudio_DLL.lib;XInput.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
       <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>

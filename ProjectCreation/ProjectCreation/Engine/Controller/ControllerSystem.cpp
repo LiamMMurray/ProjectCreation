@@ -115,6 +115,11 @@ void ControllerSystem::OnUpdate(float deltaTime)
                 std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
         }
 
+        if (GCoreInput::GetKeyState(KeyCode::Y) == KeyState::Down)
+        {
+                gp->TestGamePadRumble();
+        }
+
         if (GCoreInput::GetKeyState(KeyCode::Tab) == KeyState::DownFirst)
         {
                 m_Controllers[m_CurrentController]->SetEnabled(false);
@@ -200,8 +205,8 @@ void ControllerSystem::OnInitialize()
                 ComponentHandle tHandle = eHandle.AddComponent<TransformComponent>();
                 ComponentHandle cHandle = eHandle.AddComponent<CameraComponent>();
 
-                auto tComp                   = eHandle.GetComponent<TransformComponent>();
-                tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+                auto tComp                             = eHandle.GetComponent<TransformComponent>();
+                tComp->transform.translation           = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
                 tComp->wrapping                        = false;
                 auto cameraComp                        = cHandle.Get<CameraComponent>();
                 cameraComp->m_Settings.m_HorizontalFOV = 90.0f;
