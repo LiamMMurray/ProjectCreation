@@ -22,8 +22,8 @@ float4 main(PS_INPUT input) : SV_TARGET
         uint   height;
         uint   mipLevel;
         uint   numOfLevel;
-        output = tex1.Sample(objSamplerState, input.uv).xyzx;
-        tex1.GetDimensions(width, height);
+        output = tex1.Sample(objSamplerState, input.uv).xyzw;
+        // tex1.GetDimensions(width, height);
         output *= input.color;
         // Transparency
         float dist = distance(_EyePosition, input.posWS);

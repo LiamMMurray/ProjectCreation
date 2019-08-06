@@ -32,16 +32,16 @@ namespace ParticleData
         {
                 DirectX::XMFLOAT4 position;
                 DirectX::XMFLOAT4 prevPos;
-                DirectX::XMFLOAT4 color;
+                DirectX::XMFLOAT4 initialColor;
+                DirectX::XMFLOAT4 finalColor;
                 DirectX::XMFLOAT3 velocity;
-                DirectX::XMFLOAT2 texture;
                 float             time     = 0.0f;
-                float             lifeSpan = 1.0f;
+                DirectX::XMFLOAT3 lifeSpan = {1.0f, 0.0f, 0.0f};
                 int               active;
-                float             scale;
+                DirectX::XMFLOAT2 scale;
                 DirectX::XMFLOAT3 acceleration;
                 int               textureIndex = 0;
-                int               textueRowCol;
+
         };
 
 

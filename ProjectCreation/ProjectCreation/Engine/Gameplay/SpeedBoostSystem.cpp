@@ -168,8 +168,7 @@ EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int c
         XMStoreFloat4(&orbColor, 4.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[color]));
         XMStoreFloat3(&velMax, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f));
         XMStoreFloat3(&orbPos, pos);
-        emitterComponent->ParticleswithGravity(
-            XMFLOAT3(), XMFLOAT3(), orbColor, orbColor, XMFLOAT4(2.0f, 1.0f, 0.5f, 0.5f));
+        emitterComponent->ParticleswithGravity(XMFLOAT3(), XMFLOAT3(), orbColor, orbColor, XMFLOAT4(2.0f, 1.0f, 0.5f, 0.5f));
 
         emitterComponent->EmitterData.minInitialVelocity = {-0.5f, -1.0f, -0.5f};
         emitterComponent->EmitterData.maxInitialVelocity = {0.5f, 2.0f, 0.5f};
@@ -182,7 +181,7 @@ EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int c
         emitterComponent->maxCount                       = 0;
         emitterComponent->spawnRate                      = 0.0f; // 15.0f
         emitterComponent->active                         = false;
-        emitterComponent->EmitterData.textureIndex       = 1;
+        emitterComponent->EmitterData.textureIndex       = color;
 
         return entityHandle;
 }

@@ -6,16 +6,15 @@ struct FParticleGPU
 {
         float4 position;
         float4 prevPos;
-        float4 color;
+        float4 initialColor;
+        float4 finalColor;
         float3 velocity;
-        float2 uv;
         float  time;
-        float  lifeSpan;
+        float3 lifeSpan;
         int    emitterIndex;
-        float  scale;
+        float2 scale;
         float3 acceleration;
         int    textureIndex;
-        int    textueRowCol;
 };
 
 

@@ -47,51 +47,59 @@ struct RECT
         uint bottom;
 };
 
-void TextureAddress(inout float2 UVcord[4], int index, int rowcol) // row and coll must be the same
+float Round(float input)
 {
-        if (rowcol >= 1)
-        {
+        float output = (int)(input * 100 + .5);
+        return (float)output / 100;
+}
+void TextureAddress(inout float2 UVcord[4], uint index, uint rowcol) // row and coll must be the same
+{
+        // index is the number texture you want to get. (Starts from 0!)
+        float cellSize;
+        // float cellSizeY;
+        uint cells; // amount of cells
+        cells    = rowcol * rowcol;
+        cellSize = 1.0f / rowcol;
+        // cellSizeY = 1 / (col - 1);
 
-
-                // index is the number texture you want to get. (Starts from 0!)
-                float cellSize;
-                // float cellSizeY;
-                int cells; // amount of cells
-                cells    = (rowcol - 1) * 2;
-                cellSize = 1 / (rowcol - 1);
-                // cellSizeY = 1 / (col - 1);
-
-                if (index <= (cells - 1) || index >= 0)
-                {
-                        int   rowX   = fmod(index, rowcol);
-                        int   colY   = index / rowcol;
-                        float xValue = rowX * cellSize;
-                        float yValue = colY * cellSize;
-                        UVcord[0]    = float2(xValue, yValue);                       // top left
-                        UVcord[1]    = float2(xValue + cellSize, yValue);            // top right
-                        UVcord[2]    = float2(xValue, yValue + cellSize);            // bottom left
-                        UVcord[3]    = float2(xValue + cellSize, yValue + cellSize); // bottom left
-                }
-        }
+        uint  rowX   = index % rowcol;
+        uint  colY   = index / rowcol;
+        float xValue = rowX * cellSize;
+        float yValue = colY * cellSize;
+        UVcord[0]    = float2((xValue), (yValue));                       // top left
+        UVcord[1]    = float2((xValue + cellSize), (yValue));            // top right
+        UVcord[2]    = float2((xValue), (yValue + cellSize));            // bottom left
+        UVcord[3]    = float2((xValue + cellSize), (yValue + cellSize)); // bottom right
 }
 
-void GetTexture(inout float2 UVcord[4], RECT points){
-
-}[maxvertexcount(4)] void main(point VS_OUTPUT input[1], inout TriangleStream<GSOutput> output, uint InstanceID
-                               : SV_PrimitiveID)
-{
+[maxvertexcount(4)] void main(point VS_OUTPUT input[1], inout TriangleStream<GSOutput> output, uint InstanceID
+                              : SV_PrimitiveID) {
         GSOutput verts[4] = {(GSOutput)0, (GSOutput)0, (GSOutput)0, (GSOutput)0};
-        float2   uv[4]    = {float2(0.0f, 0.0f), float2(1.0f, 0.0f), float2(0.0f, 1.0f), float2(1.0f, 1.0f)}; //defult value\
+        uint     id       = InstanceID;
 
-        TextureAddress(uv, buffer[InstanceID].textureIndex, 2); //buffer[InstanceID].textueRowCol
+        float2 uv[4] = {float2(0.0f, 0.0f), float2(1.0f, 0.0f), float2(0.0f, 1.0f), float2(1.0f, 1.0f)}; //defult value\
+
+        TextureAddress(uv, (uint)buffer[InstanceID].textureIndex, 2); // buffer[InstanceID].textueRowCol
         if (buffer[InstanceID].time > 0.0f)
         {
+                // Compute current data from initial and target
+                float  timeAlpha    = 1.0f - buffer[id].time / buffer[id].lifeSpan.x;
+                float4 currentColor = lerp(buffer[id].initialColor, buffer[id].finalColor, timeAlpha);
+                float  currentScale = lerp(buffer[id].scale.x, buffer[id].scale.y, timeAlpha);
+
+                if (buffer[id].lifeSpan.y > 0)
+                        currentColor.a = lerp(0.0f, currentColor.a, saturate(timeAlpha / buffer[id].lifeSpan.y));
+
+                if (buffer[id].lifeSpan.z > 0)
+                        currentColor.a = lerp(0.0f, currentColor.a, saturate((1.0f - timeAlpha) / buffer[id].lifeSpan.z));
+
+                // end compute current data
 
                 for (int i = 0; i < 4; ++i)
                 {
                         verts[i].posWS = buffer[InstanceID].position;
                         // verts[i].pos   = float4(0.0f, 0.0f, 0.0f, 1.0f);
-                        verts[i].color = buffer[InstanceID].color;
+                        verts[i].color = currentColor;
                 }
 
                 uint numStructs = 0;
@@ -99,7 +107,7 @@ void GetTexture(inout float2 UVcord[4], RECT points){
                 buffer.GetDimensions(numStructs, stride);
 
 
-                float scale = buffer[InstanceID].scale;
+                float scale = currentScale;
                 // scale       = 1.0f;
                 // verts[j].pos = mul(float4(verts[j].pos.xyz, 1.0f), World);
                 verts[0].pos = mul(float4(verts[0].posWS, 1.0f), ViewProjection);

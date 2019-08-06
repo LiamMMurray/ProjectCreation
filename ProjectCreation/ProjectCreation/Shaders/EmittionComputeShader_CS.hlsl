@@ -29,13 +29,14 @@ cbuffer CScreenSpaceBuffer : register(b2)
                         ParticleBuffer[id].scale = EmitterBuffer[emitterIndex].particleScale.x;
 
                         ParticleBuffer[id].textureIndex = EmitterBuffer[emitterIndex].textureIndex;
-                        ParticleBuffer[id].textueRowCol = EmitterBuffer[emitterIndex].textueRowCol;
 
                         float timeMin = EmitterBuffer[emitterIndex].lifeSpan.x - EmitterBuffer[emitterIndex].lifeSpan.y;
                         float timeMax = EmitterBuffer[emitterIndex].lifeSpan.x + EmitterBuffer[emitterIndex].lifeSpan.y;
-                        ParticleBuffer[id].time     = RandomFloatInRange(seed, timeMin, timeMax);
-                        ParticleBuffer[id].lifeSpan = ParticleBuffer[id].time;
-                        float3 startPos             = EmitterBuffer[emitterIndex].emitterPosition;
+                        ParticleBuffer[id].time       = RandomFloatInRange(seed, timeMin, timeMax);
+                        ParticleBuffer[id].lifeSpan.x = ParticleBuffer[id].time;
+                        ParticleBuffer[id].lifeSpan.y = EmitterBuffer[emitterIndex].lifeSpan.z;
+                        ParticleBuffer[id].lifeSpan.z = EmitterBuffer[emitterIndex].lifeSpan.w;
+                        float3 startPos               = EmitterBuffer[emitterIndex].emitterPosition;
 
                         ParticleBuffer[id].velocity     = RandomFloat3InRange(seed,
                                                                           EmitterBuffer[emitterIndex].minInitialVelocity,
@@ -43,14 +44,20 @@ cbuffer CScreenSpaceBuffer : register(b2)
                         ParticleBuffer[id].acceleration = EmitterBuffer[emitterIndex].acceleration;
 
 
-                        ParticleBuffer[id].uv    = EmitterBuffer[emitterIndex].uv;
-                        ParticleBuffer[id].color = EmitterBuffer[emitterIndex].initialColor;
-
                         float3 offset = RandomFloat3InRange(
                             seed, EmitterBuffer[emitterIndex].minOffset, EmitterBuffer[emitterIndex].maxOffset);
                         ParticleBuffer[id].position = float4(startPos + offset, 1.0f);
 
                         ParticleBuffer[id].prevPos = ParticleBuffer[id].position;
+
+
+                        ParticleBuffer[id].scale.x = EmitterBuffer[emitterIndex].particleScale.x;
+                        ParticleBuffer[id].scale.y = EmitterBuffer[emitterIndex].particleScale.y;
+
+                        ParticleBuffer[id].initialColor = EmitterBuffer[emitterIndex].initialColor;
+                        ParticleBuffer[id].finalColor   = EmitterBuffer[emitterIndex].finalColor;
+
+                        ParticleBuffer[id].textureIndex = EmitterBuffer[emitterIndex].textureIndex;
                 }
         }
         else
