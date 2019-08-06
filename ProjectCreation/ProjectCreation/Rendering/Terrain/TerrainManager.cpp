@@ -184,7 +184,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 renderSystem->GetContext()->Unmap(stagingTextureResource, 0);
         }
 
-		GenerateInstanceTransforms(m_InstanceTransforms);
+        GenerateInstanceTransforms(m_InstanceTransforms);
 }
 using namespace DirectX;
 
@@ -192,7 +192,7 @@ void TerrainManager::_update(float deltaTime)
 {
         using namespace DirectX;
 
-		WrapInstanceTransforms();
+        WrapInstanceTransforms();
 
         ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
 
@@ -315,20 +315,27 @@ void TerrainManager::_shutdown()
 
 void TerrainManager::GenerateInstanceTransforms(FTransform tArray[gInstanceTransformsCount])
 {
-
+        for (int i = 0; i < gInstanceTransformsCount; ++i)
+        {
+                float x               = MathLibrary::GetRandomFloat();
+                float y               = MathLibrary::GetRandomFloat();
+                tArray[i].translation = XMVectorSet(x, y, 0.0f, 1.0f);
+                tArray[i].rotation = FQuaternion::RotateAxisAngle(VectorConstants::Up, MathLibrary::GetRandomFloat() * 360.0f);
+                tArray[i].SetScale(MathLibrary::RandomFloatInRange(0.8f, 1.2f));
+        }
 }
 
 void TerrainManager::WrapInstanceTransforms()
 {
-       /* playerTransform = currController->GetControlledEntity().GetComponentHandle<TransformComponent>();
+        /* playerTransform = currController->GetControlledEntity().GetComponentHandle<TransformComponent>();
 
-        XMVECTOR& playerPos = playerTransform.Get<TransformComponent>()->transform.translation;
-        float     scale     = TerrainManager::Get()->GetScale();
-        XMVECTOR  min       = XMVectorSet(-0.5f * scale, 0.0f, -0.5f * scale, 0.0f);
-        XMVECTOR  max       = -min;
+         XMVECTOR& playerPos = playerTransform.Get<TransformComponent>()->transform.translation;
+         float     scale     = TerrainManager::Get()->GetScale();
+         XMVECTOR  min       = XMVectorSet(-0.5f * scale, 0.0f, -0.5f * scale, 0.0f);
+         XMVECTOR  max       = -min;
 
 
-        XMVECTOR newPlayerPos = MathLibrary::WrapPosition(playerPos, min, max);*/
+         XMVECTOR newPlayerPos = MathLibrary::WrapPosition(playerPos, min, max);*/
 }
 
 void TerrainManager::CreateVertexBuffer(ID3D11Buffer** buffer, unsigned int squareDimensions, float waterLevel, float scale)
