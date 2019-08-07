@@ -1,9 +1,9 @@
 #pragma once
 
 #include <DirectXMath.h>
+#include "..//..//Engine/MathLibrary/Transform.h"
 #include "..//..//Engine/ResourceManager/IResource.h"
 #include "..//..//Utility/ForwardDeclarations/D3DNativeTypes.h"
-#include "..//..//Engine/MathLibrary/Transform.h"
 class RenderSystem;
 
 struct ID3D11HullShader;
@@ -32,6 +32,14 @@ struct TerrainVertex
         DirectX::XMFLOAT2 tex;
 };
 
+struct FInstanceRenderData
+{
+        ResourceHandle        material;
+        ResourceHandle        mesh;
+        uint32_t              instanceCount;
+        std::vector<uint32_t> instanceIndexList;
+};
+
 class TerrainManager
 {
         static constexpr float WaterLevel = -1260.0f;
@@ -42,7 +50,6 @@ class TerrainManager
         void _update(float deltaTime);
         void _shutdown();
 
-        
 
         TerrainManager()  = default;
         ~TerrainManager() = default;
@@ -64,6 +71,11 @@ class TerrainManager
         ID3D11RenderTargetView*   terrainIntermediateRenderTarget;
         ID3D11ShaderResourceView* terrainIntermediateSRV;
 
+        ID3D11Buffer*             instanceBuffer      = nullptr;
+        ID3D11Buffer*             instanceIndexBuffer = nullptr;
+        ID3D11ShaderResourceView* instanceSRV         = nullptr;
+        ID3D11ShaderResourceView* instanceIndexSRV    = nullptr;
+
         ID3D11Buffer*    vertexBuffer;
         ID3D11Buffer*    indexBuffer;
         ID3D11Texture2D* stagingTextureResource;
@@ -75,8 +87,11 @@ class TerrainManager
 
         static constexpr unsigned int gInstanceTransformsCount = 200;
         FTransform                    m_InstanceTransforms[gInstanceTransformsCount];
+        DirectX::XMMATRIX             m_InstanceMatrices[gInstanceTransformsCount];
 
-		void GenerateInstanceTransforms(FTransform tArray[gInstanceTransformsCount]);
+        std::vector<FInstanceRenderData> instanceDrawCallsData;
+
+        void GenerateInstanceTransforms(FTransform tArray[gInstanceTransformsCount]);
         void WrapInstanceTransforms();
 
         void CreateVertexBuffer(ID3D11Buffer** buffer, unsigned int squareDimensions, float waterLevel, float scale);

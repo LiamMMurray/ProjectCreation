@@ -2,6 +2,7 @@
 #include <d3d11.h>
 #include <d3d11_1.h>
 #include < Directxpackedvector.h >
+#include "../..//Engine/ResourceManager/StaticMesh.h"
 #include "../..//FileIO/FileIO.h"
 #include "../..//Utility/StringUtility.h"
 #include "..//..//Engine/Controller/ControllerSystem.h"
@@ -9,6 +10,8 @@
 #include "..//..//Engine/GEngine.h"
 #include "..//..//Engine/GenericComponents/TransformComponent.h"
 #include "..//..//Engine/GenericComponents/TransformSystem.h"
+#include "..//..//Engine/ResourceManager/Material.h"
+#include "..//..//Utility/Macros/DirectXMacros.h"
 #include "..//DebugRender/debug_renderer.h"
 #include "..//RenderingSystem.h"
 
@@ -184,7 +187,80 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 renderSystem->GetContext()->Unmap(stagingTextureResource, 0);
         }
 
+        // Create instance data and buffers
+
         GenerateInstanceTransforms(m_InstanceTransforms);
+
+        ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
+
+        FInstanceRenderData renderTestData;
+        renderTestData.instanceCount = gInstanceTransformsCount;
+        renderTestData.instanceIndexList.resize(gInstanceTransformsCount);
+        for (int i = 0; i < gInstanceTransformsCount; ++i)
+        {
+                renderTestData.instanceIndexList[i] = i;
+        }
+        renderTestData.mesh     = resourceManager->LoadStaticMesh("Sphere01");
+        renderTestData.material = resourceManager->LoadMaterial("DefaultInstanced");
+
+        using namespace DirectX;
+        HRESULT hr = {};
+        { // Create transform buffer
+                D3D11_BUFFER_DESC               sbDesc{};
+                D3D11_SUBRESOURCE_DATA          rwData{};
+                D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+
+                // CD3D11_BUFFER_DESC
+                sbDesc.BindFlags           = D3D11_BIND_SHADER_RESOURCE;
+                sbDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
+                sbDesc.MiscFlags           = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+                sbDesc.StructureByteStride = sizeof(XMMATRIX);
+                sbDesc.ByteWidth           = sizeof(XMMATRIX) * gInstanceTransformsCount;
+                sbDesc.Usage               = D3D11_USAGE_DYNAMIC;
+                // D3D11_SUBRESOURCE_DATA
+                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, nullptr, &instanceBuffer);
+
+                // D3D11_SHADER_RESOURCE_VIEW_DESC
+                srvDesc.Buffer.ElementOffset = 0;
+                srvDesc.Buffer.ElementWidth  = sizeof(XMMATRIX);
+                srvDesc.Buffer.FirstElement  = 0;
+                srvDesc.Buffer.NumElements   = gInstanceTransformsCount;
+                srvDesc.Format               = DXGI_FORMAT_UNKNOWN;
+                srvDesc.ViewDimension        = D3D11_SRV_DIMENSION_BUFFER;
+                hr |= renderSystem->m_Device->CreateShaderResourceView(instanceBuffer, &srvDesc, &instanceSRV);
+
+                assert(SUCCEEDED(hr));
+        }
+
+        { // Create transform buffer
+                D3D11_BUFFER_DESC               sbDesc{};
+                D3D11_SUBRESOURCE_DATA          rwData{};
+                D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+
+                // CD3D11_BUFFER_DESC
+                sbDesc.BindFlags           = D3D11_BIND_SHADER_RESOURCE;
+                sbDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
+                sbDesc.MiscFlags           = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+                sbDesc.StructureByteStride = sizeof(uint32_t);
+                sbDesc.ByteWidth           = sizeof(uint32_t) * gInstanceTransformsCount;
+                sbDesc.Usage               = D3D11_USAGE_DYNAMIC;
+                // D3D11_SUBRESOURCE_DATA
+                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, nullptr, &instanceIndexBuffer);
+
+                // D3D11_SHADER_RESOURCE_VIEW_DESC
+                srvDesc.Buffer.ElementOffset = 0;
+                srvDesc.Buffer.ElementWidth  = sizeof(uint32_t);
+                srvDesc.Buffer.FirstElement  = 0;
+                srvDesc.Buffer.NumElements   = gInstanceTransformsCount;
+                srvDesc.Format               = DXGI_FORMAT_UNKNOWN;
+                srvDesc.ViewDimension        = D3D11_SRV_DIMENSION_BUFFER;
+                hr |= renderSystem->m_Device->CreateShaderResourceView(instanceIndexBuffer, &srvDesc, &instanceIndexSRV);
+
+                assert(SUCCEEDED(hr));
+        }
+
+
+        instanceDrawCallsData.push_back(renderTestData);
 }
 using namespace DirectX;
 
@@ -280,6 +356,48 @@ void TerrainManager::_update(float deltaTime)
                 renderSystem->m_Context->DSSetShader(domainShader, nullptr, 0);
                 renderSystem->m_Context->DrawIndexed(patchQuadCount * 4, 0, 0);
         }
+        // Draw instanced
+        {
+                ID3D11ShaderResourceView* nullSRV = nullptr;
+
+                renderSystem->m_Context->VSSetShaderResources(8, 1, &nullSRV);
+                renderSystem->m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+                ID3D11HullShader*   nullHull   = nullptr;
+                ID3D11DomainShader* nullDomain = nullptr;
+                renderSystem->m_Context->HSSetShader(nullHull, 0, 0);
+                renderSystem->m_Context->DSSetShader(nullDomain, 0, 0);
+
+                for (unsigned int i = 0; i < gInstanceTransformsCount; ++i)
+                {
+                        m_InstanceMatrices[i] = XMMatrixTranspose(m_InstanceTransforms[i].CreateMatrix());
+                }
+
+                renderSystem->UpdateConstantBuffer(
+                    instanceBuffer, m_InstanceMatrices, sizeof(XMMATRIX) * gInstanceTransformsCount);
+
+                renderSystem->m_Context->VSSetShaderResources(8, 1, &instanceSRV);
+                renderSystem->m_Context->IASetInputLayout(renderSystem->m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
+                for (auto& data : instanceDrawCallsData)
+                {
+                        StaticMesh* sm  = resourceManager->GetResource<StaticMesh>(data.mesh);
+                        Material*   mat = resourceManager->GetResource<Material>(data.material);
+
+                        ID3D11Buffer* vertexBuffer = sm->m_VertexBuffer;
+                        ID3D11Buffer* indexBuffer  = sm->m_IndexBuffer;
+                        uint32_t      indexCount   = sm->m_IndexCount;
+                        uint32_t      vertexSize   = sizeof(FVertex);
+
+                        uint32_t instancecount = data.instanceCount;
+                        renderSystem->m_Context->VSSetShaderResources(9, 1, &nullSRV);
+
+                        renderSystem->UpdateConstantBuffer(
+                            instanceIndexBuffer, data.instanceIndexList.data(), sizeof(uint32_t) * instancecount);
+
+                        renderSystem->m_Context->VSSetShaderResources(9, 1, &instanceIndexSRV);
+                        renderSystem->DrawMeshInstanced(vertexBuffer, indexBuffer, indexCount, vertexSize, mat, instancecount);
+                }
+        }
 
         // debug_renderer::AddSphere(Shapes::FSphere(test, 0.1f), 32, XMMatrixIdentity());
 
@@ -309,6 +427,11 @@ void TerrainManager::_shutdown()
         vertexBuffer->Release();
         indexBuffer->Release();
 
+        SAFE_RELEASE(instanceBuffer);
+        SAFE_RELEASE(instanceIndexBuffer);
+        SAFE_RELEASE(instanceSRV);
+        SAFE_RELEASE(instanceIndexSRV);
+
         terrainConstantBufferGPU->Release();
         stagingTextureResource->Release();
 }
@@ -317,9 +440,9 @@ void TerrainManager::GenerateInstanceTransforms(FTransform tArray[gInstanceTrans
 {
         for (int i = 0; i < gInstanceTransformsCount; ++i)
         {
-                float x               = MathLibrary::GetRandomFloat();
-                float y               = MathLibrary::GetRandomFloat();
-                tArray[i].translation = XMVectorSet(x, y, 0.0f, 1.0f);
+                float x               = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
+                float y               = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
+                tArray[i].translation = XMVectorSet(x, 0.0f, y, 1.0f);
                 tArray[i].rotation = FQuaternion::RotateAxisAngle(VectorConstants::Up, MathLibrary::GetRandomFloat() * 360.0f);
                 tArray[i].SetScale(MathLibrary::RandomFloatInRange(0.8f, 1.2f));
         }
