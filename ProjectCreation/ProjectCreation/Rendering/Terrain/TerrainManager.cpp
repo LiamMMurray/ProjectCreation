@@ -5,6 +5,7 @@
 #include "../..//Engine/ResourceManager/StaticMesh.h"
 #include "../..//FileIO/FileIO.h"
 #include "../..//Utility/StringUtility.h"
+#include "../../Engine/ResourceManager/ComputeShader.h"
 #include "..//..//Engine/Controller/ControllerSystem.h"
 #include "..//..//Engine/CoreInput/CoreInput.h"
 #include "..//..//Engine/GEngine.h"
@@ -203,22 +204,44 @@ void TerrainManager::_initialize(RenderSystem* rs)
         renderTestData.mesh     = resourceManager->LoadStaticMesh("Sphere01");
         renderTestData.material = resourceManager->LoadMaterial("DefaultInstanced");
 
+
+        m_UpdateInstancesComputeShader = resourceManager->LoadComputeShader("InstanceUpdate");
+
         using namespace DirectX;
         HRESULT hr = {};
         { // Create transform buffer
-                D3D11_BUFFER_DESC               sbDesc{};
-                D3D11_SUBRESOURCE_DATA          rwData{};
-                D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+                for (unsigned int i = 0; i < gInstanceTransformsCount; ++i)
+                {
+                        m_InstanceMatrices[i] = XMMatrixTranspose(m_InstanceTransforms[i].CreateMatrix());
+                }
+
+                // renderSystem->UpdateConstantBuffer(
+                //    instanceBuffer, m_InstanceMatrices, sizeof(XMMATRIX) * gInstanceTransformsCount);
+
+                D3D11_BUFFER_DESC                sbDesc{};
+                D3D11_SUBRESOURCE_DATA           rwData{};
+                D3D11_SHADER_RESOURCE_VIEW_DESC  srvDesc{};
+                D3D11_UNORDERED_ACCESS_VIEW_DESC sbUAVDesc{};
 
                 // CD3D11_BUFFER_DESC
-                sbDesc.BindFlags           = D3D11_BIND_SHADER_RESOURCE;
-                sbDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
+                sbDesc.BindFlags           = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+                sbDesc.CPUAccessFlags      = 0;
                 sbDesc.MiscFlags           = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
                 sbDesc.StructureByteStride = sizeof(XMMATRIX);
                 sbDesc.ByteWidth           = sizeof(XMMATRIX) * gInstanceTransformsCount;
-                sbDesc.Usage               = D3D11_USAGE_DYNAMIC;
+                sbDesc.Usage               = D3D11_USAGE_DEFAULT;
                 // D3D11_SUBRESOURCE_DATA
-                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, nullptr, &instanceBuffer);
+                rwData.pSysMem = m_InstanceMatrices;
+
+                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, &rwData, &instanceBuffer);
+
+                // D3D11_UNORDERED_ACCESS_VIEW_DESC
+                sbUAVDesc.Buffer.FirstElement = 0;
+                sbUAVDesc.Buffer.Flags        = 0;
+                sbUAVDesc.Buffer.NumElements  = gInstanceTransformsCount * 1;
+                sbUAVDesc.Format              = DXGI_FORMAT_UNKNOWN;
+                sbUAVDesc.ViewDimension       = D3D11_UAV_DIMENSION_BUFFER;
+                hr |= renderSystem->m_Device->CreateUnorderedAccessView(instanceBuffer, &sbUAVDesc, &instanceUAV);
 
                 // D3D11_SHADER_RESOURCE_VIEW_DESC
                 srvDesc.Buffer.ElementOffset = 0;
@@ -363,18 +386,25 @@ void TerrainManager::_update(float deltaTime)
                 renderSystem->m_Context->VSSetShaderResources(8, 1, &nullSRV);
                 renderSystem->m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+                // Set Compute Shaders
+                ID3D11UnorderedAccessView* nullUAV = NULL;
+                ComputeShader*             cs = resourceManager->GetResource<ComputeShader>(m_UpdateInstancesComputeShader);
+                renderSystem->m_Context->CSSetShader(cs->m_ComputerShader, 0, 0);
+                renderSystem->m_Context->CSSetConstantBuffers(
+                    1, 1, &renderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE]);
+                renderSystem->m_Context->CSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
+
+                renderSystem->m_Context->CSSetUnorderedAccessViews(0, 1, &instanceUAV, 0);
+                renderSystem->m_Context->CSSetShaderResources(9, 1, &terrainSourceSRV);
+                // renderSystem->m_Context->CSSetShaderResources(2, 1, &instanceSRV);
+                // instanceIndexSRV ?
+                renderSystem->m_Context->Dispatch(gInstanceTransformsCount, 1, 1);
+                renderSystem->m_Context->CSSetUnorderedAccessViews(0, 1, &nullUAV, 0);
+
                 ID3D11HullShader*   nullHull   = nullptr;
                 ID3D11DomainShader* nullDomain = nullptr;
                 renderSystem->m_Context->HSSetShader(nullHull, 0, 0);
                 renderSystem->m_Context->DSSetShader(nullDomain, 0, 0);
-
-                for (unsigned int i = 0; i < gInstanceTransformsCount; ++i)
-                {
-                        m_InstanceMatrices[i] = XMMatrixTranspose(m_InstanceTransforms[i].CreateMatrix());
-                }
-
-                renderSystem->UpdateConstantBuffer(
-                    instanceBuffer, m_InstanceMatrices, sizeof(XMMATRIX) * gInstanceTransformsCount);
 
                 renderSystem->m_Context->VSSetShaderResources(8, 1, &instanceSRV);
                 renderSystem->m_Context->IASetInputLayout(renderSystem->m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
@@ -431,6 +461,7 @@ void TerrainManager::_shutdown()
         SAFE_RELEASE(instanceIndexBuffer);
         SAFE_RELEASE(instanceSRV);
         SAFE_RELEASE(instanceIndexSRV);
+        SAFE_RELEASE(instanceUAV);
 
         terrainConstantBufferGPU->Release();
         stagingTextureResource->Release();

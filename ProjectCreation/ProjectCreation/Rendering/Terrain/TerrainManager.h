@@ -71,10 +71,11 @@ class TerrainManager
         ID3D11RenderTargetView*   terrainIntermediateRenderTarget;
         ID3D11ShaderResourceView* terrainIntermediateSRV;
 
-        ID3D11Buffer*             instanceBuffer      = nullptr;
-        ID3D11Buffer*             instanceIndexBuffer = nullptr;
-        ID3D11ShaderResourceView* instanceSRV         = nullptr;
-        ID3D11ShaderResourceView* instanceIndexSRV    = nullptr;
+        ID3D11Buffer*              instanceBuffer      = nullptr;
+        ID3D11Buffer*              instanceIndexBuffer = nullptr;
+        ID3D11ShaderResourceView*  instanceSRV         = nullptr;
+        ID3D11ShaderResourceView*  instanceIndexSRV    = nullptr;
+        ID3D11UnorderedAccessView* instanceUAV         = nullptr;
 
         ID3D11Buffer*    vertexBuffer;
         ID3D11Buffer*    indexBuffer;
@@ -88,6 +89,7 @@ class TerrainManager
         static constexpr unsigned int gInstanceTransformsCount = 200;
         FTransform                    m_InstanceTransforms[gInstanceTransformsCount];
         DirectX::XMMATRIX             m_InstanceMatrices[gInstanceTransformsCount];
+        ResourceHandle                m_UpdateInstancesComputeShader;
 
         std::vector<FInstanceRenderData> instanceDrawCallsData;
 
