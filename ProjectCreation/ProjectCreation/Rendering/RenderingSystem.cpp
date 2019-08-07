@@ -636,7 +636,7 @@ void RenderSystem::DrawLines()
                 }
         }
 
-        if (orbitSystem->activeGoal.hasActiveGoal)
+        if (orbitSystem->activeGoal.hasActiveGoal == true)
         {
                 int vertexCount = 2;
 

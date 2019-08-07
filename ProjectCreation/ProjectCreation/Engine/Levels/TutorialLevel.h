@@ -21,6 +21,7 @@ class TutorialLevel : public ILevelState
         TransformComponent* m_PlayerTransform;
         EntityHandle        m_PlayerEntityHandle;
         PlayerController*   m_PlayerController;
+        OrbitSystem*        m_OrbitSystem;
 
         bool m_WhiteCollected = false;
         bool m_RedCollected   = false;
