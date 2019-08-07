@@ -2,6 +2,7 @@
 #include <d3d11.h>
 #include <d3d11_1.h>
 #include < Directxpackedvector.h >
+#include "../..//Engine/ResourceManager/StaticMesh.h"
 #include "../..//FileIO/FileIO.h"
 #include "../..//Utility/StringUtility.h"
 #include "..//..//Engine/Controller/ControllerSystem.h"
@@ -9,6 +10,8 @@
 #include "..//..//Engine/GEngine.h"
 #include "..//..//Engine/GenericComponents/TransformComponent.h"
 #include "..//..//Engine/GenericComponents/TransformSystem.h"
+#include "..//..//Engine/ResourceManager/Material.h"
+#include "..//..//Utility/Macros/DirectXMacros.h"
 #include "..//DebugRender/debug_renderer.h"
 #include "..//RenderingSystem.h"
 
@@ -184,7 +187,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 renderSystem->GetContext()->Unmap(stagingTextureResource, 0);
         }
 
-		GenerateInstanceTransforms(m_InstanceTransforms);
+        GenerateInstanceTransforms(m_InstanceTransforms);
 }
 using namespace DirectX;
 
@@ -192,7 +195,7 @@ void TerrainManager::_update(float deltaTime)
 {
         using namespace DirectX;
 
-		WrapInstanceTransforms();
+        WrapInstanceTransforms();
 
         ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
 
@@ -280,6 +283,42 @@ void TerrainManager::_update(float deltaTime)
                 renderSystem->m_Context->DSSetShader(domainShader, nullptr, 0);
                 renderSystem->m_Context->DrawIndexed(patchQuadCount * 4, 0, 0);
         }
+        // Draw instanced
+        {
+                ID3D11ShaderResourceView* nullSRV = nullptr;
+
+                renderSystem->m_Context->VSSetShaderResources(8, 1, &nullSRV);
+
+                for (unsigned int i = 0; i < gInstanceTransformsCount; ++i)
+                {
+                        m_InstanceMatrices[i] = m_InstanceTransforms[i].CreateMatrix();
+                }
+
+                renderSystem->UpdateConstantBuffer(
+                    instanceBuffer, m_InstanceMatrices, sizeof(XMMATRIX) * gInstanceTransformsCount);
+
+                renderSystem->m_Context->VSSetShaderResources(8, 1, &instanceSRV);
+
+                for (auto& data : instanceDrawCallsData)
+                {
+                        StaticMesh* sm  = resourceManager->GetResource<StaticMesh>(data.mesh);
+                        Material*   mat = resourceManager->GetResource<Material>(data.material);
+
+                        ID3D11Buffer* vertexBuffer = sm->m_VertexBuffer;
+                        ID3D11Buffer* indexBuffer  = sm->m_IndexBuffer;
+                        uint32_t      indexCount   = sm->m_IndexCount;
+                        uint32_t      vertexSize   = 16;
+
+                        uint32_t instancecount = data.instanceCount;
+                        renderSystem->m_Context->VSSetShaderResources(9, 1, &nullSRV);
+
+                        renderSystem->UpdateConstantBuffer(
+                            instanceIndexBuffer, data.instanceIndexList.data(), sizeof(uint32_t) * instancecount);
+
+                        renderSystem->m_Context->VSSetShaderResources(9, 1, &instanceIndexSRV);
+                        renderSystem->DrawMeshInstanced(vertexBuffer, indexBuffer, indexCount, vertexSize, mat, instancecount);
+                }
+        }
 
         // debug_renderer::AddSphere(Shapes::FSphere(test, 0.1f), 32, XMMatrixIdentity());
 
@@ -309,26 +348,29 @@ void TerrainManager::_shutdown()
         vertexBuffer->Release();
         indexBuffer->Release();
 
+        SAFE_RELEASE(instanceBuffer);
+        SAFE_RELEASE(instanceIndexBuffer);
+        SAFE_RELEASE(instanceSRV);
+        SAFE_RELEASE(instanceIndexSRV);
+
         terrainConstantBufferGPU->Release();
         stagingTextureResource->Release();
 }
 
 void TerrainManager::GenerateInstanceTransforms(FTransform tArray[gInstanceTransformsCount])
-{
-
-}
+{}
 
 void TerrainManager::WrapInstanceTransforms()
 {
-       /* playerTransform = currController->GetControlledEntity().GetComponentHandle<TransformComponent>();
+        /* playerTransform = currController->GetControlledEntity().GetComponentHandle<TransformComponent>();
 
-        XMVECTOR& playerPos = playerTransform.Get<TransformComponent>()->transform.translation;
-        float     scale     = TerrainManager::Get()->GetScale();
-        XMVECTOR  min       = XMVectorSet(-0.5f * scale, 0.0f, -0.5f * scale, 0.0f);
-        XMVECTOR  max       = -min;
+         XMVECTOR& playerPos = playerTransform.Get<TransformComponent>()->transform.translation;
+         float     scale     = TerrainManager::Get()->GetScale();
+         XMVECTOR  min       = XMVectorSet(-0.5f * scale, 0.0f, -0.5f * scale, 0.0f);
+         XMVECTOR  max       = -min;
 
 
-        XMVECTOR newPlayerPos = MathLibrary::WrapPosition(playerPos, min, max);*/
+         XMVECTOR newPlayerPos = MathLibrary::WrapPosition(playerPos, min, max);*/
 }
 
 void TerrainManager::CreateVertexBuffer(ID3D11Buffer** buffer, unsigned int squareDimensions, float waterLevel, float scale)

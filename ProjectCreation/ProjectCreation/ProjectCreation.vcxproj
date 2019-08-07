@@ -103,6 +103,7 @@
     <ClInclude Include="Engine\MathLibrary\Quaternion.h" />
     <ClInclude Include="Engine\MathLibrary\Transform.h" />
     <ClInclude Include="Engine\MathLibrary\Vector.h" />
+    <ClInclude Include="Rendering\InstanceData.h" />
     <ClInclude Include="Rendering\Terrain\TerrainManager.h" />
     <ClInclude Include="Shaders\Interpolation.hlsl" />
     <ClInclude Include="Shaders\MVPBuffer.hlsl" />
