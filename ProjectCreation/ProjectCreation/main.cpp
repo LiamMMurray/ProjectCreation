@@ -29,6 +29,8 @@
 #include "Rendering/Components/SkeletalMeshComponent.h"
 #include "Rendering/Components/StaticMeshComponent.h"
 
+#include "Engine/Particle Systems/EmitterComponent.h"
+
 #include "Engine/Animation/AnimationSystem.h"
 #include "Engine/ResourceManager/SkeletalMesh.h"
 /////testing -vic
@@ -173,7 +175,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         // register window class
         RegisterClassEx(&winInfo);
 
-        RECT wr = {0, 0, 1920, 1080};                        // set the size
+        RECT wr = {0, 0, 1920, 1080};           // set the size
         AdjustWindowRect(&wr, WS_POPUP, FALSE); // adjust the size
 
         int posX = GetSystemMetrics(SM_CXSCREEN) / 2 - (wr.right - wr.left) / 2;
@@ -234,7 +236,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
             /*std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
             ComponentHandle          transformHandle;
             EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
-           
+           
 
 
 
@@ -257,12 +259,26 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
                 auto dirLightEntityHandle = HandleManager->CreateEntity();
                 HandleManager->AddComponent<DirectionalLightComponent>(dirLightEntityHandle);
+                HandleManager->AddComponent<TransformComponent>(dirLightEntityHandle);
+                EmitterComponent* emitterComponent =
+                    HandleManager->AddComponent<EmitterComponent>(dirLightEntityHandle).Get<EmitterComponent>();
+
+                // emitter set up
+                XMFLOAT3 position;
+                XMStoreFloat3(&position, dirLightEntityHandle.GetComponent<TransformComponent>()->transform.translation);
+                emitterComponent->FloatParticle(XMFLOAT3(), XMFLOAT3(), XMFLOAT4(), XMFLOAT4(), XMFLOAT4(5.0f,1.0f,1.0f,1.0f));
+                emitterComponent->EmitterData.emitterPosition = position;
+                emitterComponent->rotate                      = false;
+                emitterComponent->maxCount                    = 4500;
+                emitterComponent->spawnRate                   = 30.0f;
+
 
                 auto dirComp = dirLightEntityHandle.GetComponent<DirectionalLightComponent>();
                 dirComp->m_LightRotation =
                     XMQuaternionRotationRollPitchYaw(XMConvertToRadians(25.0f), XMConvertToRadians(90.0f), 0.0f);
                 dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.85f, 0.7f, 5.0f);
                 dirComp->m_AmbientColor = XMFLOAT4(1.0f, 0.85f, 0.7f, 1.7f);
+
 
                 GEngine::Get()->m_SunHandle = dirLightEntityHandle;
         }

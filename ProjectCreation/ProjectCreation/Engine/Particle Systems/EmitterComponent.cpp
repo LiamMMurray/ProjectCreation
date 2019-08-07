@@ -81,3 +81,14 @@ void EmitterComponent::ParticleFloatUp(DirectX::XMFLOAT3 minOffset,
         EmitterData.acceleration = XMFLOAT3(0.0f, 3.0f, 0.0f);
         EmitterData.index        = 2; // type of particles;
 }
+
+void EmitterComponent::WaterSplash(DirectX::XMFLOAT3 minOffset,
+                                        DirectX::XMFLOAT3 maxOffset,
+                                        DirectX::XMFLOAT4 initialColor,
+                                        DirectX::XMFLOAT4 finalColor,
+                                        DirectX::XMFLOAT4 lifeSpan)
+{
+
+
+
+}

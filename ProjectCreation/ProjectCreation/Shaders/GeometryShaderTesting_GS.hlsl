@@ -1,20 +1,6 @@
 #include "MVPBuffer.hlsl"
 #include "ParticleData.hlsl"
 #include "SceneBuffer.hlsl"
-/*struct FParticleGPU
-{
-        float4 position;
-        float4 prevPos;
-        float4 color;
-        float3 velocity;
-        float2 uv;
-        float  time;
-        float  lifeSpan;
-        int    emitterIndex;
-        float  scale;
-        float3 acceleration;
-
-};*/
 
 struct FTextureSetting
 {
@@ -39,13 +25,6 @@ struct GSOutput
         float4 color : COLOR;
 };
 
-struct RECT
-{
-        uint left;
-        uint right;
-        uint top;
-        uint bottom;
-};
 
 float Round(float input)
 {
@@ -80,6 +59,11 @@ void TextureAddress(inout float2 UVcord[4], uint index, uint rowcol) // row and 
         float2 uv[4] = {float2(0.0f, 0.0f), float2(1.0f, 0.0f), float2(0.0f, 1.0f), float2(1.0f, 1.0f)}; //defult value\
 
         TextureAddress(uv, (uint)buffer[InstanceID].textureIndex, 2); // buffer[InstanceID].textueRowCol
+
+        float3 zValue   = {0.0f, 0.0f, 1.0f};
+        float3 upDir    = normalize(float3(buffer[InstanceID].velocity.xy, 0.0f)); // vel direction
+        float3 rightDir = cross(upDir, zValue);
+
         if (buffer[InstanceID].time > 0.0f)
         {
                 // Compute current data from initial and target
@@ -109,24 +93,30 @@ void TextureAddress(inout float2 UVcord[4], uint index, uint rowcol) // row and 
 
                 float scale = currentScale;
                 // scale       = 1.0f;
-                // verts[j].pos = mul(float4(verts[j].pos.xyz, 1.0f), World);
                 verts[0].pos = mul(float4(verts[0].posWS, 1.0f), ViewProjection);
-                verts[0].pos = verts[0].pos + float4(-1.0f / _AspectRatio, 1.0f, 0.0f, 0.0f) * scale;
+                verts[0].pos.xyz = (rightDir * (-1.0f / _AspectRatio) + upDir * (1.0f)) * scale;
+               // verts[0].pos = verts[0].pos + (float4((-1.0f / _AspectRatio), 1.0f, 0.0f, 0.0f)) * scale;
                 verts[0].uv  = uv[0];
+                // verts[0].normal;
 
                 verts[1].pos = mul(float4(verts[1].posWS, 1.0f), ViewProjection);
-                verts[1].pos = verts[1].pos + float4(1.0f / _AspectRatio, 1.0f, 0.0f, 0.0f) * scale;
+                verts[1].pos.xyz = (rightDir * (1.0f / _AspectRatio) + upDir * (1.0f)) * scale;
+                //verts[1].pos = verts[1].pos + (float4((1.0f / _AspectRatio), 1.0f, 0.0f, 0.0f)) * scale;
                 verts[1].uv  = uv[1];
 
 
                 verts[2].pos = mul(float4(verts[2].posWS, 1.0f), ViewProjection);
-                verts[2].pos = verts[2].pos + float4(-1.0f / _AspectRatio, -1.0f, 0.0f, 0.0f) * scale;
+                verts[0].pos.xyz = (rightDir * (-1.0f / _AspectRatio) + upDir * (-1.0f)) * scale;
+                //verts[2].pos = verts[2].pos + (float4((-1.0f / _AspectRatio), -1.0f, 0.0f, 0.0f)) * scale;
                 verts[2].uv  = uv[2];
 
 
                 verts[3].pos = mul(float4(verts[3].posWS, 1.0f), ViewProjection);
-                verts[3].pos = verts[3].pos + float4(1.0f / _AspectRatio, -1.0f, 0.0f, 0.0f) * scale;
-                verts[3].uv  = uv[3];
+                verts[3].pos = verts[3].pos + (float4((1.0f / _AspectRatio), -1.0f, 0.0f, 0.0f)) * scale;
+
+                //verts[3].pos.xyz += (rightDir * (1.0f / _AspectRatio) + upDir * (-1.0f)) * scale;
+
+                verts[3].uv = uv[3];
 
                 // TextureAddress(verts.uv, int index, int rowcol);
 

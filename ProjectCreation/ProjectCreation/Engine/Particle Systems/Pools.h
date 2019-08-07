@@ -45,7 +45,7 @@ namespace Pools
 
                 // Moves the element at 'index' to the inactive
                 // region and updates the active count
-                void free(int16_t index)
+                void free(const int16_t index)
                 {
                         std::swap(pool[index], pool[--active_count]);
                 }

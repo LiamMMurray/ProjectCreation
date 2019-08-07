@@ -1,5 +1,6 @@
 #include "PlayerGroundState.h"
 #include <iostream>
+#include "../../UI/UIManager.h"
 #include "..//..//Rendering/Components/DirectionalLightComponent.h"
 #include "..//GEngine.h"
 #include "..//GenericComponents/TransformComponent.h"
@@ -7,7 +8,6 @@
 #include "../CoreInput/CoreInput.h"
 #include "PlayerControllerStateMachine.h"
 #include "PlayerMovement.h"
-#include "../../UI/UIManager.h"
 
 using namespace DirectX;
 
@@ -18,7 +18,7 @@ void PlayerGroundState::Enter()
 
         _playerController->SetEulerAngles(playerTransformComponent->transform.rotation.ToEulerAngles());
 
-		_playerController->RequestCurrentLevel();
+        _playerController->RequestCurrentLevel();
 
         // Sets the gravity vector for the player
         //_playerController->SetPlayerGravity(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f));
@@ -53,7 +53,7 @@ void PlayerGroundState::Update(float deltaTime)
                 GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_03);
         }
 
-	static bool doOnce = false;
+        static bool doOnce = false;
         if (!doOnce && _playerController->GetCollectedPlanetCount() == 3)
         {
 
@@ -190,7 +190,9 @@ void PlayerGroundState::Update(float deltaTime)
 
         _playerController->GetControlledEntity().GetComponent<TransformComponent>()->transform = _cachedTransform;
 
-        auto sunComp = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>();
+        auto sunComp                        = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>();
+        auto sunTransComp                   = GEngine::Get()->m_SunHandle.GetComponent<TransformComponent>();
+        sunTransComp->transform.translation = _cachedTransform.translation;
         sunComp->m_LightRotation =
             sunComp->m_LightRotation *
             XMQuaternionRotationAxis(VectorConstants::Up,
