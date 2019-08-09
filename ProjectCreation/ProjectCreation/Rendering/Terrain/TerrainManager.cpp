@@ -469,13 +469,40 @@ void TerrainManager::_shutdown()
 
 void TerrainManager::GenerateInstanceTransforms(FTransform tArray[gInstanceTransformsCount])
 {
+        float minDist = 10.0f;
+        int   found   = 0;
+		
         for (int i = 0; i < gInstanceTransformsCount; ++i)
         {
-                float x               = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
-                float y               = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
-                tArray[i].translation = XMVectorSet(x, 0.0f, y, 1.0f);
+                float x = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
+                float z = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
+
+                while (found < i)
+                {
+                        for (int j = 0; j < i; j++)
+                        {
+                                if (XMVectorGetX(tArray[j].translation) + minDist >= x &&
+                                    XMVectorGetX(tArray[j].translation) - minDist <= x &&
+                                    XMVectorGetZ(tArray[j].translation) + minDist >= z &&
+                                    XMVectorGetZ(tArray[j].translation) - minDist <= z)
+                                {
+                                        found = 0;
+                                		x = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
+										z = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
+                                        break;
+                                }
+                                else
+                                {
+                                        found++;
+                                }
+                        }
+                }
+                
+                tArray[i].translation = XMVectorSet(x, 0.0f, z, 1.0f);
                 tArray[i].rotation = FQuaternion::RotateAxisAngle(VectorConstants::Up, MathLibrary::GetRandomFloat() * 360.0f);
                 tArray[i].SetScale(MathLibrary::RandomFloatInRange(0.8f, 1.2f));
+
+				found = 0;
         }
 }
 
