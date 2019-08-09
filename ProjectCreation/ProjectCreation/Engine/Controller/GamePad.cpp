@@ -39,10 +39,10 @@ void GamePad::TestGamePadRumble()
 
                 while (currRumble > 0)
                 {
-						currRumble = MathLibrary::MoveTowards(currRumble, 0, GEngine::Get()->GetDeltaTime()*0.05f);
                         m_GamePadRumble->wLeftMotorSpeed  = currRumble;
                         m_GamePadRumble->wRightMotorSpeed = currRumble;
 						
+						currRumble = MathLibrary::MoveTowards(currRumble, 0, GEngine::Get()->GetDeltaTime()*0.5f);
                         XInputSetState(0, m_GamePadRumble);
 
                 }

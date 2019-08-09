@@ -226,7 +226,7 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 m_SpeedBoostPoolCounter[color]++;
                 m_SpeedBoostPoolCounter[color] %= MAX_SPEEDBOOST_SOUNDS;
 
-				m_GameController->TestGamePadRumble();
+				//m_GameController->TestGamePadRumble();
 
                 return true;
         }

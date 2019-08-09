@@ -471,8 +471,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         if (distanceSq < (checkRadius * checkRadius))
                         {
-                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.color);
-                                playerController->SpeedBoost(center, speedComp.color);
+                                //SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.color);
+                                //playerController->SpeedBoost(center, speedComp.color);
                                 RequestDestroySpeedboost(&speedComp);
                         }
                 }
