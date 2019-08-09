@@ -32,3 +32,4 @@ DirectX::PackedVector::XMCOLOR C_BLACK = DirectX::PackedVector::XMCOLOR{0xFF0000
 const DirectX::PackedVector::XMCOLOR E_LIGHT_ORBS::ORB_COLORS[E_LIGHT_ORBS::COUNT] = {C_RED, C_GREEN, C_BLUE, C_WHITE};
 
 const KeyCode E_LIGHT_ORBS::ColorInputKeyCodes[E_LIGHT_ORBS::COUNT] = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
+

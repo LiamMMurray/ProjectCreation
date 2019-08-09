@@ -74,6 +74,39 @@ void PlayerController::GatherInput()
 
                 // CURRENT: [Changing movement so that the player will click the left mouse button to move forward]
                 {
+                        XINPUT_KEYSTROKE* currKeystroke = new XINPUT_KEYSTROKE();
+                        bool              wasConnected  = true;
+
+                        if (!m_GameController->Refresh())
+                        {
+                                if (wasConnected)
+                                {
+                                        wasConnected = false;
+
+                                        std::cout << "Please connect an Xbox 360 controller." << std::endl;
+                                }
+                        }
+
+                        else
+                        {
+                                tempDir.z += (1.5 * m_GameController->rightTrigger);
+                        }
+
+                        //if (m_GameControllerState.Gamepad.bRightTrigger > (255 / 2))
+                        //{
+                        //        tempDir.z += 1.5f;
+                        //}
+						//
+                        //if (XInputGetKeystroke(XUSER_INDEX_ANY, NULL, currKeystroke) == ERROR_SUCCESS)
+                        //{
+                        //        if ((currKeystroke->VirtualKey == VK_PAD_RTRIGGER) &&
+                        //            (currKeystroke->Flags == XINPUT_KEYSTROKE_KEYDOWN ||
+                        //             currKeystroke->Flags == XINPUT_KEYSTROKE_REPEAT))
+                        //        {
+                        //                tempDir.z += 1.5f;
+                        //        }
+                        //}
+
                         if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
                         {
                                 tempDir.z += 1.5f;
@@ -134,6 +167,10 @@ void PlayerController::Init(EntityHandle h)
 
         m_EulerAngles = tComp->transform.rotation.ToEulerAngles();
 
+        m_GameController = new GamePad();
+
+        m_GameController->SetUpInput(m_GameControllerState, m_GameControllerGamePad, m_GameControllerVibration);
+
         // Create any states and set their respective variables here
         m_CinematicState = m_StateMachine.CreateState<PlayerCinematicState>();
         m_GroundState    = m_StateMachine.CreateState<PlayerGroundState>();
@@ -156,7 +193,6 @@ void PlayerController::Init(EntityHandle h)
         // After you create the states, initialize the state machine. First created state is starting state
         m_StateMachine.Init(this);
 
-		
 
         // Init sound pool
         for (unsigned int color = 0; color < E_LIGHT_ORBS::COUNT; ++color)
@@ -171,13 +207,14 @@ void PlayerController::Init(EntityHandle h)
 bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
 {
         // Audio that will play on boost
-        if ((int)m_ColorInputKeyCodes[color] < 0 || GCoreInput::GetKeyState(m_ColorInputKeyCodes[color]) == KeyState::Down)
+        if ((int)m_ColorInputKeyCodes[color] < 0 || GCoreInput::GetKeyState(m_ColorInputKeyCodes[color]) == KeyState::Down ||
+            m_GameController->IsPressed(m_SpeedBoostPoolCounter[color]))
         {
                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(color);
                 bool isPlaying;
                 // m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->isSoundPlaying(isPlaying);
                 m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->Play();
-                //DebugPrintSpeedBoostColor(color);
+                // DebugPrintSpeedBoostColor(color);
                 currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
                 XMVECTOR currentInput = XMVector3Rotate(m_CurrentInput, _cachedControlledTransform.rotation.data);
                 if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
@@ -188,6 +225,8 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 }
                 m_SpeedBoostPoolCounter[color]++;
                 m_SpeedBoostPoolCounter[color] %= MAX_SPEEDBOOST_SOUNDS;
+
+				m_GameController->TestGamePadRumble();
 
                 return true;
         }

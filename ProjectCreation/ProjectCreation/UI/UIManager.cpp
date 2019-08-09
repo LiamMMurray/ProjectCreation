@@ -13,6 +13,8 @@
 
 #include "../Engine/ConsoleWindow/ConsoleWindow.h"
 #include "../Engine/Gameplay/SpeedBoostSystem.h"
+#include "../Engine/Controller/GamePad.h"
+
 
 class TutorialLevel;
 

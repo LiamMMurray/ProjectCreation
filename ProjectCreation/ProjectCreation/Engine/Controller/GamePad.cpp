@@ -24,16 +24,96 @@ GamePad::GamePad()
                         ConsoleWindow::PrintMessage("Controller Is Not Connected", "GamePad");
                 }
         }
+
+		m_InputGamePad = m_InputState.Gamepad;
+		
         m_GamePadRumble = new XINPUT_VIBRATION();
+
 }
 
 void GamePad::TestGamePadRumble()
 {
         if (m_GamePadRumble != NULL)
         {
-                m_GamePadRumble->wLeftMotorSpeed  = MAX_RUMBLE;
-                m_GamePadRumble->wRightMotorSpeed = MAX_RUMBLE;
+                int currRumble = MAX_RUMBLE*0.75f;
 
-                XInputSetState(0, m_GamePadRumble);
+                while (currRumble > 0)
+                {
+						currRumble = MathLibrary::MoveTowards(currRumble, 0, GEngine::Get()->GetDeltaTime()*0.05f);
+                        m_GamePadRumble->wLeftMotorSpeed  = currRumble;
+                        m_GamePadRumble->wRightMotorSpeed = currRumble;
+						
+                        XInputSetState(0, m_GamePadRumble);
+
+                }
         }
 }
+
+const bool GamePad::IsPressed(const WORD button) const
+{
+        return (m_InputState.Gamepad.wButtons & button) != 0;
+}
+
+bool GamePad::CheckConnection()
+{
+        int controllerId = -1;
+
+        for (DWORD i = 0; i < XUSER_MAX_COUNT && controllerId == -1; i++)
+        {
+                XINPUT_STATE state;
+                ZeroMemory(&state, sizeof(XINPUT_STATE));
+
+                if (XInputGetState(i, &state) == ERROR_SUCCESS)
+                        controllerId = i;
+        }
+
+        cId = controllerId;
+
+        return controllerId != -1;
+}
+
+// Returns false if the controller has been disconnected
+bool GamePad::Refresh()
+{
+        if (cId == -1)
+                CheckConnection();
+
+        if (cId != -1)
+        {
+                ZeroMemory(&m_InputState, sizeof(XINPUT_STATE));
+                if (XInputGetState(cId, &m_InputState) != ERROR_SUCCESS)
+                {
+                        cId = -1;
+                        return false;
+                }
+
+                float normLX = fmaxf(-1, (float)m_InputState.Gamepad.sThumbLX / 32767);
+                float normLY = fmaxf(-1, (float)m_InputState.Gamepad.sThumbLY / 32767);
+
+                leftStickX = (abs(normLX) < deadzoneX ? 0 : (abs(normLX) - deadzoneX) * (normLX / abs(normLX)));
+                leftStickY = (abs(normLY) < deadzoneY ? 0 : (abs(normLY) - deadzoneY) * (normLY / abs(normLY)));
+
+                if (deadzoneX > 0)
+                        leftStickX *= 1 / (1 - deadzoneX);
+                if (deadzoneY > 0)
+                        leftStickY *= 1 / (1 - deadzoneY);
+
+                float normRX = fmaxf(-1, (float)m_InputState.Gamepad.sThumbRX / 32767);
+                float normRY = fmaxf(-1, (float)m_InputState.Gamepad.sThumbRY / 32767);
+
+                rightStickX = (abs(normRX) < deadzoneX ? 0 : (abs(normRX) - deadzoneX) * (normRX / abs(normRX)));
+                rightStickY = (abs(normRY) < deadzoneY ? 0 : (abs(normRY) - deadzoneY) * (normRY / abs(normRY)));
+
+                if (deadzoneX > 0)
+                        rightStickX *= 1 / (1 - deadzoneX);
+                if (deadzoneY > 0)
+                        rightStickY *= 1 / (1 - deadzoneY);
+
+                leftTrigger  = (float)m_InputState.Gamepad.bLeftTrigger / 255;
+                rightTrigger = (float)m_InputState.Gamepad.bRightTrigger / 255;
+
+                return true;
+        }
+        return false;
+}
+

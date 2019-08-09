@@ -130,7 +130,7 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
 
         XMStoreFloat3(&accel, fw * 2.5f - VectorConstants::Up * 0.5f);
 
-        //auto emitterComponent                            = entityH.GetComponent<EmitterComponent>();
+        // auto emitterComponent                            = entityH.GetComponent<EmitterComponent>();
         emitterComponent->maxCount                       = 10;
         emitterComponent->EmitterData.minOffset          = posMin;
         emitterComponent->EmitterData.maxOffset          = posMax;
@@ -165,14 +165,14 @@ EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int c
             emitterComponent->EmitterData.minInitialVelocity = velMax;
             emitterComponent->EmitterData.maxInitialVelocity = velMax;*/
 
- /*       emitterComponent->rotate                    = true;
-        emitterComponent->rotationAxis              = VectorConstants::Up;
-        emitterComponent->EmitterData.acceleration  = XMFLOAT3(0.0f, -9.80f, 0.0f);
-        emitterComponent->EmitterData.index         = 2;
-        emitterComponent->EmitterData.particleScale = XMFLOAT2(0.1f, 0.1f);
-        emitterComponent->maxCount                  = 50;
-        emitterComponent->spawnRate                 = 15.0f;
-*/
+        /*       emitterComponent->rotate                    = true;
+               emitterComponent->rotationAxis              = VectorConstants::Up;
+               emitterComponent->EmitterData.acceleration  = XMFLOAT3(0.0f, -9.80f, 0.0f);
+               emitterComponent->EmitterData.index         = 2;
+               emitterComponent->EmitterData.particleScale = XMFLOAT2(0.1f, 0.1f);
+               emitterComponent->maxCount                  = 50;
+               emitterComponent->spawnRate                 = 15.0f;
+       */
         return entityHandle;
 }
 
@@ -394,6 +394,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
         targetTerrain = m_targetTerrain;
 
+        m_GameController->Refresh();
+
         GEngine::Get()->m_TerrainAlpha = MathLibrary::lerp(GEngine::Get()->m_TerrainAlpha, targetTerrain, deltaTime * 0.1f);
 
         if (GCoreInput::GetKeyState(KeyCode::T) == KeyState::DownFirst)
@@ -614,13 +616,13 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 {
                                         if (i == correctColor)
                                         {
-                                                inPath &= (GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[i]) ==
-                                                           KeyState::Down);
+                                                inPath &= ((GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[i]) == KeyState::Down));
+                                                inPath &= ((m_GameController->IsPressed(playerController->m_ColorInputGameControllerCodes[i])));
                                         }
                                         else
                                         {
-                                                inPath &= ~(GCoreInput::GetKeyState(
-                                                                playerController->m_ColorInputKeyCodes[i]) == KeyState::Down);
+                                                inPath &= ~((GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[i]) == KeyState::Down));
+                                                inPath &= ~((m_GameController->IsPressed(playerController->m_ColorInputGameControllerCodes[i])));
                                         }
                                 }
 
@@ -639,11 +641,11 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                 AudioManager::Get()->PlaySoundAtLocation(currPos, settings);
                                         }
 
-                                        latchedSplineIndex = latchedSplineComp->index;
+                                        latchedSplineIndex   = latchedSplineComp->index;
                                         m_EnableRandomSpawns = false;
                                         RequestDestroyAllSpeedboosts();
                                         playerController->m_TimeOnSpline += deltaTime;
-                                        mDelatchTimer      = mDelatchCD;
+                                        mDelatchTimer = mDelatchCD;
                                         playerController->SetUseGravity(false);
 
                                         XMVECTOR dirNext = XMVector3Normalize(nextPos - currPos);
@@ -718,7 +720,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
                                         controllerSys->resetCollectedOrbEventID(correctColor);
                                         collectEventTimestamps[correctColor] = -1;
-                                        m_EnableRandomSpawns = true;
+                                        m_EnableRandomSpawns                 = true;
                                 }
                         }
                 }
@@ -843,6 +845,8 @@ void SpeedBoostSystem::OnInitialize()
 
 
         latchedSplineIndex = -1;
+
+        m_GameController = new GamePad();
 }
 
 void SpeedBoostSystem::OnShutdown()

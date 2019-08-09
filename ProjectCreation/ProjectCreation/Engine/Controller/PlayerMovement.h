@@ -13,6 +13,7 @@
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
 #include "../Audio/AudioManager.h"
+#include "GamePad.h"
 
 class TransformComponent;
 class PlayerCinematicState;
@@ -52,6 +53,11 @@ class PlayerController : public IController
         DirectX::XMVECTOR m_JumpForce;
         DirectX::XMVECTOR m_PlayerGravity;
 
+        GamePad*         m_GameController;
+        XINPUT_STATE     m_GameControllerState;
+        XINPUT_GAMEPAD   m_GameControllerGamePad;
+        XINPUT_VIBRATION m_GameControllerVibration;
+
         // Boolean values for the light collection keys
         // Names will most likely change later on
 
@@ -76,9 +82,13 @@ class PlayerController : public IController
 
         virtual void Shutdown() override;
 
-         KeyCode m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT] = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
+        KeyCode m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT]            = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
+        DWORD   m_ColorInputGameControllerCodes[E_LIGHT_ORBS::COUNT] = {XINPUT_GAMEPAD_B, XINPUT_GAMEPAD_A, XINPUT_GAMEPAD_X};
 
-        const char* m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"Basic_Light_PickUp_Red", "Basic_Light_PickUp_Green", "Basic_Light_PickUp_Blue", "Basic_Light_PickUp_White"};
+        const char* m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"Basic_Light_PickUp_Red",
+                                                                   "Basic_Light_PickUp_Green",
+                                                                   "Basic_Light_PickUp_Blue",
+                                                                   "Basic_Light_PickUp_White"};
 
         GW::AUDIO::GSound* m_SpeedBoostSoundPool[E_LIGHT_ORBS::COUNT][MAX_SPEEDBOOST_SOUNDS];
         unsigned int       m_SpeedBoostPoolCounter[E_LIGHT_ORBS::COUNT] = {};

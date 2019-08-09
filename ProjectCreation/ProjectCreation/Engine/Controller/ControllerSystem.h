@@ -11,8 +11,6 @@
 class ControllerSystem : public ISystem
 {
 
-        GamePad* gp = new GamePad();
-
         static ControllerSystem* instance;
 
         void init();

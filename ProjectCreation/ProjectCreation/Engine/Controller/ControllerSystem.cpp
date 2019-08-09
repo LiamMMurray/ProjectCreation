@@ -115,10 +115,6 @@ void ControllerSystem::OnUpdate(float deltaTime)
                 std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
         }
 
-        if (GCoreInput::GetKeyState(KeyCode::Y) == KeyState::Down)
-        {
-                gp->TestGamePadRumble();
-        }
 
         if (GCoreInput::GetKeyState(KeyCode::Tab) == KeyState::DownFirst)
         {
@@ -171,6 +167,7 @@ void ControllerSystem::OnInitialize()
 {
         m_SystemManager = GEngine::Get()->GetSystemManager();
         m_HandleManager = GEngine::Get()->GetHandleManager();
+
 
         m_Controllers[E_CONTROLLERS::PLAYER] = new PlayerController;
         m_Controllers[E_CONTROLLERS::DEBUG]  = new DebugCameraController;
