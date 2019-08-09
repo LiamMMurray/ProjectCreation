@@ -75,18 +75,21 @@ void TerrainManager::_initialize(RenderSystem* rs)
 
         std::wstring str = L"../Assets/Textures/TerrainTest.dds";
 
-        ID3D11Resource* sourceTexture;
-        DirectX::CreateDDSTextureFromFile(renderSystem->GetDevice(), str.c_str(), &sourceTexture, &terrainSourceSRV);
-        terrainSourceTexture = (ID3D11Texture2D*)sourceTexture;
+        ID3D11Resource* resource;
+        DirectX::CreateDDSTextureFromFile(renderSystem->GetDevice(), str.c_str(), &resource, &terrainSourceSRV);
+        ID3D11Texture2D* texture = (ID3D11Texture2D*)resource;
 
         D3D11_TEXTURE2D_DESC desc;
-        terrainSourceTexture->GetDesc(&desc);
+        texture->GetDesc(&desc);
         UINT texwidth         = desc.Width;
         UINT texheight        = desc.Height;
         textureDimensions     = texwidth;
         patchSquareDimensions = ((texwidth - 1) / patchCells) + 1;
         patchQuadCount        = (patchSquareDimensions - 1) * (patchSquareDimensions - 1);
+        texture->Release();
 
+        DirectX::CreateDDSTextureFromFile(renderSystem->GetDevice(), str.c_str(), &resource, &terrainMaskSRV);
+        resource->Release();
 
         assert(texwidth == texheight);
 
@@ -222,7 +225,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 D3D11_SUBRESOURCE_DATA           rwData{};
                 D3D11_SHADER_RESOURCE_VIEW_DESC  srvDesc{};
                 D3D11_UNORDERED_ACCESS_VIEW_DESC sbUAVDesc{};
-
+                ID3D11Buffer*                    tempBuffer;
                 // CD3D11_BUFFER_DESC
                 sbDesc.BindFlags           = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
                 sbDesc.CPUAccessFlags      = 0;
@@ -233,7 +236,8 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 // D3D11_SUBRESOURCE_DATA
                 rwData.pSysMem = m_InstanceMatrices;
 
-                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, &rwData, &instanceBuffer);
+
+                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, &rwData, &tempBuffer);
 
                 // D3D11_UNORDERED_ACCESS_VIEW_DESC
                 sbUAVDesc.Buffer.FirstElement = 0;
@@ -241,7 +245,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 sbUAVDesc.Buffer.NumElements  = gInstanceTransformsCount * 1;
                 sbUAVDesc.Format              = DXGI_FORMAT_UNKNOWN;
                 sbUAVDesc.ViewDimension       = D3D11_UAV_DIMENSION_BUFFER;
-                hr |= renderSystem->m_Device->CreateUnorderedAccessView(instanceBuffer, &sbUAVDesc, &instanceUAV);
+                hr |= renderSystem->m_Device->CreateUnorderedAccessView(tempBuffer, &sbUAVDesc, &instanceUAV);
 
                 // D3D11_SHADER_RESOURCE_VIEW_DESC
                 srvDesc.Buffer.ElementOffset = 0;
@@ -250,16 +254,20 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 srvDesc.Buffer.NumElements   = gInstanceTransformsCount;
                 srvDesc.Format               = DXGI_FORMAT_UNKNOWN;
                 srvDesc.ViewDimension        = D3D11_SRV_DIMENSION_BUFFER;
-                hr |= renderSystem->m_Device->CreateShaderResourceView(instanceBuffer, &srvDesc, &instanceSRV);
+                hr |= renderSystem->m_Device->CreateShaderResourceView(tempBuffer, &srvDesc, &instanceSRV);
+
+                tempBuffer->Release();
 
                 assert(SUCCEEDED(hr));
         }
 
-        { // Create transform buffer
-                D3D11_BUFFER_DESC               sbDesc{};
-                D3D11_SUBRESOURCE_DATA          rwData{};
-                D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+        { // Create index steep buffer
+                D3D11_BUFFER_DESC                sbDesc{};
+                D3D11_SUBRESOURCE_DATA           rwData{};
+                D3D11_SHADER_RESOURCE_VIEW_DESC  srvDesc{};
+                D3D11_UNORDERED_ACCESS_VIEW_DESC sbUAVDesc{};
 
+                ID3D11Buffer* tempBuffer;
                 // CD3D11_BUFFER_DESC
                 sbDesc.BindFlags           = D3D11_BIND_SHADER_RESOURCE;
                 sbDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
@@ -268,7 +276,19 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 sbDesc.ByteWidth           = sizeof(uint32_t) * gInstanceTransformsCount;
                 sbDesc.Usage               = D3D11_USAGE_DYNAMIC;
                 // D3D11_SUBRESOURCE_DATA
-                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, nullptr, &instanceIndexBuffer);
+                rwData.pSysMem = renderTestData.instanceIndexList.data();
+
+                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, &rwData, &tempBuffer);
+
+                // D3D11_UNORDERED_ACCESS_VIEW_DESC
+                sbUAVDesc.Buffer.FirstElement = 0;
+                sbUAVDesc.Buffer.Flags        = D3D11_BUFFER_UAV_FLAG_APPEND;
+                sbUAVDesc.Buffer.NumElements  = gInstanceTransformsCount;
+                sbUAVDesc.Format              = DXGI_FORMAT_UNKNOWN;
+                sbUAVDesc.ViewDimension       = D3D11_UAV_DIMENSION_BUFFER;
+                hr |= renderSystem->m_Device->CreateUnorderedAccessView(tempBuffer, &sbUAVDesc, &instanceIndexSteepUAV);
+                hr |= renderSystem->m_Device->CreateUnorderedAccessView(tempBuffer, &sbUAVDesc, &instanceIndexFlatUAV);
+
 
                 // D3D11_SHADER_RESOURCE_VIEW_DESC
                 srvDesc.Buffer.ElementOffset = 0;
@@ -277,8 +297,9 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 srvDesc.Buffer.NumElements   = gInstanceTransformsCount;
                 srvDesc.Format               = DXGI_FORMAT_UNKNOWN;
                 srvDesc.ViewDimension        = D3D11_SRV_DIMENSION_BUFFER;
-                hr |= renderSystem->m_Device->CreateShaderResourceView(instanceIndexBuffer, &srvDesc, &instanceIndexSRV);
-
+                hr |= renderSystem->m_Device->CreateShaderResourceView(tempBuffer, &srvDesc, &instanceIndexSteepSRV);
+                hr |= renderSystem->m_Device->CreateShaderResourceView(tempBuffer, &srvDesc, &instanceIndexFlatSRV);
+                tempBuffer->Release();
                 assert(SUCCEEDED(hr));
         }
 
@@ -396,6 +417,7 @@ void TerrainManager::_update(float deltaTime)
 
                 renderSystem->m_Context->CSSetUnorderedAccessViews(0, 1, &instanceUAV, 0);
                 renderSystem->m_Context->CSSetShaderResources(9, 1, &terrainSourceSRV);
+                renderSystem->m_Context->CSSetShaderResources(9, 1, &terrainSourceSRV);
                 // renderSystem->m_Context->CSSetShaderResources(2, 1, &instanceSRV);
                 // instanceIndexSRV ?
                 renderSystem->m_Context->Dispatch(gInstanceTransformsCount, 1, 1);
@@ -421,10 +443,7 @@ void TerrainManager::_update(float deltaTime)
                         uint32_t instancecount = data.instanceCount;
                         renderSystem->m_Context->VSSetShaderResources(9, 1, &nullSRV);
 
-                        renderSystem->UpdateConstantBuffer(
-                            instanceIndexBuffer, data.instanceIndexList.data(), sizeof(uint32_t) * instancecount);
-
-                        renderSystem->m_Context->VSSetShaderResources(9, 1, &instanceIndexSRV);
+                        renderSystem->m_Context->VSSetShaderResources(9, 1, &instanceIndexFlatSRV);
                         renderSystem->DrawMeshInstanced(vertexBuffer, indexBuffer, indexCount, vertexSize, mat, instancecount);
                 }
         }
@@ -445,7 +464,6 @@ void TerrainManager::_shutdown()
         oceanPixelShader->Release();
         oceanDomainShader->Release();
 
-        terrainSourceTexture->Release();
         terrainSourceSRV->Release();
 
         terrainIntermediateTexture->Release();
@@ -457,11 +475,12 @@ void TerrainManager::_shutdown()
         vertexBuffer->Release();
         indexBuffer->Release();
 
-        SAFE_RELEASE(instanceBuffer);
-        SAFE_RELEASE(instanceIndexBuffer);
         SAFE_RELEASE(instanceSRV);
-        SAFE_RELEASE(instanceIndexSRV);
+        SAFE_RELEASE(instanceIndexSteepSRV);
+        SAFE_RELEASE(instanceIndexFlatSRV);
         SAFE_RELEASE(instanceUAV);
+        SAFE_RELEASE(instanceIndexSteepUAV);
+        SAFE_RELEASE(instanceIndexFlatUAV);
 
         terrainConstantBufferGPU->Release();
         stagingTextureResource->Release();

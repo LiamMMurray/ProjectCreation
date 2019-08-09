@@ -64,18 +64,21 @@ class TerrainManager
         ID3D11PixelShader*  pixelShader;
         ID3D11PixelShader*  oceanPixelShader;
 
-        ID3D11Texture2D*          terrainSourceTexture;
         ID3D11ShaderResourceView* terrainSourceSRV;
+        ID3D11ShaderResourceView* terrainMaskSRV;
 
         ID3D11Texture2D*          terrainIntermediateTexture;
         ID3D11RenderTargetView*   terrainIntermediateRenderTarget;
         ID3D11ShaderResourceView* terrainIntermediateSRV;
 
-        ID3D11Buffer*              instanceBuffer      = nullptr;
-        ID3D11Buffer*              instanceIndexBuffer = nullptr;
-        ID3D11ShaderResourceView*  instanceSRV         = nullptr;
-        ID3D11ShaderResourceView*  instanceIndexSRV    = nullptr;
-        ID3D11UnorderedAccessView* instanceUAV         = nullptr;
+        ID3D11ShaderResourceView*  instanceSRV = nullptr;
+        ID3D11UnorderedAccessView* instanceUAV = nullptr;
+
+        ID3D11ShaderResourceView* instanceIndexSteepSRV = nullptr;
+        ID3D11ShaderResourceView* instanceIndexFlatSRV  = nullptr;
+
+        ID3D11UnorderedAccessView* instanceIndexSteepUAV = nullptr;
+        ID3D11UnorderedAccessView* instanceIndexFlatUAV  = nullptr;
 
         ID3D11Buffer*    vertexBuffer;
         ID3D11Buffer*    indexBuffer;
