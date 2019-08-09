@@ -81,7 +81,7 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
                 emitterComponent->ParticleswithGravity(
                     XMFLOAT3(), XMFLOAT3(), orbColor, orbColor, XMFLOAT4(2.0f, 1.0f, 0.5f, 0.5f));
 
-                   emitterComponent->EmitterData.minInitialVelocity = {-0.5f, -1.0f, -0.5f};
+                emitterComponent->EmitterData.minInitialVelocity = {-0.5f, -1.0f, -0.5f};
                 emitterComponent->EmitterData.maxInitialVelocity = {0.5f, 5.0f, 0.5f};
                 emitterComponent->EmitterData.acceleration       = {0.0f, 4.5f, 0.0f};
                 emitterComponent->EmitterData.emitterPosition    = orbPos;
@@ -158,6 +158,7 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
 
         // auto emitterComponent                            = entityH.GetComponent<EmitterComponent>();
         emitterComponent->maxCount                       = 10;
+        emitterComponent->EmitterData.flags              = ALIGN_TO_VEL;
         emitterComponent->EmitterData.minOffset          = posMin;
         emitterComponent->EmitterData.maxOffset          = posMax;
         emitterComponent->EmitterData.minInitialVelocity = velMin;
@@ -254,7 +255,10 @@ void SpeedBoostSystem::RequestDestroySplineOrb(SpeedboostSplineComponent* speedC
                 orbComp->m_WantsDestroy = true;
                 speedComp->GetHandle().SetIsActive(false);
 
-                SpeedboostSplineComponent* latchedSpline = latchedSplineHandle.Get<SpeedboostSplineComponent>();
+                SpeedboostSplineComponent* latchedSpline = nullptr;
+
+                if (latchedSplineIndex != -1)
+                        latchedSpline = latchedSplineHandle.Get<SpeedboostSplineComponent>();
 
                 if (latchedSpline == speedComp)
                 {
@@ -512,7 +516,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 RequestDestroySpeedboost(&speedComp);
                         }
 
-						if (speedComp.hasParticle == false)
+                        if (speedComp.hasParticle == false)
                                 return;
 
                         EmitterComponent*   emitterComp = speedComp.GetParent().GetComponent<EmitterComponent>();
@@ -534,7 +538,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                 TransformComponent* transComp = spawnComp.GetParent().GetComponent<TransformComponent>();
                 /* EmitterComponent*   emitterComp = spawnComp.GetParent().GetComponent<EmitterComponent>();
-                 
+                 
                  int                 count       = controllerSystem->GetOrbCount(spawnComp.m_Color);
                  if (spawnComp.m_Color == E_LIGHT_ORBS::WHITE_LIGHTS)
                  {

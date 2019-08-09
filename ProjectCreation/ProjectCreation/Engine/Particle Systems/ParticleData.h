@@ -3,6 +3,7 @@
 #include <vector>
 #include "../../ECS/Component.h"
 #include "Pools.h"
+#define ALIGN_TO_VEL (1 << 0)
 namespace ParticleData
 {
 
@@ -12,7 +13,7 @@ namespace ParticleData
         struct FEmitterGPU
         {
                 DirectX::XMFLOAT4 lifeSpan; // x is life time, y is variance, z,w is fade in ad out
-                int               flags;
+                unsigned int      flags = 0;
                 DirectX::XMFLOAT3 emitterPosition;
                 DirectX::XMFLOAT3 minOffset;
                 DirectX::XMFLOAT3 maxOffset;
@@ -23,9 +24,8 @@ namespace ParticleData
                 DirectX::XMFLOAT3 maxInitialVelocity;
                 DirectX::XMFLOAT2 particleScale;
                 DirectX::XMFLOAT3 acceleration;
-                int               index; // tpye of particles
-                int               textureIndex;
-                int               textueRowCol;
+                unsigned int      index; // tpye of particles
+                unsigned int      textureIndex;
         };
 
         struct FParticleGPU
@@ -37,11 +37,10 @@ namespace ParticleData
                 DirectX::XMFLOAT3 velocity;
                 float             time     = 0.0f;
                 DirectX::XMFLOAT3 lifeSpan = {1.0f, 0.0f, 0.0f};
-                int               active;
+                unsigned int      flags;
                 DirectX::XMFLOAT2 scale;
                 DirectX::XMFLOAT3 acceleration;
-                int               textureIndex = 0;
-
+                unsigned int      textureIndex = 0;
         };
 
 

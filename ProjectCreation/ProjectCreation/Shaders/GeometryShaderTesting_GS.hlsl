@@ -60,8 +60,13 @@ void TextureAddress(inout float2 UVcord[4], uint index, uint rowcol) // row and 
 
         TextureAddress(uv, (uint)buffer[InstanceID].textureIndex, 2); // buffer[InstanceID].textueRowCol
 
-        float3 zValue   = {0.0f, 0.0f, 1.0f};
-        float3 upDir    = normalize(float3(buffer[InstanceID].velocity.xy, 0.0f)); // vel direction
+        float3 screenVel = mul(float4(buffer[InstanceID].velocity.xyz, 0.0f), ViewProjection).xyz;
+
+        float3 zValue = {0.0f, 0.0f, 1.0f};
+
+        float dirAlpha = float(buffer[InstanceID].flags & ALIGN_TO_VEL);
+
+        float3 upDir    = lerp(float3(0.0f, 1.0f, 0.0f), normalize(screenVel.xyz), dirAlpha); // vel direction
         float3 rightDir = cross(upDir, zValue);
 
         if (buffer[InstanceID].time > 0.0f)
@@ -91,30 +96,31 @@ void TextureAddress(inout float2 UVcord[4], uint index, uint rowcol) // row and 
                 buffer.GetDimensions(numStructs, stride);
 
 
-                float scale = currentScale;
+                float  scale     = currentScale;
+                float3 xScaleFix = float3(1.0f / _AspectRatio, -1.0f / _AspectRatio, 1.0f);
                 // scale       = 1.0f;
                 verts[0].pos = mul(float4(verts[0].posWS, 1.0f), ViewProjection);
-                verts[0].pos.xyz = (rightDir * (-1.0f / _AspectRatio) + upDir * (1.0f)) * scale;
-               // verts[0].pos = verts[0].pos + (float4((-1.0f / _AspectRatio), 1.0f, 0.0f, 0.0f)) * scale;
-                verts[0].uv  = uv[0];
+                verts[0].pos.xyz += (-rightDir + upDir) * scale * xScaleFix.xzz;
+                // verts[0].pos = verts[0].pos + (float4((-1.0f / _AspectRatio), 1.0f, 0.0f, 0.0f)) * scale;
+                verts[0].uv = uv[0];
                 // verts[0].normal;
 
                 verts[1].pos = mul(float4(verts[1].posWS, 1.0f), ViewProjection);
-                verts[1].pos.xyz = (rightDir * (1.0f / _AspectRatio) + upDir * (1.0f)) * scale;
-                //verts[1].pos = verts[1].pos + (float4((1.0f / _AspectRatio), 1.0f, 0.0f, 0.0f)) * scale;
-                verts[1].uv  = uv[1];
+                verts[1].pos.xyz += (rightDir + upDir) * scale * xScaleFix.xzz;
+                // verts[1].pos = verts[1].pos + (float4((1.0f / _AspectRatio), 1.0f, 0.0f, 0.0f)) * scale;
+                verts[1].uv = uv[1];
 
 
                 verts[2].pos = mul(float4(verts[2].posWS, 1.0f), ViewProjection);
-                verts[0].pos.xyz = (rightDir * (-1.0f / _AspectRatio) + upDir * (-1.0f)) * scale;
-                //verts[2].pos = verts[2].pos + (float4((-1.0f / _AspectRatio), -1.0f, 0.0f, 0.0f)) * scale;
-                verts[2].uv  = uv[2];
+                verts[2].pos.xyz += (-rightDir - upDir) * scale * xScaleFix.xzz;
+                // verts[2].pos = verts[2].pos + (float4((-1.0f / _AspectRatio), -1.0f, 0.0f, 0.0f)) * scale;
+                verts[2].uv = uv[2];
 
 
                 verts[3].pos = mul(float4(verts[3].posWS, 1.0f), ViewProjection);
-                verts[3].pos = verts[3].pos + (float4((1.0f / _AspectRatio), -1.0f, 0.0f, 0.0f)) * scale;
+                // verts[3].pos = verts[3].pos + (float4((1.0f / _AspectRatio), -1.0f, 0.0f, 0.0f)) * scale;
 
-                //verts[3].pos.xyz += (rightDir * (1.0f / _AspectRatio) + upDir * (-1.0f)) * scale;
+                verts[3].pos.xyz += (rightDir - upDir) * scale * xScaleFix.xzz;
 
                 verts[3].uv = uv[3];
 

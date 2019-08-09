@@ -49,6 +49,7 @@ cbuffer CScreenSpaceBuffer : register(b2)
                         ParticleBuffer[id].position = float4(startPos + offset, 1.0f);
 
                         ParticleBuffer[id].prevPos = ParticleBuffer[id].position;
+                        ParticleBuffer[id].flags   = EmitterBuffer[emitterIndex].flags;
 
 
                         ParticleBuffer[id].scale.x = EmitterBuffer[emitterIndex].particleScale.x;

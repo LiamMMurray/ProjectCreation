@@ -236,7 +236,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
             /*std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
             ComponentHandle          transformHandle;
             EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
-           
+           
 
 
 
@@ -266,11 +266,19 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 // emitter set up
                 XMFLOAT3 position;
                 XMStoreFloat3(&position, dirLightEntityHandle.GetComponent<TransformComponent>()->transform.translation);
-                emitterComponent->FloatParticle(XMFLOAT3(), XMFLOAT3(), XMFLOAT4(), XMFLOAT4(), XMFLOAT4(5.0f,1.0f,1.0f,1.0f));
-                emitterComponent->EmitterData.emitterPosition = position;
-                emitterComponent->rotate                      = false;
-                emitterComponent->maxCount                    = 4500;
-                emitterComponent->spawnRate                   = 30.0f;
+                emitterComponent->FloatParticle(XMFLOAT3(0.0f,0.0f,0.0f),
+                                                XMFLOAT3(0.0f,0.0f,0.0f),
+                                                XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+                                                XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+                                                XMFLOAT4(10.0f, 3.0f, 1.0f, 1.0f));
+                emitterComponent->EmitterData.emitterPosition    = position;
+                emitterComponent->rotate                         = false;
+                emitterComponent->maxCount                       = 5000;
+                emitterComponent->spawnRate                      = 50.0f;
+                emitterComponent->EmitterData.textureIndex       = 0;
+                emitterComponent->EmitterData.minInitialVelocity = {-1.0f, 0.0f, -5.0f};
+                emitterComponent->EmitterData.maxInitialVelocity = {2.0f, 0.0f, 5.0f};
+                emitterComponent->EmitterData.particleScale      = {0.15f, 0.15f};
 
 
                 auto dirComp = dirLightEntityHandle.GetComponent<DirectionalLightComponent>();

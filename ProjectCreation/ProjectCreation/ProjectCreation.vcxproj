@@ -69,6 +69,7 @@
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\Particle Systems\EmitterComponent.h" />
     <ClInclude Include="Engine\MathLibrary\Maze\MazeGenerator.h" />
+    <ClInclude Include="Engine\Particle Systems\Pools.h" />
     <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
     <ClInclude Include="Engine\GenericComponents\TestComponents.h" />
     <ClInclude Include="Engine\GenericComponents\TransformComponent.h" />
@@ -111,7 +112,6 @@
     <ClInclude Include="Engine\Particle Systems\ParticleBufferSetup.h" />
     <ClInclude Include="Engine\Particle Systems\ParticleData.h" />
     <ClInclude Include="Engine\Particle Systems\ParticleManager.h" />
-    <ClInclude Include="Engine\Particle Systems\Pools.h" />
     <ClInclude Include="Rendering\Components\CameraComponent.h" />
     <ClInclude Include="Rendering\Components\DirectionalLightComponent.h" />
     <ClInclude Include="Rendering\Components\PointLightComponent.h" />

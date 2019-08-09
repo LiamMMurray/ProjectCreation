@@ -2,6 +2,10 @@ static const unsigned int gMaxEmitterCount       = 2 << 10;
 static const unsigned int gMaxParticleCount      = 2 << 18;
 static const unsigned int gMaxParticlePerEmitter = gMaxParticleCount / gMaxEmitterCount;
 
+#define ALIGN_TO_VEL (1 << 0)
+
+// 0000 0000 0000 0000 0000 0000 0000 0001
+
 struct FParticleGPU
 {
         float4 position;
@@ -11,17 +15,17 @@ struct FParticleGPU
         float3 velocity;
         float  time;
         float3 lifeSpan;
-        int    emitterIndex;
+        uint   flags;
         float2 scale;
         float3 acceleration;
-        int    textureIndex;
+        uint    textureIndex;
 };
 
 
 struct FEmitterGPU
 {
         float4 lifeSpan; // x is life time, y,z is fed in ad out
-        int    flags;
+        uint   flags;
         float3 emitterPosition;
         float3 minOffset;
         float3 maxOffset;
@@ -32,9 +36,8 @@ struct FEmitterGPU
         float3 maxInitialVelocity;
         float2 particleScale;
         float3 acceleration;
-        int    index; // tpye of particles
-        int    textureIndex;
-        int    textueRowCol;
+        uint   index; // tpye of particles
+        uint   textureIndex;
 };
 
 struct FSegmentBuffer
