@@ -469,6 +469,7 @@ void TerrainManager::_shutdown()
 
 void TerrainManager::GenerateInstanceTransforms(FTransform tArray[gInstanceTransformsCount])
 {
+		//Do not change above 10. This is near the limit before issues arrive calculating the values
         float minDist = 10.0f;
         int   found   = 0;
 		
