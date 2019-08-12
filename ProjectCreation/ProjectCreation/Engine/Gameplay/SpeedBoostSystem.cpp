@@ -511,9 +511,9 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         if (distanceSq < (checkRadius * checkRadius))
                         {
-                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.color);
-                                playerController->SpeedBoost(center, speedComp.color);
-                                RequestDestroySpeedboost(&speedComp);
+                                //SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.color);
+                                //playerController->SpeedBoost(center, speedComp.color);
+                                //RequestDestroySpeedboost(&speedComp);
                         }
 
                         if (speedComp.hasParticle == false)
@@ -783,6 +783,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 {
                                         // Player has fallen off the spline
                                         RequestUnlatchFromSpline(playerController, deltaTime);
+                                        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+                                        controllerSys->resetCollectedOrbEventID(correctColor);
                                         m_EnableRandomSpawns = true;
                                 }
                         }
@@ -882,8 +884,10 @@ void SpeedBoostSystem::OnInitialize()
         m_HandleManager    = GEngine::Get()->GetHandleManager();
         m_SystemManager    = GEngine::Get()->GetSystemManager();
         m_ResourceManager  = GEngine::Get()->GetResourceManager();
+
         auto baseMatHandle = m_ResourceManager->LoadMaterial("GlowSpeedboostBase");
-        for (int i = 0; i < E_LIGHT_ORBS::COUNT; ++i)
+    
+		for (int i = 0; i < E_LIGHT_ORBS::COUNT; ++i)
         {
                 auto handle = m_ResourceManager->CopyResource<Material>(baseMatHandle, speedboostMaterialNames[i].c_str());
                 auto mat    = m_ResourceManager->GetResource<Material>(handle);
