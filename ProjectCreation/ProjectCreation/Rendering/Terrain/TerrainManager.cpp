@@ -195,9 +195,9 @@ void TerrainManager::_initialize(RenderSystem* rs)
         ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
 
         FInstanceRenderData renderTestData;
-        renderTestData.instanceCount = gInstanceTransformsCount;
-        renderTestData.instanceIndexList.resize(gInstanceTransformsCount);
-        for (int i = 0; i < gInstanceTransformsCount; ++i)
+        renderTestData.instanceCount = gActualTransformsCount;
+        renderTestData.instanceIndexList.resize(gActualTransformsCount);
+        for (int i = 0; i < gActualTransformsCount; ++i)
         {
                 renderTestData.instanceIndexList[i] = i;
         }
@@ -210,7 +210,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
         using namespace DirectX;
         HRESULT hr = {};
         { // Create transform buffer
-                for (unsigned int i = 0; i < gInstanceTransformsCount; ++i)
+                for (unsigned int i = 0; i < gActualTransformsCount; ++i)
                 {
                         m_InstanceMatrices[i] = XMMatrixTranspose(m_InstanceTransforms[i].CreateMatrix());
                 }
@@ -398,7 +398,7 @@ void TerrainManager::_update(float deltaTime)
                 renderSystem->m_Context->CSSetShaderResources(9, 1, &terrainSourceSRV);
                 // renderSystem->m_Context->CSSetShaderResources(2, 1, &instanceSRV);
                 // instanceIndexSRV ?
-                renderSystem->m_Context->Dispatch(gInstanceTransformsCount, 1, 1);
+                renderSystem->m_Context->Dispatch(gActualTransformsCount, 1, 1);
                 renderSystem->m_Context->CSSetUnorderedAccessViews(0, 1, &nullUAV, 0);
 
                 ID3D11HullShader*   nullHull   = nullptr;
@@ -469,41 +469,45 @@ void TerrainManager::_shutdown()
 
 void TerrainManager::GenerateInstanceTransforms(FTransform tArray[gInstanceTransformsCount])
 {
-		//Do not change above 10. This is near the limit before issues arrive calculating the values
         float minDist = 10.0f;
-        int   found   = 0;
-		
-        for (int i = 0; i < gInstanceTransformsCount; ++i)
-        {
-                float x = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
-                float z = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
 
-                while (found < i)
+        int iterations = 5;
+
+        gActualTransformsCount = 0;
+        bool overlap;
+        for (int k = 0; k < iterations; ++k)
+        {
+                for (int i = 0; i < gInstanceTransformsCount; ++i)
                 {
-                        for (int j = 0; j < i; j++)
+                        float    x      = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
+                        float    z      = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
+                        XMVECTOR newPos = XMVectorSet(x, 0.0f, z, 1.0f);
+                        overlap         = false;
+                        for (int j = 0; j < gActualTransformsCount; j++)
                         {
-                                if (XMVectorGetX(tArray[j].translation) + minDist >= x &&
-                                    XMVectorGetX(tArray[j].translation) - minDist <= x &&
-                                    XMVectorGetZ(tArray[j].translation) + minDist >= z &&
-                                    XMVectorGetZ(tArray[j].translation) - minDist <= z)
+                                float distance = MathLibrary::CalulateDistance(tArray[j].translation, newPos);
+
+                                if (distance <= minDist)
                                 {
-                                        found = 0;
-                                		x = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
-										z = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
+                                        overlap = true;
                                         break;
                                 }
-                                else
-                                {
-                                        found++;
-                                }
                         }
-                }
-                
-                tArray[i].translation = XMVectorSet(x, 0.0f, z, 1.0f);
-                tArray[i].rotation = FQuaternion::RotateAxisAngle(VectorConstants::Up, MathLibrary::GetRandomFloat() * 360.0f);
-                tArray[i].SetScale(MathLibrary::RandomFloatInRange(0.8f, 1.2f));
 
-				found = 0;
+                        if (!overlap)
+                        {
+                                tArray[gActualTransformsCount].translation = newPos;
+                                tArray[gActualTransformsCount].rotation =
+                                    FQuaternion::RotateAxisAngle(VectorConstants::Up, MathLibrary::GetRandomFloat() * 360.0f);
+                                tArray[gActualTransformsCount].SetScale(MathLibrary::RandomFloatInRange(0.8f, 1.2f));
+                                gActualTransformsCount++;
+                        }
+
+                        if (gActualTransformsCount >= gInstanceTransformsCount)
+                                break;
+                }
+                if (gActualTransformsCount >= gInstanceTransformsCount)
+                        break;
         }
 }
 
