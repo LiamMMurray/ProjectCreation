@@ -16,6 +16,7 @@
 #include "../../UI/UIManager.h"
 
 #include <WinUser.h>
+#include "../CoreInput/InputActions.h"
 
 using namespace std;
 
@@ -97,6 +98,8 @@ void ControllerSystem::OnPreUpdate(float deltaTime)
 
 void ControllerSystem::OnUpdate(float deltaTime)
 {
+
+
         if (GCoreInput::GetKeyState(KeyCode::One) == KeyState::DownFirst)
         {
                 IncreaseOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
@@ -133,7 +136,7 @@ void ControllerSystem::OnUpdate(float deltaTime)
         int lastColorPressed = -1;
         for (int i = 0; i < 3; ++i)
         {
-                if (GCoreInput::GetKeyState(E_LIGHT_ORBS::ColorInputKeyCodes[i]) == KeyState::Down)
+                if (InputActions::CheckAction(i) == KeyState::Down)
                 {
                         colorsPressed++;
                         lastColorPressed = i;
@@ -165,6 +168,9 @@ void ControllerSystem::OnPostUpdate(float deltaTime)
 
 void ControllerSystem::OnInitialize()
 {
+
+        GamePad::Get()->Init();
+
         m_SystemManager = GEngine::Get()->GetSystemManager();
         m_HandleManager = GEngine::Get()->GetHandleManager();
 
@@ -224,6 +230,7 @@ void ControllerSystem::OnShutdown()
                         delete m_Controllers[i];
                 }
         }
+        GamePad::Shutdown();
 }
 
 void ControllerSystem::OnResume()

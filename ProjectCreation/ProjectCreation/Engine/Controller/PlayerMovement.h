@@ -53,11 +53,6 @@ class PlayerController : public IController
         DirectX::XMVECTOR m_JumpForce;
         DirectX::XMVECTOR m_PlayerGravity;
 
-        GamePad*         m_GameController;
-        XINPUT_STATE     m_GameControllerState;
-        XINPUT_GAMEPAD   m_GameControllerGamePad;
-        XINPUT_VIBRATION m_GameControllerVibration;
-
         // Boolean values for the light collection keys
         // Names will most likely change later on
 
@@ -69,6 +64,18 @@ class PlayerController : public IController
 
     public:
         float m_TimeOnSpline = 0.0f;
+
+        float angularSpeedMod = 5.0f;
+
+        inline void SetAngularSpeedMod(float var)
+        {
+                angularSpeedMod = var;
+        }
+
+        inline float GetAngularSpeedMod()
+        {
+                return angularSpeedMod;
+        }
 
         inline void SetNextForward(const DirectX::XMVECTOR& _val)
         {

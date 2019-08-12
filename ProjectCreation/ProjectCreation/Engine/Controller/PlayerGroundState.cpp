@@ -1,5 +1,6 @@
 #include "PlayerGroundState.h"
 #include <iostream>
+#include "../../UI/UIManager.h"
 #include "..//..//Rendering/Components/DirectionalLightComponent.h"
 #include "..//GEngine.h"
 #include "..//GenericComponents/TransformComponent.h"
@@ -7,7 +8,6 @@
 #include "../CoreInput/CoreInput.h"
 #include "PlayerControllerStateMachine.h"
 #include "PlayerMovement.h"
-#include "../../UI/UIManager.h"
 
 using namespace DirectX;
 
@@ -18,7 +18,8 @@ void PlayerGroundState::Enter()
 
         _playerController->SetEulerAngles(playerTransformComponent->transform.rotation.ToEulerAngles());
 
-		_playerController->RequestCurrentLevel();
+        _playerController->RequestCurrentLevel();
+
 
         // Sets the gravity vector for the player
         //_playerController->SetPlayerGravity(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f));
@@ -53,7 +54,7 @@ void PlayerGroundState::Update(float deltaTime)
                 GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_03);
         }
 
-	static bool doOnce = false;
+        static bool doOnce = false;
         if (!doOnce && _playerController->GetCollectedPlanetCount() == 3)
         {
 
@@ -76,22 +77,47 @@ void PlayerGroundState::Update(float deltaTime)
 
         XMFLOAT3 eulerAngles = _playerController->GetEulerAngles();
 
-        float           angularSpeed = XMConvertToRadians(5.0f) * deltaTime;
+		float angularSpeedMod = _playerController->GetAngularSpeedMod();
+
+        float           angularSpeed = XMConvertToRadians(angularSpeedMod) * deltaTime;
         constexpr float pitchLimit   = XMConvertToRadians(90.0f);
         constexpr float rollLimit    = 20.0f;
 
+
         float pitchDelta = eulerAngles.x;
-        eulerAngles.x += GCoreInput::GetMouseY() * angularSpeed;
-        pitchDelta = eulerAngles.x - pitchDelta;
+        float yawDelta   = eulerAngles.y;
+        // Controller Is Connected
+        if (GamePad::Get()->CheckConnection() == true)
+        {
+                _playerController->SetAngularSpeedMod(40.0f);
+                angularSpeed = XMConvertToRadians(angularSpeedMod) * deltaTime;
+                eulerAngles.x += -GamePad::Get()->leftStickY * angularSpeed;
+                pitchDelta = eulerAngles.x - pitchDelta;
 
-        float yawDelta = eulerAngles.y;
-        eulerAngles.y += GCoreInput::GetMouseX() * angularSpeed;
-        yawDelta = eulerAngles.y - yawDelta;
+                eulerAngles.y += GamePad::Get()->leftStickX * angularSpeed;
+                yawDelta = eulerAngles.y - yawDelta;
 
-        eulerAngles.z += GCoreInput::GetMouseX() * angularSpeed;
+                eulerAngles.z += GamePad::Get()->leftStickX * angularSpeed;
 
-        eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
+                eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
+				
+        }
 
+        // Controller Isn't Connected
+        else
+        {
+                //float pitchDelta = eulerAngles.x;
+                eulerAngles.x += GCoreInput::GetMouseY() * angularSpeed;
+                pitchDelta = eulerAngles.x - pitchDelta;
+
+                //float yawDelta = eulerAngles.y;
+                eulerAngles.y += GCoreInput::GetMouseX() * angularSpeed;
+                yawDelta = eulerAngles.y - yawDelta;
+
+                eulerAngles.z += GCoreInput::GetMouseX() * angularSpeed;
+
+                eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
+        }
         // Convert to degrees due to precision errors using small radian values
         float rollDegrees         = XMConvertToDegrees(eulerAngles.z);
         rollDegrees               = MathLibrary::clamp(rollDegrees, -rollLimit, rollLimit);
@@ -150,7 +176,7 @@ void PlayerGroundState::Update(float deltaTime)
         float dist = MathLibrary::CalulateDistance(currentVelocity, desiredVelocity);
 
         // Calculate change based on the type of acceleration, the change in time, and the calculated distance
-        float delta = min(accel * deltaTime, dist);
+        float delta = std::min(accel * deltaTime, dist);
 
         // Normalize the difference of the desired velocity and the current velocity
         XMVECTOR deltaVec = XMVector3Normalize(desiredVelocity - currentVelocity);
@@ -184,7 +210,7 @@ void PlayerGroundState::Update(float deltaTime)
                 XMVECTOR offset = actualVelocity * deltaTime;
                 _cachedTransform.translation += offset;
                 float posY                   = XMVectorGetY(_cachedTransform.translation);
-                posY                         = max(posY, 0.0f);
+                posY                         = std::max(posY, 0.0f);
                 _cachedTransform.translation = XMVectorSetY(_cachedTransform.translation, posY);
         }
 

@@ -14,6 +14,7 @@
 #include "SplineCluster.h"
 #include "../Controller/GamePad.h"
 
+
 class TransformComponent;
 class ResourceManager;
 class SpeedboostComponent;
@@ -87,7 +88,6 @@ class SpeedBoostSystem : public ISystem
         static constexpr float m_SplineAttractionForceMax = 1.5f;
         static constexpr float m_SplineHeightOffset       = 0.06f;
 
-		GamePad* m_GameController;
 
         // TESTING
         int colorCount = 0;

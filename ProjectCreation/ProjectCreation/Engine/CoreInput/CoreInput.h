@@ -8,8 +8,9 @@
  ************************************************/
 
 #pragma once
-
+#include <Windows.h>
 #include <stdint.h>
+#include "../Controller/GamePad.h"
 
 #ifndef _WINDEF_
 struct HINSTANCE__; // Forward or never
@@ -121,6 +122,32 @@ enum KeyState
         Down
 };
 
+// Below is the virtual keys for the xbox game pad. You can find the reference to them at the following link.
+// https://docs.microsoft.com/en-us/windows/win32/api/xinput/ns-xinput-xinput_keystroke
+
+enum class ControllerCode
+{
+        // Letter Buttons
+        BUTTON_A = XINPUT_GAMEPAD_A,
+        BUTTON_B = XINPUT_GAMEPAD_B,
+        BUTTON_Y = XINPUT_GAMEPAD_Y,
+        BUTTON_X = XINPUT_GAMEPAD_X,
+
+        // Menu Buttons
+        BUTTON_START = XINPUT_GAMEPAD_START,
+        BUTTON_BACK  = XINPUT_GAMEPAD_BACK,
+
+        // D-Pad Buttons
+        DPAD_UP    = XINPUT_GAMEPAD_DPAD_UP,
+        DPAD_DOWN  = XINPUT_GAMEPAD_DPAD_DOWN,
+        DPAD_LEFT  = XINPUT_GAMEPAD_DPAD_LEFT,
+        DPAD_RIGHT = XINPUT_GAMEPAD_DPAD_RIGHT,
+
+        // Shoulder Buttons
+        SHOULDER_LEFT  = XINPUT_GAMEPAD_LEFT_SHOULDER,
+        SHOULDER_RIGHT = XINPUT_GAMEPAD_RIGHT_SHOULDER
+};
+
 class GCoreInput
 {
     public:
@@ -151,6 +178,7 @@ class GCoreInput
         static int32_t  GetMouseWindowPosY();
         static KeyState GetKeyState(KeyCode target);
         static KeyState GetMouseState(MouseCode target);
+        static KeyState GetControllerState(ControllerCode target);
 
     private:
         static void    ResetAxes();
@@ -160,4 +188,5 @@ class GCoreInput
         static int32_t mouseWindowPosY;
         static uint8_t keyStates[256];
         static uint8_t MouseStates[2];
+        static uint8_t ControllerStates[24];
 };

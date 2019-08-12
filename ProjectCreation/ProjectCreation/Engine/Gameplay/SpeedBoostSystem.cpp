@@ -28,6 +28,7 @@
 #include "..//CollisionLibary/CollisionLibary.h"
 #include "../AI/AIComponent.h"
 
+#include "../CoreInput/InputActions.h"
 #include "../Particle Systems/EmitterComponent.h"
 
 using namespace DirectX;
@@ -394,7 +395,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
         targetTerrain = m_targetTerrain;
 
-        m_GameController->Refresh();
 
         GEngine::Get()->m_TerrainAlpha = MathLibrary::lerp(GEngine::Get()->m_TerrainAlpha, targetTerrain, deltaTime * 0.1f);
 
@@ -403,6 +403,11 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 SetTargetTerrain(1.0f);
                 targetTerrain = m_targetTerrain;
         }
+
+        // if (InputActions::CheckActionDown(E_LIGHT_ORBS::RED_LIGHTS))
+        //{
+        //        int temp = 0;
+        //}
 
         // Debug Testing CHEAT to spawn a white spline that will carry player to origin
         if (GCoreInput::GetKeyState(KeyCode::J) == KeyState::DownFirst)
@@ -417,7 +422,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                 CreateRandomPath(start, end, 3);
         }
-
 
         // GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_PlayerEffectRadius, deltaTime);
 
@@ -471,9 +475,9 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         if (distanceSq < (checkRadius * checkRadius))
                         {
-                                //SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.color);
-                                //playerController->SpeedBoost(center, speedComp.color);
-                                RequestDestroySpeedboost(&speedComp);
+                                // SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.color);
+                                // playerController->SpeedBoost(center, speedComp.color);
+                                // RequestDestroySpeedboost(&speedComp);
                         }
                 }
         }
@@ -612,22 +616,32 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                                 int correctColor = latchedSplineComp->color;
 
+
                                 for (int i = 0; i < E_LIGHT_ORBS::WHITE_LIGHTS; ++i)
                                 {
                                         if (i == correctColor)
                                         {
-                                                inPath &= ((GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[i]) == KeyState::Down));
-                                                inPath &= ((m_GameController->IsPressed(playerController->m_ColorInputGameControllerCodes[i])));
+                                                // inPath &=
+                                                // ((GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[i]) ==
+                                                // KeyState::Down));
+                                                inPath &= (InputActions::CheckAction(i) == KeyState::Down);
                                         }
                                         else
                                         {
-                                                inPath &= ~((GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[i]) == KeyState::Down));
-                                                inPath &= ~((m_GameController->IsPressed(playerController->m_ColorInputGameControllerCodes[i])));
+                                                // inPath &=
+                                                // ~((GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[i]) ==
+                                                // KeyState::Down));
+                                                inPath &= ~(InputActions::CheckAction(i) == KeyState::Down);
                                         }
                                 }
 
                                 if (inPath)
                                 {
+                                        if (GamePad::Get()->CheckConnection() == true)
+                                        {
+                                                playerController->SetAngularSpeedMod(50.0f);
+                                        }
+
                                         if (latchedSplineIndex != latchedSplineComp->index)
                                         {
                                                 int                         pitch = (index / 20) % 3;
@@ -716,6 +730,16 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 else
                                 {
                                         // Player has fallen off the spline
+                                        if (GamePad::Get()->CheckConnection() == true)
+                                        {
+                                                playerController->SetAngularSpeedMod(30.0f);
+                                        }
+
+										else
+										{
+                                                playerController->SetAngularSpeedMod(5.0f);
+										}
+
                                         RequestUnlatchFromSpline(playerController, deltaTime);
                                         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
                                         controllerSys->resetCollectedOrbEventID(correctColor);
@@ -816,6 +840,7 @@ void SpeedBoostSystem::OnPostUpdate(float deltaTime)
 
 void SpeedBoostSystem::OnInitialize()
 {
+
         m_HandleManager    = GEngine::Get()->GetHandleManager();
         m_SystemManager    = GEngine::Get()->GetSystemManager();
         m_ResourceManager  = GEngine::Get()->GetResourceManager();
@@ -845,8 +870,6 @@ void SpeedBoostSystem::OnInitialize()
 
 
         latchedSplineIndex = -1;
-
-        m_GameController = new GamePad();
 }
 
 void SpeedBoostSystem::OnShutdown()

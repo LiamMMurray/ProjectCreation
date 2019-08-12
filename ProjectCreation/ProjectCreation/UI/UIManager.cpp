@@ -14,6 +14,7 @@
 #include "../Engine/ConsoleWindow/ConsoleWindow.h"
 #include "../Engine/Gameplay/SpeedBoostSystem.h"
 #include "../Engine/Controller/GamePad.h"
+#include "../Engine/CoreInput/InputActions.h"
 
 
 class TutorialLevel;
@@ -1547,7 +1548,7 @@ void UIManager::Update()
         }
         else
         {
-                if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
+                if (InputActions::PauseAction() == KeyState::DownFirst)
                 {
                         for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::Demo].size(); i++)
                         {

@@ -19,6 +19,7 @@
 #include "../../Rendering/DebugRender/debug_renderer.h"
 // v Testing only delete when done v
 #include <iostream>
+#include "../CoreInput/InputActions.h"
 // ^ Testing only delete when done ^
 using namespace DirectX;
 using namespace Shapes;
@@ -74,38 +75,10 @@ void PlayerController::GatherInput()
 
                 // CURRENT: [Changing movement so that the player will click the left mouse button to move forward]
                 {
-                        XINPUT_KEYSTROKE* currKeystroke = new XINPUT_KEYSTROKE();
-                        bool              wasConnected  = true;
-
-                        if (!m_GameController->Refresh())
+                        if (GamePad::Get()->CheckConnection() == true)
                         {
-                                if (wasConnected)
-                                {
-                                        wasConnected = false;
-
-                                        std::cout << "Please connect an Xbox 360 controller." << std::endl;
-                                }
+                                tempDir.z += (1.5 * GamePad::Get()->rightTrigger);
                         }
-
-                        else
-                        {
-                                tempDir.z += (1.5 * m_GameController->rightTrigger);
-                        }
-
-                        //if (m_GameControllerState.Gamepad.bRightTrigger > (255 / 2))
-                        //{
-                        //        tempDir.z += 1.5f;
-                        //}
-						//
-                        //if (XInputGetKeystroke(XUSER_INDEX_ANY, NULL, currKeystroke) == ERROR_SUCCESS)
-                        //{
-                        //        if ((currKeystroke->VirtualKey == VK_PAD_RTRIGGER) &&
-                        //            (currKeystroke->Flags == XINPUT_KEYSTROKE_KEYDOWN ||
-                        //             currKeystroke->Flags == XINPUT_KEYSTROKE_REPEAT))
-                        //        {
-                        //                tempDir.z += 1.5f;
-                        //        }
-                        //}
 
                         if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
                         {
@@ -167,9 +140,6 @@ void PlayerController::Init(EntityHandle h)
 
         m_EulerAngles = tComp->transform.rotation.ToEulerAngles();
 
-        m_GameController = new GamePad();
-
-        m_GameController->SetUpInput(m_GameControllerState, m_GameControllerGamePad, m_GameControllerVibration);
 
         // Create any states and set their respective variables here
         m_CinematicState = m_StateMachine.CreateState<PlayerCinematicState>();
@@ -207,8 +177,8 @@ void PlayerController::Init(EntityHandle h)
 bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
 {
         // Audio that will play on boost
-        if ((int)m_ColorInputKeyCodes[color] < 0 || GCoreInput::GetKeyState(m_ColorInputKeyCodes[color]) == KeyState::Down ||
-            m_GameController->IsPressed(m_SpeedBoostPoolCounter[color]))
+        if ((int)m_ColorInputKeyCodes[color] < 0 || InputActions::CheckAction(color) == KeyState::Down ||
+            InputActions::CheckAction(color) == DownFirst)
         {
                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(color);
                 bool isPlaying;
@@ -226,7 +196,7 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 m_SpeedBoostPoolCounter[color]++;
                 m_SpeedBoostPoolCounter[color] %= MAX_SPEEDBOOST_SOUNDS;
 
-				//m_GameController->TestGamePadRumble();
+                // m_GameController->TestGamePadRumble();
 
                 return true;
         }

@@ -138,7 +138,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 )
 {
         ENABLE_LEAK_DETECTION();
-
+        //_CrtSetBreakAlloc(50290);
         _WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
         return 0;

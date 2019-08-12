@@ -13,6 +13,7 @@ class ControllerSystem : public ISystem
 
         static ControllerSystem* instance;
 
+
         void init();
         void shutdown();
 
@@ -85,6 +86,7 @@ class ControllerSystem : public ISystem
         // Resets the orb count of a certain color based on passed in parameter
         // 0 = Red Lights, 1 = Green Lights, 2 = Blue Lights
         void ResetOrbCount(int color);
+
 
 
         // Inherited via ISystem
