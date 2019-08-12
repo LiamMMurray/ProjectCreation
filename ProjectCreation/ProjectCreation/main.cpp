@@ -173,8 +173,13 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         // register window class
         RegisterClassEx(&winInfo);
 
-        RECT wr = {0, 0, 1920, 1080};                        // set the size
-        AdjustWindowRect(&wr, WS_POPUP, FALSE); // adjust the size
+        DWORD style = WS_POPUP;
+#ifdef _FPS
+        style = WS_OVERLAPPEDWINDOW;
+#endif
+
+        RECT wr = {0, 0, 1920, 1080};        // set the size
+        AdjustWindowRect(&wr, style, FALSE); // adjust the size
 
         int posX = GetSystemMetrics(SM_CXSCREEN) / 2 - (wr.right - wr.left) / 2;
         int posY = GetSystemMetrics(SM_CYSCREEN) / 2 - (wr.bottom - wr.top) / 2;
@@ -183,7 +188,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         HWND handle = CreateWindowEx(WS_EX_APPWINDOW,
                                      appName, // Window class name again
                                      appName, // window title text
-                                     WS_POPUP,
+                                     style,
                                      posX,                // x pos
                                      posY,                // y pos
                                      wr.right - wr.left,  // width of the window
@@ -239,6 +244,9 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 
 
+
+
+
             TransformComponent* transformComp = HandleManager->GetComponent<TransformComponent>(transformHandle);
             transformComp->transform.SetScale(0.1f);*/
         }
@@ -261,8 +269,8 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 auto dirComp = dirLightEntityHandle.GetComponent<DirectionalLightComponent>();
                 dirComp->m_LightRotation =
                     XMQuaternionRotationRollPitchYaw(XMConvertToRadians(25.0f), XMConvertToRadians(90.0f), 0.0f);
-                dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.85f, 0.7f, 5.0f);
-                dirComp->m_AmbientColor = XMFLOAT4(1.0f, 0.85f, 0.7f, 1.7f);
+                dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.85f, 0.7f, 8.0f);
+                dirComp->m_AmbientColor = XMFLOAT4(1.0f, 0.85f, 0.7f, 1.1f);
 
                 GEngine::Get()->m_SunHandle = dirLightEntityHandle;
         }

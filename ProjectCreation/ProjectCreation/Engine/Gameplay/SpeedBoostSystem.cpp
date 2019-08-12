@@ -116,19 +116,19 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
         XMStoreFloat3(&velMin, -rt * 2.05f);
         XMStoreFloat3(&velMax, +rt * 2.05f + VectorConstants::Up * 10.0f);
 
-        XMStoreFloat3(&accel, fw * 2.5f - VectorConstants::Up * 9.5f);
+        XMStoreFloat3(&accel, fw * 2.5f - VectorConstants::Up * 0.5f);
 
-        auto emitterComponent      = entityH.GetComponent<EmitterComponent>();
-        emitterComponent->maxCount = 2000;
-        emitterComponent->spawnRate = 200.0f;
+        auto emitterComponent       = entityH.GetComponent<EmitterComponent>();
+        emitterComponent->maxCount  = 20;
+        //emitterComponent->spawnRate = 200.0f;
 
         emitterComponent->EmitterData.minOffset          = posMin;
         emitterComponent->EmitterData.maxOffset          = posMax;
         emitterComponent->EmitterData.minInitialVelocity = velMin;
         emitterComponent->EmitterData.maxInitialVelocity = velMax;
-        emitterComponent->EmitterData.lifeSpan.x = 20.0f;
+        //emitterComponent->EmitterData.lifeSpan.x         = 20.0f;
         emitterComponent->EmitterData.acceleration       = accel;
-        emitterComponent->EmitterData.particleScale      = XMFLOAT2(0.35f, 0.35f);
+        emitterComponent->EmitterData.particleScale      = XMFLOAT2(0.05f, 0.05f);
 
         return entityH;
 }
@@ -606,12 +606,31 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 {
                                         if (latchedSplineIndex != latchedSplineComp->index)
                                         {
-                                                int                         pitch = (index / 20) % 3;
+                                                int adjustedIndex = index;
+
+                                                float factor = 0.5f * (adjustedIndex % 20) / 20.0f;
+
+                                                int chance = rand() % 100 < factor * 100.0f;
+                                                int pitch  = (adjustedIndex / 20 + chance) % 4;
+
+                                                if (pitch == 3) {
+                                                        pitch = 1;
+												}
                                                 SoundComponent3D::FSettings settings;
                                                 settings.m_SoundType =
                                                     SOUND_COLOR_TYPE(correctColor, E_SOUND_TYPE::SPLINE_COLLECT_0 + pitch);
-                                                settings.m_SoundVaration = MathLibrary::GetRandomIntInRange(
-                                                    0, E_SOUND_TYPE::variations[E_SOUND_TYPE::SPLINE_COLLECT_0]);
+
+
+                                                int totalVariations =
+                                                    E_SOUND_TYPE::variations[E_SOUND_TYPE::SPLINE_COLLECT_0] * 2 - 2;
+                                                int variation = adjustedIndex % (totalVariations);
+
+                                                if (variation >= E_SOUND_TYPE::variations[E_SOUND_TYPE::SPLINE_COLLECT_0])
+                                                {
+                                                        variation = totalVariations - variation;
+                                                }
+
+                                                settings.m_SoundVaration = variation;
                                                 settings.flags.set(SoundComponent3D::E_FLAGS::DestroyOnEnd, true);
                                                 settings.m_Volume = 1.0f;
                                                 AudioManager::Get()->PlaySoundAtLocation(currPos, settings);

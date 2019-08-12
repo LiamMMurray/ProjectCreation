@@ -1,6 +1,7 @@
 #include "DefaultPixelIn.hlsl"
 #include "InstanceData.hlsl"
 #include "MVPBuffer.hlsl"
+#include "Math.hlsl"
 #include "SceneBuffer.hlsl"
 
 struct INPUT_VERTEX
@@ -14,18 +15,34 @@ struct INPUT_VERTEX
         uint   instanceID : SV_InstanceID;
 };
 
+
 StructuredBuffer<FInstanceData> TransformMatrices : register(t8);
 StructuredBuffer<uint>          TransformIndices : register(t9);
 
 
 INPUT_PIXEL main(INPUT_VERTEX vIn)
 {
-        INPUT_PIXEL  output = (INPUT_PIXEL)0;
-        const float4 Pos    = float4(vIn.Pos, 1.0f);
+        INPUT_PIXEL output = (INPUT_PIXEL)0;
 
         matrix instanceWorld = TransformMatrices[TransformIndices[vIn.instanceID]].mtx;
         float  lifeTime      = TransformMatrices[TransformIndices[vIn.instanceID]].lifeTime;
         uint   flags         = TransformMatrices[TransformIndices[vIn.instanceID]].flags;
+        float4 Pos           = float4(vIn.Pos, 1.0f);
+
+        uint   id     = vIn.instanceID;
+        float3 objPos = float3(instanceWorld._41, instanceWorld._42, instanceWorld._43);
+
+
+        float2 windDir     = float2(1.0f, 0.0f);
+        float  hWave       = sin(_Time * 0.5f + dot(objPos, windDir));
+        hWave              = remap(hWave, -1.0f, 1.0f, -0.2f, 1.0f);
+        float vWave        = remap(sin(_Time * 2.5f + Pos.y / 0.5f), -1.0f, 1.0f, 0.8f, 1.0f);
+        float heightFactor = saturate(Pos.y / 2.0f);
+        float windStrength = 0.2f * hWave * vWave * heightFactor;
+
+        Pos.xz += windDir * windStrength;
+        Pos.xz *= pow(lifeTime, 2.0f);
+        Pos.y *= pow(lifeTime, 0.5f);
 
         output.PosWS = mul(Pos, instanceWorld).xyz;
         output.Pos   = mul(float4(output.PosWS, 1.0f), ViewProjection);

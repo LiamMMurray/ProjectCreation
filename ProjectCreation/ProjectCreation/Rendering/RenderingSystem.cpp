@@ -692,7 +692,7 @@ void RenderSystem::DrawMesh(ID3D11Buffer*      vertexBuffer,
         m_Context->PSSetShader(ps->m_PixelShader, nullptr, 0);
 
         ID3D11ShaderResourceView* srvs[E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT];
-        m_ResourceManager->GetSRVs(E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, material->m_TextureHandles, srvs);
+        m_ResourceManager->GetSRVsFromMaterial(material, srvs);
 
         m_Context->PSSetShaderResources(0, E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, srvs);
 
@@ -707,12 +707,13 @@ void RenderSystem::DrawMesh(ID3D11Buffer*      vertexBuffer,
         m_Context->DrawIndexed(indexCount, 0, 0);
 }
 
-void RenderSystem::DrawMeshInstanced(ID3D11Buffer*             vertexBuffer,
-                                     ID3D11Buffer*             indexBuffer,
-                                     uint32_t                  indexCount,
-                                     uint32_t                  vertexSize,
-                                     Material*                 material,
-                                     uint32_t                  instanceCount)
+void RenderSystem::DrawMeshInstanced(ID3D11Buffer* vertexBuffer,
+                                     ID3D11Buffer* indexBuffer,
+                                     uint32_t      indexCount,
+                                     uint32_t      vertexSize,
+                                     Material*     material,
+                                     uint32_t      instanceCount,
+                                     uint32_t      instanceOffset)
 {
         using namespace DirectX;
 
@@ -728,7 +729,7 @@ void RenderSystem::DrawMeshInstanced(ID3D11Buffer*             vertexBuffer,
         m_Context->PSSetShader(ps->m_PixelShader, nullptr, 0);
 
         ID3D11ShaderResourceView* srvs[E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT];
-        m_ResourceManager->GetSRVs(E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, material->m_TextureHandles, srvs);
+        m_ResourceManager->GetSRVsFromMaterial(material, srvs);
 
         m_Context->PSSetShaderResources(0, E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, srvs);
 
@@ -736,7 +737,7 @@ void RenderSystem::DrawMeshInstanced(ID3D11Buffer*             vertexBuffer,
                              &material->m_SurfaceProperties,
                              sizeof(FSurfaceProperties));
 
-        m_Context->DrawIndexedInstanced(indexCount, instanceCount, 0, 0, 0);
+        m_Context->DrawIndexedInstanced(indexCount, instanceCount, 0, 0, instanceOffset);
 }
 
 void RenderSystem::DrawStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)

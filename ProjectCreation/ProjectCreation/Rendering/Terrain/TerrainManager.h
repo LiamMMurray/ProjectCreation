@@ -4,6 +4,7 @@
 #include "..//..//Engine/MathLibrary/Transform.h"
 #include "..//..//Engine/ResourceManager/IResource.h"
 #include "..//..//Utility/ForwardDeclarations/D3DNativeTypes.h"
+#include "..//InstanceData.h"
 class RenderSystem;
 
 struct ID3D11HullShader;
@@ -39,6 +40,7 @@ struct FInstanceRenderData
         uint32_t              instanceCount;
         std::vector<uint32_t> instanceIndexList;
 };
+
 
 class TerrainManager
 {
@@ -80,6 +82,8 @@ class TerrainManager
         ID3D11UnorderedAccessView* instanceIndexSteepUAV = nullptr;
         ID3D11UnorderedAccessView* instanceIndexFlatUAV  = nullptr;
 
+        ID3D11Buffer* indexCounterHelperBuffer = nullptr;
+
         ID3D11Buffer*    vertexBuffer;
         ID3D11Buffer*    indexBuffer;
         ID3D11Texture2D* stagingTextureResource;
@@ -89,12 +93,13 @@ class TerrainManager
         CTerrainInfoBuffer terrainConstantBufferCPU;
         ID3D11Buffer*      terrainConstantBufferGPU;
 
-        static constexpr unsigned int gInstanceTransformsCount = 200;
+        static constexpr unsigned int gInstanceTransformsCount = 5000;
         FTransform                    m_InstanceTransforms[gInstanceTransformsCount];
-        DirectX::XMMATRIX             m_InstanceMatrices[gInstanceTransformsCount];
+        FInstanceData                 m_InstanceData[gInstanceTransformsCount];
         ResourceHandle                m_UpdateInstancesComputeShader;
 
-        std::vector<FInstanceRenderData> instanceDrawCallsData;
+        std::vector<FInstanceRenderData> instanceDrawCallsDataFlat;
+        std::vector<FInstanceRenderData> instanceDrawCallsDataSteep;
 
         void GenerateInstanceTransforms(FTransform tArray[gInstanceTransformsCount]);
         void WrapInstanceTransforms();

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "..//Utility/Macros/GlobalMacros.h"
+
 #define COMPONENT_MANAGER GEngine::Get()->GetHandleManager()
 #define SYSTEM_MANAGER GEngine::Get()->GetSystemManager()
 #define GET_SYSTEM(x) GEngine::Get()->GetSystemManager()->GetSystem<x>()
@@ -45,7 +47,7 @@ class GEngine
 
     public:
         DirectX::XMVECTOR m_OriginOffset = DirectX::XMVECTORF32{0.0f, 0.0f, 0.0f, 0.0f};
-        inline void SetPlayerRadius(float r)
+        inline void       SetPlayerRadius(float r)
         {
                 m_PlayerRadius = m_DesiredPlayerRadius = r;
         }

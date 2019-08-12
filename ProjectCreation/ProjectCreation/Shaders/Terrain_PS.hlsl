@@ -44,8 +44,8 @@ float4 main(DomainOutput pIn) : SV_TARGET
         float bottomY = gTerrainAlpha * 2625.f * HeightMap.SampleLevel(sampleTypeWrap, bottomTex, 0).r;
         float topY    = gTerrainAlpha * 2625.f * HeightMap.SampleLevel(sampleTypeWrap, topTex, 0).r;
 
-        float3 TangentWS  = normalize(float3(2.0f * gWorldCellSpace, rightY - leftY, 0.0f));
-        float3 BinormalWS = normalize(float3(0.0f, bottomY - topY, -2.0f * gWorldCellSpace));
+        float3 TangentWS  = normalize(float3(2.5f * gWorldCellSpace, rightY - leftY, 0.0f));
+        float3 BinormalWS = normalize(float3(0.0f, bottomY - topY, -2.5f * gWorldCellSpace));
         float3 NormalWS   = normalize(cross(TangentWS, BinormalWS));
 
         float3 viewWS = -normalize(pIn.PosWS - _EyePosition);

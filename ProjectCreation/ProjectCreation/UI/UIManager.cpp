@@ -338,8 +338,14 @@ void UIManager::StartupResAdjust(HWND window)
 
 void UIManager::AdjustResolution(HWND window, int wWidth, int wHeight)
 {
-        RECT wr = {0, 0, wWidth, wHeight};                 // set the size
-        AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE); // adjust the size
+        RECT wr = {0, 0, wWidth, wHeight}; // set the size
+
+        DWORD style = WS_OVERLAPPEDWINDOW;
+#ifdef _FPS
+        style = WS_POPUP;
+#endif
+
+        AdjustWindowRect(&wr, style, FALSE); // adjust the size
 
         DXGI_MODE_DESC& desc = instance->resDescriptors.back();
 
@@ -769,6 +775,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 0.5f,
                                 false);
                                 
+
+
+
 
 
 

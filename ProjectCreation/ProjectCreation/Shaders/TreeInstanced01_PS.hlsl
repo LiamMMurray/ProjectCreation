@@ -95,20 +95,18 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         {
                 float4 diffuse = diffuseMap.Sample(sampleTypeWrap, pIn.Tex);
 
-                if (IsMasked(_textureFlags))
-                {
-                        clip(diffuse.a < 0.1f ? -1 : 1);
-                }
-
                 surface.diffuseColor *= diffuse.xyz;
-                if (IsTransluscent(_textureFlags))
-                {
-                        clip(diffuse.a < 0.01f ? -1 : 1);
-                        surface.diffuseColor *= diffuse.w;
-                        alpha = diffuse.w;
-                }
         }
         surface.diffuseColor = saturate(surface.diffuseColor);
+
+        float3 genericA = diffuseMap.Sample(sampleTypeWrap, pIn.Tex * 8.0f).a;
+
+        float fresnel = saturate(dot(pIn.NormalWS, viewWS));
+        fresnel       = 1.0f - saturate(pow(fresnel + 0.6f, 20.0f));
+        fresnel *= saturate(pow(genericA.b + 0.2f, 4.0f));
+
+        fresnel = 1.0f - fresnel;
+        clip(fresnel < 0.5f ? -1 : 1);
 
         if (HasSpecularTexture(_textureFlags))
         {
@@ -218,9 +216,9 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         veins                = saturate(pow(veins, 4.0f));
         float3 veinsEmissive = veins * 0.1f * float3(1.0f, 1.0f, 1.0f) * mask;
 
-        clip((1 - bandA) < 0.01f ? -1 : 1);
+        clip((1 - bandA + veinsEmissive) < 0.01f ? -1 : 1);
 
-        color += surface.emissiveColor + band; //+ veinsEmissive;
+        color += surface.emissiveColor + band; //        +veinsEmissive;
 
         return float4(color, 1.0f);
 }

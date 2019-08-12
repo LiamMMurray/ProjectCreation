@@ -156,7 +156,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
         // return fresnel;
         // return fresnelLow;
         float transluscencyExtra = saturate(pow(lerp(fresnelHigh, fresnelLow, 0.7f), 2.0f) * 0.08f);
-        float transluscency = saturate(pow(lerp(transluscentHigh, transluscentLow, 0.7f), 15.0f) * 1.0f + transluscencyExtra);
+        float transluscency = saturate(pow(lerp(transluscentHigh, transluscentLow, 0.4f), 20.0f) * 0.4f + transluscencyExtra);
         float fresnel       = 0.04f * saturate(pow(fresnelLow + fresnelHigh * 0.1f, 25.0f));
         // return fresnel;
         // return transluscency;
@@ -186,7 +186,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
                 // color += lerp(shallowWaterColor, deepWaterColor, fresnelTerm) + specular * radiance;
         }
         // return NormalWS.xyz;
-        //return float4(color, 1.0f);
+        return float4(color, 1.0f);
 
         float maskA     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 45.0f + _Time * 0.01f * float2(1.0f, 0.0f)).z;
         float maskB     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 40.0f + _Time * 0.01f * float2(-1.0f, 0.0f)).z;

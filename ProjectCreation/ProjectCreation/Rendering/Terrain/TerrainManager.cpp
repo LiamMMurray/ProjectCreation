@@ -88,6 +88,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
         patchQuadCount        = (patchSquareDimensions - 1) * (patchSquareDimensions - 1);
         texture->Release();
 
+        str = L"../Assets/Textures/TerrainHeightmap_Mask.dds";
         DirectX::CreateDDSTextureFromFile(renderSystem->GetDevice(), str.c_str(), &resource, &terrainMaskSRV);
         resource->Release();
 
@@ -197,15 +198,9 @@ void TerrainManager::_initialize(RenderSystem* rs)
 
         ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
 
-        FInstanceRenderData renderTestData;
-        renderTestData.instanceCount = gInstanceTransformsCount;
-        renderTestData.instanceIndexList.resize(gInstanceTransformsCount);
-        for (int i = 0; i < gInstanceTransformsCount; ++i)
-        {
-                renderTestData.instanceIndexList[i] = i;
-        }
-        renderTestData.mesh     = resourceManager->LoadStaticMesh("Sphere01");
-        renderTestData.material = resourceManager->LoadMaterial("DefaultInstanced");
+        FInstanceRenderData renderTestDataFlat;
+        renderTestDataFlat.mesh     = resourceManager->LoadStaticMesh("PineTree01");
+        renderTestDataFlat.material = resourceManager->LoadMaterial("Tree01");
 
 
         m_UpdateInstancesComputeShader = resourceManager->LoadComputeShader("InstanceUpdate");
@@ -215,11 +210,11 @@ void TerrainManager::_initialize(RenderSystem* rs)
         { // Create transform buffer
                 for (unsigned int i = 0; i < gInstanceTransformsCount; ++i)
                 {
-                        m_InstanceMatrices[i] = XMMatrixTranspose(m_InstanceTransforms[i].CreateMatrix());
+                        m_InstanceData[i].mtx = XMMatrixTranspose(m_InstanceTransforms[i].CreateMatrix());
                 }
 
                 // renderSystem->UpdateConstantBuffer(
-                //    instanceBuffer, m_InstanceMatrices, sizeof(XMMATRIX) * gInstanceTransformsCount);
+                //    instanceBuffer, m_InstanceData, sizeof(XMMATRIX) * gInstanceTransformsCount);
 
                 D3D11_BUFFER_DESC                sbDesc{};
                 D3D11_SUBRESOURCE_DATA           rwData{};
@@ -230,11 +225,11 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 sbDesc.BindFlags           = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
                 sbDesc.CPUAccessFlags      = 0;
                 sbDesc.MiscFlags           = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-                sbDesc.StructureByteStride = sizeof(XMMATRIX);
-                sbDesc.ByteWidth           = sizeof(XMMATRIX) * gInstanceTransformsCount;
+                sbDesc.StructureByteStride = sizeof(FInstanceData);
+                sbDesc.ByteWidth           = sizeof(FInstanceData) * gInstanceTransformsCount;
                 sbDesc.Usage               = D3D11_USAGE_DEFAULT;
                 // D3D11_SUBRESOURCE_DATA
-                rwData.pSysMem = m_InstanceMatrices;
+                rwData.pSysMem = m_InstanceData;
 
 
                 hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, &rwData, &tempBuffer);
@@ -249,7 +244,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
 
                 // D3D11_SHADER_RESOURCE_VIEW_DESC
                 srvDesc.Buffer.ElementOffset = 0;
-                srvDesc.Buffer.ElementWidth  = sizeof(XMMATRIX);
+                srvDesc.Buffer.ElementWidth  = sizeof(FInstanceData);
                 srvDesc.Buffer.FirstElement  = 0;
                 srvDesc.Buffer.NumElements   = gInstanceTransformsCount;
                 srvDesc.Format               = DXGI_FORMAT_UNKNOWN;
@@ -267,18 +262,19 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 D3D11_SHADER_RESOURCE_VIEW_DESC  srvDesc{};
                 D3D11_UNORDERED_ACCESS_VIEW_DESC sbUAVDesc{};
 
-                ID3D11Buffer* tempBuffer;
+                ID3D11Buffer* tempBufferSteep;
+                ID3D11Buffer* tempBufferFlat;
                 // CD3D11_BUFFER_DESC
-                sbDesc.BindFlags           = D3D11_BIND_SHADER_RESOURCE;
-                sbDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
+                sbDesc.BindFlags           = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+                sbDesc.CPUAccessFlags      = 0;
                 sbDesc.MiscFlags           = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
                 sbDesc.StructureByteStride = sizeof(uint32_t);
                 sbDesc.ByteWidth           = sizeof(uint32_t) * gInstanceTransformsCount;
-                sbDesc.Usage               = D3D11_USAGE_DYNAMIC;
+                sbDesc.Usage               = D3D11_USAGE_DEFAULT;
                 // D3D11_SUBRESOURCE_DATA
-                rwData.pSysMem = renderTestData.instanceIndexList.data();
 
-                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, &rwData, &tempBuffer);
+                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, nullptr, &tempBufferSteep);
+                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, nullptr, &tempBufferFlat);
 
                 // D3D11_UNORDERED_ACCESS_VIEW_DESC
                 sbUAVDesc.Buffer.FirstElement = 0;
@@ -286,8 +282,8 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 sbUAVDesc.Buffer.NumElements  = gInstanceTransformsCount;
                 sbUAVDesc.Format              = DXGI_FORMAT_UNKNOWN;
                 sbUAVDesc.ViewDimension       = D3D11_UAV_DIMENSION_BUFFER;
-                hr |= renderSystem->m_Device->CreateUnorderedAccessView(tempBuffer, &sbUAVDesc, &instanceIndexSteepUAV);
-                hr |= renderSystem->m_Device->CreateUnorderedAccessView(tempBuffer, &sbUAVDesc, &instanceIndexFlatUAV);
+                hr |= renderSystem->m_Device->CreateUnorderedAccessView(tempBufferSteep, &sbUAVDesc, &instanceIndexSteepUAV);
+                hr |= renderSystem->m_Device->CreateUnorderedAccessView(tempBufferFlat, &sbUAVDesc, &instanceIndexFlatUAV);
 
 
                 // D3D11_SHADER_RESOURCE_VIEW_DESC
@@ -297,14 +293,37 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 srvDesc.Buffer.NumElements   = gInstanceTransformsCount;
                 srvDesc.Format               = DXGI_FORMAT_UNKNOWN;
                 srvDesc.ViewDimension        = D3D11_SRV_DIMENSION_BUFFER;
-                hr |= renderSystem->m_Device->CreateShaderResourceView(tempBuffer, &srvDesc, &instanceIndexSteepSRV);
-                hr |= renderSystem->m_Device->CreateShaderResourceView(tempBuffer, &srvDesc, &instanceIndexFlatSRV);
-                tempBuffer->Release();
+                hr |= renderSystem->m_Device->CreateShaderResourceView(tempBufferSteep, &srvDesc, &instanceIndexSteepSRV);
+                hr |= renderSystem->m_Device->CreateShaderResourceView(tempBufferFlat, &srvDesc, &instanceIndexFlatSRV);
+                tempBufferSteep->Release();
+                tempBufferFlat->Release();
                 assert(SUCCEEDED(hr));
         }
 
+        { // indexCounterHelperBuffer
+                D3D11_BUFFER_DESC               sbDesc{};
+                D3D11_SUBRESOURCE_DATA          rwData{};
+                D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 
-        instanceDrawCallsData.push_back(renderTestData);
+                // CD3D11_BUFFER_DESC
+                sbDesc.BindFlags           = 0;
+                sbDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_READ;
+                sbDesc.MiscFlags           = 0;
+                sbDesc.StructureByteStride = 0;
+                sbDesc.ByteWidth           = sizeof(uint32_t) * 2;
+                sbDesc.Usage               = D3D11_USAGE_STAGING;
+                // D3D11_SUBRESOURCE_DATA
+
+                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, nullptr, &indexCounterHelperBuffer);
+        }
+
+        instanceDrawCallsDataFlat.push_back(renderTestDataFlat);
+
+        FInstanceRenderData renderTestDataSteep;
+        renderTestDataSteep.mesh     = resourceManager->LoadStaticMesh("RockInstance01");
+        renderTestDataSteep.material = resourceManager->LoadMaterial("RockInstance01");
+
+        instanceDrawCallsDataSteep.push_back(renderTestDataSteep);
 }
 using namespace DirectX;
 
@@ -401,27 +420,49 @@ void TerrainManager::_update(float deltaTime)
                 renderSystem->m_Context->DrawIndexed(patchQuadCount * 4, 0, 0);
         }
         // Draw instanced
+
         {
+                UINT uavCounters[3] = {0, 0, 0};
+
+                renderSystem->m_Context->PSSetConstantBuffers(
+                    0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, renderSystem->m_BasePassConstantBuffers);
+
                 ID3D11ShaderResourceView* nullSRV = nullptr;
 
                 renderSystem->m_Context->VSSetShaderResources(8, 1, &nullSRV);
                 renderSystem->m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
                 // Set Compute Shaders
-                ID3D11UnorderedAccessView* nullUAV = NULL;
+                ID3D11UnorderedAccessView* nullUAVs[8] = {};
                 ComputeShader*             cs = resourceManager->GetResource<ComputeShader>(m_UpdateInstancesComputeShader);
                 renderSystem->m_Context->CSSetShader(cs->m_ComputerShader, 0, 0);
                 renderSystem->m_Context->CSSetConstantBuffers(
                     1, 1, &renderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE]);
                 renderSystem->m_Context->CSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
 
-                renderSystem->m_Context->CSSetUnorderedAccessViews(0, 1, &instanceUAV, 0);
+                ID3D11UnorderedAccessView* loadedUAVs[3] = {instanceUAV, instanceIndexSteepUAV, instanceIndexFlatUAV};
+                renderSystem->m_Context->CSSetUnorderedAccessViews(0, 3, loadedUAVs, uavCounters);
+
                 renderSystem->m_Context->CSSetShaderResources(9, 1, &terrainSourceSRV);
-                renderSystem->m_Context->CSSetShaderResources(9, 1, &terrainSourceSRV);
+                renderSystem->m_Context->CSSetShaderResources(10, 1, &terrainMaskSRV);
                 // renderSystem->m_Context->CSSetShaderResources(2, 1, &instanceSRV);
                 // instanceIndexSRV ?
                 renderSystem->m_Context->Dispatch(gInstanceTransformsCount, 1, 1);
-                renderSystem->m_Context->CSSetUnorderedAccessViews(0, 1, &nullUAV, 0);
+                renderSystem->m_Context->CSSetUnorderedAccessViews(0, 3, nullUAVs, 0);
+
+
+                // Transfer append buffer counts to CPU
+                renderSystem->m_Context->CopyStructureCount(indexCounterHelperBuffer, 0, instanceIndexSteepUAV);
+                renderSystem->m_Context->CopyStructureCount(indexCounterHelperBuffer, 4, instanceIndexFlatUAV);
+
+                uint32_t  indexBuffers[2];
+                uint32_t& steepCount = indexBuffers[0];
+                uint32_t& flatCount  = indexBuffers[1];
+
+                D3D11_MAPPED_SUBRESOURCE mappedResource{};
+                renderSystem->GetContext()->Map(indexCounterHelperBuffer, 0, D3D11_MAP_READ, 0, &mappedResource);
+                memcpy(indexBuffers, mappedResource.pData, sizeof(uint32_t) * 2);
+                renderSystem->GetContext()->Unmap(indexCounterHelperBuffer, 0);
 
                 ID3D11HullShader*   nullHull   = nullptr;
                 ID3D11DomainShader* nullDomain = nullptr;
@@ -430,7 +471,7 @@ void TerrainManager::_update(float deltaTime)
 
                 renderSystem->m_Context->VSSetShaderResources(8, 1, &instanceSRV);
                 renderSystem->m_Context->IASetInputLayout(renderSystem->m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
-                for (auto& data : instanceDrawCallsData)
+                for (auto& data : instanceDrawCallsDataFlat)
                 {
                         StaticMesh* sm  = resourceManager->GetResource<StaticMesh>(data.mesh);
                         Material*   mat = resourceManager->GetResource<Material>(data.material);
@@ -444,7 +485,24 @@ void TerrainManager::_update(float deltaTime)
                         renderSystem->m_Context->VSSetShaderResources(9, 1, &nullSRV);
 
                         renderSystem->m_Context->VSSetShaderResources(9, 1, &instanceIndexFlatSRV);
-                        renderSystem->DrawMeshInstanced(vertexBuffer, indexBuffer, indexCount, vertexSize, mat, instancecount);
+                        renderSystem->DrawMeshInstanced(vertexBuffer, indexBuffer, indexCount, vertexSize, mat, flatCount, 0);
+                }
+
+                for (auto& data : instanceDrawCallsDataSteep)
+                {
+                        StaticMesh* sm  = resourceManager->GetResource<StaticMesh>(data.mesh);
+                        Material*   mat = resourceManager->GetResource<Material>(data.material);
+
+                        ID3D11Buffer* vertexBuffer = sm->m_VertexBuffer;
+                        ID3D11Buffer* indexBuffer  = sm->m_IndexBuffer;
+                        uint32_t      indexCount   = sm->m_IndexCount;
+                        uint32_t      vertexSize   = sizeof(FVertex);
+
+                        uint32_t instancecount = data.instanceCount;
+                        renderSystem->m_Context->VSSetShaderResources(9, 1, &nullSRV);
+
+                        renderSystem->m_Context->VSSetShaderResources(9, 1, &instanceIndexSteepSRV);
+                        renderSystem->DrawMeshInstanced(vertexBuffer, indexBuffer, indexCount, vertexSize, mat, steepCount, 0);
                 }
         }
 
@@ -481,6 +539,9 @@ void TerrainManager::_shutdown()
         SAFE_RELEASE(instanceUAV);
         SAFE_RELEASE(instanceIndexSteepUAV);
         SAFE_RELEASE(instanceIndexFlatUAV);
+        SAFE_RELEASE(terrainMaskSRV);
+
+        SAFE_RELEASE(indexCounterHelperBuffer);
 
         terrainConstantBufferGPU->Release();
         stagingTextureResource->Release();
