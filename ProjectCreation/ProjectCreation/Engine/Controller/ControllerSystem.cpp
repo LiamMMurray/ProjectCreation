@@ -2,6 +2,7 @@
 #include "ControllerSystem.h"
 
 #include <iostream>
+#include "../..//Rendering/Terrain/TerrainManager.h"
 #include "..//Gameplay/LightOrbColors.h"
 #include "../Controller/IController.h"
 #include "../CoreInput/CoreInput.h"
@@ -135,8 +136,18 @@ void ControllerSystem::OnUpdate(float deltaTime)
 
         if (GCoreInput::GetKeyState(KeyCode::Tab) == KeyState::DownFirst)
         {
+                using namespace DirectX;
+
                 m_Controllers[m_CurrentController]->SetEnabled(false);
+
+                IController* prevController = m_Controllers[m_CurrentController];
+
                 m_CurrentController = (E_CONTROLLERS)((m_CurrentController + 1) % E_CONTROLLERS::COUNT);
+
+                IController* currController = m_Controllers[m_CurrentController];
+                currController->GetControlledEntity().GetComponent<TransformComponent>()->transform.translation +=
+                    prevController->worldOffset;
+
                 m_Controllers[m_CurrentController]->SetEnabled(true);
                 HandleManager*  handleManager    = GEngine::Get()->GetHandleManager();
                 EntityHandle    controllerHandle = m_Controllers[m_CurrentController]->GetControlledEntity();

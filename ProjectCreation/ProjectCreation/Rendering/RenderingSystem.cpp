@@ -598,13 +598,13 @@ void RenderSystem::DrawLines()
         for (auto& it : speedboostSystem->m_SplineClusterSpawners)
         {
                 int vertexCount = it.second.cachedPoints.size() - 1;
-				
-                int separator = it.second.deleteIndex;
+
+                int separator  = it.second.deleteIndex;
                 int separation = it.second.deleteSeparation;
 
                 int lengthA = separator - separation;
 
-				int startB = separator + separation;
+                int startB  = separator + separation;
                 int lengthB = vertexCount - startB + 1;
 
 
@@ -628,8 +628,7 @@ void RenderSystem::DrawLines()
                 {
                         D3D11_MAPPED_SUBRESOURCE mappedResource{};
                         m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-                        memcpy(mappedResource.pData,
-                               it.second.cachedPoints.data() + startB, (lengthB) * sizeof(XMVECTOR));
+                        memcpy(mappedResource.pData, it.second.cachedPoints.data() + startB, (lengthB) * sizeof(XMVECTOR));
                         m_Context->Unmap(m_LineVertexBuffer, 0);
 
                         m_Context->Draw(lengthB, 0);
@@ -706,6 +705,38 @@ void RenderSystem::DrawMesh(ID3D11Buffer*      vertexBuffer,
                              sizeof(FSurfaceProperties));
 
         m_Context->DrawIndexed(indexCount, 0, 0);
+}
+
+void RenderSystem::DrawMeshInstanced(ID3D11Buffer*             vertexBuffer,
+                                     ID3D11Buffer*             indexBuffer,
+                                     uint32_t                  indexCount,
+                                     uint32_t                  vertexSize,
+                                     Material*                 material,
+                                     uint32_t                  instanceCount)
+{
+        using namespace DirectX;
+
+        const UINT strides[] = {vertexSize};
+        const UINT offsets[] = {0};
+
+        m_Context->IASetVertexBuffers(0, 1, &vertexBuffer, strides, offsets);
+        m_Context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+        VertexShader* vs = m_ResourceManager->GetResource<VertexShader>(material->m_VertexShaderHandle);
+        PixelShader*  ps = m_ResourceManager->GetResource<PixelShader>(material->m_PixelShaderHandle);
+
+        m_Context->VSSetShader(vs->m_VertexShader, nullptr, 0);
+        m_Context->PSSetShader(ps->m_PixelShader, nullptr, 0);
+
+        ID3D11ShaderResourceView* srvs[E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT];
+        m_ResourceManager->GetSRVs(E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, material->m_TextureHandles, srvs);
+
+        m_Context->PSSetShaderResources(0, E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, srvs);
+
+        UpdateConstantBuffer(m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE],
+                             &material->m_SurfaceProperties,
+                             sizeof(FSurfaceProperties));
+
+        m_Context->DrawIndexedInstanced(indexCount, instanceCount, 0, 0, 0);
 }
 
 void RenderSystem::DrawStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx)
@@ -1059,7 +1090,7 @@ void RenderSystem::OnUpdate(float deltaTime)
         UIManager::Update();
 
         DXGI_PRESENT_PARAMETERS parameters = {0};
-        m_Swapchain->Present1(1, 0, &parameters);
+        m_Swapchain->Present1(0, 0, &parameters);
 }
 
 void RenderSystem::OnPostUpdate(float deltaTime)

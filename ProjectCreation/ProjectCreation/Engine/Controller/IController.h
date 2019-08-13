@@ -33,7 +33,7 @@ class IController
 
         virtual void Init(EntityHandle handle);
         virtual void Shutdown();
-        inline void SetControlledEntity(EntityHandle handle)
+        inline void  SetControlledEntity(EntityHandle handle)
         {
                 m_ControlledEntityHandle = handle;
         }
@@ -42,4 +42,6 @@ class IController
         {
                 return m_ControlledEntityHandle;
         }
+
+        DirectX::XMVECTOR worldOffset = DirectX::XMVectorZero();
 };

@@ -50,10 +50,10 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
         // return vignetteIntensity;
 
         float3 bw               = 0.21 * color.r + 0.71 * color.g + 0.07 * color.b;
-        float  desaturationMask = 0.1f;
+        float  desaturationMask = 0.17f;
         color                   = lerp(color, bw, desaturationMask);
-        float  fogMask  = saturate((linearDepth - 50.0f) / 200.0f) * 0.6f * (1.0f - saturate((linearDepth - 800.0f) / 100.0f));
-        float3 fogColor         = float3(0.8f, 0.9f, 1.0f);
+        float  fogMask  = saturate((linearDepth - 10.0f) / 300.0f) * 0.8f * (1.0f - saturate((linearDepth - 800.0f) / 100.0f));
+        float3 fogColor         = float3(0.6f, 0.7f, 1.0f);
         color                   = lerp(color, fogColor, fogMask);
         float3 dither           = InterleavedGradientNoise(pos.xy + _time);
 

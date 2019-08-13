@@ -1,6 +1,7 @@
 #pragma once
 
 #include <DirectXMath.h>
+#include "..//..//Engine/MathLibrary/Transform.h"
 #include "..//..//Engine/ResourceManager/IResource.h"
 #include "..//..//Utility/ForwardDeclarations/D3DNativeTypes.h"
 class RenderSystem;
@@ -29,6 +30,14 @@ struct TerrainVertex
 {
         DirectX::XMFLOAT3 pos;
         DirectX::XMFLOAT2 tex;
+};
+
+struct FInstanceRenderData
+{
+        ResourceHandle        material;
+        ResourceHandle        mesh;
+        uint32_t              instanceCount;
+        std::vector<uint32_t> instanceIndexList;
 };
 
 class TerrainManager
@@ -62,6 +71,12 @@ class TerrainManager
         ID3D11RenderTargetView*   terrainIntermediateRenderTarget;
         ID3D11ShaderResourceView* terrainIntermediateSRV;
 
+        ID3D11Buffer*              instanceBuffer      = nullptr;
+        ID3D11Buffer*              instanceIndexBuffer = nullptr;
+        ID3D11ShaderResourceView*  instanceSRV         = nullptr;
+        ID3D11ShaderResourceView*  instanceIndexSRV    = nullptr;
+        ID3D11UnorderedAccessView* instanceUAV         = nullptr;
+
         ID3D11Buffer*    vertexBuffer;
         ID3D11Buffer*    indexBuffer;
         ID3D11Texture2D* stagingTextureResource;
@@ -70,6 +85,17 @@ class TerrainManager
 
         CTerrainInfoBuffer terrainConstantBufferCPU;
         ID3D11Buffer*      terrainConstantBufferGPU;
+
+        static constexpr unsigned int gInstanceTransformsCount = 2000;
+        unsigned int                  gActualTransformsCount   = 0;
+        FTransform                    m_InstanceTransforms[gInstanceTransformsCount];
+        DirectX::XMMATRIX             m_InstanceMatrices[gInstanceTransformsCount];
+        ResourceHandle                m_UpdateInstancesComputeShader;
+
+        std::vector<FInstanceRenderData> instanceDrawCallsData;
+
+        void GenerateInstanceTransforms(FTransform tArray[gInstanceTransformsCount]);
+        void WrapInstanceTransforms();
 
         void CreateVertexBuffer(ID3D11Buffer** buffer, unsigned int squareDimensions, float waterLevel, float scale);
         void CreateIndexBuffer(ID3D11Buffer** buffer, unsigned int squareDimensions);
@@ -96,10 +122,12 @@ class TerrainManager
                 return groundOffset;
         }
         static TerrainManager* Get();
-        DirectX::XMVECTOR      AlignPositionToTerrain(const DirectX::XMVECTOR& pos);
-        static void            Initialize(RenderSystem* rs);
-        static void            Update(float deltaTime);
-        static void            Shutdown();
+
+
+        DirectX::XMVECTOR AlignPositionToTerrain(const DirectX::XMVECTOR& pos);
+        static void       Initialize(RenderSystem* rs);
+        static void       Update(float deltaTime);
+        static void       Shutdown();
 
         inline float GetScale()
         {

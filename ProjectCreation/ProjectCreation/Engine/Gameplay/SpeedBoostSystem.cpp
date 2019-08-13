@@ -126,17 +126,20 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
         XMStoreFloat3(&posMin, XMVectorZero());
         XMStoreFloat3(&posMax, fw);
 
-        XMStoreFloat3(&velMin, -rt * 0.05f);
-        XMStoreFloat3(&velMax, +rt * 0.05f + VectorConstants::Up * 1.0f);
+        XMStoreFloat3(&velMin, -rt * 2.05f);
+        XMStoreFloat3(&velMax, +rt * 2.05f + VectorConstants::Up * 10.0f);
 
-        XMStoreFloat3(&accel, fw * 2.5f - VectorConstants::Up * 0.5f);
+        XMStoreFloat3(&accel, fw * 2.5f - VectorConstants::Up * 9.5f);
 
-        // auto emitterComponent                            = entityH.GetComponent<EmitterComponent>();
-        emitterComponent->maxCount                       = 10;
+        auto emitterComponent      = entityH.GetComponent<EmitterComponent>();
+        emitterComponent->maxCount = 10;
+        //emitterComponent->spawnRate = 200.0f;
+
         emitterComponent->EmitterData.minOffset          = posMin;
         emitterComponent->EmitterData.maxOffset          = posMax;
         emitterComponent->EmitterData.minInitialVelocity = velMin;
         emitterComponent->EmitterData.maxInitialVelocity = velMax;
+        emitterComponent->EmitterData.lifeSpan.x = 20.0f;
         emitterComponent->EmitterData.acceleration       = accel;
         emitterComponent->EmitterData.particleScale      = XMFLOAT2(0.05f, 0.05f);
 
