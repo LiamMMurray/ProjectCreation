@@ -80,6 +80,7 @@ void Bloom::Initialize(ID3D11Device1* device, ID3D11DeviceContext1* context, D3D
         m_BloomUpscalePS        = m_ResourceManager->LoadPixelShader("BloomUpscale");
         m_BloomDownscalePS      = m_ResourceManager->LoadPixelShader("BloomDownscale");
         m_BloomDownscaleKarisPS = m_ResourceManager->LoadPixelShader("BloomDownscaleKaris");
+        m_AONormals             = m_ResourceManager->LoadTexture2D("RandomNormalsAO");
 
         D3D11_BUFFER_DESC cbDesc{};
         cbDesc.Usage          = D3D11_USAGE_DYNAMIC;
@@ -209,6 +210,9 @@ void Bloom::Render(ID3D11ShaderResourceView** inSRV, ID3D11RenderTargetView** ou
         m_Context->PSSetShader(combinePS->m_PixelShader, nullptr, 0);
 
         m_Context->PSSetShaderResources(E_BLOOM_PS_SRV::SCREEN, 1, inSRV);
+
+        Texture2D* aoTex = m_ResourceManager->GetResource<Texture2D>(m_AONormals);
+        m_Context->PSSetShaderResources(3, 1, &aoTex->m_SRV);
 
         m_Context->Draw(4, 0);
 }

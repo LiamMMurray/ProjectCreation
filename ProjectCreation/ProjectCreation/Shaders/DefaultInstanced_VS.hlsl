@@ -29,6 +29,7 @@ INPUT_PIXEL main(INPUT_VERTEX vIn)
 
         Pos.xz *= pow(lifeTime, 2.0f);
         Pos.y *= pow(lifeTime, 0.5f);
+        Pos.xyz *= 2.0f;
 
         output.PosWS = mul(Pos, instanceWorld).xyz;
         output.Pos   = mul(float4(output.PosWS, 1.0f), ViewProjection);

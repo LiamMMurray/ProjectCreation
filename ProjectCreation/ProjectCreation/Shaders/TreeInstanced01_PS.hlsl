@@ -99,14 +99,18 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         }
         surface.diffuseColor = saturate(surface.diffuseColor);
 
-        float3 genericA = diffuseMap.Sample(sampleTypeWrap, pIn.Tex * 8.0f).a;
+        float3 genericA = diffuseMap.Sample(sampleTypeWrap, pIn.Tex * 16.0f).a;
 
-        float fresnel = saturate(dot(pIn.NormalWS, viewWS));
-        fresnel       = 1.0f - saturate(pow(fresnel + 0.6f, 20.0f));
-        fresnel *= saturate(pow(genericA.b + 0.2f, 4.0f));
+        float fresnel     = saturate(dot(pIn.NormalWS, viewWS));
+        fresnel           = 1.0f - saturate(pow(fresnel + 0.3f, 10.0f));
+        float fresnelMask = saturate(pow(genericA.b + 0.2f, 4.0f));
+        // return fresnelMask;
+        fresnel *= fresnelMask;
 
         fresnel = 1.0f - fresnel;
+
         clip(fresnel < 0.5f ? -1 : 1);
+
 
         if (HasSpecularTexture(_textureFlags))
         {
@@ -123,7 +127,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         }
         // Remapping roughness to prevent errors on normal distribution
         surface.roughness = max(surface.roughness, 0.08f);
-        surface.metallic  = 1.0f;
+        // surface.metallic  = 1.0f;
         // surface.diffuseColor = float3(0.1f, 0.2f, 0.3f);
         if (HasAOTexture(_textureFlags))
         {
@@ -160,7 +164,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         }
 
         // Non metals use a constant for this value
-        float3 specColor = 0.04f;
+        float3 specColor = 0.00f;
         // Lerp between diffuse color and constant based on metallic. Ideally metallic should be either 1 or 0
         specColor = lerp(specColor, surface.diffuseColor, surface.metallic);
 
@@ -181,7 +185,9 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
                 float3 diffuse     = IBLDiffuse.Sample(sampleTypeWrap, N).rgb;
                 float3 specular    = IBLSpecular.SampleLevel(sampleTypeWrap, reflectionVector, surface.roughness * 10.f).rgb;
                 float2 integration = IBLIntegration.Sample(sampleTypeNearest, float2(NdotV, 1.f - surface.roughness)).rg;
-                color += IBL(surface, viewWS, specColor, diffuse, specular, integration);
+
+                // color += IBL(surface, viewWS, specColor, diffuse, specular, integration);
+                color += _AmbientColor * surface.ambient * surface.diffuseColor;
         }
         return float4(color, 1.0f);
 

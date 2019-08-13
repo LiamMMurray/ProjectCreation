@@ -16,7 +16,7 @@ AppendStructuredBuffer<uint>      InstanceIndicesFlat : register(u2);
                                 : SV_DispatchThreadID) {
         uint   id    = DTid.x;
         float3 pos   = float3(InstanceTransforms[id].mtx._41, InstanceTransforms[id].mtx._42, InstanceTransforms[id].mtx._43);
-        float  scale = 100.0f;
+        float  scale = gScale / 2.0f;
 
         float2 MinLocal  = float2(-0.5f * scale, -0.5f * scale);
         float2 MinGlobal = float2(-0.5f * gScale, -0.5f * gScale);
@@ -46,7 +46,11 @@ AppendStructuredBuffer<uint>      InstanceIndicesFlat : register(u2);
 
         InstanceTransforms[id].lifeTime *= _InstanceReveal;
 
-        if (deltaPos < scale / 2.0f)
+        bool isSteep = id > 30000;
+
+        float distanceToEye = distance(_EyePosition, pos);
+
+        if (deltaPos < scale / 10.0f)
         {
                 InstanceTransforms[id].lifeTime = min(InstanceTransforms[id].lifeTime + _DeltaTime, 1.0f);
 
@@ -54,7 +58,7 @@ AppendStructuredBuffer<uint>      InstanceIndicesFlat : register(u2);
                 {
                         InstanceIndicesFlat.Append(id);
                 }
-                else if (InstanceTransforms[id].flags & IS_STEEP)
+                else if (InstanceTransforms[id].flags & IS_STEEP && isSteep)
                 {
                         InstanceIndicesSteep.Append(id);
                 }
@@ -66,12 +70,14 @@ AppendStructuredBuffer<uint>      InstanceIndicesFlat : register(u2);
 
         float seed                      = id * 3.64567f + _Time;
         InstanceTransforms[id].lifeTime = RandomFloatInRange(seed, -5.0f, 0.0f);
+
+
         if (slopeMaskSample.r > 0.5f)
         {
                 InstanceTransforms[id].flags |= IS_FLAT;
                 InstanceIndicesFlat.Append(id);
         }
-        else if (slopeMaskSample.g > 0.5f)
+        else if (slopeMaskSample.g > 0.5f && isSteep)
         {
                 InstanceTransforms[id].flags &= ~IS_FLAT;
                 InstanceTransforms[id].flags |= IS_STEEP;

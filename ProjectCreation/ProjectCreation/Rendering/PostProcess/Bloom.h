@@ -64,6 +64,7 @@ class Bloom : public PostProcessEffectBase
         ResourceHandle m_BloomUpscalePS;
         ResourceHandle m_BloomDownscalePS;
         ResourceHandle m_BloomDownscaleKarisPS;
+        ResourceHandle m_AONormals;
 
     public:
         // Inherited via PostProcessEffectBase

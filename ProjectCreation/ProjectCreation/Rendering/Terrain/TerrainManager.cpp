@@ -199,7 +199,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
         ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
 
         FInstanceRenderData renderTestDataFlat;
-        renderTestDataFlat.mesh     = resourceManager->LoadStaticMesh("PineTree01");
+        renderTestDataFlat.mesh     = resourceManager->LoadStaticMesh("Tree01");
         renderTestDataFlat.material = resourceManager->LoadMaterial("Tree01");
 
 
@@ -549,13 +549,14 @@ void TerrainManager::_shutdown()
 
 void TerrainManager::GenerateInstanceTransforms(FTransform tArray[gInstanceTransformsCount])
 {
+        float scale = GetScale() / 2.0f;
         for (int i = 0; i < gInstanceTransformsCount; ++i)
         {
-                float x               = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
-                float y               = 100.0f * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
+                float x               = scale * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
+                float y               = scale * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
                 tArray[i].translation = XMVectorSet(x, 0.0f, y, 1.0f);
                 tArray[i].rotation = FQuaternion::RotateAxisAngle(VectorConstants::Up, MathLibrary::GetRandomFloat() * 360.0f);
-                tArray[i].SetScale(MathLibrary::RandomFloatInRange(0.8f, 1.2f));
+                tArray[i].SetScale(MathLibrary::RandomFloatInRange(0.3f, 0.8f));
         }
 }
 
