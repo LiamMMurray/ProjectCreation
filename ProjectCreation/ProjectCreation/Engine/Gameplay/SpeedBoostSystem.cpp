@@ -29,6 +29,7 @@
 #include "../AI/AIComponent.h"
 
 #include "../Particle Systems/EmitterComponent.h"
+#include "../../Utility/Random.h"
 
 using namespace DirectX;
 
@@ -836,7 +837,7 @@ void SpeedBoostSystem::OnInitialize()
                 m_Paths[i] = mazeGenerator.GeneratePath(15, 15, 8, 0, 8, 14);
         }
 
-        std::random_shuffle(m_Paths.begin(), m_Paths.end());
+		std::shuffle(m_Paths.begin(), m_Paths.end(), default_random_engine);
 
         EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
                                         ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
