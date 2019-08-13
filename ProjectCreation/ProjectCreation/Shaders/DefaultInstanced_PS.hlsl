@@ -93,7 +93,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
 
         if (HasDiffuseTexture(_textureFlags))
         {
-                float4 diffuse = diffuseMap.Sample(sampleTypeWrap, pIn.Tex);
+                float4 diffuse = 1.3f * diffuseMap.Sample(sampleTypeWrap, pIn.Tex);
 
                 if (IsMasked(_textureFlags))
                 {
@@ -185,7 +185,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
                 float2 integration = IBLIntegration.Sample(sampleTypeNearest, float2(NdotV, 1.f - surface.roughness)).rg;
                 color += IBL(surface, viewWS, specColor, diffuse, specular, integration);
         }
-        // return float4(color, 1.0f);
+        return float4(color, 1.0f);
 
         float maskA     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 45.0f + _Time * 0.01f * float2(1.0f, 0.0f)).z;
         float maskB     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 40.0f + _Time * 0.01f * float2(-1.0f, 0.0f)).z;

@@ -121,4 +121,5 @@ class GEngine
         {
                 m_WantsGameExit = true;
         }
+        float m_InstanceReveal = 0.0f;
 };

@@ -9,6 +9,18 @@ Texture2D ScreenDepth : register(t1);
 Texture2D BloomTexture : register(t0);
 Texture2D MaskTexture : register(t5);
 
+static float3 fixedOffsets[] = {
+    normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)),
+    normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)),
+    normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)),
+    normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)),
+    normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)),
+    normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)),
+    normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)),
+    normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)),
+    normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)), normalize(float3(1.0f, 1.0f, 1.0f)),
+    normalize(float3(1.0f, 1.0f, 1.0f))};
+
 float3 VSPositionFromDepth(float2 vTexCoord)
 {
         // Get the depth value for this pixel
@@ -53,9 +65,34 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
         float  desaturationMask = 0.17f;
         color                   = lerp(color, bw, desaturationMask);
         float  fogMask  = saturate((linearDepth - 10.0f) / 300.0f) * 0.8f * (1.0f - saturate((linearDepth - 800.0f) / 100.0f));
-        float3 fogColor         = float3(0.6f, 0.7f, 1.0f);
-        color                   = lerp(color, fogColor, fogMask);
-        float3 dither           = InterleavedGradientNoise(pos.xy + _time);
+        float3 fogColor = float3(0.6f, 0.7f, 1.0f);
+        color           = lerp(color, fogColor, fogMask);
+
+        float depthDelta = 0.0f;
+
+        int   count      = 5;
+        float proportion = 1.0f / ((count * 2 + 1) * (count * 2 + 1) - 1);
+
+        float2 randOffset = float2(3.0f, 3.0f);
+
+       //float3 posVS    = viewPos;
+       //float3 posVS1   = VSPositionFromDepth(texCoord + float2(invScreen.x, 0.0f));
+       //float3 posVS2   = VSPositionFromDepth(texCoord + float2(0.0f, invScreen.y));
+       //float3 normalVS = normalize(cross(posVS1 - posVS, posVS2 - posVS));
+	   //
+       //float x = rand_2_10(texCoord);
+       //float y = rand_2_10(texCoord + x);
+       //float z = rand_2_10(texCoord + y);
+	   //
+       //float3 randomVec = normalize(float3(x, y, z)) * 2.0f - 1.0f;
+
+        int sampleCount = 20;
+        for (int i = 0; i < sampleCount; ++i) {}
+
+        //return 1.0f - depthDelta;
+        color *= lerp(1.0f, 0.0f, depthDelta);
+
+        float3 dither = InterleavedGradientNoise(pos.xy + _time);
 
         color += bloom;
         color += 0.004f * dither / 255;

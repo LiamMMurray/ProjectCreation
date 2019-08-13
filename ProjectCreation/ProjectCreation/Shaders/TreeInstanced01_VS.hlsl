@@ -25,7 +25,7 @@ INPUT_PIXEL main(INPUT_VERTEX vIn)
         INPUT_PIXEL output = (INPUT_PIXEL)0;
 
         matrix instanceWorld = TransformMatrices[TransformIndices[vIn.instanceID]].mtx;
-        float  lifeTime      = TransformMatrices[TransformIndices[vIn.instanceID]].lifeTime;
+        float  lifeTime      = saturate(TransformMatrices[TransformIndices[vIn.instanceID]].lifeTime);
         uint   flags         = TransformMatrices[TransformIndices[vIn.instanceID]].flags;
         float4 Pos           = float4(vIn.Pos, 1.0f);
 
@@ -34,11 +34,11 @@ INPUT_PIXEL main(INPUT_VERTEX vIn)
 
 
         float2 windDir     = float2(1.0f, 0.0f);
-        float  hWave       = sin(_Time * 0.5f + dot(objPos, windDir));
+        float  hWave       = sin(_Time * 1.4f + dot(objPos, windDir));
         hWave              = remap(hWave, -1.0f, 1.0f, -0.2f, 1.0f);
         float vWave        = remap(sin(_Time * 2.5f + Pos.y / 0.5f), -1.0f, 1.0f, 0.8f, 1.0f);
         float heightFactor = saturate(Pos.y / 2.0f);
-        float windStrength = 0.2f * hWave * vWave * heightFactor;
+        float windStrength = 0.4f * hWave * vWave * heightFactor;
 
         Pos.xz += windDir * windStrength;
         Pos.xz *= pow(lifeTime, 2.0f);

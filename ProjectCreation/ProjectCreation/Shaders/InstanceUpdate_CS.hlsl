@@ -18,7 +18,6 @@ AppendStructuredBuffer<uint>      InstanceIndicesFlat : register(u2);
         float3 pos   = float3(InstanceTransforms[id].mtx._41, InstanceTransforms[id].mtx._42, InstanceTransforms[id].mtx._43);
         float  scale = 100.0f;
 
-
         float2 MinLocal  = float2(-0.5f * scale, -0.5f * scale);
         float2 MinGlobal = float2(-0.5f * gScale, -0.5f * gScale);
         // Min        = float2(-10.0f, -10.0f);
@@ -45,9 +44,11 @@ AppendStructuredBuffer<uint>      InstanceIndicesFlat : register(u2);
         float deltaPos = distance(pos.xz, prevPos.xz);
 
 
+        InstanceTransforms[id].lifeTime *= _InstanceReveal;
+
         if (deltaPos < scale / 2.0f)
         {
-                InstanceTransforms[id].lifeTime = saturate(InstanceTransforms[id].lifeTime + _DeltaTime);
+                InstanceTransforms[id].lifeTime = min(InstanceTransforms[id].lifeTime + _DeltaTime, 1.0f);
 
                 if (InstanceTransforms[id].flags & IS_FLAT)
                 {
@@ -63,7 +64,8 @@ AppendStructuredBuffer<uint>      InstanceIndicesFlat : register(u2);
         InstanceTransforms[id].mtx._41 = pos.x;
         InstanceTransforms[id].mtx._43 = pos.z;
 
-        InstanceTransforms[id].lifeTime = 0.0f;
+        float seed                      = id * 3.64567f + _Time;
+        InstanceTransforms[id].lifeTime = RandomFloatInRange(seed, -5.0f, 0.0f);
         if (slopeMaskSample.r > 0.5f)
         {
                 InstanceTransforms[id].flags |= IS_FLAT;

@@ -20,12 +20,15 @@ StructuredBuffer<uint>          TransformIndices : register(t9);
 
 INPUT_PIXEL main(INPUT_VERTEX vIn)
 {
-        INPUT_PIXEL  output = (INPUT_PIXEL)0;
-        const float4 Pos    = float4(vIn.Pos, 1.0f);
+        INPUT_PIXEL output = (INPUT_PIXEL)0;
+        float4      Pos    = float4(vIn.Pos, 1.0f);
 
         matrix instanceWorld = TransformMatrices[TransformIndices[vIn.instanceID]].mtx;
-        float  lifeTime      = TransformMatrices[TransformIndices[vIn.instanceID]].lifeTime;
+        float  lifeTime      = saturate(TransformMatrices[TransformIndices[vIn.instanceID]].lifeTime);
         uint   flags         = TransformMatrices[TransformIndices[vIn.instanceID]].flags;
+
+        Pos.xz *= pow(lifeTime, 2.0f);
+        Pos.y *= pow(lifeTime, 0.5f);
 
         output.PosWS = mul(Pos, instanceWorld).xyz;
         output.Pos   = mul(float4(output.PosWS, 1.0f), ViewProjection);
