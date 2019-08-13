@@ -27,9 +27,8 @@ INPUT_PIXEL main(INPUT_VERTEX vIn)
         float  lifeTime      = saturate(TransformMatrices[TransformIndices[vIn.instanceID]].lifeTime);
         uint   flags         = TransformMatrices[TransformIndices[vIn.instanceID]].flags;
 
-        Pos.xz *= pow(lifeTime, 2.0f);
-        Pos.y *= pow(lifeTime, 0.5f);
-        Pos.xyz *= 2.0f;
+        Pos.xz *= 2.5f * pow(lifeTime, 2.0f);
+        Pos.y *= 1.5f * pow(lifeTime, 0.5f);
 
         output.PosWS = mul(Pos, instanceWorld).xyz;
         output.Pos   = mul(float4(output.PosWS, 1.0f), ViewProjection);

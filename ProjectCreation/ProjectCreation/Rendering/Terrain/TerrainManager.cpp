@@ -556,7 +556,7 @@ void TerrainManager::GenerateInstanceTransforms(FTransform tArray[gInstanceTrans
                 float y               = scale * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
                 tArray[i].translation = XMVectorSet(x, 0.0f, y, 1.0f);
                 tArray[i].rotation = FQuaternion::RotateAxisAngle(VectorConstants::Up, MathLibrary::GetRandomFloat() * 360.0f);
-                tArray[i].SetScale(MathLibrary::RandomFloatInRange(0.3f, 0.8f));
+                tArray[i].SetScale(MathLibrary::RandomFloatInRange(0.5f, 1.1f));
         }
 }
 

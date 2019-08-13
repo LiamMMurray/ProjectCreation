@@ -46,9 +46,20 @@ AppendStructuredBuffer<uint>      InstanceIndicesFlat : register(u2);
 
         InstanceTransforms[id].lifeTime *= _InstanceReveal;
 
-        bool isSteep = id > 30000;
+        bool isSteep = id > 12000;
 
-        float distanceToEye = distance(_EyePosition, pos);
+        float distanceToEye       = distance(_EyePosition, pos);
+        float linearDistanceRatio = saturate((distanceToEye + 30.0f) / (scale * 0.5f));
+        uint  maxStep             = 6;
+        uint  step                = lerp(0, maxStep - 1, linearDistanceRatio);
+        bool  shouldAppend        = (id % maxStep) >= step || isSteep;
+
+        if (shouldAppend == false)
+        {
+                float seed                      = id * 3.64567f + _Time;
+                InstanceTransforms[id].lifeTime = RandomFloatInRange(seed, -5.0f, 0.0f);
+                return;
+        }
 
         if (deltaPos < scale / 10.0f)
         {

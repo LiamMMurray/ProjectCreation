@@ -93,7 +93,7 @@ class TerrainManager
         CTerrainInfoBuffer terrainConstantBufferCPU;
         ID3D11Buffer*      terrainConstantBufferGPU;
 
-        static constexpr unsigned int gInstanceTransformsCount = 32000;
+        static constexpr unsigned int gInstanceTransformsCount = 15000;
         FTransform                    m_InstanceTransforms[gInstanceTransformsCount];
         FInstanceData                 m_InstanceData[gInstanceTransformsCount];
         ResourceHandle                m_UpdateInstancesComputeShader;
