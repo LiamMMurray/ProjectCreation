@@ -37,50 +37,17 @@ GamePad::GamePad()
         xInputToKeyState.insert(std::make_pair(XINPUT_KEYSTROKE_REPEAT, (uint16_t)KeyState::Down));
 }
 
-void GamePad::TestGamePadRumble()
+void GamePad::IsVibrating(float strength)
 {
-        if (&m_GamePadRumble != NULL)
-        {
-                int currRumble = MAX_RUMBLE * 0.75f;
-
-                while (currRumble > 0)
-                {
-                        m_GamePadRumble.wLeftMotorSpeed  = currRumble;
-                        m_GamePadRumble.wRightMotorSpeed = currRumble;
-
-                        currRumble = MathLibrary::MoveTowards(currRumble, 0, GEngine::Get()->GetDeltaTime() * 0.5f);
-                        XInputSetState(0, &m_GamePadRumble);
-                }
-        }
+        instance->m_GamePadRumble.wLeftMotorSpeed = MAX_RUMBLE * strength;
+        XInputSetState(instance->cId, &instance->m_GamePadRumble);
+        std::cout << "Rumble Strength: " << instance->m_GamePadRumble.wLeftMotorSpeed << std::endl;
 }
 
 const uint16_t GamePad::IsPressed(const WORD button) const
 {
         uint16_t output     = (m_InputState.Gamepad.wButtons & button) != 0;
         uint16_t prevOutput = (m_PrevInputState.Gamepad.wButtons & button) != 0;
-
- /*       XINPUT_KEYSTROKE keystroke;
-        XInputGetKeystroke(XUSER_INDEX_ANY, XINPUT_FLAG_GAMEPAD, &keystroke);
-
-        if ((keystroke.Flags == XINPUT_KEYSTROKE_KEYDOWN && m_InputState.Gamepad.wButtons == button) || output == 3)
-        {
-                return DownFirst;
-        }
-
-        else if ((keystroke.Flags == XINPUT_KEYSTROKE_REPEAT && m_InputState.Gamepad.wButtons == button) || output == 1)
-        {
-                return Down;
-        }
-
-        else if ((keystroke.Flags == XINPUT_KEYSTROKE_KEYUP && m_InputState.Gamepad.wButtons == button) || output == 2)
-        {
-                return Release;
-        }
-
-        else
-        {
-                return Unpressed;
-        }*/
 
         // 0 = Unpressed
         // 1 = Down
@@ -136,7 +103,7 @@ bool GamePad::Refresh()
         if (instance->cId == -1)
                 CheckConnection();
 
-        if (cId != -1)
+        if (instance->cId != -1)
         {
                 m_PrevInputState = m_InputState;
                 ZeroMemory(&instance->m_InputState, sizeof(XINPUT_STATE));
@@ -188,7 +155,7 @@ GamePad* GamePad::Get()
 void GamePad::Init()
 {
         instance             = new GamePad();
-        instance->MAX_RUMBLE = 65535;
+        instance->MAX_RUMBLE = 65535.0f;
         instance->normLX     = fmaxf(-1, (float)instance->m_InputState.Gamepad.sThumbLX / 32767);
         instance->normLY     = fmaxf(-1, (float)instance->m_InputState.Gamepad.sThumbLY / 32767);
         instance->deadzoneX  = 0.1f;

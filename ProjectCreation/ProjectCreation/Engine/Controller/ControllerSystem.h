@@ -73,6 +73,10 @@ class ControllerSystem : public ISystem
         int m_OrbCounts[E_LIGHT_ORBS::COUNT] = {};
         int m_PrevOrbColor;
 
+		bool IsVibrating;
+
+		float rumbleStrength;
+
         void DisplayConsoleMenu();
 
         // Returns the number of orbs collected of a certain color based on passed in parameter

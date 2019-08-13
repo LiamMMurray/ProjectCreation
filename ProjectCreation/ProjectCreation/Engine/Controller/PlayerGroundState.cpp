@@ -8,6 +8,9 @@
 #include "../CoreInput/CoreInput.h"
 #include "PlayerControllerStateMachine.h"
 #include "PlayerMovement.h"
+#include <cmath>
+
+#define _USE_MATH_DEFINES
 
 using namespace DirectX;
 
@@ -77,7 +80,7 @@ void PlayerGroundState::Update(float deltaTime)
 
         XMFLOAT3 eulerAngles = _playerController->GetEulerAngles();
 
-		float angularSpeedMod = _playerController->GetAngularSpeedMod();
+        float angularSpeedMod = _playerController->GetAngularSpeedMod();
 
         float           angularSpeed = XMConvertToRadians(angularSpeedMod) * deltaTime;
         constexpr float pitchLimit   = XMConvertToRadians(90.0f);
@@ -89,28 +92,27 @@ void PlayerGroundState::Update(float deltaTime)
         // Controller Is Connected
         if (GamePad::Get()->CheckConnection() == true)
         {
-                _playerController->SetAngularSpeedMod(40.0f);
+                _playerController->SetAngularSpeedMod(100.0f);
                 angularSpeed = XMConvertToRadians(angularSpeedMod) * deltaTime;
                 eulerAngles.x += -GamePad::Get()->leftStickY * angularSpeed;
                 pitchDelta = eulerAngles.x - pitchDelta;
-
+				
                 eulerAngles.y += GamePad::Get()->leftStickX * angularSpeed;
                 yawDelta = eulerAngles.y - yawDelta;
-
-                eulerAngles.z += GamePad::Get()->leftStickX * angularSpeed;
-
-                eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
 				
+                eulerAngles.z += GamePad::Get()->leftStickX * angularSpeed;
+				
+                eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
         }
 
         // Controller Isn't Connected
         else
         {
-                //float pitchDelta = eulerAngles.x;
+                // float pitchDelta = eulerAngles.x;
                 eulerAngles.x += GCoreInput::GetMouseY() * angularSpeed;
                 pitchDelta = eulerAngles.x - pitchDelta;
 
-                //float yawDelta = eulerAngles.y;
+                // float yawDelta = eulerAngles.y;
                 eulerAngles.y += GCoreInput::GetMouseX() * angularSpeed;
                 yawDelta = eulerAngles.y - yawDelta;
 

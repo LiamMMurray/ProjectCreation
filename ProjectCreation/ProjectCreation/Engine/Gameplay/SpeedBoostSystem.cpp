@@ -326,6 +326,11 @@ void SpeedBoostSystem::RequestUnlatchFromSpline(PlayerController* playerControll
                         DestroySpline(latchedSplineComp->clusterID, latchedSplineComp->index);
                 }
         }
+
+        if (inPath == true)
+        {
+                inPath = false;
+        }
 }
 
 void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
@@ -395,7 +400,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
         targetTerrain = m_targetTerrain;
 
-
         GEngine::Get()->m_TerrainAlpha = MathLibrary::lerp(GEngine::Get()->m_TerrainAlpha, targetTerrain, deltaTime * 0.1f);
 
         if (GCoreInput::GetKeyState(KeyCode::T) == KeyState::DownFirst)
@@ -431,6 +435,14 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 euler.x           = 0.0f;
                 FQuaternion quat  = FQuaternion::FromEulerAngles(euler);
                 flatPlayerForward = quat.GetForward();
+        }
+
+        auto activeBoosts = m_HandleManager->GetActiveComponents<SpeedboostComponent>();
+
+
+        if (inPath == false && inTutorial == false)
+        {
+                m_EnableRandomSpawns = true;
         }
 
         // m_PlayerEffectRadius                       = 25.0f;
@@ -559,6 +571,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         }
                 }
 
+
                 if (latchedSplineIndex != -1 || shouldLatch)
                 {
                         SpeedboostSplineComponent* latchedSplineComp = latchedSplineHandle.Get<SpeedboostSplineComponent>();
@@ -601,7 +614,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 Shapes::FCapsule capsuleA;
                                 Shapes::FCapsule capsuleB;
 
-                                bool inPath = false;
 
                                 capsuleA.startPoint = currPos + offset;
                                 capsuleA.endPoint   = nextPos + offset;
@@ -639,7 +651,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 {
                                         if (GamePad::Get()->CheckConnection() == true)
                                         {
-                                                playerController->SetAngularSpeedMod(50.0f);
+                                                playerController->SetAngularSpeedMod(100.0f);
                                         }
 
                                         if (latchedSplineIndex != latchedSplineComp->index)
@@ -653,6 +665,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                 settings.flags.set(SoundComponent3D::E_FLAGS::DestroyOnEnd, true);
                                                 settings.m_Volume = 1.0f;
                                                 AudioManager::Get()->PlaySoundAtLocation(currPos, settings);
+                                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating    = true;
+                                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrength = 0.25f;
                                         }
 
                                         latchedSplineIndex   = latchedSplineComp->index;
@@ -732,13 +746,13 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                         // Player has fallen off the spline
                                         if (GamePad::Get()->CheckConnection() == true)
                                         {
-                                                playerController->SetAngularSpeedMod(30.0f);
+                                                playerController->SetAngularSpeedMod(100.0f);
                                         }
 
-										else
-										{
+                                        else
+                                        {
                                                 playerController->SetAngularSpeedMod(5.0f);
-										}
+                                        }
 
                                         RequestUnlatchFromSpline(playerController, deltaTime);
                                         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
@@ -840,6 +854,9 @@ void SpeedBoostSystem::OnPostUpdate(float deltaTime)
 
 void SpeedBoostSystem::OnInitialize()
 {
+
+        inPath     = false;
+        inTutorial = true;
 
         m_HandleManager    = GEngine::Get()->GetHandleManager();
         m_SystemManager    = GEngine::Get()->GetSystemManager();

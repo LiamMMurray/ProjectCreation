@@ -55,3 +55,22 @@ uint16_t InputActions::MoveAction()
 
         return returnType;
 }
+
+uint16_t InputActions::EnterAction()
+{
+        uint16_t returnType;
+
+        if (GamePad::Get()->CheckConnection() == true) // has controller
+        {
+                returnType = (KeyState)GCoreInput::GetControllerState(ControllerCode::BUTTON_BACK);
+                if (returnType == KeyState::DownFirst)
+                {
+                        int temp = 0;
+                }
+                return returnType;
+        }
+
+        returnType = (uint16_t)GCoreInput::GetKeyState(KeyCode::Enter);
+
+        return returnType;
+}

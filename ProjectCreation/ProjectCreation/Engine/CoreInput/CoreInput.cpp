@@ -16,6 +16,7 @@ uint8_t GCoreInput::ControllerStates[24]{};
 
 void GCoreInput::InitializeInput(HWND hwnd)
 {
+
         RAWINPUTDEVICE Rid[2];
 		
         Rid[0].usUsagePage = 0x01;

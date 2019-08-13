@@ -118,6 +118,20 @@ void ControllerSystem::OnUpdate(float deltaTime)
                 std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
         }
 
+        if (IsVibrating == true)
+        {
+                if (rumbleStrength <= 0)
+                {
+                        IsVibrating = false;
+                }
+
+                else
+                {
+                        rumbleStrength = MathLibrary::MoveTowards(rumbleStrength, 0, deltaTime * 1.5f);
+                        GamePad::Get()->IsVibrating(rumbleStrength);
+                }
+        }
+
 
         if (GCoreInput::GetKeyState(KeyCode::Tab) == KeyState::DownFirst)
         {
@@ -169,7 +183,8 @@ void ControllerSystem::OnPostUpdate(float deltaTime)
 void ControllerSystem::OnInitialize()
 {
 
-        GamePad::Get()->Init();
+        IsVibrating    = false;
+        rumbleStrength = 0.0f;
 
         m_SystemManager = GEngine::Get()->GetSystemManager();
         m_HandleManager = GEngine::Get()->GetHandleManager();
@@ -230,7 +245,6 @@ void ControllerSystem::OnShutdown()
                         delete m_Controllers[i];
                 }
         }
-        GamePad::Shutdown();
 }
 
 void ControllerSystem::OnResume()

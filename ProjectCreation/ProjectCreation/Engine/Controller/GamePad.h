@@ -9,14 +9,14 @@ class GamePad
         XINPUT_STATE     m_PrevInputState;
         XINPUT_GAMEPAD   m_InputGamePad;
         XINPUT_VIBRATION m_GamePadRumble;
-        int              MAX_RUMBLE;
+        float              MAX_RUMBLE;
 
 
     public:
         GamePad();
         static GamePad* instance;
 
-        void           TestGamePadRumble();
+        void           IsVibrating(float strength);
         const uint16_t IsPressed(const WORD button) const;
         bool           CheckConnection();
         bool           Refresh();

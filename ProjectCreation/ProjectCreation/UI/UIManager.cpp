@@ -12,9 +12,9 @@
 #include "../Utility/MemoryLeakDetection.h"
 
 #include "../Engine/ConsoleWindow/ConsoleWindow.h"
-#include "../Engine/Gameplay/SpeedBoostSystem.h"
 #include "../Engine/Controller/GamePad.h"
 #include "../Engine/CoreInput/InputActions.h"
+#include "../Engine/Gameplay/SpeedBoostSystem.h"
 
 
 class TutorialLevel;
@@ -483,61 +483,136 @@ void UIManager::Initialize(native_handle_type hwnd)
                           -0.35f,
                           true,
                           false);
+		
+	// GamePad is connected
+        if (GamePad::Get()->CheckConnection() == true)
+        {
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Calibri,
-                          "Press Enter to continue. . .",
-                          0.04f,
-                          0.0f,
-                          0.15f,
-                          true,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Press the Back Button to continue. . .",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  true,
+                                  false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Calibri,
-                          "Hold Left Click to Move",
-                          0.04f,
-                          0.0f,
-                          0.15f,
-                          false,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold Right Trigger to Move",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Calibri,
-                          "Hold A to collect Red lights",
-                          0.04f,
-                          0.0f,
-                          0.15f,
-                          false,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold the B Button to collect Red lights",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Calibri,
-                          "Hold S to collect Green lights",
-                          0.04f,
-                          0.0f,
-                          0.15f,
-                          false,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold the A Button to collect Green lights",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Calibri,
-                          "Hold D to collect Blue lights",
-                          0.04f,
-                          0.0f,
-                          0.15f,
-                          false,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold the X Button to collect Blue lights",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
+        }
+
+	// GamePad is not connected
+        if (GamePad::Get()->CheckConnection() == false)
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Press Enter to continue. . .",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  true,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold Left Click to Move",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Press Enter to continue. . .",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  true,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold A to collect Red lights",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold S to collect Green lights",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold D to collect Blue lights",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
+        }
 
         // Pause Menu
         instance->AddSprite(instance->m_RenderSystem->m_Device,
@@ -1541,7 +1616,7 @@ void UIManager::Update()
         // Pause & Unpause
         if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled == true)
         {
-                if (GCoreInput::GetKeyState(KeyCode::Enter) == KeyState::Down)
+                if (InputActions::EnterAction() == KeyState::Down)
                 {
                         instance->MainTilteUnpause();
                 }

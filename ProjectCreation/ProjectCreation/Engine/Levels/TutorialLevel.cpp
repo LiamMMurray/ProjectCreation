@@ -16,6 +16,8 @@ void TutorialLevel::Enter()
 
 		m_SpeedBoostSystem->ResetLevel();
 
+		m_SpeedBoostSystem->inTutorial = true;
+
         m_PlayerController->SetCollectedPlanetCount(0);
 
         m_WhiteCollected = m_RedCollected = m_GreenCollected = m_BlueCollected = false;
