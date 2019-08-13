@@ -221,7 +221,7 @@ void ParticleManager::init()
         m_PixelShaderHandle             = RESOURCE_MANAGER->LoadPixelShader("PurePixelShader");
         m_VertexShaderHandle            = RESOURCE_MANAGER->LoadVertexShader("PureVertexShader");
         m_GeometryShaderHandle          = RESOURCE_MANAGER->LoadGeometryShader("GeometryShaderTesting");
-        m_TextureHandle                 = RESOURCE_MANAGER->LoadTexture2D("atlasTest (2)");
+        m_TextureHandle                 = RESOURCE_MANAGER->LoadTexture2D("Particle pattern");
 
 
         D3D11_INPUT_ELEMENT_DESC layout1[] = {
