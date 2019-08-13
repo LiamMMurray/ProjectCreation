@@ -41,6 +41,7 @@ void TutorialLevel::Update(float deltaTime)
         else if (redCount <= 0 && m_WhiteCollected == true)
         {
                 UIManager::instance->WhiteOrbCollected();
+                m_OrbitSystem->sunAlignedTransformsSpawning.push_back(m_OrbitSystem->sunHandle);
                 SpawnFirstRedOrb();
                 // UI: Hold A to Collect Red Orbs
         }
@@ -48,6 +49,7 @@ void TutorialLevel::Update(float deltaTime)
         else if (greenCount <= 0 && m_RedCollected == true)
         {
                 UIManager::instance->RedOrbCollected();
+                m_OrbitSystem->sunAlignedTransformsSpawning.push_back(m_OrbitSystem->ring1Handle);
                 SpawnFirstGreenOrb();
                 // UI: Hold D to Collect Green Orbs
         }
@@ -56,6 +58,7 @@ void TutorialLevel::Update(float deltaTime)
         {
 
                 UIManager::instance->GreenOrbCollected();
+                m_OrbitSystem->sunAlignedTransformsSpawning.push_back(m_OrbitSystem->ring2Handle);
                 SpawnFirstBlueOrb();
                 // UI: Hold S to Collect Blue Orbs
         }
@@ -63,7 +66,7 @@ void TutorialLevel::Update(float deltaTime)
         else if (m_GreenCollected == false && greenCount <= 0 && m_BlueCollected == true)
         {
                 UIManager::instance->BlueOrbCollected();
-                SpawnFirstGreenOrb();
+                m_OrbitSystem->sunAlignedTransformsSpawning.push_back(m_OrbitSystem->ring3Handle);
                 // UI: Hold D to Collect Green Orbs
         }
 
@@ -97,6 +100,7 @@ void TutorialLevel::Update(float deltaTime)
             levelRequested <= 0)
         {
                 UIManager::instance->BlueOrbCollected();
+                m_OrbitSystem->sunAlignedTransformsSpawning.push_back(m_OrbitSystem->ring3Handle);
                 levelRequested += 1;
                 GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_01);
         }
@@ -108,6 +112,7 @@ void TutorialLevel::Exit()
 
 TutorialLevel::TutorialLevel()
 {
+        m_OrbitSystem      = GEngine::Get()->GetSystemManager()->GetSystem<OrbitSystem>();
         m_LevelType        = E_Level_States::TUTORIAL_LEVEL;
         m_SpeedBoostSystem = GEngine::Get()->GetSystemManager()->GetSystem<SpeedBoostSystem>();
         whiteCount = redCount = blueCount = greenCount = levelRequested = 0;

@@ -1,5 +1,6 @@
 #include "OrbitSystem.h"
 #include <limits>
+#include "../../Rendering/Components/StaticMeshComponent.h"
 #include "..//..//Rendering/Components/DirectionalLightComponent.h"
 #include "..//Controller/PlayerMovement.h"
 #include "..//CoreInput/CoreInput.h"
@@ -75,6 +76,30 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
 
 void OrbitSystem::UpdateSunAlignedObjects()
 {
+        float deltaTime = 0.02f;
+
+        size_t sizeSpawning = sunAlignedTransformsSpawning.size();
+
+        if (sizeSpawning > 0)
+        {
+                for (size_t i = sizeSpawning - 1; i >= 0; --i)
+                {
+                        TransformComponent* tc = sunAlignedTransformsSpawning[i].Get<TransformComponent>();
+
+                        float currentRadius = tc->transform.GetRadius();
+                        if (fabsf(currentRadius - 150.0f) < 0.1f)
+                        {
+                                tc->transform.SetScale(150.0f);
+                                sunAlignedTransformsSpawning.erase(sunAlignedTransformsSpawning.begin() + i);
+                                break;
+                        }
+                        else
+                        {
+                                tc->transform.SetScale(MathLibrary::MoveTowards(currentRadius, 150.0f, deltaTime * 20.0f));
+                                break;
+                        }
+                }
+        }
         for (auto& h : sunAlignedTransforms)
         {
                 TransformComponent* tc    = h.Get<TransformComponent>();
@@ -170,7 +195,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         playerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
                         playerController->SetCollectedPlanetCount(1 + playerController->GetCollectedPlanetCount());
                         SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->ColorsCollected[goalComp.color] = true;
-                        playerController->m_TimeOnSpline = 0.0f;
+                        playerController->m_TimeOnSpline                                               = 0.0f;
                 }
 
                 if (goalComp.goalState == E_GOAL_STATE::Done)
@@ -186,8 +211,6 @@ void OrbitSystem::OnUpdate(float deltaTime)
 
                         transComp->transform = FTransform::Lerp(
                             goalComp.initialTransform, goalComp.goalTransform, std::min(1.0f, goalComp.currAlpha));
-
-
                 }
         }
 
@@ -224,7 +247,8 @@ void OrbitSystem::OnPostUpdate(float deltaTime)
 
 void OrbitSystem::OnInitialize()
 {
-        m_HandleManager = GEngine::Get()->GetHandleManager();
+        m_HandleManager   = GEngine::Get()->GetHandleManager();
+        m_ResourceManager = GEngine::Get()->GetResourceManager();
 
         PlayerController* playerController = (PlayerController*)SYSTEM_MANAGER->GetSystem<ControllerSystem>()
                                                  ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
@@ -237,11 +261,54 @@ void OrbitSystem::OnInitialize()
 
         orbitCenter = playerTransform->transform.translation - sunRotation.GetForward() * orbitOffset;
 
-        ComponentHandle sunHandle, ring1Handle, ring2Handle, ring3Handle;
+        ComponentHandle ring1MeshHandle, ring2MeshHandle, ring3MeshHandle;
+
+        std::string ring1MaterialName = "Ring01Mat", ring2MaterialName = "Ring02Mat", ring3MaterialName = "Ring03Mat";
+
+
         EntityFactory::CreateStaticMeshEntity("Sphere01", "GlowMatSun", &sunHandle, nullptr, false);
-        EntityFactory::CreateStaticMeshEntity("Ring01", "GlowMatRing", &ring1Handle, nullptr, false);
-        EntityFactory::CreateStaticMeshEntity("Ring02", "GlowMatRing", &ring2Handle, nullptr, false);
-        EntityFactory::CreateStaticMeshEntity("Ring03", "GlowMatRing", &ring3Handle, nullptr, false);
+        EntityFactory::CreateStaticMeshEntity("Ring01", "GlowMatRing", &ring1Handle, &ring1MeshHandle, false);
+        EntityFactory::CreateStaticMeshEntity("Ring02", "GlowMatRing", &ring2Handle, &ring2MeshHandle, false);
+        EntityFactory::CreateStaticMeshEntity("Ring03", "GlowMatRing", &ring3Handle, &ring3MeshHandle, false);
+
+        auto baseRingMaterial = m_ResourceManager->LoadMaterial("GlowMatRing");
+
+        // Red Ring Material
+        {
+                auto ring1MaterialHandle = ring1MeshHandle.Get<StaticMeshComponent>()->m_MaterialHandle;
+
+                ring1MaterialHandle = m_ResourceManager->CopyResource<Material>(baseRingMaterial, ring1MaterialName.c_str());
+
+                auto ring1Material =
+                    m_ResourceManager->GetResource<Material>(ring1MeshHandle.Get<StaticMeshComponent>()->m_MaterialHandle);
+
+                XMStoreFloat3(&ring1Material->m_SurfaceProperties.emissiveColor,
+                              1.5f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::RING_COLORS[0]));
+        }
+
+        // Green Ring Material
+        {
+                ring2MeshHandle.Get<StaticMeshComponent>()->m_MaterialHandle =
+                    m_ResourceManager->CopyResource<Material>(baseRingMaterial, ring2MaterialName.c_str());
+
+                auto ring2Material =
+                    m_ResourceManager->GetResource<Material>(ring2MeshHandle.Get<StaticMeshComponent>()->m_MaterialHandle);
+
+                XMStoreFloat3(&ring2Material->m_SurfaceProperties.emissiveColor,
+                              1.5f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::RING_COLORS[1]));
+        }
+
+        // Blue Ring Material
+        {
+                ring3MeshHandle.Get<StaticMeshComponent>()->m_MaterialHandle =
+                    m_ResourceManager->CopyResource<Material>(baseRingMaterial, ring3MaterialName.c_str());
+
+                auto ring3Material =
+                    m_ResourceManager->GetResource<Material>(ring3MeshHandle.Get<StaticMeshComponent>()->m_MaterialHandle);
+
+                XMStoreFloat3(&ring3Material->m_SurfaceProperties.emissiveColor,
+                              1.5f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::RING_COLORS[2]));
+        }
 
         auto sunTransform   = sunHandle.Get<TransformComponent>();
         auto ring1Transform = ring1Handle.Get<TransformComponent>();
@@ -256,10 +323,10 @@ void OrbitSystem::OnInitialize()
 
         UpdateSunAlignedObjects();
 
-        sunTransform->transform.SetScale(150.0f);
-        ring1Transform->transform.SetScale(150.0f); // radius of 1
-        ring2Transform->transform.SetScale(150.0f); // radius of 2
-        ring3Transform->transform.SetScale(150.0f); // radius of 3
+        sunTransform->transform.SetScale(0.0f);
+        ring1Transform->transform.SetScale(0.0f); // radius of 1
+        ring2Transform->transform.SetScale(0.0f); // radius of 2
+        ring3Transform->transform.SetScale(0.0f); // radius of 3
 
         //<Joseph's Temp Material Change>
 

@@ -4,13 +4,17 @@
 #include "../../ECS/SystemManager.h"
 #include "../MathLibrary/MathLibrary.h"
 #include "GoalComponent.h"
+#include "..//ResourceManager/IResource.h"
 
 class TransformComponent;
+class ResourceManager;
 
 class OrbitSystem : public ISystem
 {
     private:
         HandleManager* m_HandleManager;
+
+		ResourceManager* m_ResourceManager;
 
         const char* materialNames[3] = {"GlowMatPlanet01", "GlowMatPlanet03", "GlowMatPlanet02"};
         const char* spawnNames[3]    = {"redPlanetSpawn", "greenPlanetSpawn", "bluePlanetSpawn"};
@@ -49,8 +53,10 @@ class OrbitSystem : public ISystem
         int collectEventTimestamps[3] = {-1, -1, -1};
 
     public:
+        std::vector<ComponentHandle> sunAlignedTransformsSpawning;
         unsigned int    goalsCollected   = 0;
         bool            collectedMask[3] = {};
         FActiveGoalInfo activeGoal;
-        void            DestroyPlanet(GoalComponent* toDestroy);
+        void                         DestroyPlanet(GoalComponent* toDestroy);
+        ComponentHandle              sunHandle, ring1Handle, ring2Handle, ring3Handle;
 };
