@@ -802,8 +802,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   false,
                                   false);
         }
-
-<<<<<<< HEAD
         /*
             //Options Volume Slider
             instance->m_SliderHandle = 0.0f;
@@ -838,8 +836,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 0.5f,
                                 false);
         */
-=======
->>>>>>> ParticleManagerRefactor
+
 
         // Level Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
