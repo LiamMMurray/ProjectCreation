@@ -270,6 +270,11 @@ inline namespace ContainerUtility
                 {
                         free((void*)VectorImpl<T>::Begin);
                 }
+                void Free()
+                {
+                        free((void*)VectorImpl<T>::Begin);
+                        VectorImpl<T>::Begin = 0;
+				}
         };
 
         template <typename T, unsigned MaxElements>

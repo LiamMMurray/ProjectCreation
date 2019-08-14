@@ -1,6 +1,6 @@
 #pragma once
 #include <mutex>
-inline namespace JobSchedulerUtility
+inline namespace JobSchedulerInternalUtility
 {
         template <class C>
         struct ClosureTraits : public ClosureTraits<decltype(&C::operator())>
@@ -43,12 +43,13 @@ inline namespace JobSchedulerUtility
         inline constexpr auto CACHE_LINE_SIZE = std::hardware_destructive_interference_size;
 
         inline static std::mutex DebugPrintMutex;
-} // namespace JobSchedulerUtility
+} // namespace JobSchedulerInternalUtility
 
 #define WIN_32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <atomic>
 #include <thread>
+#include <vector>
 #include "ContainerUtility.h"
 inline namespace JobSchedulerInternal
 {
@@ -342,84 +343,7 @@ inline namespace JobSchedulerInternal
                         }
                 }
         }
-} // namespace JobSchedulerInternal
 
-inline namespace JobScheduler
-{
-        inline void Initialize()
-        {
-#pragma push_macro("new");
-#undef new
-                //WorkerThreads          = AllocVector<std::thread, CACHE_LINE_SIZE>{NumWorkerThreads};
-                //JobQueues              = AllocVector<JobQueue<1024>>{NumWorkerThreads + 1}; // main thread also has a job queue
-                //StaticJobAllocatorImpl = AllocVector<RingBuffer<Job, MaxJobs>>{NumWorkerThreads + 1};
-                //TempJobAllocatorImpl   = AllocVector<RingBuffer<Job, MaxJobs>>{NumWorkerThreads + 1};
-                //TlsSetValue(TLSIndex_GenericIndex, (LPVOID)NumWorkerThreads);
-                //for (auto& itr : JobQueues)
-                //{
-                //        new (&itr) JobQueue<1024>();
-                //}
-                //for (auto& itr : StaticJobAllocatorImpl)
-                //{
-                //        new (&itr) RingBuffer<Job, MaxJobs>();
-                //}
-                //for (auto& itr : TempJobAllocatorImpl)
-                //{
-                //        new (&itr) RingBuffer<Job, MaxJobs>();
-                //}
-                //unsigned i = 0;
-                //for (auto& itr : WorkerThreads)
-                //{
-                //        new (&itr) std::thread(WorkerThreadMain, i);
-                //        i++;
-                //}
-#pragma pop_macro("new");
-        }
-
-        inline void Shutdown()
-        {
-                RunWorkerThreads = false;
-                for (auto& itr : WorkerThreads)
-                {
-                        itr.join();
-                }
-                for (auto& itr : TempJobAllocatorImpl)
-                {
-                        itr.~RingBuffer();
-                }
-                for (auto& itr : StaticJobAllocatorImpl)
-                {
-                        itr.~RingBuffer();
-                }
-                for (auto& itr : JobQueues)
-                {
-                        itr.~JobQueue();
-                }
-                TlsFree(TLSIndex_GenericIndex);
-        }
-
-        struct TempJobAllocator
-        {
-            private:
-                static inline auto& AllocatorImpl = TempJobAllocatorImpl;
-
-            public:
-                static inline Job* Allocate()
-                {
-                        AllocatorImpl[GetThreadIndex()].Allocate();
-                }
-        };
-        struct StaticJobAllocator
-        {
-            private:
-                static inline auto& AllocatorImpl = StaticJobAllocatorImpl;
-
-            public:
-                static inline Job* Allocate()
-                {
-                        AllocatorImpl[GetThreadIndex()].Allocate();
-                }
-        };
         template <typename Allocator, typename R, typename Lambda, typename... Args>
         struct ParallelForJobImpl
         {
@@ -562,21 +486,7 @@ inline namespace JobScheduler
                         return root;
                 }
         };
-        // How to use:
-        //		1. Declare a ParallelForJob with a lambda and optional range integers "begin"(inclusive) and "end"(exclusive)
-        //			1b. The lambda's first argument must be an unsigned int, this integer will be the index into the data
-        //			structure being iterated over.
-        //		2. If range integers weren't passed to the ParallelForJob constructor in part 1. call SetRange memberfunction
-        //			Note: SetRange clears any args previously set, so if the lambda takes args SetArgs must be called after a
-        // call to SetRange
-        //		3. Call the function operator member function and pass the non index arguments (if any)
-        //		4. Call wait member function to block until the job is finished.
-        // Usage example:
-        //		/*multiplies all values in ArrayBar by 5*/
-        //		ParallelForJob JobFoo([&ArrayBar](unsigned i, unsigned factor) {ArrayBar[i] *= factor;});
-        //		JobFoo.SetRange(0, 1024);
-        //		JobFoo(5);
-        //		JobFoo.Wait();
+
         template <typename Allocator, typename Lambda>
         struct ParallelForJob : public ParallelForJob<Allocator, decltype(&Lambda::operator())>
         {
@@ -606,25 +516,110 @@ inline namespace JobScheduler
                     ParallelForJobImpl<Allocator, R, Lambda, Args...>(std::forward<Lambda>(lambda), begin, end, chunkSize)
                 {}
         };
+} // namespace JobSchedulerInternal
+
+inline namespace JobScheduler
+{
+        inline void Initialize()
+        {
+                WorkerThreads          = AllocVector<std::thread, CACHE_LINE_SIZE>{NumWorkerThreads};
+                JobQueues              = AllocVector<JobQueue<1024>>{NumWorkerThreads + 1}; // main thread also has a job queue
+                StaticJobAllocatorImpl = AllocVector<RingBuffer<Job, MaxJobs>>{NumWorkerThreads + 1};
+                TempJobAllocatorImpl   = AllocVector<RingBuffer<Job, MaxJobs>>{NumWorkerThreads + 1};
+                TlsSetValue(TLSIndex_GenericIndex, (LPVOID)NumWorkerThreads);
+
+#pragma push_macro("new");
+#undef new
+                for (auto& itr : JobQueues)
+                {
+                        new (&itr) JobQueue<1024>();
+                }
+                for (auto& itr : StaticJobAllocatorImpl)
+                {
+                        new (&itr) RingBuffer<Job, MaxJobs>();
+                }
+                for (auto& itr : TempJobAllocatorImpl)
+                {
+                        new (&itr) RingBuffer<Job, MaxJobs>();
+                }
+                unsigned i = 0;
+                for (auto& itr : WorkerThreads)
+                {
+                        new (&itr) std::thread(WorkerThreadMain, i);
+                        i++;
+                }
+#pragma pop_macro("new");
+        }
+
+        inline void Shutdown()
+        {
+                RunWorkerThreads = false;
+                for (auto& itr : WorkerThreads)
+                {
+                        itr.join();
+                        itr.~thread();
+                }
+                for (auto& itr : TempJobAllocatorImpl)
+                {
+                        itr.~RingBuffer();
+                }
+                for (auto& itr : StaticJobAllocatorImpl)
+                {
+                        itr.~RingBuffer();
+                }
+                for (auto& itr : JobQueues)
+                {
+                        itr.~JobQueue();
+                }
+                JobQueues.Free();
+                StaticJobAllocatorImpl.Free();
+                TempJobAllocatorImpl.Free();
+                WorkerThreads.Free();
+                TlsFree(TLSIndex_GenericIndex);
+        }
+
+        struct TempJobAllocator
+        {
+            private:
+                static inline auto& AllocatorImpl = TempJobAllocatorImpl;
+
+            public:
+                static inline Job* Allocate()
+                {
+                        return AllocatorImpl[GetThreadIndex()].Allocate();
+                }
+        };
+        struct StaticJobAllocator
+        {
+            private:
+                static inline auto& AllocatorImpl = StaticJobAllocatorImpl;
+
+            public:
+                static inline Job* Allocate()
+                {
+                        return AllocatorImpl[GetThreadIndex()].Allocate();
+                }
+        };
+
+        // Usage example:
+        //		/*multiplies all values in ArrayBar by 5*/
+        //		auto JobFoo = ParallelFor([&ArrayBar](unsigned i, unsigned factor) {ArrayBar[i] *= factor;});
+        //		JobFoo.SetRange(0, 1024);
+        //		JobFoo(5);
+        //		JobFoo.Wait();
         template <typename Allocator = TempJobAllocator, typename Lambda>
-        auto CreateParallelFor(Lambda&& lambda, unsigned begin, unsigned end, unsigned chunkSize = 256)
+        auto ParallelFor(Lambda&& lambda, unsigned begin, unsigned end, unsigned chunkSize = 256)
         {
                 return ParallelForJob<Allocator, Lambda>(std::forward<Lambda>(lambda), begin, end, chunkSize);
         }
         template <typename Allocator = TempJobAllocator, typename Lambda>
-        auto CreateParallelFor(Lambda&& lambda)
+        auto ParallelFor(Lambda&& lambda)
         {
                 return ParallelForJob<Allocator, Lambda>(std::forward<Lambda>(lambda));
         }
 
-
-        // How to use:
-        //		1. Declare a TempJob
-        //		2. Append lambdas or Job*s to the ImmediateTempJob by calling Append member function
-        //		3. Call function operator member function
-        //		4. Call Wait member function to block untill all appended jobs are complete
         // Usage example:
-        //		/*sets integers foo to 3, bar to 777, and baz to 42*/
+        //		/*sets integers foo, bar, and baz to 3, 777, and 42, respectively.
         //		TempJob job_A;
         //		TempJob job_A.Append([&foo]() { foo = 3; });
         //		TempJob job_B;

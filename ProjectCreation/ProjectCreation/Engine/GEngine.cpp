@@ -1,7 +1,8 @@
-#include "GEngine.h"
 #include "../Utility/MemoryLeakDetection.h"
-#include "MathLibrary/MathLibrary.h"
+
 #include "../Engine/JobScheduler.h"
+#include "GEngine.h"
+#include "MathLibrary/MathLibrary.h"
 GEngine*         GEngine::instance        = 0;
 NMemory::memsize GEngine::s_PoolAllocSize = MB(64);
 
