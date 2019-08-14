@@ -21,6 +21,8 @@ class ResourceContainerBase
         virtual ~ResourceContainerBase(){};
 };
 
+struct Material;
+
 template <class T>
 class ResourceContainer : public ResourceContainerBase
 {
@@ -128,6 +130,7 @@ class ResourceManager
         template <typename T>
         ResourceHandle CopyResource(ResourceHandle, const char* name);
 
+        void GetSRVsFromMaterial(Material* material, ID3D11ShaderResourceView** srvsOut);
         void GetSRVs(unsigned int count, ResourceHandle* textureHandles, ID3D11ShaderResourceView** srvsOut);
 
         template <typename T>

@@ -54,7 +54,6 @@ float3 VSPositionFromDepth(float2 vTexCoord)
 
         float depth = posVS.z;
 
-
         if (ParticleBuffer[id].time > 0.0f)
         {
 

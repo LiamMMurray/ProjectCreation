@@ -4,6 +4,7 @@
 #include "..//..//Engine/MathLibrary/Transform.h"
 #include "..//..//Engine/ResourceManager/IResource.h"
 #include "..//..//Utility/ForwardDeclarations/D3DNativeTypes.h"
+#include "..//InstanceData.h"
 class RenderSystem;
 
 struct ID3D11HullShader;
@@ -30,6 +31,7 @@ struct TerrainVertex
 {
         DirectX::XMFLOAT3 pos;
         DirectX::XMFLOAT2 tex;
+        DirectX::XMFLOAT2 boundsY;
 };
 
 struct FInstanceRenderData
@@ -39,6 +41,7 @@ struct FInstanceRenderData
         uint32_t              instanceCount;
         std::vector<uint32_t> instanceIndexList;
 };
+
 
 class TerrainManager
 {
@@ -64,18 +67,24 @@ class TerrainManager
         ID3D11PixelShader*  pixelShader;
         ID3D11PixelShader*  oceanPixelShader;
 
-        ID3D11Texture2D*          terrainSourceTexture;
         ID3D11ShaderResourceView* terrainSourceSRV;
+        ID3D11ShaderResourceView* terrainMaskSRV;
+        ID3D11ShaderResourceView* terrainColorSRV;
 
         ID3D11Texture2D*          terrainIntermediateTexture;
         ID3D11RenderTargetView*   terrainIntermediateRenderTarget;
         ID3D11ShaderResourceView* terrainIntermediateSRV;
 
-        ID3D11Buffer*              instanceBuffer      = nullptr;
-        ID3D11Buffer*              instanceIndexBuffer = nullptr;
-        ID3D11ShaderResourceView*  instanceSRV         = nullptr;
-        ID3D11ShaderResourceView*  instanceIndexSRV    = nullptr;
-        ID3D11UnorderedAccessView* instanceUAV         = nullptr;
+        ID3D11ShaderResourceView*  instanceSRV = nullptr;
+        ID3D11UnorderedAccessView* instanceUAV = nullptr;
+
+        ID3D11ShaderResourceView* instanceIndexSteepSRV = nullptr;
+        ID3D11ShaderResourceView* instanceIndexFlatSRV  = nullptr;
+
+        ID3D11UnorderedAccessView* instanceIndexSteepUAV = nullptr;
+        ID3D11UnorderedAccessView* instanceIndexFlatUAV  = nullptr;
+
+        ID3D11Buffer* indexCounterHelperBuffer = nullptr;
 
         ID3D11Buffer*    vertexBuffer;
         ID3D11Buffer*    indexBuffer;
@@ -86,13 +95,13 @@ class TerrainManager
         CTerrainInfoBuffer terrainConstantBufferCPU;
         ID3D11Buffer*      terrainConstantBufferGPU;
 
-        static constexpr unsigned int gInstanceTransformsCount = 2000;
-        unsigned int                  gActualTransformsCount   = 0;
+        static constexpr unsigned int gInstanceTransformsCount = 15000;
         FTransform                    m_InstanceTransforms[gInstanceTransformsCount];
-        DirectX::XMMATRIX             m_InstanceMatrices[gInstanceTransformsCount];
+        FInstanceData                 m_InstanceData[gInstanceTransformsCount];
         ResourceHandle                m_UpdateInstancesComputeShader;
 
-        std::vector<FInstanceRenderData> instanceDrawCallsData;
+        std::vector<FInstanceRenderData> instanceDrawCallsDataFlat;
+        std::vector<FInstanceRenderData> instanceDrawCallsDataSteep;
 
         void GenerateInstanceTransforms(FTransform tArray[gInstanceTransformsCount]);
         void WrapInstanceTransforms();

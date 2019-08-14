@@ -1,5 +1,7 @@
 #pragma once
 
+#include "..//Utility/Macros/GlobalMacros.h"
+
 #define COMPONENT_MANAGER GEngine::Get()->GetHandleManager()
 #define SYSTEM_MANAGER GEngine::Get()->GetSystemManager()
 #define GET_SYSTEM(x) GEngine::Get()->GetSystemManager()->GetSystem<x>()
@@ -30,20 +32,19 @@ class GEngine
 
 
         static GEngine* instance;
-
-        bool m_DebugMode     = false;
-        bool m_GameIsPaused  = false;
-        bool m_WantsGameExit = false;
+        bool            m_DebugMode     = false;
+        bool            m_GameIsPaused  = false;
+        bool            m_WantsGameExit = false;
 
         LevelStateManager* m_LevelStateManager;
 
-        void Signal();
 
         float m_PlayerRadius          = 0.0f;
         float m_DesiredPlayerRadius   = 0.0f;
         float m_RadiusTransitionSpeed = 5.0f;
 
     public:
+        void Signal();
         DirectX::XMVECTOR m_OriginOffset = DirectX::XMVECTORF32{0.0f, 0.0f, 0.0f, 0.0f};
         DirectX::XMVECTOR m_WorldOffsetDelta = DirectX::XMVECTORF32{0.0f, 0.0f, 0.0f, 0.0f};
         inline void SetPlayerRadius(float r)
@@ -120,4 +121,7 @@ class GEngine
         {
                 m_WantsGameExit = true;
         }
+        float       m_InstanceReveal = 0.0f;
+        float       m_TargetInstanceReveal = 0.0f;
+        static bool ShowFPS;
 };

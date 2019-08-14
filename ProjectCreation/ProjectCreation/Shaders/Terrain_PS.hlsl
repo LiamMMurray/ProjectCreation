@@ -9,6 +9,7 @@ Texture2D   Mask1 : register(t7);
 Texture2D   Mask2 : register(t8);
 Texture2D   Heightmap : register(t9);
 Texture2D   Roughness : register(t10);
+Texture2D   TerrainColor : register(t11);
 
 #include "Constants.hlsl"
 #include "Math.hlsl"
@@ -44,8 +45,8 @@ float4 main(DomainOutput pIn) : SV_TARGET
         float bottomY = gTerrainAlpha * 2625.f * HeightMap.SampleLevel(sampleTypeWrap, bottomTex, 0).r;
         float topY    = gTerrainAlpha * 2625.f * HeightMap.SampleLevel(sampleTypeWrap, topTex, 0).r;
 
-        float3 TangentWS  = normalize(float3(2.0f * gWorldCellSpace, rightY - leftY, 0.0f));
-        float3 BinormalWS = normalize(float3(0.0f, bottomY - topY, -2.0f * gWorldCellSpace));
+        float3 TangentWS  = normalize(float3(2.5f * gWorldCellSpace, rightY - leftY, 0.0f));
+        float3 BinormalWS = normalize(float3(0.0f, bottomY - topY, -2.5f * gWorldCellSpace));
         float3 NormalWS   = normalize(cross(TangentWS, BinormalWS));
 
         float3 viewWS = -normalize(pIn.PosWS - _EyePosition);
@@ -63,7 +64,19 @@ float4 main(DomainOutput pIn) : SV_TARGET
 
         SurfacePBR surface;
         surface.diffuseColor = lerp(diffuseA, diffuseB, blendAlpha);
-        surface.metallic     = 0.0f;
+
+        float  bw          = saturate(20.0f * dot(surface.diffuseColor, float3(0.21, 0.71, 0.07)));
+        float3 colorSample = 0.8f * TerrainColor.Sample(sampleTypeWrap, pIn.Tex).rgb;
+
+        float fibers = Mask1.Sample(sampleTypeWrap, pIn.Tex2).g;
+        float noise  = Mask1.Sample(sampleTypeWrap, pIn.Tex2 * 0.2f).r;
+        float maskInstanceBlend;
+        float modulatedInstanceBlend = _InstanceReveal + noise * 0.5f;
+        maskInstanceBlend            = saturate(floor(fibers + 2.0f * modulatedInstanceBlend));
+        float alphaInstace           = _InstanceReveal;
+        surface.diffuseColor         = lerp(surface.diffuseColor, bw * colorSample, maskInstanceBlend);
+
+        surface.metallic = 0.0f;
 
         surface.ambient       = 1.0f;
         surface.emissiveColor = 0.0f;
@@ -75,7 +88,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
                 normalSample   = normalize(normalSample);
                 surface.normal = TangentWS * normalSample.x + BinormalWS * normalSample.y + NormalWS * normalSample.z;
         }
-        surface.normal = normalize(surface.normal);
+        surface.normal = (surface.normal);
         // surface.normal = NormalWS;
         // return surface.normal.xyzz;
         float alpha = 1.f;
@@ -85,9 +98,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
         // Remapping roughness to prevent errors on normal distribution
         surface.roughness = max(surface.roughness, 0.08f);
 
-        surface.ambient = lerp(roughnessSample.b, roughnessSample.a, blendAlpha);
-
-        float3 reflectionVector = reflect(-viewWS, surface.normal);
+        surface.ambient = lerp(roughnessSample.b, 1.0f, blendAlpha);
 
 
         float3 positionWS = pIn.PosWS;
@@ -107,18 +118,12 @@ float4 main(DomainOutput pIn) : SV_TARGET
 
         // Environment mapping
         {
-                surface.ambient *= 0.4f;
-                float3 N = surface.normal;
-                float3 V = -viewWS;
+                surface.ambient *= 0.8f;
 
-                float  NdotV       = max(dot(N, V), 0.f);
-                float3 diffuse     = IBLDiffuse.Sample(sampleTypeWrap, N).rgb;
-                float3 specular    = IBLSpecular.SampleLevel(sampleTypeWrap, reflectionVector, surface.roughness * 10.f).rgb;
-                float2 integration = IBLIntegration.Sample(sampleTypeNearest, float2(NdotV, 1.f - surface.roughness)).rg;
-                color += IBL(surface, viewWS, specColor, diffuse, specular, integration);
+                color += surface.ambient * _AmbientColor * surface.diffuseColor;
         }
-        //return NormalWS.xxxx;
-        return float4(color, 1.0f);
+        // return NormalWS.xxxx;
+        //return float4(color, 1.0f);
 
         float maskA     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 45.0f + _Time * 0.01f * float2(1.0f, 0.0f)).z;
         float maskB     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 40.0f + _Time * 0.01f * float2(-1.0f, 0.0f)).z;

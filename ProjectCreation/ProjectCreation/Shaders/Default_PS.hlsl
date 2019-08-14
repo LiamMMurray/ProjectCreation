@@ -77,7 +77,6 @@ inline int IsUnlit(int flags)
 }
 
 
-
 float4 main(INPUT_PIXEL pIn) : SV_TARGET
 {
         float3 viewWS = -normalize(pIn.PosWS - _EyePosition);
@@ -125,9 +124,9 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
                 surface.roughness = 0.5f * (_roughnessMin + _roughnessMax);
         }
         // Remapping roughness to prevent errors on normal distribution
-        surface.roughness = min(surface.roughness, 0.08f);
-        surface.metallic  = 1.0f;
-        surface.diffuseColor   = float3(0.1f, 0.2f, 0.3f);
+        surface.roughness    = max(surface.roughness, 0.08f);
+        surface.metallic     = 1.0f;
+        surface.diffuseColor = float3(0.1f, 0.2f, 0.3f);
         if (HasAOTexture(_textureFlags))
         {
                 surface.ambient *= detailsMap.Sample(sampleTypeWrap, pIn.Tex).z;

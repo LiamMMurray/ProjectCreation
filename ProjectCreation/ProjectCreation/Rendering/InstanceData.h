@@ -4,5 +4,6 @@
 struct FInstanceData
 {
         DirectX::XMMATRIX mtx;
-        float             lifetime;
+        uint32_t          flags;
+        float             lifeTime;
 };

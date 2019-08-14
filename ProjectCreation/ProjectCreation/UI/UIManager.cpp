@@ -356,8 +356,15 @@ void UIManager::StartupResAdjust(HWND window)
 
 void UIManager::AdjustResolution(HWND window, int wWidth, int wHeight)
 {
-        RECT wr = {0, 0, wWidth, wHeight};                 // set the size
-        AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE); // adjust the size
+        RECT wr = {0, 0, wWidth, wHeight}; // set the size
+
+        DWORD style = WS_OVERLAPPEDWINDOW;
+
+        if (GEngine::ShowFPS)
+                style = WS_POPUP;
+
+
+        AdjustWindowRect(&wr, style, FALSE); // adjust the size
 
         DXGI_MODE_DESC& desc = instance->resDescriptors.back();
 
@@ -864,6 +871,40 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   false);
         }
 
+        /*
+            //Options Volume Slider
+            instance->m_SliderHandle = 0.0f;
+            instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                instance->m_RenderSystem->m_Context,
+                                E_MENU_CATEGORIES::OptionsMenu,
+                                L"../Assets/2d/Sprite/Slider_BG.dds",
+                                0.0f,
+                                -0.35f,
+                                0.2f,
+                                0.5f,
+                                false);
+                                
+
+
+
+
+
+
+
+
+
+
+
+            instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                instance->m_RenderSystem->m_Context,
+                                E_MENU_CATEGORIES::OptionsMenu,
+                                L"../Assets/2d/Sprite/Slider_FG.dds",
+                                0.0f,
+                                -0.35f,
+                                0.2f,
+                                0.5f,
+                                false);
+        */
 
         // Level Menu
         instance->AddText(instance->m_RenderSystem->m_Device,

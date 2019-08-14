@@ -1,5 +1,5 @@
 #include "SceneBuffer.hlsl"
-
+#include "MVPBuffer.hlsl"
 cbuffer TerrainInfoBuffer : register(b4)
 {
         matrix WorldView;
