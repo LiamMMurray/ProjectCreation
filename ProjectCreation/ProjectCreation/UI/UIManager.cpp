@@ -52,8 +52,8 @@ void UIManager::AddSprite(ID3D11Device*        device,
         cSprite.mHeight = TextureDesc.Height;
 
         // Scale
-        cSprite.mScaleX = scaleX * 1.0f / cSprite.mWidth;
-        cSprite.mScaleY = scaleY * 1.0f / cSprite.mHeight;
+        cSprite.mScaleX = scaleX / cSprite.mWidth;
+        cSprite.mScaleY = scaleY / cSprite.mHeight;
 
         // Add the origin to the sprite
         cSprite.mOrigin.x = (float)(cSprite.mWidth * 0.5f);
@@ -66,7 +66,7 @@ void UIManager::AddSprite(ID3D11Device*        device,
         cSprite.mEnabled = enabled;
 
         cSprite.mRectangle.center  = XMVectorSet(PositionX, PositionY, 0.0f, 1.0f);
-        cSprite.mRectangle.extents = XMVectorSet(scaleX * 0.5f, scaleY * 0.8f, 0.0f, 1.0f);
+        cSprite.mRectangle.extents = 0.5f*XMVectorSet(scaleX, scaleY, 0.0f, 1.0f);
         // Push back to the vector
         m_AllSprites[category].emplace_back(cSprite);
 
@@ -455,13 +455,34 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->m_FontTypes[E_FONT_TYPE::CourierNew] =
             new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/couriernew.spritefont");
 
+        // Splash Screen
+        instance->AddSprite(instance->m_RenderSystem->m_Device,
+                            instance->m_RenderSystem->m_Context,
+                            E_MENU_CATEGORIES::SplashScreen,
+                            L"../Assets/2d/Sprite/Full_Sail_Logo.dds",
+                            0.0f,
+                            0.0f,
+                            1.0f,
+                            1.0f,
+                            false);
+
+        instance->AddSprite(instance->m_RenderSystem->m_Device,
+                            instance->m_RenderSystem->m_Context,
+                            E_MENU_CATEGORIES::SplashScreen,
+                            L"../Assets/2d/Sprite/GPGlogo_solid.dds",
+                            0.0f,
+                            0.0f,
+                            1.0f,
+                            1.0f,
+                            false);
+
         // Main Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Angel,
                           "INANIS",
-                          0.06f,
+                          0.12f,
                           0.0f,
                           -0.35f,
                           true,
@@ -472,7 +493,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
                           "Press Enter to continue. . .",
-                          0.06f,
+                          0.12f,
                           0.0f,
                           0.1f,
                           true,
@@ -483,7 +504,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
                           "Hold Left Click to Move",
-                          0.06f,
+                          0.12f,
                           0.0f,
                           0.1f,
                           false,
@@ -494,7 +515,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
                           "Hold A to get a boost from Red lights",
-                          0.06f,
+                          0.12f,
                           0.0f,
                           0.1f,
                           false,
@@ -505,7 +526,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
                           "Hold S to get a boost from Green lights",
-                          0.06f,
+                          0.12f,
                           0.0f,
                           0.1f,
                           false,
@@ -516,7 +537,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
                           "Hold D to get a boost from Blue lights",
-                          0.06f,
+                          0.12f,
                           0.0f,
                           0.1f,
                           false,
@@ -529,8 +550,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                             L"../Assets/2d/Sprite/Grey Box Test.dds",
                             0.0f,
                             0.0f,
-                            0.4f,
                             0.6f,
+                            1.2f,
                             false);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -538,7 +559,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::PauseMenu,
                           E_FONT_TYPE::Angel,
                           "INANIS",
-                          0.06f,
+                          0.12f,
                           0.0f,
                           -0.35f,
                           false,
@@ -549,7 +570,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::PauseMenu,
                           E_FONT_TYPE::CourierNew,
                           "Resume",
-                          0.05f,
+                          0.1f,
                           0.0f,
                           -0.15f,
                           false,
@@ -563,7 +584,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::PauseMenu,
                           E_FONT_TYPE::CourierNew,
                           "Levels",
-                          0.05f,
+                          0.1f,
                           0.0f,
                           -0.05f,
                           false,
@@ -577,7 +598,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::PauseMenu,
                           E_FONT_TYPE::CourierNew,
                           "Options",
-                          0.05f,
+                          0.1f,
                           0.0f,
                           0.05f,
                           false,
@@ -591,7 +612,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::PauseMenu,
                           E_FONT_TYPE::CourierNew,
                           "Controls",
-                          0.05f,
+                          0.1f,
                           0.0f,
                           0.15f,
                           false,
@@ -605,7 +626,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::PauseMenu,
                           E_FONT_TYPE::CourierNew,
                           "Exit",
-                          0.05f,
+                          0.1f,
                           0.0f,
                           0.25f,
                           false,
@@ -620,7 +641,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::OptionsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Back",
-                          0.05f,
+                          0.1f,
                           0.0f,
                           -0.35f,
                           false,
@@ -634,7 +655,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::OptionsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Windowed",
-                          0.04f,
+                          0.08f,
                           0.0f,
                           0.08f,
                           false,
@@ -648,7 +669,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::OptionsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Resolution",
-                          0.04f,
+                          0.08f,
                           0.0f,
                           0.25f,
                           false,
@@ -662,7 +683,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::OptionsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Apply",
-                          0.05f,
+                          0.1f,
                           0.0f,
                           -0.25f,
                           false,
@@ -676,7 +697,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::OptionsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Master Volume",
-                          0.03f,
+                          0.06f,
                           0.0f,
                           -0.1f,
                           false,
@@ -691,7 +712,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::OptionsSubmenu,
                           E_FONT_TYPE::CourierNew,
                           "Off",
-                          0.04f,
+                          0.08f,
                           0.0f,
                           0.16f,
                           false,
@@ -702,7 +723,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::OptionsSubmenu,
                           E_FONT_TYPE::CourierNew,
                           "On",
-                          0.04f,
+                          0.08f,
                           0.0f,
                           0.16f,
                           false,
@@ -713,7 +734,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::OptionsSubmenu,
                           E_FONT_TYPE::CourierNew,
                           "<",
-                          0.04f,
+                          0.08f,
                           -0.12f,
                           0.35f,
                           false,
@@ -724,7 +745,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::OptionsSubmenu,
                           E_FONT_TYPE::CourierNew,
                           ">",
-                          0.04f,
+                          0.08f,
                           0.12f,
                           0.35f,
                           false,
@@ -738,7 +759,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_FONT_TYPE::CourierNew,
                                   std::to_string(instance->resDescriptors[i].Width) + "x" +
                                       std::to_string(instance->resDescriptors[i].Height),
-                                  0.04f,
+                                  0.08f,
                                   0.0f,
                                   0.35f,
                                   false,
@@ -757,7 +778,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 0.2f,
                                 0.5f,
                                 false);
-                                
+                                
+
 
 
 
@@ -783,7 +805,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::LevelMenu,
                           E_FONT_TYPE::CourierNew,
                           "Back",
-                          0.05f,
+                          0.1f,
                           0.0f,
                           -0.35f,
                           false,
@@ -797,7 +819,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::LevelMenu,
                           E_FONT_TYPE::CourierNew,
                           "Tutorial",
-                          0.05f,
+                          0.1f,
                           0.0f,
                           -0.1f,
                           false,
@@ -811,7 +833,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::LevelMenu,
                           E_FONT_TYPE::CourierNew,
                           "Level 1",
-                          0.05f,
+                          0.1f,
                           0.0f,
                           0.0f,
                           false,
@@ -825,7 +847,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::LevelMenu,
                           E_FONT_TYPE::CourierNew,
                           "Level 2",
-                          0.05f,
+                          0.1f,
                           0.0f,
                           0.1f,
                           false,
@@ -839,7 +861,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::LevelMenu,
                           E_FONT_TYPE::CourierNew,
                           "Level 3",
-                          0.05f,
+                          0.1f,
                           0.0f,
                           0.2f,
                           false,
@@ -854,7 +876,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Back",
-                          0.05f,
+                          0.1f,
                           0.0f,
                           -0.3f,
                           false,
@@ -868,7 +890,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Collect Red Light: A",
-                          0.03f,
+                          0.06f,
                           0.0f,
                           -0.1f,
                           false,
@@ -879,7 +901,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Collect Green Light: S",
-                          0.03f,
+                          0.06f,
                           0.0f,
                           0.0f,
                           false,
@@ -890,7 +912,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Collect Blue Light: D",
-                          0.03f,
+                          0.06f,
                           0.0f,
                           0.1f,
                           false,
@@ -901,7 +923,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Movement: Left Mouse ",
-                          0.03f,
+                          0.06f,
                           0.0f,
                           0.2f,
                           false,
@@ -913,7 +935,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::Demo,
                           E_FONT_TYPE::Calibri,
                           "Thank you for playing our demo!",
-                          0.06f,
+                          0.12f,
                           0.0f,
                           0.0f,
                           false,
@@ -924,7 +946,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::Demo,
                           E_FONT_TYPE::CourierNew,
                           "Continue",
-                          0.05f,
+                          0.1f,
                           -0.15f,
                           0.1f,
                           false,
@@ -938,7 +960,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::Demo,
                           E_FONT_TYPE::CourierNew,
                           "Exit",
-                          0.05f,
+                          0.1f,
                           0.15f,
                           0.1f,
                           false,
@@ -1479,6 +1501,14 @@ void UIManager::Update()
         e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
         std::vector<SpriteComponent*> clickedSprites;
 
+        RECT rect;
+        GetWindowRect((HWND)(instance->m_RenderSystem->m_WindowHandle), &rect);
+        XMUINT4 xmRect = XMUINT4(rect.top, rect.left, rect.bottom, rect.right);
+
+        POINT cursorPoint;
+        GetCursorPos(&cursorPoint);
+        XMFLOAT2 cursorCoords = {(float)cursorPoint.x, (float)cursorPoint.y};
+        XMVECTOR point        = UI::ConvertScreenPosToNDC(cursorCoords, instance->m_ScreenSize, xmRect);
         for (auto& it : instance->m_AllSprites)
                 for (auto& sprite : it.second)
                 {
@@ -1486,9 +1516,7 @@ void UIManager::Update()
                         {
                                 if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Release)
                                 {
-                                        XMFLOAT2 cursorCoords = {(float)GCoreInput::GetMouseWindowPosX(),
-                                                                 (float)GCoreInput::GetMouseWindowPosY()};
-                                        XMVECTOR point        = UI::ConvertScreenPosToNDC(cursorCoords, instance->m_ScreenSize);
+
                                         if (UI::PointInRect(sprite.mRectangle, point))
                                         {
                                                 // Button Was Pressed
@@ -1499,14 +1527,14 @@ void UIManager::Update()
                                 instance->m_SpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
                                                                instance->m_States->NonPremultiplied());
 
-                                XMVECTOR position = XMVectorSet(sprite.mScreenOffset.x * instance->m_ScreenSize.x,
-                                                                sprite.mScreenOffset.y * instance->m_ScreenSize.y,
+                                XMVECTOR position = XMVectorSet(sprite.mScreenOffset.x * instance->m_ScreenSize.x / 2.0f,
+                                                                sprite.mScreenOffset.y * instance->m_ScreenSize.y / 2.0f,
                                                                 0.0f,
-                                                                1.0f) +
+                                                                0.0f) +
                                                     instance->m_ScreenCenter;
 
-                                XMVECTOR scale = XMVectorSet(sprite.mScaleX * instance->m_ScreenSize.x,
-                                                             aspectRatio * sprite.mScaleY * instance->m_ScreenSize.y,
+                                XMVECTOR scale = XMVectorSet(sprite.mScaleX * instance->m_ScreenSize.x / 2.0f,
+                                                             sprite.mScaleY * instance->m_ScreenSize.y / 2.0f,
                                                              0.0f,
                                                              1.0f);
 
@@ -1532,14 +1560,14 @@ void UIManager::Update()
                                 instance->m_SpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
                                                                instance->m_States->NonPremultiplied());
 
-                                XMVECTOR position = XMVectorSet(font.mScreenOffset.x * instance->m_ScreenSize.x,
-                                                                font.mScreenOffset.y * instance->m_ScreenSize.y,
+                                XMVECTOR position = XMVectorSet(font.mScreenOffset.x * instance->m_ScreenSize.x / 2.0f,
+                                                                font.mScreenOffset.y * instance->m_ScreenSize.y / 2.0f,
                                                                 0.0f,
                                                                 0.0f) +
                                                     instance->m_ScreenCenter;
 
-                                XMVECTOR scale = XMVectorSet(font.mScaleX * instance->m_ScreenSize.x,
-                                                             aspectRatio * font.mScaleY * instance->m_ScreenSize.y,
+                                XMVECTOR scale = XMVectorSet(font.mScaleX * instance->m_ScreenSize.x / 2.0f,
+                                                             font.mScaleY * instance->m_ScreenSize.y / 2.0f,
                                                              0.0f,
                                                              0.0f);
 

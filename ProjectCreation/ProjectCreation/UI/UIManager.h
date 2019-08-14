@@ -19,6 +19,7 @@ struct E_MENU_CATEGORIES
 {
         enum
         {
+                SplashScreen,
                 MainMenu,
                 PauseMenu,
                 OptionsMenu,

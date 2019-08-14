@@ -173,7 +173,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         // register window class
         RegisterClassEx(&winInfo);
 
-        RECT wr = {0, 0, 1920, 1080};                        // set the size
+        RECT wr = {0, 0, 1920, 1080};           // set the size
         AdjustWindowRect(&wr, WS_POPUP, FALSE); // adjust the size
 
         int posX = GetSystemMetrics(SM_CXSCREEN) / 2 - (wr.right - wr.left) / 2;
@@ -235,6 +235,8 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
             ComponentHandle          transformHandle;
             EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
            
+
+
 
 
 
@@ -301,7 +303,35 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         GEngine::Get()->SetGamePaused(true);
         GEngine::Get()->GetLevelStateManager()->Init();
         UIManager::instance->StartupResAdjust(handle);
-
+        /*
+        float GlobalTimer = 0;
+        while (GlobalTimer < 20.0f)
+        {
+                // Loop for the Splash screen
+                float deltatime = GEngine::Get()->Update();
+                GlobalTimer += deltatime;
+                if (GlobalTimer < 5.0f)
+                {
+	                //Full Sail Logo
+                        int x = 5;
+                }
+                else if (GlobalTimer >= 5.0f && GlobalTimer < 10.0f)
+                {
+	                //GP Games Logo
+                        int x = 5;
+                }
+                else if (GlobalTimer >= 10.0f && GlobalTimer < 15.0f)
+                {
+	                //Deep!deep Logo
+                        int x = 5;
+                }
+                else
+                {
+                        int x = 5;
+                        break;
+                }
+        }
+		*/
         while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
         {
                 GCoreInput::UpdateInput();
