@@ -341,7 +341,6 @@ void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
         int         segments         = length / m_SplineLengthPerOrb;
         auto        it               = m_SplineClusterSpawners.emplace(std::make_pair(m_ClusterCounter, SplineCluster(spline)));
 
-
         XMVECTOR   dir      = end - start;
         float      distance = MathLibrary::CalulateVectorLength(dir);
         XMVECTOR   scale    = XMVectorSet(width, 1.0f, distance, 1.0f);
@@ -362,7 +361,6 @@ void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
         XMVECTOR dummy;
         it.first->second.BakeNextPointOnSpline(dummy, dummy, dummy);
         it.first->second.current = 0;
-
 
         m_ClusterCounter++;
 }

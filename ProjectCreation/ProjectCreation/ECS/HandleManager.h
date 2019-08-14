@@ -75,6 +75,9 @@ struct HandleManager
         range<T> GetComponents();
 
         template <typename T>
+        auto GetComponentsRaw();
+
+        template <typename T>
         size_t GetComponentCount();
 
         template <typename T>
@@ -104,6 +107,18 @@ inline range<T> HandleManager::GetComponents()
 }
 
 template <typename T>
+inline auto HandleManager::GetComponentsRaw()
+{
+        using ReturnType               = std::tuple<T*, size_t>;
+        NMemory::type_index pool_index = T::SGetTypeIndex();
+        if (m_ComponentRandomAccessPools.m_mem_starts.size() <= pool_index)
+                ReturnType{0, 0};
+        T*     data          = reinterpret_cast<T*>(m_ComponentRandomAccessPools.m_mem_starts[pool_index]);
+        size_t element_count = static_cast<size_t>(m_ComponentRandomAccessPools.m_element_counts[pool_index]);
+        return ReturnType{data, element_count};
+}
+
+template <typename T>
 inline active_range<T> HandleManager::GetActiveComponents()
 {
         NMemory::type_index pool_index = T::SGetTypeIndex();
@@ -121,7 +136,7 @@ inline size_t HandleManager::GetComponentCount()
         NMemory::type_index pool_index = T::SGetTypeIndex();
         if (m_ComponentRandomAccessPools.m_mem_starts.size() <= pool_index)
                 return 0ULL;
-       return static_cast<size_t>(m_ComponentRandomAccessPools.m_element_counts[pool_index]);
+        return static_cast<size_t>(m_ComponentRandomAccessPools.m_element_counts[pool_index]);
 }
 
 template <typename T>

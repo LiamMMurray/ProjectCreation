@@ -347,6 +347,7 @@
     <ClCompile Include="Engine\Gameplay\StateMachine\IState.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
     <ClCompile Include="Engine\GenericComponents\TransformSystem.cpp" />
+    <ClCompile Include="Engine\JobScheduler.cpp" />
     <ClCompile Include="Engine\Levels\LevelStateMachine.cpp" />
     <ClCompile Include="Engine\Levels\LevelStateManager.cpp" />
     <ClCompile Include="Engine\Levels\Level_01.cpp" />

@@ -42,7 +42,7 @@ inline namespace JobSchedulerInternalUtility
 
         inline constexpr auto CACHE_LINE_SIZE = std::hardware_destructive_interference_size;
 
-        inline static std::mutex DebugPrintMutex;
+        inline std::mutex DebugPrintMutex;
 } // namespace JobSchedulerInternalUtility
 
 #define WIN_32_LEAN_AND_MEAN
@@ -224,16 +224,16 @@ inline namespace JobSchedulerInternal
         };
 
 
-        inline static DWORD              TLSIndex_GenericIndex = TlsAlloc();
-        inline static auto               NumWorkerThreads{std::thread::hardware_concurrency() - 1};
-        inline static constexpr unsigned MaxJobs          = 1024;
-        inline static volatile bool      RunWorkerThreads = true;
+        inline DWORD              TLSIndex_GenericIndex = TlsAlloc();
+        inline auto               NumWorkerThreads{std::thread::hardware_concurrency() - 1};
+        inline constexpr unsigned MaxJobs          = 1024;
+        inline volatile bool      RunWorkerThreads = true;
 
-        inline static AllocVector<RingBuffer<Job, MaxJobs>> TempJobAllocatorImpl;
-        inline static AllocVector<RingBuffer<Job, MaxJobs>> StaticJobAllocatorImpl;
+        inline AllocVector<RingBuffer<Job, MaxJobs>> TempJobAllocatorImpl;
+        inline AllocVector<RingBuffer<Job, MaxJobs>> StaticJobAllocatorImpl;
 
-        inline static AllocVector<std::thread, CACHE_LINE_SIZE> WorkerThreads;
-        inline static AllocVector<JobQueue<MaxJobs>>            JobQueues;
+        inline AllocVector<std::thread, CACHE_LINE_SIZE> WorkerThreads;
+        inline AllocVector<JobQueue<MaxJobs>>            JobQueues;
         inline bool                                             IsEmpty(Job* job)
         {
                 return !job;
@@ -343,7 +343,6 @@ inline namespace JobSchedulerInternal
                         }
                 }
         }
-
         template <typename Allocator, typename R, typename Lambda, typename... Args>
         struct ParallelForJobImpl
         {
@@ -517,66 +516,11 @@ inline namespace JobSchedulerInternal
                 {}
         };
 } // namespace JobSchedulerInternal
-
 inline namespace JobScheduler
 {
-        inline void Initialize()
-        {
-                WorkerThreads          = AllocVector<std::thread, CACHE_LINE_SIZE>{NumWorkerThreads};
-                JobQueues              = AllocVector<JobQueue<1024>>{NumWorkerThreads + 1}; // main thread also has a job queue
-                StaticJobAllocatorImpl = AllocVector<RingBuffer<Job, MaxJobs>>{NumWorkerThreads + 1};
-                TempJobAllocatorImpl   = AllocVector<RingBuffer<Job, MaxJobs>>{NumWorkerThreads + 1};
-                TlsSetValue(TLSIndex_GenericIndex, (LPVOID)NumWorkerThreads);
+        void Initialize();
 
-#pragma push_macro("new");
-#undef new
-                for (auto& itr : JobQueues)
-                {
-                        new (&itr) JobQueue<1024>();
-                }
-                for (auto& itr : StaticJobAllocatorImpl)
-                {
-                        new (&itr) RingBuffer<Job, MaxJobs>();
-                }
-                for (auto& itr : TempJobAllocatorImpl)
-                {
-                        new (&itr) RingBuffer<Job, MaxJobs>();
-                }
-                unsigned i = 0;
-                for (auto& itr : WorkerThreads)
-                {
-                        new (&itr) std::thread(WorkerThreadMain, i);
-                        i++;
-                }
-#pragma pop_macro("new");
-        }
-
-        inline void Shutdown()
-        {
-                RunWorkerThreads = false;
-                for (auto& itr : WorkerThreads)
-                {
-                        itr.join();
-                        itr.~thread();
-                }
-                for (auto& itr : TempJobAllocatorImpl)
-                {
-                        itr.~RingBuffer();
-                }
-                for (auto& itr : StaticJobAllocatorImpl)
-                {
-                        itr.~RingBuffer();
-                }
-                for (auto& itr : JobQueues)
-                {
-                        itr.~JobQueue();
-                }
-                JobQueues.Free();
-                StaticJobAllocatorImpl.Free();
-                TempJobAllocatorImpl.Free();
-                WorkerThreads.Free();
-                TlsFree(TLSIndex_GenericIndex);
-        }
+        void Shutdown();
 
         struct TempJobAllocator
         {

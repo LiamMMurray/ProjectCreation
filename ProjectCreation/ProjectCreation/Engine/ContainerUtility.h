@@ -223,6 +223,16 @@ inline namespace ContainerUtility
                         other.Begin              = 0;
                         other.End                = 0;
                 }
+                AllocVector(AllocVector& other)
+                {
+                        if (&other == this)
+                                return;
+                        _aligned_free(VectorImpl<T>::Begin);
+                        VectorImpl<T>::Alignment = other.Alignment;
+                        VectorImpl<T>::Capacity  = other.Capacity;
+                        VectorImpl<T>::Begin     = other.Begin;
+                        VectorImpl<T>::End       = other.End;
+                }
                 AllocVector(const AllocVector& other)
                 {
                         if (&other == this)
@@ -269,6 +279,7 @@ inline namespace ContainerUtility
                 ~AllocVector()
                 {
                         free((void*)VectorImpl<T>::Begin);
+                        VectorImpl<T>::Begin = 0;
                 }
                 void Free()
                 {
