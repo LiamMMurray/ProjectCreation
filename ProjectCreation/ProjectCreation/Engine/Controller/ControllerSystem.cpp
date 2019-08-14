@@ -73,9 +73,19 @@ int ControllerSystem::GetOrbCount(int color)
 
 void ControllerSystem::IncreaseOrbCount(int color)
 {
+        if (m_PrevOrbColor != color)
+        {
+                ResetOrbCount(m_PrevOrbColor);
+        }
+
         m_OrbCounts[color]++;
+
         if (m_OrbCounts[color] % 3 == 0 && m_OrbCounts[color] > 0)
+        {
                 CollectOrbEventIDs[color]++;
+        }
+
+        m_PrevOrbColor = color;
 }
 
 void ControllerSystem::ResetOrbCount(int color)
@@ -184,7 +194,7 @@ void ControllerSystem::OnInitialize()
 
                 auto tComp                   = eHandle.GetComponent<TransformComponent>();
                 tComp->wrapping              = false;
-                tComp->transform.translation = DirectX::XMVectorSet(0.0f, 5.0f, 0.0f, 1.0f);
+                tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
                 tComp->transform.rotation =
                     DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(0.0f), 0.0f, 0.0f);
 
@@ -201,8 +211,8 @@ void ControllerSystem::OnInitialize()
                 ComponentHandle tHandle = eHandle.AddComponent<TransformComponent>();
                 ComponentHandle cHandle = eHandle.AddComponent<CameraComponent>();
 
-                auto tComp                             = eHandle.GetComponent<TransformComponent>();
-                tComp->transform.translation           = DirectX::XMVectorSet(0.0f, 5.0f, 0.0f, 1.0f);
+                auto tComp                   = eHandle.GetComponent<TransformComponent>();
+                tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
                 tComp->wrapping                        = false;
                 auto cameraComp                        = cHandle.Get<CameraComponent>();
                 cameraComp->m_Settings.m_HorizontalFOV = 90.0f;

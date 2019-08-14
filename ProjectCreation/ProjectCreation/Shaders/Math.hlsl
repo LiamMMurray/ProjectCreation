@@ -56,7 +56,7 @@ float3 WrapPosition(float3 position, float3 Min, float3 Max)
 float RandomFloatInRange(inout float seed, float min, float max)
 {
         float alpha = rand(seed);
-        seed         = alpha;
+        seed        = alpha;
 
         float output;
         output = lerp(min, max, alpha);
@@ -67,8 +67,8 @@ float RandomFloatInRange(inout float seed, float min, float max)
 float3 RandomFloat3InRange(inout float seed, float3 min, float3 max)
 {
         float alphaA = rand(seed);
-        float alphaB = rand(alphaA);
-        float alphaC = rand(alphaB);
+        float alphaB = rand(alphaA + seed);
+        float alphaC = rand(alphaB + alphaA);
         seed         = alphaC;
 
         float3 output;

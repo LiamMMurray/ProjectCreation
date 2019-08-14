@@ -89,6 +89,7 @@ class MathLibrary
                                                        DirectX::XMFLOAT2 blue,
                                                        DirectX::XMFLOAT2 alpha);
         static DirectX::XMFLOAT4 GetRandomColor();
+        static DirectX::XMFLOAT3 MultiplyFLoat3(DirectX::XMFLOAT3& a, DirectX::XMFLOAT3& b);
         inline static float      GetSign(float val)
         {
                 return (val == 0) ? 0.0f : (val > 0 ? 1.0f : -1.0f);

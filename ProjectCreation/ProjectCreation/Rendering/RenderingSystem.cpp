@@ -635,7 +635,7 @@ void RenderSystem::DrawLines()
                 }
         }
 
-        if (orbitSystem->activeGoal.hasActiveGoal)
+        if (orbitSystem->activeGoal.hasActiveGoal == true)
         {
                 int vertexCount = 2;
 
@@ -845,8 +845,9 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(m_CachedMainViewProjectionMatrix);
         m_ConstantBuffer_MVP.Projection     = XMMatrixTranspose(m_CachedMainProjectionMatrix);
         // get scale
-        m_ConstantBuffer_SCENE.scale            = TerrainManager::Get()->GetScale();
-        m_ConstantBuffer_SCENE.screenDimensions = XMFLOAT2(m_BackBufferWidth, m_BackBufferHeight);
+        m_ConstantBuffer_SCENE.scale = TerrainManager::Get()->GetScale();
+        m_ConstantBuffer_SCENE.screenDimensions = XMFLOAT2(m_BackBufferWidth,m_BackBufferHeight);
+        XMStoreFloat3(&m_ConstantBuffer_SCENE.worldOffsetDelta, GEngine::Get()->m_WorldOffsetDelta);
 
         m_ConstantBuffer_SCENE._InstanceReveal = GEngine::Get()->m_InstanceReveal;
 
@@ -1243,7 +1244,6 @@ void RenderSystem::OnWindowResize(WPARAM wParam, LPARAM lParam)
                 D3D11_TEXTURE2D_DESC desc;
                 CreateDefaultRenderTargets(&desc);
                 CreatePostProcessEffects(&desc);
-                UIManager::OnScreenResize();
                 RefreshMainCameraSettings();
 
                 std::cout << m_BackBufferHeight << "   " << m_BackBufferWidth << std::endl;
