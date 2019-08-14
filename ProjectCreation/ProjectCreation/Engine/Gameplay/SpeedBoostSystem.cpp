@@ -131,7 +131,7 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
 
         XMStoreFloat3(&accel, fw * 2.5f - VectorConstants::Up * 9.5f);
 
-        auto emitterComponent      = entityH.GetComponent<EmitterComponent>();
+        //auto emitterComponent      = entityH.GetComponent<EmitterComponent>();
         emitterComponent->maxCount = 10;
         //emitterComponent->spawnRate = 200.0f;
 

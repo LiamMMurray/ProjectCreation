@@ -49,6 +49,7 @@ class InputActions
 
         static uint16_t CheckAction(uint16_t action);
         static uint16_t PauseAction();
+        static uint16_t MouseClickAction();
         static uint16_t MoveAction();
         static uint16_t EnterAction();
         static float    CheckAxis(uint16_t axis);

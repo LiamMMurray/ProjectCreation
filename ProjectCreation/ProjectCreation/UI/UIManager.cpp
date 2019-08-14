@@ -232,6 +232,7 @@ void UIManager::Pause()
 {
         instance->m_InMenu = true;
         GEngine::Get()->SetGamePaused(true);
+
         if (instance->m_InMenu)
         {
                 while (ShowCursor(TRUE) < 0)
@@ -483,8 +484,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                           -0.35f,
                           true,
                           false);
-		
-	// GamePad is connected
+
+        // GamePad is connected
         if (GamePad::Get()->CheckConnection() == true)
         {
 
@@ -544,13 +545,13 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   false);
         }
 
-	// GamePad is not connected
+        // GamePad is not connected
         if (GamePad::Get()->CheckConnection() == false)
         {
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::MainMenu,
-                                  E_FONT_TYPE::Calibri,
+                                  E_FONT_TYPE::CourierNew,
                                   "Press Enter to continue. . .",
                                   0.04f,
                                   0.0f,
@@ -567,17 +568,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   0.0f,
                                   0.15f,
                                   false,
-                                  false);
-
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::MainMenu,
-                                  E_FONT_TYPE::Calibri,
-                                  "Press Enter to continue. . .",
-                                  0.04f,
-                                  0.0f,
-                                  0.15f,
-                                  true,
                                   false);
 
                 instance->AddText(instance->m_RenderSystem->m_Device,
@@ -825,7 +815,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "<",
                           0.04f,
                           -0.12f,
@@ -836,7 +826,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           ">",
                           0.04f,
                           0.12f,
@@ -849,7 +839,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::OptionsSubmenu,
-                                  E_FONT_TYPE::MyFile,
+                                  E_FONT_TYPE::CourierNew,
                                   std::to_string(i),
                                   0.04f,
                                   0.0f,
@@ -1597,6 +1587,7 @@ void UIManager::Update()
 {
         GEngine::Get()->m_MainThreadProfilingContext.Begin("UIManager", "UIManager");
         using namespace DirectX;
+        GamePad::Get()->Refresh();
 
         instance->m_ScreenSize =
             XMFLOAT2{instance->m_RenderSystem->m_BackBufferWidth, instance->m_RenderSystem->m_BackBufferHeight};
@@ -1646,8 +1637,23 @@ void UIManager::Update()
         }
 
         UIMouseEvent e;
-        e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
-        e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
+        POINT        cursorPos;
+        GetCursorPos(&cursorPos);
+        if (GamePad::Get()->CheckConnection() == true)
+        {
+                for (int i = 0; i < instance->resDescriptors.size(); i++)
+                {
+                        int XPos = GamePad::Get()->leftStickX * 10.0f;
+                        int YPos = GamePad::Get()->leftStickY * 10.0f;
+
+                        SetCursorPos(cursorPos.x + XPos, cursorPos.y - YPos);
+                        // std::cout << "XPos: " << GamePad::Get()->leftStickX << " | YPos: " << YPos << std::endl;
+                }
+        }
+        GetCursorPos(&cursorPos);
+        e.mouseX = (float)cursorPos.x;
+        e.mouseY = (float)cursorPos.y;
+
         std::vector<SpriteComponent*> clickedSprites;
 
         for (auto& it : instance->m_AllSprites)
@@ -1655,10 +1661,9 @@ void UIManager::Update()
                 {
                         if (sprite.mEnabled)
                         {
-                                if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Release)
+                                if (InputActions::MouseClickAction() == KeyState::Release)
                                 {
-                                        XMFLOAT2 cursorCoords = {(float)GCoreInput::GetMouseWindowPosX(),
-                                                                 (float)GCoreInput::GetMouseWindowPosY()};
+                                        XMFLOAT2 cursorCoords = {e.mouseX, e.mouseY};
                                         XMVECTOR point        = UI::ConvertScreenPosToNDC(cursorCoords, instance->m_ScreenSize);
                                         if (UI::PointInRect(sprite.mRectangle, point))
                                         {

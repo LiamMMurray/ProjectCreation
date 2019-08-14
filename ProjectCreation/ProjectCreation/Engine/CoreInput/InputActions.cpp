@@ -37,6 +37,25 @@ uint16_t InputActions::PauseAction()
         return returnType;
 }
 
+uint16_t InputActions::MouseClickAction()
+{
+        uint16_t returnType;
+
+        if (GamePad::Get()->CheckConnection() == true) // has controller
+        {
+                returnType = (KeyState)GCoreInput::GetControllerState(ControllerCode::BUTTON_A);
+                if (returnType == KeyState::Release)
+                {
+                        int temp = 0;
+                }
+                return returnType;
+        }
+
+        returnType = (uint16_t)GCoreInput::GetMouseState(MouseCode::LeftClick);
+
+        return returnType;
+}
+
 uint16_t InputActions::MoveAction()
 {
         uint16_t returnType;

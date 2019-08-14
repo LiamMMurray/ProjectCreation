@@ -108,7 +108,6 @@ void GCoreInput::UpdateInput()
 		GEngine::Get()->m_MainThreadProfilingContext.End();
 
         ResetAxes();
-        GamePad::Get()->Refresh();
 }
 
 int32_t GCoreInput::GetMouseWindowPosX()
