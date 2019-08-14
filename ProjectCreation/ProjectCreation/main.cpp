@@ -269,7 +269,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 emitterComponent->FloatParticle(XMFLOAT3(-20.0f, -5.0f, -20.0f),
                                                 XMFLOAT3(20.0f, 20.0f, 20.0f),
                                                 XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-                                                XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+                                                XMFLOAT4(1.0f, 1.0f, 1.0f, 0.65f),
                                                 XMFLOAT4(15.0f, 3.0f, 1.0f, 1.0f));
                 emitterComponent->EmitterData.emitterPosition = position;
                 emitterComponent->rotate                      = false;
