@@ -238,7 +238,8 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
             /*std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
             ComponentHandle          transformHandle;
             EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
-           
+           
+
 
 
 
@@ -308,7 +309,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         GEngine::Get()->SetGamePaused(true);
         GEngine::Get()->GetLevelStateManager()->Init();
         UIManager::instance->StartupResAdjust(handle);
-
+        GEngine::Get()->Signal();
         while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
         {
                 GCoreInput::UpdateInput();

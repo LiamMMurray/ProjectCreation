@@ -64,7 +64,7 @@ bool AABBToFrustum(float3 center, float3 extents)
         float deltaPos = distance(pos.xz, prevPos.xz);
 
 
-        InstanceTransforms[id].lifeTime *= _InstanceReveal;
+        InstanceTransforms[id].lifeTime *= ceil(_InstanceReveal);
 
         bool isSteep = id > 10000;
 
