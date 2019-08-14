@@ -31,6 +31,7 @@
     <ClInclude Include="Engine\CollisionLibary\CollisionLibary.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionComponents.h" />
     <ClInclude Include="Engine\Commands.h" />
+    <ClInclude Include="Engine\ContainerUtility.h" />
     <ClInclude Include="Engine\Controller\ControllerSystem.h" />
     <ClInclude Include="Engine\Controller\DebugCameraController.h" />
     <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
@@ -58,6 +59,7 @@
     <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
     <ClInclude Include="Engine\GenericComponents\TransformSystem.h" />
+    <ClInclude Include="Engine\JobScheduler.h" />
     <ClInclude Include="Engine\Levels\LevelState.h" />
     <ClInclude Include="Engine\Levels\LevelStateEvents.h" />
     <ClInclude Include="Engine\Levels\LevelStateMachine.h" />
