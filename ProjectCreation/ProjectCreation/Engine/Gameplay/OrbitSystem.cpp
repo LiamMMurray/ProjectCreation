@@ -71,6 +71,7 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
         emitterComponent->EmitterData.particleScale = XMFLOAT2(0.2f, 0.2f);
         emitterComponent->maxCount                  = 0;
         emitterComponent->spawnRate                 = 0.0f;
+        emitterComponent->EmitterData.textureIndex  = 3;
         /*** REFACTORING CODE END ***/
 }
 
