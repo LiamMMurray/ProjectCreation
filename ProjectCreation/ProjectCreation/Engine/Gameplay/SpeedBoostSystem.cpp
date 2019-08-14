@@ -68,6 +68,32 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
                                                                                 m_BoostLifespan + m_BoostLifespanVariance);
                 speedboostComponent->decay    = 1.0f;
                 speedboostComponent->color    = color;
+
+                ComponentHandle   emitterComponentHandle = entityH.AddComponent<EmitterComponent>();
+                EmitterComponent* emitterComponent       = emitterComponentHandle.Get<EmitterComponent>();
+                XMFLOAT3          velMin;
+                XMFLOAT3          velMax;
+                XMFLOAT4          orbColor;
+                XMFLOAT3          orbPos;
+                XMStoreFloat4(&orbColor, 4.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[color]));
+                XMStoreFloat3(&velMax, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f));
+                XMStoreFloat3(&orbPos, pos);
+                emitterComponent->ParticleswithGravity(
+                    XMFLOAT3(), XMFLOAT3(), orbColor, orbColor, XMFLOAT4(2.0f, 1.0f, 0.5f, 0.5f));
+
+                emitterComponent->EmitterData.minInitialVelocity = {-0.1f, -0.0f, -0.1f};
+                emitterComponent->EmitterData.maxInitialVelocity = {0.3f, 1.25f, 0.3f};
+                emitterComponent->EmitterData.acceleration       = {0.0f, 1.25f, 0.0f};
+                emitterComponent->EmitterData.emitterPosition    = orbPos;
+                emitterComponent->rotate                         = true;
+                emitterComponent->rotationAxis                   = VectorConstants::Up;
+                emitterComponent->EmitterData.index              = 2;
+                emitterComponent->EmitterData.particleScale      = XMFLOAT2(0.0f, 0.05f);
+                emitterComponent->maxCount                       = 0;
+                emitterComponent->spawnRate                      = 0.0f; // 15.0f
+                emitterComponent->active                         = false;
+                emitterComponent->EmitterData.textureIndex       = color;
+
                 return entityH;
         }
         return NULL;
@@ -130,14 +156,16 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
 
         XMStoreFloat3(&accel, fw * 2.5f - VectorConstants::Up * 0.5f);
 
-        //auto emitterComponent                            = entityH.GetComponent<EmitterComponent>();
+        // auto emitterComponent                            = entityH.GetComponent<EmitterComponent>();
         emitterComponent->maxCount                       = 10;
+        emitterComponent->EmitterData.flags              = ALIGN_TO_VEL;
         emitterComponent->EmitterData.minOffset          = posMin;
         emitterComponent->EmitterData.maxOffset          = posMax;
         emitterComponent->EmitterData.minInitialVelocity = velMin;
         emitterComponent->EmitterData.maxInitialVelocity = velMax;
         emitterComponent->EmitterData.acceleration       = accel;
         emitterComponent->EmitterData.particleScale      = XMFLOAT2(0.05f, 0.05f);
+        emitterComponent->EmitterData.textureIndex       = 3;
 
         return entityH;
 }
@@ -159,20 +187,6 @@ EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int c
         orbComp->m_Color         = color;
         orbComp->m_TargetRadius  = m_BoostRadius;
 
-
-        /*    XMFLOAT3 velMax;
-            XMStoreFloat3(&velMax, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f));
-            emitterComponent->EmitterData.minInitialVelocity = velMax;
-            emitterComponent->EmitterData.maxInitialVelocity = velMax;*/
-
- /*       emitterComponent->rotate                    = true;
-        emitterComponent->rotationAxis              = VectorConstants::Up;
-        emitterComponent->EmitterData.acceleration  = XMFLOAT3(0.0f, -9.80f, 0.0f);
-        emitterComponent->EmitterData.index         = 2;
-        emitterComponent->EmitterData.particleScale = XMFLOAT2(0.1f, 0.1f);
-        emitterComponent->maxCount                  = 50;
-        emitterComponent->spawnRate                 = 15.0f;
-*/
         return entityHandle;
 }
 
@@ -218,7 +232,10 @@ void SpeedBoostSystem::RequestDestroySplineOrb(SpeedboostSplineComponent* speedC
                 orbComp->m_WantsDestroy = true;
                 speedComp->GetHandle().SetIsActive(false);
 
-                SpeedboostSplineComponent* latchedSpline = latchedSplineHandle.Get<SpeedboostSplineComponent>();
+                SpeedboostSplineComponent* latchedSpline = nullptr;
+
+                if (latchedSplineIndex != -1)
+                        latchedSpline = latchedSplineHandle.Get<SpeedboostSplineComponent>();
 
                 if (latchedSpline == speedComp)
                 {
@@ -385,10 +402,10 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                         ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
                                         ->GetControlledEntity();
 
-        TransformComponent* playerTransform = playerEntity.GetComponent<TransformComponent>();
-
-        auto playerController = static_cast<PlayerController*>(
-            SYSTEM_MANAGER->GetSystem<ControllerSystem>()->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]);
+        TransformComponent* playerTransform  = playerEntity.GetComponent<TransformComponent>();
+        ControllerSystem*   controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+        auto                playerController =
+            static_cast<PlayerController*>(controllerSystem->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]);
 
         static float targetTerrain = 0.0f;
 
@@ -432,6 +449,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
         {
                 for (auto& speedComp : m_HandleManager->GetActiveComponents<SpeedboostComponent>())
                 {
+
+
                         XMVECTOR center = speedComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
 
                         speedboostCount++;
@@ -469,16 +488,57 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                         if (distanceSq < (checkRadius * checkRadius))
                         {
-                                //SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.color);
-                                //playerController->SpeedBoost(center, speedComp.color);
-                                //RequestDestroySpeedboost(&speedComp);
+                                // SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.color);
+                                // playerController->SpeedBoost(center, speedComp.color);
+                                // RequestDestroySpeedboost(&speedComp);
+                        }
+
+                        if (speedComp.hasParticle == false)
+                                return;
+
+                        EmitterComponent*   emitterComp = speedComp.GetParent().GetComponent<EmitterComponent>();
+                        TransformComponent* transComp   = speedComp.GetParent().GetComponent<TransformComponent>();
+                        int                 count       = controllerSystem->GetOrbCount(speedComp.color);
+                        if (speedComp.color == E_LIGHT_ORBS::WHITE_LIGHTS)
+                        {
+                                count = 0;
+                        }
+                        emitterComp->active    = true;
+                        emitterComp->spawnRate = 5.0f * count;
+                        emitterComp->maxCount  = 10 * count;
+                        switch (count)
+                        {
+                                case 1:
+                                        break;
+                                case 2:
+                                        emitterComp->EmitterData.acceleration.y       = 2.5f;
+                                        emitterComp->EmitterData.maxInitialVelocity.y = 2.5f;
+                                        emitterComp->EmitterData.particleScale.y      = 0.1f;
+                                        break;
+                                case 3:
+                                        emitterComp->EmitterData.acceleration.y       = 3.5f;
+                                        emitterComp->EmitterData.maxInitialVelocity.y = 3.5f;
+                                        emitterComp->EmitterData.particleScale.y      = 0.15;
+                                        break;
                         }
                 }
         }
 
+
         for (auto& spawnComp : m_HandleManager->GetActiveComponents<OrbComponent>())
         {
+
                 TransformComponent* transComp = spawnComp.GetParent().GetComponent<TransformComponent>();
+                /* EmitterComponent*   emitterComp = spawnComp.GetParent().GetComponent<EmitterComponent>();
+                 
+                 int                 count       = controllerSystem->GetOrbCount(spawnComp.m_Color);
+                 if (spawnComp.m_Color == E_LIGHT_ORBS::WHITE_LIGHTS)
+                 {
+                         count = 0;
+                 }
+                 emitterComp->active    = true;
+                 emitterComp->spawnRate = 10.0f * count;
+                 emitterComp->maxCount  = 10 * count;*/
 
                 if (spawnComp.m_CurrentRadius != spawnComp.m_TargetRadius)
                 {
@@ -639,11 +699,11 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                 AudioManager::Get()->PlaySoundAtLocation(currPos, settings);
                                         }
 
-                                        latchedSplineIndex = latchedSplineComp->index;
+                                        latchedSplineIndex   = latchedSplineComp->index;
                                         m_EnableRandomSpawns = false;
                                         RequestDestroyAllSpeedboosts();
                                         playerController->m_TimeOnSpline += deltaTime;
-                                        mDelatchTimer      = mDelatchCD;
+                                        mDelatchTimer = mDelatchCD;
                                         playerController->SetUseGravity(false);
 
                                         XMVECTOR dirNext = XMVector3Normalize(nextPos - currPos);
@@ -813,13 +873,13 @@ void SpeedBoostSystem::OnPostUpdate(float deltaTime)
 
 void SpeedBoostSystem::OnInitialize()
 {
-        m_HandleManager    = GEngine::Get()->GetHandleManager();
-        m_SystemManager    = GEngine::Get()->GetSystemManager();
-        m_ResourceManager  = GEngine::Get()->GetResourceManager();
+        m_HandleManager   = GEngine::Get()->GetHandleManager();
+        m_SystemManager   = GEngine::Get()->GetSystemManager();
+        m_ResourceManager = GEngine::Get()->GetResourceManager();
 
         auto baseMatHandle = m_ResourceManager->LoadMaterial("GlowSpeedboostBase");
-    
-		for (int i = 0; i < E_LIGHT_ORBS::COUNT; ++i)
+
+        for (int i = 0; i < E_LIGHT_ORBS::COUNT; ++i)
         {
                 auto handle = m_ResourceManager->CopyResource<Material>(baseMatHandle, speedboostMaterialNames[i].c_str());
                 auto mat    = m_ResourceManager->GetResource<Material>(handle);

@@ -14,7 +14,7 @@ void TutorialLevel::Enter()
         GEngine::Get()->SetPlayerRadius(0);
         m_SpeedBoostSystem->SetRandomSpawnEnabled(false);
 
-		m_SpeedBoostSystem->ResetLevel();
+        m_SpeedBoostSystem->ResetLevel();
 
         m_PlayerController->SetCollectedPlanetCount(0);
 
@@ -163,6 +163,7 @@ void TutorialLevel::SpawnFirstRedOrb()
         speedboostComponent->lifetime        = 1.0f;
         speedboostComponent->decay           = 0.0f;
         speedboostComponent->color           = E_LIGHT_ORBS::RED_LIGHTS;
+        speedboostComponent->hasParticle     = false;
 }
 
 void TutorialLevel::SpawnFirstBlueOrb()
@@ -182,6 +183,7 @@ void TutorialLevel::SpawnFirstBlueOrb()
         speedboostComponent->collisionRadius = 0.1f;
         speedboostComponent->lifetime        = 1.0f;
         speedboostComponent->decay           = 0.0f;
+        speedboostComponent->hasParticle     = false;
         speedboostComponent->color           = E_LIGHT_ORBS::BLUE_LIGHTS;
 }
 
@@ -203,4 +205,5 @@ void TutorialLevel::SpawnFirstGreenOrb()
         speedboostComponent->lifetime        = 1.0f;
         speedboostComponent->decay           = 0.0f;
         speedboostComponent->color           = E_LIGHT_ORBS::GREEN_LIGHTS;
+        speedboostComponent->hasParticle   = false;
 }

@@ -141,5 +141,5 @@ EntityHandle SpatialSoundSystem::PlaySoundAtLocation(const DirectX::XMVECTOR& po
 void SpatialSoundSystem::FreeSound(int type, int variation, int16_t index)
 {
         m_SoundPools[type][variation][index].gwSound->StopSound();
-        m_SoundPools[type][variation].free(index);
+        m_SoundPools[type][variation].Free(index);
 }

@@ -11,4 +11,6 @@ class SpeedboostComponent : public Component<SpeedboostComponent>
         float             collisionRadius;
         float             lifetime;
         float             decay;
+
+		bool hasParticle = true;
 };
