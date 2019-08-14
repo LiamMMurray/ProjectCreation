@@ -444,6 +444,8 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         // Create supported resolutions
         instance->SupportedResolutions();
+        const float ScaleRatiao = 2.0f;
+        const float PosYRatiao = 1.4f;
 
         constexpr float pauseButtonWidth  = 0.25f;
         constexpr float pauseButtonHeight = 0.05f;
@@ -462,8 +464,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                             L"../Assets/2d/Sprite/Full_Sail_Logo.dds",
                             0.0f,
                             0.0f,
-                            1.0f,
-                            1.0f,
+                            1.0f * ScaleRatiao,
+                            1.0f * ScaleRatiao,
                             false);
 
         instance->AddSprite(instance->m_RenderSystem->m_Device,
@@ -472,8 +474,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                             L"../Assets/2d/Sprite/GPGlogo_solid.dds",
                             0.0f,
                             0.0f,
-                            1.0f,
-                            1.0f,
+                            1.0f * ScaleRatiao,
+                            1.0f * ScaleRatiao,
                             false);
 
         // Main Menu
@@ -482,9 +484,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Angel,
                           "INANIS",
-                          0.12f,
+                          0.06f * ScaleRatiao,
                           0.0f,
-                          -0.35f,
+                          -0.35f * PosYRatiao,
                           true,
                           false);
 
@@ -493,9 +495,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
                           "Press Enter to continue. . .",
-                          0.12f,
+                          0.06f * ScaleRatiao,
                           0.0f,
-                          0.1f,
+                          0.1f * PosYRatiao,
                           true,
                           false);
 
@@ -504,9 +506,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
                           "Hold Left Click to Move",
-                          0.12f,
+                          0.06f * ScaleRatiao,
                           0.0f,
-                          0.1f,
+                          0.1f * PosYRatiao,
                           false,
                           false);
 
@@ -515,9 +517,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
                           "Hold A to get a boost from Red lights",
-                          0.12f,
+                          0.06f * ScaleRatiao,
                           0.0f,
-                          0.1f,
+                          0.1f * PosYRatiao,
                           false,
                           false);
 
@@ -526,9 +528,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
                           "Hold S to get a boost from Green lights",
-                          0.12f,
+                          0.06f * ScaleRatiao,
                           0.0f,
-                          0.1f,
+                          0.1f * PosYRatiao,
                           false,
                           false);
 
@@ -537,9 +539,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::MainMenu,
                           E_FONT_TYPE::Calibri,
                           "Hold D to get a boost from Blue lights",
-                          0.12f,
+                          0.06f * ScaleRatiao,
                           0.0f,
-                          0.1f,
+                          0.1f * PosYRatiao,
                           false,
                           false);
 
@@ -549,9 +551,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                             E_MENU_CATEGORIES::PauseMenu,
                             L"../Assets/2d/Sprite/Grey Box Test.dds",
                             0.0f,
-                            0.0f,
-                            0.6f,
-                            1.2f,
+                            0.0f * PosYRatiao,
+                            0.4f * ScaleRatiao,
+                            0.6f * ScaleRatiao,
                             false);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -559,9 +561,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::PauseMenu,
                           E_FONT_TYPE::Angel,
                           "INANIS",
-                          0.12f,
+                          0.06f * ScaleRatiao,
                           0.0f,
-                          -0.35f,
+                          -0.35f * PosYRatiao,
                           false,
                           false);
 
@@ -570,70 +572,70 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::PauseMenu,
                           E_FONT_TYPE::CourierNew,
                           "Resume",
-                          0.1f,
+                          0.05f * ScaleRatiao,
                           0.0f,
-                          -0.15f,
+                          -0.15f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
                           E_FONT_TYPE::CourierNew,
                           "Levels",
-                          0.1f,
+                          0.05f * ScaleRatiao,
                           0.0f,
-                          -0.05f,
+                          -0.05f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
                           E_FONT_TYPE::CourierNew,
                           "Options",
-                          0.1f,
+                          0.05f * ScaleRatiao,
                           0.0f,
-                          0.05f,
+                          0.05f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
                           E_FONT_TYPE::CourierNew,
                           "Controls",
-                          0.1f,
+                          0.05f * ScaleRatiao,
                           0.0f,
-                          0.15f,
+                          0.15f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
                           E_FONT_TYPE::CourierNew,
                           "Exit",
-                          0.1f,
+                          0.05f * ScaleRatiao,
                           0.0f,
-                          0.25f,
+                          0.25f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         // Options Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -641,70 +643,70 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::OptionsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Back",
-                          0.1f,
+                          0.05f * ScaleRatiao,
                           0.0f,
-                          -0.35f,
+                          -0.35f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Windowed",
-                          0.08f,
+                          0.04f * ScaleRatiao,
                           0.0f,
-                          0.08f,
+                          0.08f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Resolution",
-                          0.08f,
+                          0.04f * ScaleRatiao,
                           0.0f,
-                          0.25f,
+                          0.25f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Apply",
-                          0.1f,
+                          0.05f * ScaleRatiao,
                           0.0f,
-                          -0.25f,
+                          -0.25f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Master Volume",
-                          0.06f,
+                          0.03f * ScaleRatiao,
                           0.0f,
-                          -0.1f,
+                          -0.1f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         // Options Submenu
         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -712,9 +714,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::OptionsSubmenu,
                           E_FONT_TYPE::CourierNew,
                           "Off",
-                          0.08f,
+                          0.04f * ScaleRatiao,
                           0.0f,
-                          0.16f,
+                          0.16f * PosYRatiao,
                           false,
                           false);
 
@@ -723,9 +725,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::OptionsSubmenu,
                           E_FONT_TYPE::CourierNew,
                           "On",
-                          0.08f,
+                          0.04f * ScaleRatiao,
                           0.0f,
-                          0.16f,
+                          0.16f * PosYRatiao,
                           false,
                           false);
 
@@ -734,9 +736,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::OptionsSubmenu,
                           E_FONT_TYPE::CourierNew,
                           "<",
-                          0.08f,
+                          0.04f * ScaleRatiao,
                           -0.12f,
-                          0.35f,
+                          0.35f * PosYRatiao,
                           false,
                           true);
 
@@ -745,9 +747,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::OptionsSubmenu,
                           E_FONT_TYPE::CourierNew,
                           ">",
-                          0.08f,
+                          0.04f * ScaleRatiao,
                           0.12f,
-                          0.35f,
+                          0.35f * PosYRatiao,
                           false,
                           true);
 
@@ -759,9 +761,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_FONT_TYPE::CourierNew,
                                   std::to_string(instance->resDescriptors[i].Width) + "x" +
                                       std::to_string(instance->resDescriptors[i].Height),
-                                  0.08f,
+                                  0.04f * ScaleRatiao,
                                   0.0f,
-                                  0.35f,
+                                  0.35f * PosYRatiao,
                                   false,
                                   false);
         }
@@ -805,70 +807,70 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::LevelMenu,
                           E_FONT_TYPE::CourierNew,
                           "Back",
-                          0.1f,
+                          0.05f * ScaleRatiao,
                           0.0f,
-                          -0.35f,
+                          -0.35f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           E_FONT_TYPE::CourierNew,
                           "Tutorial",
-                          0.1f,
+                          0.05f * ScaleRatiao,
                           0.0f,
-                          -0.1f,
+                          -0.1f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           E_FONT_TYPE::CourierNew,
                           "Level 1",
-                          0.1f,
+                          0.05f * ScaleRatiao,
                           0.0f,
-                          0.0f,
+                          0.0f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           E_FONT_TYPE::CourierNew,
                           "Level 2",
-                          0.1f,
+                          0.05f * ScaleRatiao,
                           0.0f,
-                          0.1f,
+                          0.1f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
                           E_FONT_TYPE::CourierNew,
                           "Level 3",
-                          0.1f,
+                          0.05f * ScaleRatiao,
                           0.0f,
-                          0.2f,
+                          0.2f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         // Controls Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -876,23 +878,23 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Back",
-                          0.1f,
+                          0.05f * ScaleRatiao,
                           0.0f,
-                          -0.3f,
+                          -0.3f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Collect Red Light: A",
-                          0.06f,
+                          0.03f * ScaleRatiao,
                           0.0f,
-                          -0.1f,
+                          -0.1f * PosYRatiao,
                           false,
                           false);
 
@@ -901,9 +903,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Collect Green Light: S",
-                          0.06f,
+                          0.03f * ScaleRatiao,
                           0.0f,
-                          0.0f,
+                          0.0f * PosYRatiao,
                           false,
                           false);
 
@@ -912,9 +914,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Collect Blue Light: D",
-                          0.06f,
+                          0.03f * ScaleRatiao,
                           0.0f,
-                          0.1f,
+                          0.1f * PosYRatiao,
                           false,
                           false);
 
@@ -923,9 +925,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::ControlsMenu,
                           E_FONT_TYPE::CourierNew,
                           "Movement: Left Mouse ",
-                          0.06f,
+                          0.03f * ScaleRatiao,
                           0.0f,
-                          0.2f,
+                          0.2f * PosYRatiao,
                           false,
                           false);
 
@@ -935,9 +937,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::Demo,
                           E_FONT_TYPE::Calibri,
                           "Thank you for playing our demo!",
-                          0.12f,
+                          0.06f * ScaleRatiao,
                           0.0f,
-                          0.0f,
+                          0.0f * PosYRatiao,
                           false,
                           false);
 
@@ -946,28 +948,28 @@ void UIManager::Initialize(native_handle_type hwnd)
                           E_MENU_CATEGORIES::Demo,
                           E_FONT_TYPE::CourierNew,
                           "Continue",
-                          0.1f,
+                          0.05f * ScaleRatiao,
                           -0.15f,
-                          0.1f,
+                          0.1f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::Demo,
                           E_FONT_TYPE::CourierNew,
                           "Exit",
-                          0.1f,
+                          0.05f * ScaleRatiao,
                           0.15f,
-                          0.1f,
+                          0.1f * PosYRatiao,
                           false,
                           true,
                           true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                          pauseButtonWidth * ScaleRatiao,
+                          pauseButtonHeight * ScaleRatiao);
 
 
         // Pause Menu
