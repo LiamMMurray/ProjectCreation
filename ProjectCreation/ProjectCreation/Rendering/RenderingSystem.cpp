@@ -847,7 +847,6 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         // get scale
         m_ConstantBuffer_SCENE.scale            = TerrainManager::Get()->GetScale();
         m_ConstantBuffer_SCENE.screenDimensions = XMFLOAT2(m_BackBufferWidth, m_BackBufferHeight);
-        GEngine::Get()->m_InstanceReveal        = 1.0f;
 
         m_ConstantBuffer_SCENE._InstanceReveal = GEngine::Get()->m_InstanceReveal;
 

@@ -38,6 +38,7 @@ class Bloom : public PostProcessEffectBase
                 enum
                 {
                         MASK = Bloom::MaxIterations,
+                        AO,
                         COUNT
                 };
         };
@@ -61,6 +62,8 @@ class Bloom : public PostProcessEffectBase
         ResourceHandle m_ScreenQuadVS;
         ResourceHandle m_BloomMaskPS;
         ResourceHandle m_BloomCombinePS;
+        ResourceHandle m_AO_PS;
+        ResourceHandle m_AOBlur_PS;
         ResourceHandle m_BloomUpscalePS;
         ResourceHandle m_BloomDownscalePS;
         ResourceHandle m_BloomDownscaleKarisPS;

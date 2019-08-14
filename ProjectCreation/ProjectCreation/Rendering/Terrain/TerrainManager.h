@@ -31,6 +31,7 @@ struct TerrainVertex
 {
         DirectX::XMFLOAT3 pos;
         DirectX::XMFLOAT2 tex;
+        DirectX::XMFLOAT2 boundsY;
 };
 
 struct FInstanceRenderData
@@ -68,6 +69,7 @@ class TerrainManager
 
         ID3D11ShaderResourceView* terrainSourceSRV;
         ID3D11ShaderResourceView* terrainMaskSRV;
+        ID3D11ShaderResourceView* terrainColorSRV;
 
         ID3D11Texture2D*          terrainIntermediateTexture;
         ID3D11RenderTargetView*   terrainIntermediateRenderTarget;

@@ -32,10 +32,9 @@ class GEngine
 
 
         static GEngine* instance;
-
-        bool m_DebugMode     = false;
-        bool m_GameIsPaused  = false;
-        bool m_WantsGameExit = false;
+        bool            m_DebugMode     = false;
+        bool            m_GameIsPaused  = false;
+        bool            m_WantsGameExit = false;
 
         LevelStateManager* m_LevelStateManager;
 
@@ -121,5 +120,6 @@ class GEngine
         {
                 m_WantsGameExit = true;
         }
-        float m_InstanceReveal = 0.0f;
+        float       m_InstanceReveal = 0.0f;
+        static bool ShowFPS;
 };

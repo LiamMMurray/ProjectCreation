@@ -341,9 +341,10 @@ void UIManager::AdjustResolution(HWND window, int wWidth, int wHeight)
         RECT wr = {0, 0, wWidth, wHeight}; // set the size
 
         DWORD style = WS_OVERLAPPEDWINDOW;
-#ifdef _FPS
-        style = WS_POPUP;
-#endif
+
+        if (GEngine::ShowFPS)
+                style = WS_POPUP;
+
 
         AdjustWindowRect(&wr, style, FALSE); // adjust the size
 
@@ -774,7 +775,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 0.2f,
                                 0.5f,
                                 false);
-                                
+                                
 
 
 

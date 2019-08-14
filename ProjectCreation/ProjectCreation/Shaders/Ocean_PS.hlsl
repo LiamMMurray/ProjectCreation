@@ -186,7 +186,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
                 // color += lerp(shallowWaterColor, deepWaterColor, fresnelTerm) + specular * radiance;
         }
         // return NormalWS.xyz;
-        return float4(color, 1.0f);
+        //return float4(color, 1.0f);
 
         float maskA     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 45.0f + _Time * 0.01f * float2(1.0f, 0.0f)).z;
         float maskB     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 40.0f + _Time * 0.01f * float2(-1.0f, 0.0f)).z;

@@ -54,6 +54,26 @@ void Bloom::Initialize(ID3D11Device1* device, ID3D11DeviceContext1* context, D3D
                 assert(SUCCEEDED(hr));
         }
 
+        { // AO
+                auto newDesc   = desc;
+                newDesc.Format = DXGI_FORMAT_R8_UNORM;
+                hr             = m_Device->CreateTexture2D(&newDesc, nullptr, &m_BlurTextures[Bloom::E_PASSES::AO]);
+                assert(SUCCEEDED(hr));
+
+                D3D11_RENDER_TARGET_VIEW_DESC rtvDesc{};
+                rtvDesc.Format             = newDesc.Format;
+                rtvDesc.ViewDimension      = D3D11_RTV_DIMENSION_TEXTURE2D;
+                rtvDesc.Texture2D.MipSlice = 0;
+
+                hr = m_Device->CreateRenderTargetView(
+                    m_BlurTextures[Bloom::E_PASSES::AO], &rtvDesc, &m_BlurRTVs[Bloom::E_PASSES::AO]);
+                assert(SUCCEEDED(hr));
+
+                m_Device->CreateShaderResourceView(
+                    m_BlurTextures[Bloom::E_PASSES::AO], nullptr, &m_BlurSRVs[Bloom::E_PASSES::AO]);
+                assert(SUCCEEDED(hr));
+        }
+
         for (int i = 0; i < MaxIterations; ++i)
         {
                 UINT div    = (UINT)pow(2, i);
@@ -80,6 +100,8 @@ void Bloom::Initialize(ID3D11Device1* device, ID3D11DeviceContext1* context, D3D
         m_BloomUpscalePS        = m_ResourceManager->LoadPixelShader("BloomUpscale");
         m_BloomDownscalePS      = m_ResourceManager->LoadPixelShader("BloomDownscale");
         m_BloomDownscaleKarisPS = m_ResourceManager->LoadPixelShader("BloomDownscaleKaris");
+        m_AO_PS                 = m_ResourceManager->LoadPixelShader("AO");
+        m_AOBlur_PS             = m_ResourceManager->LoadPixelShader("AOBlur");
         m_AONormals             = m_ResourceManager->LoadTexture2D("RandomNormalsAO");
 
         D3D11_BUFFER_DESC cbDesc{};
@@ -121,6 +143,8 @@ void Bloom::Render(ID3D11ShaderResourceView** inSRV, ID3D11RenderTargetView** ou
         PixelShader*  upscalePS        = m_ResourceManager->GetResource<PixelShader>(m_BloomUpscalePS);
         PixelShader*  downscalePS      = m_ResourceManager->GetResource<PixelShader>(m_BloomDownscalePS);
         PixelShader*  downscaleKarisPS = m_ResourceManager->GetResource<PixelShader>(m_BloomDownscaleKarisPS);
+        PixelShader*  AO_PS            = m_ResourceManager->GetResource<PixelShader>(m_AO_PS);
+        PixelShader*  AOBlur_PS        = m_ResourceManager->GetResource<PixelShader>(m_AOBlur_PS);
 
 
         int   s           = std::max(m_Width / 2, m_Height / 2);
@@ -206,14 +230,50 @@ void Bloom::Render(ID3D11ShaderResourceView** inSRV, ID3D11RenderTargetView** ou
         RenderUtility::UpdateConstantBuffer(m_Context, m_BloomCB_GPU, &m_BloomCB_CPU, sizeof(m_BloomCB_CPU));
         m_Context->OMSetBlendState(m_DefaultBlendState, blendFactor, sampleMask);
 
-        m_Context->OMSetRenderTargets(1, outRTV, nullptr);
-        m_Context->PSSetShader(combinePS->m_PixelShader, nullptr, 0);
 
-        m_Context->PSSetShaderResources(E_BLOOM_PS_SRV::SCREEN, 1, inSRV);
 
         Texture2D* aoTex = m_ResourceManager->GetResource<Texture2D>(m_AONormals);
         m_Context->PSSetShaderResources(3, 1, &aoTex->m_SRV);
 
+        // Do Ambient occlusion pass
+        constexpr FLOAT black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+        //m_Context->ClearRenderTargetView(m_BlurRTVs[E_PASSES::AO], black);
+        m_Context->PSSetShader(AO_PS->m_PixelShader, nullptr, 0);
+        ID3D11ShaderResourceView* nullSRV = nullptr;
+        m_Context->PSSetShaderResources(4, 1, &nullSRV);
+        m_Context->OMSetRenderTargets(1, &m_BlurRTVs[E_PASSES::AO], nullptr);
+        m_Context->Draw(4, 0);
+
+        // Blur AO
+        UINT AOTargetIndex = E_PASSES::MASK;
+        m_Context->PSSetShader(AOBlur_PS->m_PixelShader, nullptr, 0);
+        {
+                UINT div        = (UINT)pow(2, 0);
+                viewport.Width  = FLOAT(m_Width / div);
+                viewport.Height = FLOAT(m_Height / div);
+
+                m_BloomCB_CPU.inverseScreenDimensions = DirectX::XMFLOAT2(1 / viewport.Width, 1 / viewport.Height);
+                RenderUtility::UpdateConstantBuffer(m_Context, m_BloomCB_GPU, &m_BloomCB_CPU, sizeof(m_BloomCB_CPU));
+                m_Context->RSSetViewports(1, &viewport);
+                //m_Context->ClearRenderTargetView(m_BlurRTVs[AOTargetIndex], black);
+                m_Context->PSSetShaderResources(E_BLOOM_PS_SRV::BLOOM, 1, &nullSRV);
+                m_Context->OMSetRenderTargets(1, &m_BlurRTVs[AOTargetIndex], nullptr);
+                m_Context->PSSetShaderResources(E_BLOOM_PS_SRV::BLOOM, 1, &m_BlurSRVs[E_PASSES::AO]);
+                m_Context->Draw(4, 0);
+        }
+
+        UINT div        = (UINT)pow(2, 0);
+        viewport.Width  = FLOAT(m_Width / div);
+        viewport.Height = FLOAT(m_Height / div);
+        m_Context->RSSetViewports(1, &viewport);
+
+        // do bloom combine stage
+        m_Context->PSSetShader(combinePS->m_PixelShader, nullptr, 0);
+        m_Context->OMSetRenderTargets(1, outRTV, nullptr);
+        m_Context->PSSetShaderResources(4, 1, &m_BlurSRVs[AOTargetIndex]);
+        m_Context->PSSetShaderResources(E_BLOOM_PS_SRV::BLOOM, 1, &m_BlurSRVs[0]);
+        m_Context->PSSetShaderResources(E_BLOOM_PS_SRV::SCREEN, 1, inSRV);
         m_Context->Draw(4, 0);
 }
 

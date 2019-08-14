@@ -92,6 +92,10 @@ void TerrainManager::_initialize(RenderSystem* rs)
         DirectX::CreateDDSTextureFromFile(renderSystem->GetDevice(), str.c_str(), &resource, &terrainMaskSRV);
         resource->Release();
 
+        str = L"../Assets/Textures/Terrain_Color.dds";
+        DirectX::CreateDDSTextureFromFile(renderSystem->GetDevice(), str.c_str(), &resource, &terrainColorSRV);
+        resource->Release();
+
         assert(texwidth == texheight);
 
         CreateVertexBuffer(&vertexBuffer, patchSquareDimensions, WaterLevel, 8000.0f);
@@ -112,7 +116,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
         terrainConstantBufferCPU.gWorldCellSpace = 8000.0f / texwidth;
         terrainConstantBufferCPU.gScale          = 8000.0f * scale;
         terrainConstantBufferCPU.gTerrainAlpha   = GEngine::Get()->m_TerrainAlpha;
-        terrainConstantBufferCPU.gCellSizeWorld  = 8000.0f / (patchSquareDimensions - 1) * scale;
+        terrainConstantBufferCPU.gCellSizeWorld  = GEngine::Get()->m_InstanceReveal;
 
 
         {
@@ -327,6 +331,52 @@ void TerrainManager::_initialize(RenderSystem* rs)
 }
 using namespace DirectX;
 
+void CalculateFrustumCorners(XMVECTOR* cornersOut, const XMMATRIX& view, const XMMATRIX& proj)
+{
+        XMVECTOR corners[8] = {{0.f, 0.f, 0.0f, 1.0f},
+                               {0.f, 1.0f, 0.0f, 1.0f},
+                               {1.0f, 1.0f, 0.0f, 1.0f},
+                               {1.0f, 0.f, 0.0f, 1.0f},
+                               {0.f, 0.f, 1.0f, 1.0f},
+                               {0.f, 1.0f, 1.0f, 1.0f},
+                               {1.0f, 1.0f, 1.0f, 1.0f},
+                               {1.0f, 0.f, 1.0f, 1.0f}};
+
+        XMMATRIX identity = XMMatrixIdentity();
+        for (int i = 0; i < 8; i++)
+        {
+                cornersOut[i] = XMVector3Unproject(corners[i], 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, proj, view, identity);
+        }
+}
+
+void CalculateFrustumPlanes(XMFLOAT4* planes, const XMVECTOR* corners)
+{
+        XMVECTOR output[6];
+        output[0] = XMVector3Normalize(XMVector3Cross(corners[4] - corners[0], corners[1] - corners[0]));
+        XMStoreFloat4(&planes[0], output[0]);
+        planes[0].w = XMVectorGetX(XMVector3Dot(output[0], corners[0]));
+
+        output[1] = XMVector3Normalize(XMVector3Cross(corners[5] - corners[1], corners[2] - corners[1]));
+        XMStoreFloat4(&planes[1], output[1]);
+        planes[1].w = XMVectorGetX(XMVector3Dot(output[1], corners[1]));
+
+        output[2] = XMVector3Normalize(XMVector3Cross(corners[6] - corners[2], corners[3] - corners[2]));
+        XMStoreFloat4(&planes[2], output[2]);
+        planes[2].w = XMVectorGetX(XMVector3Dot(output[2], corners[2]));
+
+        output[3] = XMVector3Normalize(XMVector3Cross(corners[7] - corners[3], corners[0] - corners[3]));
+        XMStoreFloat4(&planes[3], output[3]);
+        planes[3].w = XMVectorGetX(XMVector3Dot(output[3], corners[3]));
+
+        output[4] = XMVector3Normalize(XMVector3Cross(corners[1] - corners[0], corners[3] - corners[0]));
+        XMStoreFloat4(&planes[4], output[4]);
+        planes[4].w = XMVectorGetX(XMVector3Dot(output[4], corners[0]));
+
+        output[5] = XMVector3Normalize(XMVector3Cross(corners[6] - corners[7], corners[4] - corners[7]));
+        XMStoreFloat4(&planes[5], output[5]);
+        planes[5].w = XMVectorGetX(XMVector3Dot(output[5], corners[7]));
+}
+
 void TerrainManager::_update(float deltaTime)
 {
         using namespace DirectX;
@@ -342,6 +392,11 @@ void TerrainManager::_update(float deltaTime)
                                  .Get<TransformComponent>()
                                  ->transform.translation;
 
+        auto cameraComp = GET_SYSTEM(ControllerSystem)
+                              ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
+                              ->GetControlledEntity()
+                              .GetComponent<CameraComponent>();
+
         XMVECTOR correctedTerrainPos = playerPos;
         float    cellSize            = terrainConstantBufferCPU.gWorldCellSpace * scale * 8.0f;
         XMVECTOR cellVector          = XMVectorSet(cellSize, 1.0f, cellSize, 1.0f);
@@ -351,6 +406,14 @@ void TerrainManager::_update(float deltaTime)
         correctedTerrainPos  = XMVectorSetY(correctedTerrainPos, 0.0f);
         TerrainMatrix.r[3]   = correctedTerrainPos;
         InverseTerrainMatrix = DirectX::XMMatrixInverse(nullptr, TerrainMatrix);
+
+        // Calculate frustum planes
+        {
+                XMVECTOR corners[8];
+
+                CalculateFrustumCorners(corners, cameraComp->_cachedView, cameraComp->_cachedProjection);
+                CalculateFrustumPlanes(terrainConstantBufferCPU.gWorldFrustumPlanes, corners);
+        }
 
         // GEngine::Get()->m_TerrainAlpha += deltaTime * 0.04f;
         // GEngine::Get()->m_TerrainAlpha = std::min(1.0f, GEngine::Get()->m_TerrainAlpha);
@@ -415,12 +478,14 @@ void TerrainManager::_update(float deltaTime)
                 renderSystem->UpdateConstantBuffer(renderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP],
                                                    &renderSystem->m_ConstantBuffer_MVP,
                                                    sizeof(renderSystem->m_ConstantBuffer_MVP));
+                renderSystem->m_Context->PSSetShaderResources(11, 1, &terrainColorSRV);
+
                 renderSystem->m_Context->PSSetShader(pixelShader, nullptr, 0);
                 renderSystem->m_Context->DSSetShader(domainShader, nullptr, 0);
                 renderSystem->m_Context->DrawIndexed(patchQuadCount * 4, 0, 0);
         }
         // Draw instanced
-
+        if (GEngine::Get()->m_InstanceReveal > 0.0f)
         {
                 UINT uavCounters[3] = {0, 0, 0};
 
@@ -540,6 +605,7 @@ void TerrainManager::_shutdown()
         SAFE_RELEASE(instanceIndexSteepUAV);
         SAFE_RELEASE(instanceIndexFlatUAV);
         SAFE_RELEASE(terrainMaskSRV);
+        SAFE_RELEASE(terrainColorSRV);
 
         SAFE_RELEASE(indexCounterHelperBuffer);
 

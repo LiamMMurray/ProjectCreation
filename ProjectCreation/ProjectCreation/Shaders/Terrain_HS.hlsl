@@ -1,9 +1,9 @@
-#include "MVPBuffer.hlsl"
 #include "Terrain_Includes.hlsl"
 // Input control point
 struct VertexOut
 {
-        float3 PosL : POSITION;
+        float3 PosL : POSITION0;
+        float3 PosW : POSITION1;
         float2 Tex : TEXCOORD0;
 };
 
@@ -51,21 +51,27 @@ float CalculateTessellationFactor(float3 Control0, float3 Control1)
         float alpha = saturate(3.0f * dist / gScale);
 
         return lerp(64.0f, 4.0f, alpha);
+}
 
+bool AABBToPlane(float3 center, float3 extents, float4 plane)
+{
+        float3 n = abs(plane.xyz);
+        float  r = dot(extents, n) * 2.5f;
+        float  s = dot(center, plane.xyz) - plane.w;
+        return (s + r) < 0.0f;
+}
 
-        float tileSize = cellSizeWorld;
+bool AABBToFrustum(float3 center, float3 extents)
+{
+        for (int i = 0; i < 6; ++i)
+        {
+                if (AABBToPlane(center, extents, gWorldFrustumPlanes[i]))
+                {
+                        return true;
+                }
+        }
 
-        float3 center = (Control0 + Control1) / 2;
-        float4 v0     = mul(float4(center, 1.0), WorldView);
-
-        float4 v1 = v0 + float4(tileSize, 0.0f, 0.0f, 0.0f);
-
-        float2 s0 = eyeToScreen(v0);
-        float2 s1 = eyeToScreen(v1);
-
-        float d = distance(s0, s1);
-
-        return clamp(d / triangleSize, 1.0f, 64);
+        return false;
 }
 
 // Patch Constant Function
@@ -73,16 +79,48 @@ HullConstantDataOut CalcHSPatchConstants(InputPatch<VertexOut, NUM_CONTROL_POINT
 {
         HullConstantDataOut hCDOut;
 
-        hCDOut.EdgeTessFactor[0] = CalculateTessellationFactor(ip[0].PosL, ip[3].PosL);
-        hCDOut.EdgeTessFactor[1] = CalculateTessellationFactor(ip[0].PosL, ip[1].PosL);
-        hCDOut.EdgeTessFactor[2] = CalculateTessellationFactor(ip[1].PosL, ip[2].PosL);
-        hCDOut.EdgeTessFactor[3] = CalculateTessellationFactor(ip[3].PosL, ip[2].PosL);
+        float minY = -1600.0f;
+        minY /= 8000.0f / gScale;
+        float maxY = 150.0f;
 
-        hCDOut.InsideTessFactor[0] =
-            0.25 * (hCDOut.EdgeTessFactor[0] + hCDOut.EdgeTessFactor[1] + hCDOut.EdgeTessFactor[2] + hCDOut.EdgeTessFactor[3]);
-        hCDOut.InsideTessFactor[1] = hCDOut.InsideTessFactor[0];
+        float3 vMin = ip[0].PosW;
+        float3 vMax = ip[0].PosW;
+        for (int i = 1; i < 4; ++i)
+        {
+                vMin = min(vMin, ip[i].PosW);
+                vMax = max(vMax, ip[i].PosW);
+        }
 
-        return hCDOut;
+        vMin.y = minY;
+        vMax.y = maxY;
+
+        float3 boxCenter  = 0.5f * (vMin + vMax);
+        float3 boxExtents = 0.5f * (vMax - vMin);
+        if (AABBToFrustum(boxCenter, boxExtents))
+        {
+                hCDOut.EdgeTessFactor[0] = 0.0f;
+                hCDOut.EdgeTessFactor[1] = 0.0f;
+                hCDOut.EdgeTessFactor[2] = 0.0f;
+                hCDOut.EdgeTessFactor[3] = 0.0f;
+
+                hCDOut.InsideTessFactor[0] = 0.0f;
+                hCDOut.InsideTessFactor[1] = 0.0f;
+
+                return hCDOut;
+        }
+        else
+        {
+                hCDOut.EdgeTessFactor[0] = CalculateTessellationFactor(ip[0].PosL, ip[3].PosL);
+                hCDOut.EdgeTessFactor[1] = CalculateTessellationFactor(ip[0].PosL, ip[1].PosL);
+                hCDOut.EdgeTessFactor[2] = CalculateTessellationFactor(ip[1].PosL, ip[2].PosL);
+                hCDOut.EdgeTessFactor[3] = CalculateTessellationFactor(ip[3].PosL, ip[2].PosL);
+
+                hCDOut.InsideTessFactor[0] = 0.25 * (hCDOut.EdgeTessFactor[0] + hCDOut.EdgeTessFactor[1] +
+                                                     hCDOut.EdgeTessFactor[2] + hCDOut.EdgeTessFactor[3]);
+                hCDOut.InsideTessFactor[1] = hCDOut.InsideTessFactor[0];
+
+                return hCDOut;
+        }
 }
 
 [domain("quad")][partitioning("fractional_even")][outputtopology("triangle_cw")][outputcontrolpoints(4)]

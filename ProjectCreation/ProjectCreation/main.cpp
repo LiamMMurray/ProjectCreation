@@ -174,9 +174,8 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         RegisterClassEx(&winInfo);
 
         DWORD style = WS_POPUP;
-#ifdef _FPS
-        style = WS_OVERLAPPEDWINDOW;
-#endif
+        if (GEngine::ShowFPS)
+                style = WS_OVERLAPPEDWINDOW;
 
         RECT wr = {0, 0, 1920, 1080};        // set the size
         AdjustWindowRect(&wr, style, FALSE); // adjust the size
@@ -239,7 +238,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
             /*std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
             ComponentHandle          transformHandle;
             EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
-           
+           
 
 
 
