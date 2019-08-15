@@ -42,9 +42,11 @@ ResourceHandle ResourceManager::LoadMaterial(const char* name)
                 resource->m_SurfaceProperties  = materialData.surfaceProperties;
                 // resource->m_SurfaceProperties.emissiveColor = DirectX::XMFLOAT3(20.0f, 20.0f, 20.0f);
 
+                resource->m_TextureUsed = 0;
                 for (auto desc : materialData.textureDescs)
                 {
                         resource->m_TextureHandles[int(desc.textureType)] = LoadTexture2D(desc.filePath.data());
+                        resource->m_TextureUsed |= 1 << int(desc.textureType);
                 }
         }
         else
@@ -204,7 +206,8 @@ ResourceHandle ResourceManager::LoadGeometryShader(const char* name)
                         FileIO::FShaderData shaderData;
                         FileIO::LoadShaderDataFromFile(name, "_GS", &shaderData);
 
-                        renderSystem->m_Device->CreateGeometryShader(shaderData.bytes.data(), shaderData.bytes.size(), nullptr, &resource->m_GeometryShader);
+                        renderSystem->m_Device->CreateGeometryShader(
+                            shaderData.bytes.data(), shaderData.bytes.size(), nullptr, &resource->m_GeometryShader);
                 }
                 else
                 {
@@ -345,11 +348,27 @@ ResourceHandle ResourceManager::LoadAnimationClip(const char* name, const Animat
         return outputHandle;
 }
 
-void ResourceManager::GetSRVs(unsigned int count, ResourceHandle* textureHandles, ID3D11ShaderResourceView** srvsOut)
+void ResourceManager::GetSRVsFromMaterial(Material* material, ID3D11ShaderResourceView** srvsOut)
 {
         ResourceContainer<Texture2D>* container = GetResourceContainer<Texture2D>();
 
 
+        for (unsigned int i = 0; i < (unsigned int)ETexture2DType::COUNT; ++i)
+        {
+                if (material->m_TextureUsed & (1 << i))
+                {
+                        srvsOut[i] = container->GetResource(material->m_TextureHandles[i])->m_SRV;
+                }
+                else
+                {
+                        srvsOut[i] = nullptr;
+                }
+        }
+}
+
+void ResourceManager::GetSRVs(unsigned int count, ResourceHandle* textureHandles, ID3D11ShaderResourceView** srvsOut)
+{
+        ResourceContainer<Texture2D>* container = GetResourceContainer<Texture2D>();
         for (unsigned int i = 0; i < count; ++i)
         {
                 srvsOut[i] = container->GetResource(textureHandles[i])->m_SRV;

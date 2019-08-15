@@ -12,7 +12,10 @@
 #include "../Utility/MemoryLeakDetection.h"
 
 #include "../Engine/ConsoleWindow/ConsoleWindow.h"
+#include "../Engine/Controller/GamePad.h"
+#include "../Engine/CoreInput/InputActions.h"
 #include "../Engine/Gameplay/SpeedBoostSystem.h"
+
 
 class TutorialLevel;
 
@@ -229,6 +232,7 @@ void UIManager::Pause()
 {
         instance->m_InMenu = true;
         GEngine::Get()->SetGamePaused(true);
+
         if (instance->m_InMenu)
         {
                 while (ShowCursor(TRUE) < 0)
@@ -352,8 +356,15 @@ void UIManager::StartupResAdjust(HWND window)
 
 void UIManager::AdjustResolution(HWND window, int wWidth, int wHeight)
 {
-        RECT wr = {0, 0, wWidth, wHeight};                 // set the size
-        AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE); // adjust the size
+        RECT wr = {0, 0, wWidth, wHeight}; // set the size
+
+        DWORD style = WS_OVERLAPPEDWINDOW;
+
+        if (GEngine::ShowFPS)
+                style = WS_POPUP;
+
+
+        AdjustWindowRect(&wr, style, FALSE); // adjust the size
 
         DXGI_MODE_DESC& desc = instance->resDescriptors.back();
 
@@ -466,8 +477,8 @@ void UIManager::Initialize(native_handle_type hwnd)
             new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/angel.spritefont");
         instance->m_FontTypes[E_FONT_TYPE::Calibri] =
             new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/calibri.spritefont");
-        instance->m_FontTypes[E_FONT_TYPE::MyFile] =
-            new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/myfile.spritefont");
+        instance->m_FontTypes[E_FONT_TYPE::CourierNew] =
+            new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/couriernew.spritefont");
 
         // Main Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -481,60 +492,124 @@ void UIManager::Initialize(native_handle_type hwnd)
                           true,
                           false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Calibri,
-                          "Press Enter to continue. . .",
-                          0.04f,
-                          0.0f,
-                          0.15f,
-                          true,
-                          false);
+        // GamePad is connected
+        if (GamePad::Get()->CheckConnection() == true)
+        {
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Calibri,
-                          "Hold Left Click to Move",
-                          0.04f,
-                          0.0f,
-                          0.15f,
-                          false,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Press the Back Button to continue. . .",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  true,
+                                  false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Calibri,
-                          "Hold A to collect Red lights",
-                          0.04f,
-                          0.0f,
-                          0.15f,
-                          false,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold Right Trigger to Move",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Calibri,
-                          "Hold S to collect Green lights",
-                          0.04f,
-                          0.0f,
-                          0.15f,
-                          false,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold the B Button to collect Red lights",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Calibri,
-                          "Hold D to collect Blue lights",
-                          0.04f,
-                          0.0f,
-                          0.15f,
-                          false,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold the A Button to collect Green lights",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold the X Button to collect Blue lights",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
+        }
+
+        // GamePad is not connected
+        if (GamePad::Get()->CheckConnection() == false)
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Press Enter to continue. . .",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  true,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold Left Click to Move",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold A to collect Red lights",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold S to collect Green lights",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Hold D to collect Blue lights",
+                                  0.04f,
+                                  0.0f,
+                                  0.15f,
+                                  false,
+                                  false);
+        }
 
         // Pause Menu
         instance->AddSprite(instance->m_RenderSystem->m_Device,
@@ -561,7 +636,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Resume",
                           0.05f,
                           0.0f,
@@ -575,7 +650,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Levels",
                           0.05f,
                           0.0f,
@@ -589,7 +664,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Options",
                           0.05f,
                           0.0f,
@@ -603,7 +678,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Controls",
                           0.05f,
                           0.0f,
@@ -617,7 +692,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Exit",
                           0.05f,
                           0.0f,
@@ -632,7 +707,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Back",
                           0.05f,
                           0.0f,
@@ -646,7 +721,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Windowed",
                           0.04f,
                           0.0f,
@@ -660,7 +735,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Resolution",
                           0.04f,
                           0.0f,
@@ -674,7 +749,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Apply",
                           0.05f,
                           0.0f,
@@ -688,7 +763,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Master Volume",
                           0.03f,
                           0.0f,
@@ -703,7 +778,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Off",
                           0.04f,
                           0.0f,
@@ -714,7 +789,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "On",
                           0.04f,
                           0.0f,
@@ -725,7 +800,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "<",
                           0.04f,
                           -0.12f,
@@ -736,7 +811,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           ">",
                           0.04f,
                           0.12f,
@@ -747,7 +822,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "<",
                           0.04f,
                           -0.12f,
@@ -758,7 +833,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           ">",
                           0.04f,
                           0.12f,
@@ -771,7 +846,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::OptionsSubmenu,
-                                  E_FONT_TYPE::MyFile,
+                                  E_FONT_TYPE::CourierNew,
                                   std::to_string(i),
                                   0.04f,
                                   0.0f,
@@ -786,7 +861,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::OptionsSubmenu,
-                                  E_FONT_TYPE::MyFile,
+                                  E_FONT_TYPE::CourierNew,
                                   std::to_string(instance->resDescriptors[i].Width) + "x" +
                                       std::to_string(instance->resDescriptors[i].Height),
                                   0.04f,
@@ -796,12 +871,47 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   false);
         }
 
+        /*
+            //Options Volume Slider
+            instance->m_SliderHandle = 0.0f;
+            instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                instance->m_RenderSystem->m_Context,
+                                E_MENU_CATEGORIES::OptionsMenu,
+                                L"../Assets/2d/Sprite/Slider_BG.dds",
+                                0.0f,
+                                -0.35f,
+                                0.2f,
+                                0.5f,
+                                false);
+                                
+
+
+
+
+
+
+
+
+
+
+
+            instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                instance->m_RenderSystem->m_Context,
+                                E_MENU_CATEGORIES::OptionsMenu,
+                                L"../Assets/2d/Sprite/Slider_FG.dds",
+                                0.0f,
+                                -0.35f,
+                                0.2f,
+                                0.5f,
+                                false);
+        */
+
 
         // Level Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Back",
                           0.05f,
                           0.0f,
@@ -815,7 +925,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Tutorial",
                           0.05f,
                           0.0f,
@@ -829,7 +939,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Level 1",
                           0.05f,
                           0.0f,
@@ -843,7 +953,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Level 2",
                           0.05f,
                           0.0f,
@@ -857,7 +967,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Level 3",
                           0.05f,
                           0.0f,
@@ -872,7 +982,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Back",
                           0.05f,
                           0.0f,
@@ -886,8 +996,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::MyFile,
-                          "Collect Red: A",
+                          E_FONT_TYPE::CourierNew,
+                          "Collect Red Light: A",
                           0.03f,
                           0.0f,
                           -0.1f,
@@ -897,8 +1007,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::MyFile,
-                          "Collect Green: S",
+                          E_FONT_TYPE::CourierNew,
+                          "Collect Green Light: S",
                           0.03f,
                           0.0f,
                           0.0f,
@@ -908,8 +1018,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::MyFile,
-                          "Collect Blue: D",
+                          E_FONT_TYPE::CourierNew,
+                          "Collect Blue Light: D",
                           0.03f,
                           0.0f,
                           0.1f,
@@ -919,7 +1029,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Movement: Left Mouse ",
                           0.03f,
                           0.0f,
@@ -942,7 +1052,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::Demo,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Continue",
                           0.05f,
                           -0.15f,
@@ -956,7 +1066,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::Demo,
-                          E_FONT_TYPE::MyFile,
+                          E_FONT_TYPE::CourierNew,
                           "Exit",
                           0.05f,
                           0.15f,
@@ -1519,6 +1629,7 @@ void UIManager::Update()
 {
         GEngine::Get()->m_MainThreadProfilingContext.Begin("UIManager", "UIManager");
         using namespace DirectX;
+        GamePad::Get()->Refresh();
 
         instance->m_ScreenSize =
             XMFLOAT2{instance->m_RenderSystem->m_BackBufferWidth, instance->m_RenderSystem->m_BackBufferHeight};
@@ -1538,14 +1649,14 @@ void UIManager::Update()
         // Pause & Unpause
         if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled == true)
         {
-                if (GCoreInput::GetKeyState(KeyCode::Enter) == KeyState::Down)
+                if (InputActions::EnterAction() == KeyState::Down)
                 {
                         instance->MainTilteUnpause();
                 }
         }
         else
         {
-                if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
+                if (InputActions::PauseAction() == KeyState::DownFirst)
                 {
                         for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::Demo].size(); i++)
                         {
@@ -1568,8 +1679,23 @@ void UIManager::Update()
         }
 
         UIMouseEvent e;
-        e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
-        e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
+        POINT        cursorPos;
+        GetCursorPos(&cursorPos);
+        if (GamePad::Get()->CheckConnection() == true)
+        {
+                for (int i = 0; i < instance->resDescriptors.size(); i++)
+                {
+                        int XPos = GamePad::Get()->leftStickX * 10.0f;
+                        int YPos = GamePad::Get()->leftStickY * 10.0f;
+
+                        SetCursorPos(cursorPos.x + XPos, cursorPos.y - YPos);
+                        // std::cout << "XPos: " << GamePad::Get()->leftStickX << " | YPos: " << YPos << std::endl;
+                }
+        }
+        GetCursorPos(&cursorPos);
+        e.mouseX = (float)cursorPos.x;
+        e.mouseY = (float)cursorPos.y;
+
         std::vector<SpriteComponent*> clickedSprites;
 
         for (auto& it : instance->m_AllSprites)
@@ -1577,10 +1703,9 @@ void UIManager::Update()
                 {
                         if (sprite.mEnabled)
                         {
-                                if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Release)
+                                if (InputActions::MouseClickAction() == KeyState::Release)
                                 {
-                                        XMFLOAT2 cursorCoords = {(float)GCoreInput::GetMouseWindowPosX(),
-                                                                 (float)GCoreInput::GetMouseWindowPosY()};
+                                        XMFLOAT2 cursorCoords = {e.mouseX, e.mouseY};
                                         XMVECTOR point        = UI::ConvertScreenPosToNDC(cursorCoords, instance->m_ScreenSize);
                                         if (UI::PointInRect(sprite.mRectangle, point))
                                         {

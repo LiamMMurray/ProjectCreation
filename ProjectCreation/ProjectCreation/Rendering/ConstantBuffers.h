@@ -21,7 +21,7 @@ struct alignas(16) CSceneInfoBuffer
         float             deltaTime;
         DirectX::XMFLOAT2 screenDimensions;
         float             scale;
-        float padding;
+        float             _InstanceReveal;
         DirectX::XMFLOAT3 worldOffsetDelta;
         float             otherPadding;
 };
@@ -35,6 +35,7 @@ struct alignas(16) CScreenSpaceBuffer
 {
         DirectX::XMMATRIX invProj;
         DirectX::XMMATRIX invView;
+        DirectX::XMMATRIX Proj;
         DirectX::XMFLOAT3 playerPosition;
         float             time;
         DirectX::XMFLOAT3 selectionColor;

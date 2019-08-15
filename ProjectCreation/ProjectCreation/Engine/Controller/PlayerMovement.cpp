@@ -19,6 +19,7 @@
 #include "../../Rendering/DebugRender/debug_renderer.h"
 // v Testing only delete when done v
 #include <iostream>
+#include "../CoreInput/InputActions.h"
 // ^ Testing only delete when done ^
 using namespace DirectX;
 using namespace Shapes;
@@ -74,6 +75,11 @@ void PlayerController::GatherInput()
 
                 // CURRENT: [Changing movement so that the player will click the left mouse button to move forward]
                 {
+                        if (GamePad::Get()->CheckConnection() == true)
+                        {
+                                tempDir.z += (1.5 * GamePad::Get()->rightTrigger);
+                        }
+
                         if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
                         {
                                 tempDir.z += 1.5f;
@@ -134,6 +140,7 @@ void PlayerController::Init(EntityHandle h)
 
         m_EulerAngles = tComp->transform.rotation.ToEulerAngles();
 
+
         // Create any states and set their respective variables here
         m_CinematicState = m_StateMachine.CreateState<PlayerCinematicState>();
         m_GroundState    = m_StateMachine.CreateState<PlayerGroundState>();
@@ -156,7 +163,6 @@ void PlayerController::Init(EntityHandle h)
         // After you create the states, initialize the state machine. First created state is starting state
         m_StateMachine.Init(this);
 
-		
 
         // Init sound pool
         for (unsigned int color = 0; color < E_LIGHT_ORBS::COUNT; ++color)
@@ -171,13 +177,14 @@ void PlayerController::Init(EntityHandle h)
 bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
 {
         // Audio that will play on boost
-        if ((int)m_ColorInputKeyCodes[color] < 0 || GCoreInput::GetKeyState(m_ColorInputKeyCodes[color]) == KeyState::Down)
+        if ((int)m_ColorInputKeyCodes[color] < 0 || InputActions::CheckAction(color) == KeyState::Down ||
+            InputActions::CheckAction(color) == DownFirst)
         {
                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(color);
                 bool isPlaying;
                 // m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->isSoundPlaying(isPlaying);
                 m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->Play();
-                //DebugPrintSpeedBoostColor(color);
+                // DebugPrintSpeedBoostColor(color);
                 currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
                 XMVECTOR currentInput = XMVector3Rotate(m_CurrentInput, _cachedControlledTransform.rotation.data);
                 if (MathLibrary::VectorDotProduct(currentInput, m_CurrentVelocity) > 0.0f)
@@ -188,6 +195,9 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 }
                 m_SpeedBoostPoolCounter[color]++;
                 m_SpeedBoostPoolCounter[color] %= MAX_SPEEDBOOST_SOUNDS;
+
+				SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating = true;
+				SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrength = 0.5f;
 
                 return true;
         }

@@ -1,5 +1,4 @@
 #include "Level_01.h"
-#include "../GEngine.h"
 #include "../Gameplay/OrbitSystem.h"
 #include "../Controller/ControllerSystem.h"
 
@@ -15,6 +14,7 @@ void Level_01::Enter()
         m_SpeedBoostSystem->splineWidth = 1.0f;
         m_SpeedBoostSystem->splineHeight = 0.25f;
         m_SpeedBoostSystem->changeColor = false;
+        m_SpeedBoostSystem->inTutorial = false;
         m_SpeedBoostSystem->SetTargetTerrain(0.0f);
 
 		m_SpeedBoostSystem->ResetLevel();

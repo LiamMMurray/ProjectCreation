@@ -1,4 +1,5 @@
 #pragma once
+#include <Windows.h>
 #include <vector>
 #include <DirectXMath.h>
 #include "splines.hpp"

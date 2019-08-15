@@ -5,6 +5,7 @@
 #include "Samplers.hlsl"
 
 Texture2D ScreenTexture : register(t2);
+Texture2D AO : register(t4);
 Texture2D ScreenDepth : register(t1);
 Texture2D BloomTexture : register(t0);
 Texture2D MaskTexture : register(t5);
@@ -23,7 +24,6 @@ float3 VSPositionFromDepth(float2 vTexCoord)
         return vPositionVS.xyz / vPositionVS.w;
 }
 
-
 float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
 {
         float  depthSample = ScreenDepth.Sample(sampleTypeClamp, texCoord).r;
@@ -32,7 +32,8 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
         float  linearDepth = viewPos.z;
         // return worldPos.xyzz / 100.0f;
 
-        float aspectRatio = (1.0f / _inverseScreenDimensions.y) / (1.0f / _inverseScreenDimensions.x);
+        float2 screenSize  = float2(1.0f / _inverseScreenDimensions.x, 1.0f / _inverseScreenDimensions.y);
+        float  aspectRatio = (screenSize.y / screenSize.x);
 
         float4 uvOffset = float4(_inverseScreenDimensions.x, 0.0f, _inverseScreenDimensions.y, 1.0f);
 
@@ -50,12 +51,14 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
         // return vignetteIntensity;
 
         float3 bw               = 0.21 * color.r + 0.71 * color.g + 0.07 * color.b;
-        float  desaturationMask = 0.1f;
+        float  desaturationMask = 0.17f;
         color                   = lerp(color, bw, desaturationMask);
-        float  fogMask  = saturate((linearDepth - 50.0f) / 200.0f) * 0.6f * (1.0f - saturate((linearDepth - 800.0f) / 100.0f));
-        float3 fogColor         = float3(0.8f, 0.9f, 1.0f);
-        color                   = lerp(color, fogColor, fogMask);
-        float3 dither           = InterleavedGradientNoise(pos.xy + _time);
+        float  fogMask  = saturate((linearDepth - 10.0f) / 300.0f) * 0.8f * (1.0f - saturate((linearDepth - 800.0f) / 100.0f));
+        float3 fogColor = float3(0.6f, 0.7f, 1.0f);
+        color           = lerp(color, fogColor, fogMask);
+
+
+        float3 dither = InterleavedGradientNoise(pos.xy + _time);
 
         color += bloom;
         color += 0.004f * dither / 255;
@@ -63,10 +66,13 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
         // color *= 1.5f;
         color = pow(color, 1.f / 2.2f);
 
+		float ao = AO.Sample(sampleTypeClamp, texCoord).r;
+        //return ao;
+        color *= ao;
+
         color = lerp(color, colorVignette, vignetteIntensity);
 
         color += dither / 255;
-
 
         return float4(color, 1.f);
 }
