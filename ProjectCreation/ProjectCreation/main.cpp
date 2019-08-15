@@ -330,35 +330,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         GEngine::Get()->SetGamePaused(true);
         GEngine::Get()->GetLevelStateManager()->Init();
         UIManager::instance->StartupResAdjust(handle);
-        /*
-        float GlobalTimer = 0;
-        while (GlobalTimer < 20.0f)
-        {
-                // Loop for the Splash screen
-                float deltatime = GEngine::Get()->Update();
-                GlobalTimer += deltatime;
-                if (GlobalTimer < 5.0f)
-                {
-	                //Full Sail Logo
-                        int x = 5;
-                }
-                else if (GlobalTimer >= 5.0f && GlobalTimer < 10.0f)
-                {
-	                //GP Games Logo
-                        int x = 5;
-                }
-                else if (GlobalTimer >= 10.0f && GlobalTimer < 15.0f)
-                {
-	                //Deep!deep Logo
-                        int x = 5;
-                }
-                else
-                {
-                        int x = 5;
-                        break;
-                }
-        }
-		*/
+
         while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
         {
                 GCoreInput::UpdateInput();

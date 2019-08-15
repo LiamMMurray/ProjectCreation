@@ -19,7 +19,6 @@ struct E_MENU_CATEGORIES
 {
         enum
         {
-                SplashScreen,
                 MainMenu,
                 PauseMenu,
                 OptionsMenu,
@@ -81,8 +80,7 @@ class UIManager
                      int                  category,
                      int                  fontType,
                      std::string          TextDisplay,
-                     float                scaleX,
-                     float                scaleY,
+                     float                scale,
                      float                PositionX,
                      float                PositionY,
                      bool                 enabled,

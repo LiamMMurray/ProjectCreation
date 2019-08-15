@@ -11,5 +11,5 @@ namespace UI
         };
 
         bool PointInRect(const UIRect& rect, const DirectX::XMVECTOR& point);
-        DirectX::XMVECTOR ConvertScreenPosToNDC(DirectX::XMFLOAT2 in, const DirectX::XMFLOAT2& res, const DirectX::XMUINT4& rect);
+        DirectX::XMVECTOR ConvertScreenPosToNDC(DirectX::XMFLOAT2 in, const DirectX::XMFLOAT2& res);
 } // namespace UI
