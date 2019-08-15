@@ -160,10 +160,10 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 itr.AddComponent<TransformComponent>();
         auto count = handleManager.GetComponentCount<TransformComponent>();
 
-        auto ParallelTransformsJob = ParallelForActiveComponents<TransformComponent>([](TransformComponent& itr, float x, float y, float z) {
-                itr.transform.scale = {x, y, z*2};
+        auto ParallelTransformsJob = ParallelForComponents<TransformComponent>([](TransformComponent& itr) {
+                itr.transform.scale = {3, 6, 12*2};
         });
-        ParallelTransformsJob(3.0, 5.0, 60);
+        ParallelTransformsJob();
         ParallelTransformsJob.Wait();
 
 

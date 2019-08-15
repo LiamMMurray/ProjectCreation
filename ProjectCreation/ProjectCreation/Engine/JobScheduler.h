@@ -706,6 +706,198 @@ inline namespace JobSchedulerInternal
                     ParallelForActiveImpl<Component, JobAllocator, R, Lambda, Args...>(std::forward<Lambda>(lambda), chunkSize)
                 {}
         };
+
+
+		        template <typename Component, typename JobAllocator, typename R, typename Lambda, typename... Args>
+        struct ParallelForComponentsImpl
+        {
+            protected:
+                ParallelForComponentsImpl(Lambda&& lambda, unsigned chunkSize)
+                {
+                        root = CreateJobData([]() {});
+
+                        auto  rg_PoolIndex                  = Component::SGetTypeIndex();
+                        auto& rg_ComponentRandomAccessPools = GEngine::Get()->GetHandleManager()->m_ComponentRandomAccessPools;
+                        auto  rg_ComponentCount             = rg_ComponentRandomAccessPools.m_element_counts[rg_PoolIndex];
+
+                        children = CreateParallelForSubJobs(std::forward<Lambda>(lambda), 0, rg_ComponentCount, chunkSize);
+                }
+
+            private:
+                Job*              root;
+                std::vector<Job*> children;
+
+                Job* CreateParallelForSubJobImpl(Lambda&& lambda, unsigned begin, unsigned end)
+                {
+                        Job*  thisJob     = JobAllocator::Allocate();
+                        char* bufferAlias = thisJob->buffer;
+
+                        InPlaceForwardConstruct(bufferAlias, std::forward<Lambda>(lambda));
+                        bufferAlias += sizeof(Lambda);
+
+                        InPlaceForwardConstruct(bufferAlias, std::tuple<unsigned, unsigned>(begin, end));
+
+                        thisJob->invokeImpl = [](Job* job) {
+                                char* bufferAlias = job->buffer;
+                                auto* lambda      = reinterpret_cast<Lambda*>(bufferAlias);
+                                bufferAlias += sizeof(Lambda);
+
+                                auto [_begin, _end] = *reinterpret_cast<std::tuple<unsigned, unsigned>*>(bufferAlias);
+
+                                if constexpr (sizeof...(Args))
+                                {
+                                        auto  _PoolIndex = Component::SGetTypeIndex();
+                                        auto& _ComponentRandomAccessPools =
+                                            GEngine::Get()->GetHandleManager()->m_ComponentRandomAccessPools;
+                                        auto  _ComponentCount = _ComponentRandomAccessPools.m_element_counts[_PoolIndex];
+                                        auto  _ComponentsBegin =
+                                            reinterpret_cast<Component*>(_ComponentRandomAccessPools.m_mem_starts[_PoolIndex]);
+                                        range<Component> _range(
+                                            _ComponentsBegin + _begin, _ComponentCount + _end);
+
+
+                                        bufferAlias += sizeof(std::tuple<unsigned, unsigned>);
+                                        auto _args = *reinterpret_cast<std::tuple<Args...>*>(bufferAlias);
+                                        for (auto& itr : _range)
+                                        {
+                                                ParallelForApply(std::forward<Lambda>(*lambda),
+                                                                 itr,
+                                                                 std::forward<std::tuple<Args...>>(_args));
+                                        }
+                                }
+                                else
+                                {
+                                        auto  _PoolIndex = Component::SGetTypeIndex();
+                                        auto& _ComponentRandomAccessPools =
+                                            GEngine::Get()->GetHandleManager()->m_ComponentRandomAccessPools;
+                                        auto  _ComponentCount = _ComponentRandomAccessPools.m_element_counts[_PoolIndex];
+                                        auto  _ComponentsBegin =
+                                            reinterpret_cast<Component*>(_ComponentRandomAccessPools.m_mem_starts[_PoolIndex]);
+                                        range<Component> _range(
+                                            _ComponentsBegin + _begin, _ComponentCount + _end);
+
+                                        for (auto& itr : _range)
+                                        {
+                                                (*lambda)(itr);
+                                        }
+                                }
+                        };
+                        return thisJob;
+                }
+                template <typename Lambda>
+                std::vector<Job*> CreateParallelForSubJobs(Lambda&& lambda, unsigned begin, unsigned end, unsigned chunkSize)
+                {
+                        std::vector<Job*> output;
+                        if (end - begin <= chunkSize)
+                                output.push_back(CreateParallelForSubJobImpl(std::forward<Lambda>(lambda), begin, end));
+                        else
+                        {
+                                unsigned leftBegin  = begin;
+                                unsigned leftEnd    = ((end - begin) / 2) + begin;
+                                unsigned rightBegin = leftEnd;
+                                unsigned rightEnd   = end;
+
+                                auto left =
+                                    CreateParallelForSubJobs(std::forward<Lambda>(lambda), leftBegin, leftEnd, chunkSize);
+
+                                auto right =
+                                    CreateParallelForSubJobs(std::forward<Lambda>(lambda), rightBegin, rightEnd, chunkSize);
+
+                                output.insert(output.end(), left.begin(), left.end());
+                                output.insert(output.end(), right.begin(), right.end());
+                        }
+
+                        return output;
+                }
+                template <unsigned... Is>
+                static R ParallelForApplyImpl(Lambda&&              lambda,
+                                              Component&            component,
+                                              std::tuple<Args...>&& tuple,
+                                              std::index_sequence<Is...>)
+                {
+                        return lambda(component, std::get<Is>(tuple)...);
+                }
+
+                static void ParallelForApply(Lambda&& lambda, Component& component, std::tuple<Args...>&& tuple)
+                {
+                        ParallelForApplyImpl(std::forward<Lambda>(lambda),
+                                             component,
+                                             std::forward<std::tuple<Args...>>(tuple),
+                                             std::make_index_sequence<sizeof...(Args)>{});
+                }
+                void ResetJobs()
+                {
+                        root->Reset();
+                        for (const auto& itr : children)
+                                itr->Reset(root);
+                }
+                void Launch()
+                {
+                        JobSchedulerInternal::Launch(root);
+                        for (const auto& itr : children)
+                                JobSchedulerInternal::Launch(itr);
+                }
+
+            public:
+                void Wait()
+                {
+                        JobSchedulerInternal::Wait(root);
+                }
+                void SetArgs(Args... args)
+                {
+                        for (const auto& itr : children)
+                        {
+                                char* bufferAlias = itr->buffer;
+                                bufferAlias += sizeof(Lambda) + sizeof(std::tuple<unsigned, unsigned>);
+                                auto bufferArgsAlias = reinterpret_cast<std::tuple<Args...>*>(bufferAlias);
+                                InPlaceForwardConstruct(bufferArgsAlias, std::tuple(args...));
+                        }
+                }
+                void SetRange(unsigned begin, unsigned end, unsigned chunkSize = 256)
+                {
+                        char* bufferAlias = children[0]->buffer;
+                        auto& lambda      = *reinterpret_cast<Lambda*>(bufferAlias);
+                        children          = CreateParallelForSubJobs(std::forward<Lambda>(lambda), begin, end, chunkSize);
+                }
+                void operator()(Args... args)
+                {
+                        SetArgs(args...);
+                        ResetJobs();
+                        Launch();
+                }
+                Job* GetRootJob()
+                {
+                        return root;
+                }
+        };
+		        template <typename Component, typename JobAllocator, typename Lambda>
+        struct ParallelForComponentsLambdaExpander
+            : public ParallelForComponentsLambdaExpander<Component, JobAllocator, decltype(&Lambda::operator())>
+        {
+                        ParallelForComponentsLambdaExpander(Lambda&& lambda, unsigned chunkSize) :
+                    ParallelForComponentsLambdaExpander<Component, JobAllocator, decltype(&Lambda::operator())>(
+                        std::forward<Lambda>(lambda),
+                        chunkSize)
+                {}
+        };
+        template <typename Component, typename JobAllocator, typename R, typename Lambda, typename... Args>
+        struct ParallelForComponentsLambdaExpander<Component, JobAllocator, R (Lambda::*)(Component&, Args...) const>
+            : public ParallelForComponentsImpl<Component, JobAllocator, R, Lambda, Args...>
+        {
+                ParallelForComponentsLambdaExpander(Lambda&& lambda, unsigned chunkSize) :
+                    ParallelForComponentsImpl<Component, JobAllocator, R, Lambda, Args...>(std::forward<Lambda>(lambda),
+                                                                                           chunkSize)
+                {}
+        };
+        template <typename Component, typename JobAllocator, typename R, typename Lambda, typename... Args>
+        struct ParallelForComponentsLambdaExpander<Component, JobAllocator, R (Lambda::*)(Component&, Args...)>
+            : public ParallelForComponentsImpl<Component, JobAllocator, R, Lambda, Args...>
+        {
+                ParallelForComponentsLambdaExpander(Lambda&& lambda, unsigned chunkSize) :
+                    ParallelForComponentsImpl<Component, JobAllocator, R, Lambda, Args...>(std::forward<Lambda>(lambda),
+                                                                                          chunkSize)
+                {}
+        };
 } // namespace JobSchedulerInternal
 
 inline namespace JobSchedulerValidation
@@ -853,30 +1045,29 @@ inline namespace JobScheduler
         //		JobFoo.SetRange(0, 1024);
         //		JobFoo(5);
         //		JobFoo.Wait();
-        template <typename JobAllocator = TempJobAllocator, typename Lambda>
-        auto ParallelFor(Lambda&& lambda, unsigned begin, unsigned end, unsigned chunkSize = 256)
-        {
-                return ParallelForJob<JobAllocator, Lambda>(std::forward<Lambda>(lambda), begin, end, chunkSize);
-        }
+
+        //template <typename JobAllocator = TempJobAllocator, typename Lambda>
+        //auto ParallelFor(Lambda&& lambda, unsigned begin, unsigned end, unsigned chunkSize = 256)
+        //{
+        //        return ParallelForJob<JobAllocator, Lambda>(std::forward<Lambda>(lambda), begin, end, chunkSize);
+        //}
         template <typename JobAllocator = TempJobAllocator, typename Lambda>
         auto ParallelFor(Lambda&& lambda)
         {
                 return ParallelForJob<JobAllocator, Lambda>(std::forward<Lambda>(lambda));
         }
-
-
         template <typename Component, typename JobAllocator = TempJobAllocator, typename Lambda>
         auto ParallelForActiveComponents(Lambda&& lambda, unsigned chunkSize = 256)
         {
                 return ParallelForActiveComponentsLambdaExpander<Component, JobAllocator, Lambda>(std::forward<Lambda>(lambda),
                                                                                                   chunkSize);
         }
-        //template <typename Component, typename JobAllocator = TempJobAllocator, typename Lambda>
-        //auto ParallelForComponents(Lambda&& lambda, unsigned chunkSize = 256)
-        //{
-        //        GEngine()::Get().
-
-        //}
+        template <typename Component, typename JobAllocator = TempJobAllocator, typename Lambda>
+        auto ParallelForComponents(Lambda&& lambda, unsigned chunkSize = 256)
+        {
+                return ParallelForComponentsLambdaExpander<Component, JobAllocator, Lambda>(std::forward<Lambda>(lambda),
+                                                                                                  chunkSize);
+        }
 
 
         // Usage example:
