@@ -56,26 +56,7 @@ float3 VSPositionFromDepth(float2 vTexCoord)
 
         if (ParticleBuffer[id].time > 0.0f)
         {
-
-
-                float wValue = 1.0f;
-
-                float alpha = 1.0f - ParticleBuffer[id].time / ParticleBuffer[id].lifeSpan;
-                ParticleBuffer[id].color =
-                    lerp(EmitterBuffer[emitterIndex].initialColor, EmitterBuffer[emitterIndex].finalColor, alpha);
-
-                if (EmitterBuffer[emitterIndex].lifeSpan.z > 0)
-                        ParticleBuffer[id].color.a =
-                            lerp(0.0f, ParticleBuffer[id].color.a, saturate(alpha / EmitterBuffer[emitterIndex].lifeSpan.z));
-
-                if (EmitterBuffer[emitterIndex].lifeSpan.w > 0)
-                        ParticleBuffer[id].color.a = lerp(0.0f,
-                                                          ParticleBuffer[id].color.a,
-                                                          saturate((1.0f - alpha) / EmitterBuffer[emitterIndex].lifeSpan.w));
-                // ParticleBuffer[id].scale =
-                // lerp(EmitterBuffer[emitterIndex].particleScale.x,EmitterBuffer[emitterIndex].particleScale.y, alpha);
                 ParticleBuffer[DTid.x].time -= _DeltaTime;
-
                 // ParticleBuffer[DTid.x].position += 1.0f*float4(ParticleBuffer[DTid.x].velocity * _DeltaTime,
                 // 0.0f);
 

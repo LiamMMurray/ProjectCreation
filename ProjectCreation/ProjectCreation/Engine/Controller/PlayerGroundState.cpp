@@ -66,6 +66,7 @@ void PlayerGroundState::Update(float deltaTime)
 
                 // Reveal Ocean once first planet placed
                 UIManager::instance->DemoEnd();
+                GEngine::Get()->m_TargetInstanceReveal = 1.0f;
                 doOnce = true;
         }
 
@@ -218,7 +219,9 @@ void PlayerGroundState::Update(float deltaTime)
 
         _playerController->GetControlledEntity().GetComponent<TransformComponent>()->transform = _cachedTransform;
 
-        auto sunComp = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>();
+        auto sunComp                        = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>();
+        auto sunTransComp                   = GEngine::Get()->m_SunHandle.GetComponent<TransformComponent>();
+        sunTransComp->transform.translation = _cachedTransform.translation;
         sunComp->m_LightRotation =
             sunComp->m_LightRotation *
             XMQuaternionRotationAxis(VectorConstants::Up,

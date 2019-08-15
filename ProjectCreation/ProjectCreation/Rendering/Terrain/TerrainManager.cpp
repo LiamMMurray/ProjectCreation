@@ -212,7 +212,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
         using namespace DirectX;
         HRESULT hr = {};
         { // Create transform buffer
-                for (unsigned int i = 0; i < gActualTransformsCount; ++i)
+                for (unsigned int i = 0; i < gInstanceTransformsCount; ++i)
                 {
                         m_InstanceData[i].mtx = XMMatrixTranspose(m_InstanceTransforms[i].CreateMatrix());
                 }

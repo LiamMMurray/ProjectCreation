@@ -71,7 +71,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
         float fibers = Mask1.Sample(sampleTypeWrap, pIn.Tex2).g;
         float noise  = Mask1.Sample(sampleTypeWrap, pIn.Tex2 * 0.2f).r;
         float maskInstanceBlend;
-        float modulatedInstanceBlend = _InstanceReveal + noise * 0.5f;
+        float modulatedInstanceBlend = _InstanceReveal + noise * 0.5f * _InstanceReveal;
         maskInstanceBlend            = saturate(floor(fibers + 2.0f * modulatedInstanceBlend));
         float alphaInstace           = _InstanceReveal;
         surface.diffuseColor         = lerp(surface.diffuseColor, bw * colorSample, maskInstanceBlend);
@@ -123,7 +123,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
                 color += surface.ambient * _AmbientColor * surface.diffuseColor;
         }
         // return NormalWS.xxxx;
-        //return float4(color, 1.0f);
+        // return float4(color, 1.0f);
 
         float maskA     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 45.0f + _Time * 0.01f * float2(1.0f, 0.0f)).z;
         float maskB     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 40.0f + _Time * 0.01f * float2(-1.0f, 0.0f)).z;

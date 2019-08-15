@@ -906,6 +906,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 false);
         */
 
+
         // Level Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,

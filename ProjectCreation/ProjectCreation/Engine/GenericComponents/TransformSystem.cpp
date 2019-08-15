@@ -24,6 +24,8 @@ void TransformSystem::OnUpdate(float deltaTime)
         GEngine::Get()->m_OriginOffset += delta;
         currController->worldOffset = GEngine::Get()->m_OriginOffset;
         playerPos                   = newPlayerPos;
+        GEngine::Get()->m_WorldOffsetDelta = delta;
+        playerPos                          = newPlayerPos;
         if (controllerSystem->GetCurrentControllerIndex() == 0)
         {
                 playerPos = XMVectorMax(playerPos, TerrainManager::Get()->AlignPositionToTerrain(playerPos));

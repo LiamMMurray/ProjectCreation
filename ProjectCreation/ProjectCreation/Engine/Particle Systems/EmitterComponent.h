@@ -31,4 +31,10 @@ class EmitterComponent : public Component<EmitterComponent>
                              DirectX::XMFLOAT4 initialColor,
                              DirectX::XMFLOAT4 finalColor,
                              DirectX::XMFLOAT4 lifeSpan);
+
+		void WaterSplash(DirectX::XMFLOAT3 minOffset,
+                              DirectX::XMFLOAT3 maxOffset,
+                              DirectX::XMFLOAT4 initialColor,
+                              DirectX::XMFLOAT4 finalColor,
+                              DirectX::XMFLOAT4 lifeSpan);
 };

@@ -22,6 +22,8 @@ struct alignas(16) CSceneInfoBuffer
         DirectX::XMFLOAT2 screenDimensions;
         float             scale;
         float             _InstanceReveal;
+        DirectX::XMFLOAT3 worldOffsetDelta;
+        float             otherPadding;
 };
 
 struct alignas(16) CAnimationBuffer
