@@ -66,7 +66,7 @@ void UIManager::AddSprite(ID3D11Device*        device,
         cSprite.mEnabled = enabled;
 
         cSprite.mRectangle.center  = XMVectorSet(PositionX, PositionY, 0.0f, 1.0f);
-        cSprite.mRectangle.extents = 0.5f*XMVectorSet(scaleX, scaleY, 0.0f, 1.0f);
+        cSprite.mRectangle.extents = 0.5f * XMVectorSet(scaleX, scaleY, 0.0f, 1.0f);
         // Push back to the vector
         m_AllSprites[category].emplace_back(cSprite);
 
@@ -121,8 +121,8 @@ void UIManager::AddText(ID3D11Device*        device,
         }
         m_AllFonts[category].emplace_back(std::move(cFont));
 
-		scaleX *= aspectRatio;
-		scaleY = scaleY;
+        scaleX *= aspectRatio;
+        scaleY = scaleY;
 
         if (bOverrideButtonDimensions)
         {
@@ -188,7 +188,139 @@ void UIManager::UIClipCursor()
 void UIManager::OnScreenResize()
 {}
 
-//Splash Screen
+void UIManager::DrawSprites()
+{
+        for (auto& it : instance->m_AllSprites)
+                for (auto& sprite : it.second)
+                {
+                        if (sprite.mEnabled)
+                        {
+                                instance->m_SpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
+                                                               instance->m_States->NonPremultiplied());
+
+                                XMVECTOR position = XMVectorSet(sprite.mScreenOffset.x * instance->m_ScreenSize.x / 2.0f,
+                                                                sprite.mScreenOffset.y * instance->m_ScreenSize.y / 2.0f,
+                                                                0.0f,
+                                                                0.0f) +
+                                                    instance->m_ScreenCenter;
+
+                                XMVECTOR scale = XMVectorSet(sprite.mScaleX * instance->m_ScreenSize.x / 2.0f,
+                                                             sprite.mScaleY * instance->m_ScreenSize.y / 2.0f,
+                                                             0.0f,
+                                                             1.0f);
+
+                                instance->m_SpriteBatch->Draw(
+                                    sprite.mTexture, position, nullptr, DirectX::Colors::White, 0.0f, sprite.mOrigin, scale);
+
+
+                                instance->m_SpriteBatch->End();
+                        }
+                }
+}
+
+void UIManager::Present()
+{
+        m_RenderSystem->Present();
+}
+
+void UIManager::GameplayUpdate()
+{
+        float aspectRatio = instance->m_ScreenSize.x / instance->m_ScreenSize.y;
+        if (instance->m_InMenu)
+        {
+                ClipCursor(nullptr);
+        }
+        else
+        {
+                instance->UIClipCursor();
+        }
+
+        // Pause & Unpause
+        if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled == true)
+        {
+                // Joseph Updated the main menu ui to match to input keys
+                // Changed 'Space', 'Q', and 'E' to 'A', 'S', and 'D'
+                if (GCoreInput::GetKeyState(KeyCode::Enter) == KeyState::Down)
+                {
+                        instance->MainTilteUnpause();
+                }
+        }
+        else
+        {
+                if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
+
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::Demo].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::Demo][i].mEnabled = false;
+                        }
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::Demo].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::Demo][i].mEnabled = false;
+                        }
+
+                        if (GEngine::Get()->GetGamePaused() == false)
+                        {
+                                instance->Pause();
+                        }
+                        else
+                        {
+                                instance->Unpause();
+                        }
+                }
+        }
+
+        // Left Click
+        if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled == true)
+        {
+                if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
+                }
+        }
+
+        UIMouseEvent e;
+        e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
+        e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
+        std::vector<SpriteComponent*> clickedSprites;
+
+        RECT rect;
+        GetWindowRect((HWND)(instance->m_RenderSystem->m_WindowHandle), &rect);
+        XMUINT4 xmRect = XMUINT4(rect.top, rect.left, rect.bottom, rect.right);
+
+        POINT cursorPoint;
+        GetCursorPos(&cursorPoint);
+        XMFLOAT2 cursorCoords = {(float)cursorPoint.x, (float)cursorPoint.y};
+        XMVECTOR point        = UI::ConvertScreenPosToNDC(cursorCoords, instance->m_ScreenSize, xmRect);
+
+        instance->DrawSprites();
+
+        for (auto& it : instance->m_AllSprites)
+                for (auto& sprite : it.second)
+                {
+                        if (sprite.mEnabled)
+                        {
+                                if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Release)
+                                {
+
+                                        if (UI::PointInRect(sprite.mRectangle, point))
+                                        {
+                                                // Button Was Pressed
+                                                clickedSprites.push_back(&sprite);
+                                        }
+                                }
+                        }
+                }
+
+        for (auto& sprite : clickedSprites)
+        {
+                e.sprite = sprite;
+                sprite->OnMouseDown.Invoke(&e);
+        }
+}
+
+// Splash Screen
 void UIManager::Splash_FullSail()
 {
         instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = true;
@@ -204,11 +336,39 @@ void UIManager::Splash_Team()
         instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = true;
 }
 
+void UIManager::SplashUpdate(float globalTimer)
+{
+        float deltatime = GEngine::Get()->GetDeltaTime();
+        if (globalTimer < 5.0f)
+        {
+                // Full Sail Logo
+                UIManager::instance->Splash_FullSail();
+        }
+        else if (globalTimer >= 5.0f && globalTimer < 10.0f)
+        {
+                // GP Games Logo
+                UIManager::instance->Splash_GPGames();
+        }
+        else if (globalTimer >= 10.0f && globalTimer < 15.0f)
+        {
+                // Deep!deep Logo
+                UIManager::instance->Splash_Team();
+        }
+        else
+        {
+                UIManager::instance->Splash_End();
+        }
+}
+
 void UIManager::Splash_End()
 {
         instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = false;
         instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = false;
         instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = false;
+
+	
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled = true;
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][1].mEnabled = true;
 }
 
 
@@ -429,7 +589,6 @@ void UIManager::DemoEnd()
 }
 
 
-
 // Core Function
 void UIManager::Initialize(native_handle_type hwnd)
 {
@@ -437,6 +596,11 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance = DBG_NEW UIManager;
 
         instance->m_RenderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
+
+        instance->m_ScreenSize =
+            XMFLOAT2{instance->m_RenderSystem->m_BackBufferWidth, instance->m_RenderSystem->m_BackBufferHeight};
+        instance->m_ScreenCenter = XMVectorSet(instance->m_ScreenSize.x * 0.5f, instance->m_ScreenSize.y * 0.5f, 0.0f, 1.0f);
+        instance->m_TexelSize    = XMFLOAT2{1.0f / instance->m_ScreenSize.x, 1.0f / instance->m_ScreenSize.y};
 
         instance->m_SpriteBatch = std::make_unique<DirectX::SpriteBatch>(instance->m_RenderSystem->m_Context);
         instance->m_States      = std::make_unique<DirectX::CommonStates>(instance->m_RenderSystem->m_Device);
@@ -484,7 +648,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->m_FontTypes[E_FONT_TYPE::CourierNew] =
             new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/couriernew.spritefont");
 
-        
+
         // Splash Screen
         instance->AddSprite(instance->m_RenderSystem->m_Device,
                             instance->m_RenderSystem->m_Context,
@@ -525,7 +689,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.06f * ScaleYRatio,
                           0.0f * PosXRatio,
                           -0.35f * PosYRatio,
-                          true,
+                          false,
                           false);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -537,7 +701,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.06f * ScaleYRatio,
                           0.0f * PosXRatio,
                           0.1f * PosYRatio,
-                          true,
+                          false,
                           false);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -1483,117 +1647,19 @@ void UIManager::Update()
         instance->m_ScreenCenter = XMVectorSet(instance->m_ScreenSize.x * 0.5f, instance->m_ScreenSize.y * 0.5f, 0.0f, 1.0f);
         instance->m_TexelSize    = XMFLOAT2{1.0f / instance->m_ScreenSize.x, 1.0f / instance->m_ScreenSize.y};
 
-        float aspectRatio = instance->m_ScreenSize.x / instance->m_ScreenSize.y;
-        if (instance->m_InMenu)
+        static float GlobalTimer = 0.0f;
+
+        if (GlobalTimer < 20.0f)
         {
-                ClipCursor(nullptr);
+                instance->SplashUpdate(GlobalTimer);
+                GlobalTimer += GEngine::Get()->GetDeltaTime();
         }
         else
         {
-                instance->UIClipCursor();
+                instance->GameplayUpdate();
         }
 
-        // Pause & Unpause
-        if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled == true)
-        {
-                // Joseph Updated the main menu ui to match to input keys
-                // Changed 'Space', 'Q', and 'E' to 'A', 'S', and 'D'
-                if (GCoreInput::GetKeyState(KeyCode::Enter) == KeyState::Down)
-                {
-                        instance->MainTilteUnpause();
-                }
-        }
-        else
-        {
-                if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
-
-                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::Demo].size(); i++)
-                        {
-                                instance->m_AllFonts[E_MENU_CATEGORIES::Demo][i].mEnabled = false;
-                        }
-                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::Demo].size(); i++)
-                        {
-                                instance->m_AllFonts[E_MENU_CATEGORIES::Demo][i].mEnabled = false;
-                        }
-
-                        if (GEngine::Get()->GetGamePaused() == false)
-                        {
-                                instance->Pause();
-                        }
-                        else
-                        {
-                                instance->Unpause();
-                        }
-                }
-        }
-
-        // Left Click
-        if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled == true)
-        {
-                if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
-                }
-        }
-
-        UIMouseEvent e;
-        e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
-        e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
-        std::vector<SpriteComponent*> clickedSprites;
-
-        RECT rect;
-        GetWindowRect((HWND)(instance->m_RenderSystem->m_WindowHandle), &rect);
-        XMUINT4 xmRect = XMUINT4(rect.top, rect.left, rect.bottom, rect.right);
-
-        POINT cursorPoint;
-        GetCursorPos(&cursorPoint);
-        XMFLOAT2 cursorCoords = {(float)cursorPoint.x, (float)cursorPoint.y};
-        XMVECTOR point        = UI::ConvertScreenPosToNDC(cursorCoords, instance->m_ScreenSize, xmRect);
-        for (auto& it : instance->m_AllSprites)
-                for (auto& sprite : it.second)
-                {
-                        if (sprite.mEnabled)
-                        {
-                                if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Release)
-                                {
-
-                                        if (UI::PointInRect(sprite.mRectangle, point))
-                                        {
-                                                // Button Was Pressed
-                                                clickedSprites.push_back(&sprite);
-                                        }
-                                }
-
-                                instance->m_SpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
-                                                               instance->m_States->NonPremultiplied());
-
-                                XMVECTOR position = XMVectorSet(sprite.mScreenOffset.x * instance->m_ScreenSize.x / 2.0f,
-                                                                sprite.mScreenOffset.y * instance->m_ScreenSize.y / 2.0f,
-                                                                0.0f,
-                                                                0.0f) +
-                                                    instance->m_ScreenCenter;
-
-                                XMVECTOR scale = XMVectorSet(sprite.mScaleX * instance->m_ScreenSize.x / 2.0f,
-                                                             sprite.mScaleY * instance->m_ScreenSize.y / 2.0f,
-                                                             0.0f,
-                                                             1.0f);
-
-                                instance->m_SpriteBatch->Draw(
-                                    sprite.mTexture, position, nullptr, DirectX::Colors::White, 0.0f, sprite.mOrigin, scale);
-
-
-                                instance->m_SpriteBatch->End();
-                        }
-                }
-
-        for (auto& sprite : clickedSprites)
-        {
-                e.sprite = sprite;
-                sprite->OnMouseDown.Invoke(&e);
-        }
-
+		instance->DrawSprites();
         for (auto& it : instance->m_AllFonts)
                 for (auto& font : it.second)
                 {

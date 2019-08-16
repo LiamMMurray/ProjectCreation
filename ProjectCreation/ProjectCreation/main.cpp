@@ -241,6 +241,8 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 
 
+
+
             TransformComponent* transformComp = HandleManager->GetComponent<TransformComponent>(transformHandle);
             transformComp->transform.SetScale(0.1f);*/
         }
@@ -304,33 +306,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         GEngine::Get()->GetLevelStateManager()->Init();
         UIManager::instance->StartupResAdjust(handle);
 
-        float GlobalTimer = 0;
-        while (GlobalTimer < 20.0f)
-        {
-                // Loop for the Splash screen
-                float deltatime = GEngine::Get()->Update();
-                GlobalTimer += deltatime;
-                if (GlobalTimer < 5.0f)
-                {
-						//Full Sail Logo
-                        UIManager::instance->Splash_FullSail();
-                }
-                else if (GlobalTimer >= 5.0f && GlobalTimer < 10.0f)
-                {
-						//GP Games Logo
-                        UIManager::instance->Splash_GPGames();
-                }
-                else if (GlobalTimer >= 10.0f && GlobalTimer < 15.0f)
-                {
-						//Deep!deep Logo
-                        UIManager::instance->Splash_Team();
-                }
-                else
-                {
-                        UIManager::instance->Splash_End();
-                        break;
-                }
-        }
+        
 
         while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
         {

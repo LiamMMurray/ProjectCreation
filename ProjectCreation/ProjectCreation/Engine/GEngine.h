@@ -37,13 +37,13 @@ class GEngine
 
         LevelStateManager* m_LevelStateManager;
 
-        void Signal();
 
         float m_PlayerRadius          = 0.0f;
         float m_DesiredPlayerRadius   = 0.0f;
         float m_RadiusTransitionSpeed = 5.0f;
 
     public:
+        void Signal();
         DirectX::XMVECTOR m_OriginOffset = DirectX::XMVECTORF32{0.0f, 0.0f, 0.0f, 0.0f};
         inline void SetPlayerRadius(float r)
         {

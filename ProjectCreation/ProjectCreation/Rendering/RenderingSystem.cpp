@@ -707,12 +707,18 @@ void RenderSystem::DrawMesh(ID3D11Buffer*      vertexBuffer,
         m_Context->DrawIndexed(indexCount, 0, 0);
 }
 
-void RenderSystem::DrawMeshInstanced(ID3D11Buffer*             vertexBuffer,
-                                     ID3D11Buffer*             indexBuffer,
-                                     uint32_t                  indexCount,
-                                     uint32_t                  vertexSize,
-                                     Material*                 material,
-                                     uint32_t                  instanceCount)
+void RenderSystem::Present()
+{
+        DXGI_PRESENT_PARAMETERS parameters = {0};
+        m_Swapchain->Present1(0, 0, &parameters);
+}
+
+void RenderSystem::DrawMeshInstanced(ID3D11Buffer* vertexBuffer,
+                                     ID3D11Buffer* indexBuffer,
+                                     uint32_t      indexCount,
+                                     uint32_t      vertexSize,
+                                     Material*     material,
+                                     uint32_t      instanceCount)
 {
         using namespace DirectX;
 
@@ -1088,8 +1094,7 @@ void RenderSystem::OnUpdate(float deltaTime)
         // UI Manager Update
         UIManager::Update();
 
-        DXGI_PRESENT_PARAMETERS parameters = {0};
-        m_Swapchain->Present1(0, 0, &parameters);
+        Present();
 }
 
 void RenderSystem::OnPostUpdate(float deltaTime)
@@ -1121,6 +1126,19 @@ void RenderSystem::OnInitialize()
         CreateDepthStencilStates();
 
         // UI Manager Initialize
+        /** Create viewport. This should be replaced**/
+        D3D11_VIEWPORT viewport;
+        viewport.Height   = m_BackBufferHeight;
+        viewport.Width    = m_BackBufferWidth;
+        viewport.MaxDepth = 1.0f;
+        viewport.MinDepth = 0.0f;
+        viewport.TopLeftX = 0;
+        viewport.TopLeftY = 0;
+
+
+        m_Context->RSSetViewports(1, &viewport);
+        m_Context->OMSetRenderTargets(1, &m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER], nullptr);
+
         UIManager::Initialize(m_WindowHandle);
         TerrainManager::Initialize(this);
         ParticleManager::Initialize();
