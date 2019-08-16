@@ -1,5 +1,6 @@
 #pragma once
 #include "../ECS/Memory.h"
+#include <assert.h>
 template <typename T>
 class range_iterator;
 

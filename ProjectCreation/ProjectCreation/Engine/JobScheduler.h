@@ -1,7 +1,16 @@
 #pragma once
-#include <mutex>
+
+#define WIN_32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <atomic>
+#include <random>
+#include <thread>
 #include <tuple>
-#include "GEngine.h"
+#undef GetJob
+
+#include "../Utility/BitwiseUtility.h"
+#include "../Utility/Range.h"
+
 inline namespace JobSchedulerInternalUtility
 {
         template <class C>
@@ -41,164 +50,148 @@ inline namespace JobSchedulerInternalUtility
                 InPlaceForwardConstruct(memAlias + sizeof(CopyConstructableType),
                                         std::forward<CopyConstructableTypes>(objects)...);
         }
-
-        inline constexpr auto CACHE_LINE_SIZE = std::hardware_destructive_interference_size;
-
-        inline std::mutex DebugPrintMutex;
 } // namespace JobSchedulerInternalUtility
 
-#define WIN_32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <atomic>
-#include <thread>
-#include <vector>
-#include "ContainerUtility.h"
-inline namespace JobSchedulerInternal
+// The JobSchedulerInternals are a modified implementation of the lock free JobQueue specified by Stefan Reinalter on
+// his blog, molecular-matters. It should be noted that code has been modified/added as seen fit.
+//
+// https://blog.molecular-matters.com/2015/09/25/job-system-2-0-lock-free-work-stealing-part-3-going-lock-free/
+//
+// The MIT License(MIT)
+//
+// Copyright(c) 2012-2017 Stefan Reinalter
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions :
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+inline namespace JobScheduler
 {
-        // The JobSchedulerInternals are a modified implementation of the lock free JobQueue specified by Stefan Reinalter on
-        // his blog, molecular-matters. It should be noted that code has been modified/added as seen fit.
-        //
-        // https://blog.molecular-matters.com/2015/09/25/job-system-2-0-lock-free-work-stealing-part-3-going-lock-free/
-        //
-        // The MIT License(MIT)
-        //
-        // Copyright(c) 2012-2017 Stefan Reinalter
-        //
-        // Permission is hereby granted, free of charge, to any person obtaining a copy
-        // of this software and associated documentation files (the "Software"), to deal
-        // in the Software without restriction, including without limitation the rights
-        // to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
-        // copies of the Software, and to permit persons to whom the Software is
-        // furnished to do so, subject to the following conditions :
-        //
-        // The above copyright notice and this permission notice shall be included in
-        // all copies or substantial portions of the Software.
-        //
-        // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-        // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-        // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-        // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-        // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-        // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-        // THE SOFTWARE.
-        //
+        struct Job;
+}
+inline namespace JobSchedulerGlobals
+{
+        inline DWORD                     g_tls_access_value = TlsAlloc();
+        inline unsigned                  g_num_threads      = std::thread::hardware_concurrency();
+        inline std::vector<std::thread>  g_worker_threads;
+        inline volatile bool             g_worker_thread_active = true;
+        inline thread_local std::mt19937 g_thread_local_rng_engine;
 
+        inline constexpr unsigned CACHE_LINE_SIZE    = std::hardware_destructive_interference_size;
+        inline constexpr unsigned MAX_JOBS_PER_FRAME = 8192U;
+} // namespace JobSchedulerGlobals
+inline namespace JobSchedulerUtility
+{
+        inline unsigned GenerateRandomNumber(unsigned min, unsigned max)
+        {
+                return (g_thread_local_rng_engine() % (max - min)) + min;
+        }
+} // namespace JobSchedulerUtility
+inline namespace JobScheduler
+{
+        using JobFunction = void (*)(Job*);
         struct Job
         {
-                void (*invokeImpl)(Job*);
+                JobFunction           function;
                 Job*                  parent;
-                std::atomic<int> unfinishedJobs;
+                volatile long         unfinished_jobs;
+                static constexpr auto PADDING_SIZE =
+                    CACHE_LINE_SIZE - sizeof(function) - sizeof(parent) - sizeof(unfinished_jobs);
+                char padding[PADDING_SIZE];
 
-                static constexpr auto Size               = CACHE_LINE_SIZE;
-                static constexpr auto invokeImplSize     = sizeof(invokeImpl);
-                static constexpr auto ParentSize         = sizeof(parent);
-                static constexpr auto UnfinishedJobsSize = sizeof(unfinishedJobs);
-                static constexpr auto PaddingSize        = Size - ParentSize - invokeImplSize - UnfinishedJobsSize;
-                char                  buffer[PaddingSize];
-
-                inline void Invoke()
-                {
-                        invokeImpl(this);
-                }
                 inline void Reset()
                 {
-                        parent         = 0;
-                        unfinishedJobs = 1;
+                        parent          = 0;
+                        unfinished_jobs = 1;
                 }
                 inline void Reset(Job* parent)
                 {
-                        this->parent   = parent;
-                        unfinishedJobs = 1;
-                        this->parent->unfinishedJobs++;
+                        InterlockedIncrement(&parent->unfinished_jobs);
+                        this->parent          = parent;
+                        this->unfinished_jobs = 1;
                 }
-                inline void Finish()
+        };
+        template <unsigned MAX_JOBS>
+        struct JobAllocator
+        {
+                static constexpr uint64_t MAX_JOBS       = nextPowerOf2(MAX_JOBS);
+                static constexpr uint64_t MASK           = MAX_JOBS - 1;
+                Job*                      job_buffer     = 0;
+                uint64_t                  allocated_jobs = 0;
+                JobAllocator()
                 {
-                        //const int32_t _unfinishedJobs = --unfinishedJobs;
-                        --unfinishedJobs;
-                        if ((unfinishedJobs <= 0) && (parent))
-                        {
-                                parent->Finish();
-                        }
+                        job_buffer = (Job*)malloc(sizeof(Job) * MAX_JOBS);
+                }
+                Job* Allocate()
+                {
+                        return job_buffer + (allocated_jobs++ & MASK);
+                }
+                ~JobAllocator()
+                {
+                        free(job_buffer);
                 }
         };
 
-        //.
-        //	This data structure acts as a normal ring buffer but with atomics and a steal() function
-        //	that pop's from the queue concurrently from another thread
-        template <unsigned MaxJobs>
+        template <unsigned MAX_JOBS>
         struct JobQueue
         {
-                static constexpr unsigned MaxJobs = nextPowerOf2(MaxJobs);
-                static constexpr unsigned Mask    = MaxJobs - 1;
-
-                volatile long m_bottom;
-                volatile long m_top;
-                Job**         m_jobs;
+                static constexpr auto MAX_JOBS = nextPowerOf2(MAX_JOBS);
+                static constexpr auto MASK     = MAX_JOBS - 1;
+                Job**                 m_jobs;
+                volatile int64_t      m_bottom;
+                volatile int64_t      m_top;
                 JobQueue()
                 {
+                        m_jobs   = (Job**)malloc(sizeof(Job*) * MAX_JOBS);
                         m_bottom = 0;
                         m_top    = 0;
-                        m_jobs   = static_cast<Job**>(_aligned_malloc(MaxJobs * sizeof(Job*), 64));
+                }
+                JobQueue(JobQueue&& other) noexcept
+                {
+                        m_bottom     = other.m_bottom;
+                        m_top        = other.m_top;
+                        m_jobs       = other.m_jobs;
+                        other.m_jobs = 0;
                 }
                 ~JobQueue()
                 {
-                        _aligned_free(m_jobs);
+                        free(m_jobs);
                 }
-
                 void Push(Job* job)
                 {
                         long b           = m_bottom;
-                        m_jobs[b & Mask] = job;
+                        m_jobs[b & MASK] = job;
 
                         // ensure the job is written before b+1 is published to other threads.
                         // on x86/64, a compiler barrier is enough.
-                        _ReadWriteBarrier();
+                        std::atomic_thread_fence(std::memory_order_seq_cst);
 
                         m_bottom = b + 1;
                 }
-
-                Job* Steal(void)
-                {
-                        long t = m_top;
-
-                        // ensure that top is always read before bottom.
-                        // loads will not be reordered with other loads on x86, so a compiler barrier is enough.
-                        _ReadWriteBarrier();
-
-                        long b = m_bottom;
-                        if (t < b)
-                        {
-                                // non-empty queue
-                                Job* job = m_jobs[t & Mask];
-
-                                // the interlocked function serves as a compiler barrier, and guarantees that the read happens
-                                // before the CAS.
-                                if (_InterlockedCompareExchange(&m_top, t + 1, t) != t)
-                                {
-                                        // a concurrent steal or pop operation removed an element from the deque in the
-                                        // meantime.
-                                        return 0;
-                                }
-
-                                return job;
-                        }
-                        else
-                        {
-                                // empty queue
-                                return 0;
-                        }
-                }
-
                 Job* Pop(void)
                 {
-                        long b   = m_bottom - 1;
-                        m_bottom = b;
+                        long b = m_bottom - 1;
+                        InterlockedExchange64(&m_bottom, b);
 
                         long t = m_top;
                         if (t <= b)
                         {
                                 // non-empty queue
-                                Job* job = m_jobs[b & Mask];
+                                Job* job = m_jobs[b & MASK];
                                 if (t != b)
                                 {
                                         // there's still more than one item left in the queue
@@ -206,10 +199,10 @@ inline namespace JobSchedulerInternal
                                 }
 
                                 // this is the last item in the queue
-                                if (_InterlockedCompareExchange(&m_top, t + 1, t) != t)
+                                if (InterlockedCompareExchange64(&m_top, t + 1, t) != t)
                                 {
                                         // failed race against steal operation
-                                        job = 0;
+                                        job = nullptr;
                                 }
 
                                 m_bottom = t + 1;
@@ -219,45 +212,191 @@ inline namespace JobSchedulerInternal
                         {
                                 // deque was already empty
                                 m_bottom = t;
-                                return 0;
+                                return nullptr;
+                        }
+                }
+                Job* Steal(void)
+                {
+                        long t = m_top;
+
+                        // ensure that top is always read before bottom.
+                        // loads will not be reordered with other loads on x86, so a compiler barrier is enough.
+                        std::atomic_thread_fence(std::memory_order_seq_cst);
+
+                        long b = m_bottom;
+                        if (t < b)
+                        {
+                                // non-empty queue
+                                Job* job = m_jobs[t & MASK];
+
+                                // the interlocked function serves as a compiler barrier, and guarantees that the read happens
+                                // before the CAS.
+                                if (InterlockedCompareExchange64(&m_top, t + 1, t) != t)
+                                {
+                                        // a concurrent steal or pop operation removed an element from the deque in the
+                                        // meantime.
+                                        return nullptr;
+                                }
+
+                                return job;
+                        }
+                        else
+                        {
+                                // empty queue
+                                return nullptr;
                         }
                 }
         };
+} // namespace JobScheduler
+inline namespace JobSchedulerGlobals
+{
+        inline thread_local JobAllocator<MAX_JOBS_PER_FRAME> g_thread_local_job_allocator_temp;
+        inline thread_local JobAllocator<MAX_JOBS_PER_FRAME> g_thread_local_job_allocator_static;
 
-
-        inline DWORD              TLSIndex_GenericIndex = TlsAlloc();
-        inline auto               NumWorkerThreads{std::thread::hardware_concurrency() - 1};
-        inline constexpr unsigned MaxJobs          = 1024;
-        inline volatile bool      RunWorkerThreads = true;
-
-        inline AllocVector<RingBuffer<Job, MaxJobs>> TempJobAllocatorImpl;
-        inline AllocVector<RingBuffer<Job, MaxJobs>> StaticJobAllocatorImpl;
-
-        inline AllocVector<std::thread, CACHE_LINE_SIZE> WorkerThreads;
-        inline AllocVector<JobQueue<MaxJobs>>            JobQueues;
-        inline bool                                      IsEmpty(Job* job)
+        inline std::vector<JobQueue<MAX_JOBS_PER_FRAME>> g_job_queues;
+} // namespace JobSchedulerGlobals
+inline namespace JobSchedulerInternal
+{
+        inline auto& GetWorkerThreadQueue()
         {
-                return !job;
+                return g_job_queues[(unsigned)TlsGetValue(g_tls_access_value)];
         }
-
-        inline const unsigned GetThreadIndex()
+        inline void Run(Job* job)
         {
-                return (unsigned)TlsGetValue(TLSIndex_GenericIndex);
+                auto& queue = GetWorkerThreadQueue();
+                queue.Push(job);
         }
+        inline Job* AllocateJob()
+        {
+                return g_thread_local_job_allocator_temp.Allocate();
+        }
+        inline Job* CreateJob(JobFunction function)
+        {
+                Job* job             = AllocateJob();
+                job->function        = function;
+                job->parent          = nullptr;
+                job->unfinished_jobs = 1;
+                return job;
+        }
+        inline Job* CreateJobAsChild(Job* parent, JobFunction function)
+        {
+                InterlockedIncrement(&parent->unfinished_jobs);
+                Job* job             = AllocateJob();
+                job->function        = function;
+                job->parent          = parent;
+                job->unfinished_jobs = 1;
+                return job;
+        }
+        inline bool HasJobCompleted(Job* job)
+        {
+                return job->unfinished_jobs == 0;
+        }
+        inline void Finish(Job* job)
+        {
+                const long unfinished_jobs = InterlockedDecrement(&job->unfinished_jobs);
+                if (unfinished_jobs == 0 && job->parent)
+                {
+                        Finish(job->parent);
+                }
+        }
+        inline void Execute(Job* job)
+        {
+                job->function(job);
+                Finish(job);
+        }
+        inline Job* GetJob()
+        {
+                auto& queue = GetWorkerThreadQueue();
+                Job*  job   = queue.Pop();
+                if (!job)
+                {
+                        // this is not a valid job because our own queue is empty, so try stealing from some other queue
+                        unsigned int randomIndex = GenerateRandomNumber(0, g_num_threads);
+                        auto&        stealQueue  = g_job_queues[randomIndex];
+                        if (&stealQueue == &queue)
+                        {
+                                // don't try to steal from ourselves
+                                Sleep(0);
+                                return nullptr;
+                        }
 
+                        Job* stolenJob = stealQueue.Steal();
+                        if (!stolenJob)
+                        {
+                                // we couldn't steal a job from the other queue either, so we just yield our time slice
+                                // for now
+                                Sleep(0);
+                                return nullptr;
+                        }
+
+                        return stolenJob;
+                }
+                return job;
+        }
+        inline void Wait(Job* job)
+        {
+                while (!HasJobCompleted(job))
+                {
+                        Job* nextJob = GetJob();
+                        if (nextJob)
+                        {
+                                Execute(nextJob);
+                        }
+                        std::atomic_thread_fence(std::memory_order_seq_cst);
+                }
+        }
+        inline void WorkerThreadMain(unsigned index)
+        {
+                TlsSetValue(g_tls_access_value, (LPVOID)index);
+                while (g_worker_thread_active)
+                {
+                        Job* job = GetJob();
+                        if (job)
+                        {
+                                Execute(job);
+                        }
+                }
+        }
+} // namespace JobSchedulerInternal
+inline namespace JobScheduler
+{
+        inline void Initialize()
+        {
+                unsigned thread_index = 0;
+                for (; thread_index < g_num_threads; thread_index++)
+                        g_job_queues.push_back(std::move(JobQueue<MAX_JOBS_PER_FRAME>()));
+                thread_index = 0;
+                TlsSetValue(g_tls_access_value, (LPVOID)thread_index);
+                thread_index++;
+                for (; thread_index < g_num_threads; thread_index++)
+                        g_worker_threads.push_back(std::move(std::thread(WorkerThreadMain, thread_index)));
+        }
+        inline void Shutdown()
+        {
+                g_worker_thread_active = false;
+                for (auto& itr : g_worker_threads)
+                        itr.join();
+
+                TlsFree(g_tls_access_value);
+        }
+} // namespace JobScheduler
+
+
+inline namespace JobSchedulerAbstractionsInternal
+{
         template <typename Allocator = TempJobAllocator, typename CallableType, typename... Args>
         inline Job* CreateJobData(CallableType&& callable, Args&&... args)
         {
                 Job* thisJob = Allocator::Allocate();
 
-                static_assert(sizeof(std::tuple<Args&&...>) + sizeof(CallableType &&) <= Job::PaddingSize,
+                static_assert(sizeof(std::tuple<Args&&...>) + sizeof(CallableType &&) <= Job::PADDING_SIZE,
                               "lambda is too large to fit the Job's padding buffer");
-                char* bufferAlias = thisJob->buffer;
+                char* bufferAlias = thisJob->padding;
                 InPlaceForwardConstruct(bufferAlias, std::forward<CallableType>(callable));
                 InPlaceForwardConstruct(bufferAlias + sizeof(CallableType), std::tuple<Args&&...>(std::forward<Args>(args)...));
 
-                thisJob->invokeImpl = [](Job* job) {
-                        char*         bufferAlias    = job->buffer;
+                thisJob->function = [](Job* job) {
+                        char*         bufferAlias    = job->padding;
                         CallableType& callableObject = *reinterpret_cast<CallableType*>(bufferAlias);
                         using ArgsTupleType          = std::tuple<Args&&...>;
 
@@ -272,78 +411,7 @@ inline namespace JobSchedulerInternal
                 return thisJob;
         }
 
-        inline JobQueue<MaxJobs>& GetStealJobQueue()
-        {
-                unsigned WorkerThreadIndex = rand() % (NumWorkerThreads + 1);
-                return JobQueues[WorkerThreadIndex];
-        }
 
-        inline void Launch(Job* job)
-        {
-                unsigned InactiveJobQueueIndex = NumWorkerThreads;
-                JobQueues[InactiveJobQueueIndex].Push(job);
-        }
-
-        inline Job* PopOrStealJob()
-        {
-                JobQueue<MaxJobs>& MyJobQueue = JobQueues[GetThreadIndex()];
-
-                Job* job = MyJobQueue.Pop();
-                if (IsEmpty(job))
-                {
-                        // this is not a valid job because our own queue is empty, so try stealing from some other queue
-                        JobQueue<MaxJobs>& StealJobQueue = GetStealJobQueue();
-
-                        if (&StealJobQueue == &MyJobQueue)
-                        {
-                                // don't try to steal from ourselves
-                                Yield();
-                                return 0;
-                        }
-
-                        Job* stolenJob = StealJobQueue.Steal();
-                        if (IsEmpty(stolenJob))
-                        {
-                                // we couldn't steal a job from the other queue either, so we just yield our time slice for
-                                // now
-                                Yield();
-                                return 0;
-                        }
-
-                        return stolenJob;
-                }
-
-                return job;
-        }
-
-        inline void Wait(Job* job)
-        {
-                while (job->unfinishedJobs > 0)
-                {
-                        Job* nextJob = PopOrStealJob();
-
-                        if (nextJob)
-                        {
-                                nextJob->Invoke();
-                                nextJob->Finish();
-                        }
-                }
-        }
-
-        inline void WorkerThreadMain(unsigned ThreadIndex)
-        {
-                TlsSetValue(TLSIndex_GenericIndex, (LPVOID)ThreadIndex);
-                while (RunWorkerThreads)
-                {
-                        Job* ThisJob = PopOrStealJob();
-
-                        if (ThisJob)
-                        {
-                                ThisJob->Invoke();
-                                ThisJob->Finish();
-                        }
-                }
-        }
         template <typename Allocator, typename R, typename Lambda, typename... Args>
         struct ParallelForJobImpl
         {
@@ -377,15 +445,15 @@ inline namespace JobSchedulerInternal
                 Job* CreateParallelForSubJobImpl(Lambda&& lambda, unsigned begin, unsigned end)
                 {
                         Job*  thisJob     = Allocator::Allocate();
-                        char* bufferAlias = thisJob->buffer;
+                        char* bufferAlias = thisJob->padding;
 
                         InPlaceForwardConstruct(bufferAlias, std::forward<Lambda>(lambda));
                         bufferAlias += sizeof(Lambda);
 
                         InPlaceForwardConstruct(bufferAlias, std::tuple<unsigned, unsigned>(begin, end));
 
-                        thisJob->invokeImpl = [](Job* job) {
-                                char* bufferAlias = job->buffer;
+                        thisJob->function = [](Job* job) {
+                                char* bufferAlias = job->padding;
                                 auto* lambda      = reinterpret_cast<Lambda*>(bufferAlias);
                                 bufferAlias += sizeof(Lambda);
 
@@ -444,11 +512,11 @@ inline namespace JobSchedulerInternal
                                 itr->Reset(root);
                 }
 
-                void Launch()
+                void Run()
                 {
-                        JobSchedulerInternal::Launch(root);
+                        JobSchedulerInternal::Run(root);
                         for (const auto& itr : children)
-                                JobSchedulerInternal::Launch(itr);
+                                JobSchedulerInternal::Run(itr);
                 }
 
             public:
@@ -460,7 +528,7 @@ inline namespace JobSchedulerInternal
                 {
                         for (const auto& itr : children)
                         {
-                                char* bufferAlias = itr->buffer;
+                                char* bufferAlias = itr->padding;
                                 bufferAlias += sizeof(Lambda) + sizeof(std::tuple<unsigned, unsigned>);
                                 auto bufferArgsAlias = reinterpret_cast<std::tuple<Args...>*>(bufferAlias);
                                 InPlaceForwardConstruct(bufferArgsAlias, std::tuple(args...));
@@ -468,7 +536,7 @@ inline namespace JobSchedulerInternal
                 }
                 void SetRange(unsigned begin, unsigned end, unsigned chunkSize = 256)
                 {
-                        char* bufferAlias = children[0]->buffer;
+                        char* bufferAlias = children[0]->padding;
                         auto& lambda      = *reinterpret_cast<Lambda*>(bufferAlias);
                         children          = CreateParallelForSubJobs(std::forward<Lambda>(lambda), begin, end, chunkSize);
                 }
@@ -476,14 +544,13 @@ inline namespace JobSchedulerInternal
                 {
                         SetArgs(args...);
                         ResetJobs();
-                        Launch();
+                        Run();
                 }
                 Job* GetRootJob()
                 {
                         return root;
                 }
         };
-
         template <typename Allocator, typename Lambda>
         struct ParallelForJob : public ParallelForJob<Allocator, decltype(&Lambda::operator())>
         {
@@ -538,15 +605,15 @@ inline namespace JobSchedulerInternal
 
 
                         Job*  thisJob     = JobAllocator::Allocate();
-                        char* bufferAlias = thisJob->buffer;
+                        char* bufferAlias = thisJob->padding;
 
                         InPlaceForwardConstruct(bufferAlias, std::forward<Lambda>(lambda));
                         bufferAlias += sizeof(Lambda);
 
                         InPlaceForwardConstruct(bufferAlias, std::tuple<unsigned, unsigned>(begin, end));
 
-                        thisJob->invokeImpl = [](Job* job) {
-                                char* bufferAlias = job->buffer;
+                        thisJob->function = [](Job* job) {
+                                char* bufferAlias = job->padding;
                                 auto* lambda      = reinterpret_cast<Lambda*>(bufferAlias);
                                 bufferAlias += sizeof(Lambda);
 
@@ -639,11 +706,11 @@ inline namespace JobSchedulerInternal
                         for (const auto& itr : children)
                                 itr->Reset(root);
                 }
-                void Launch()
+                void Run()
                 {
-                        JobSchedulerInternal::Launch(root);
+                        JobSchedulerInternal::Run(root);
                         for (const auto& itr : children)
-                                JobSchedulerInternal::Launch(itr);
+                                JobSchedulerInternal::Run(itr);
                 }
 
             public:
@@ -655,7 +722,7 @@ inline namespace JobSchedulerInternal
                 {
                         for (const auto& itr : children)
                         {
-                                char* bufferAlias = itr->buffer;
+                                char* bufferAlias = itr->padding;
                                 bufferAlias += sizeof(Lambda) + sizeof(std::tuple<unsigned, unsigned>);
                                 auto bufferArgsAlias = reinterpret_cast<std::tuple<Args...>*>(bufferAlias);
                                 InPlaceForwardConstruct(bufferArgsAlias, std::tuple(args...));
@@ -663,7 +730,7 @@ inline namespace JobSchedulerInternal
                 }
                 void SetRange(unsigned begin, unsigned end, unsigned chunkSize = 256)
                 {
-                        char* bufferAlias = children[0]->buffer;
+                        char* bufferAlias = children[0]->padding;
                         auto& lambda      = *reinterpret_cast<Lambda*>(bufferAlias);
                         children          = CreateParallelForSubJobs(std::forward<Lambda>(lambda), begin, end, chunkSize);
                 }
@@ -671,7 +738,7 @@ inline namespace JobSchedulerInternal
                 {
                         SetArgs(args...);
                         ResetJobs();
-                        Launch();
+                        Run();
                 }
                 Job* GetRootJob()
                 {
@@ -705,7 +772,6 @@ inline namespace JobSchedulerInternal
                 {}
         };
 
-
         template <typename Component, typename JobAllocator, typename R, typename Lambda, typename... Args>
         struct ParallelForComponentsImpl
         {
@@ -728,15 +794,15 @@ inline namespace JobSchedulerInternal
                 Job* CreateParallelForSubJobImpl(Lambda&& lambda, unsigned begin, unsigned end)
                 {
                         Job*  thisJob     = JobAllocator::Allocate();
-                        char* bufferAlias = thisJob->buffer;
+                        char* bufferAlias = thisJob->padding;
 
                         InPlaceForwardConstruct(bufferAlias, std::forward<Lambda>(lambda));
                         bufferAlias += sizeof(Lambda);
 
                         InPlaceForwardConstruct(bufferAlias, std::tuple<unsigned, unsigned>(begin, end));
 
-                        thisJob->invokeImpl = [](Job* job) {
-                                char* bufferAlias = job->buffer;
+                        thisJob->function = [](Job* job) {
+                                char* bufferAlias = job->padding;
                                 auto* lambda      = reinterpret_cast<Lambda*>(bufferAlias);
                                 bufferAlias += sizeof(Lambda);
 
@@ -827,11 +893,11 @@ inline namespace JobSchedulerInternal
                         for (const auto& itr : children)
                                 itr->Reset(root);
                 }
-                void Launch()
+                void Run()
                 {
-                        JobSchedulerInternal::Launch(root);
+                        JobSchedulerInternal::Run(root);
                         for (const auto& itr : children)
-                                JobSchedulerInternal::Launch(itr);
+                                JobSchedulerInternal::Run(itr);
                 }
 
             public:
@@ -843,7 +909,7 @@ inline namespace JobSchedulerInternal
                 {
                         for (const auto& itr : children)
                         {
-                                char* bufferAlias = itr->buffer;
+                                char* bufferAlias = itr->padding;
                                 bufferAlias += sizeof(Lambda) + sizeof(std::tuple<unsigned, unsigned>);
                                 auto bufferArgsAlias = reinterpret_cast<std::tuple<Args...>*>(bufferAlias);
                                 InPlaceForwardConstruct(bufferArgsAlias, std::tuple(args...));
@@ -851,7 +917,7 @@ inline namespace JobSchedulerInternal
                 }
                 void SetRange(unsigned begin, unsigned end, unsigned chunkSize = 256)
                 {
-                        char* bufferAlias = children[0]->buffer;
+                        char* bufferAlias = children[0]->padding;
                         auto& lambda      = *reinterpret_cast<Lambda*>(bufferAlias);
                         children          = CreateParallelForSubJobs(std::forward<Lambda>(lambda), begin, end, chunkSize);
                 }
@@ -859,7 +925,7 @@ inline namespace JobSchedulerInternal
                 {
                         SetArgs(args...);
                         ResetJobs();
-                        Launch();
+                        Run();
                 }
                 Job* GetRootJob()
                 {
@@ -894,11 +960,11 @@ inline namespace JobSchedulerInternal
                                                                                            chunkSize)
                 {}
         };
-} // namespace JobSchedulerInternal
+} // namespace JobSchedulerAbstractionsInternal
+
 
 inline namespace JobSchedulerValidation
 {
-
         template <typename TupleA, typename TupleB, unsigned I, unsigned J>
         constexpr bool IntersectsImpl_HoldIConst_PopJs(TupleA tupleA,
                                                        TupleB tupleB,
@@ -985,7 +1051,6 @@ inline namespace JobSchedulerValidation
                                            std::make_index_sequence<std::tuple_size<TupleA>::value>{},
                                            std::make_index_sequence<std::tuple_size<TupleB>::value>{});
         }
-
         template <typename... TupleElements, unsigned... Is>
         std::tuple<TupleElements*...> AddrOfTupleElementsImpl(std::tuple<TupleElements&...> input, std::index_sequence<Is...>)
         {
@@ -1006,47 +1071,31 @@ inline namespace JobSchedulerValidation
         }
 } // namespace JobSchedulerValidation
 
-inline namespace JobScheduler
+inline namespace JobSchedulerAbstractions
 {
-        void Initialize();
-
-        void Shutdown();
-
         struct TempJobAllocator
         {
             private:
-                static inline auto& AllocatorImpl = TempJobAllocatorImpl;
+                static inline auto& AllocatorImpl = g_thread_local_job_allocator_temp;
 
             public:
                 static inline Job* Allocate()
                 {
-                        return AllocatorImpl[GetThreadIndex()].Allocate();
+                        return g_thread_local_job_allocator_temp.Allocate();
                 }
         };
         struct StaticJobAllocator
         {
             private:
-                static inline auto& AllocatorImpl = StaticJobAllocatorImpl;
+                static inline auto& AllocatorImpl = g_thread_local_job_allocator_static;
 
             public:
                 static inline Job* Allocate()
                 {
-                        return AllocatorImpl[GetThreadIndex()].Allocate();
+                        return g_thread_local_job_allocator_static.Allocate();
                 }
         };
 
-        // Usage example:
-        //		/*multiplies all values in ArrayBar by 5*/
-        //		auto JobFoo = ParallelFor([&ArrayBar](unsigned i, unsigned factor) {ArrayBar[i] *= factor;});
-        //		JobFoo.SetRange(0, 1024);
-        //		JobFoo(5);
-        //		JobFoo.Wait();
-
-        // template <typename JobAllocator = TempJobAllocator, typename Lambda>
-        // auto ParallelFor(Lambda&& lambda, unsigned begin, unsigned end, unsigned chunkSize = 256)
-        //{
-        //        return ParallelForJob<JobAllocator, Lambda>(std::forward<Lambda>(lambda), begin, end, chunkSize);
-        //}
         template <typename JobAllocator = TempJobAllocator, typename Lambda>
         auto ParallelFor(Lambda&& lambda)
         {
@@ -1065,17 +1114,6 @@ inline namespace JobScheduler
                                                                                             chunkSize);
         }
 
-
-        // Usage example:
-        //		/*sets integers foo, bar, and baz to 3, 777, and 42, respectively.
-        //		TempJob job_A;
-        //		TempJob job_A.Append([&foo]() { foo = 3; });
-        //		TempJob job_B;
-        //		job_B.Append([&bar]() { bar = 777; });
-        //		job_B.Append(job_A.GetRootJob());
-        //		job_B.Append([&baz](int qux) { baz = qux; }, 42);
-        //		job_B();
-        //		job_B.Wait();
         template <typename Allocator = TempJobAllocator>
         struct TempJob
         {
@@ -1085,8 +1123,7 @@ inline namespace JobScheduler
             public:
                 TempJob()
                 {
-                        rootJob = CreateJobData([]() {});
-                        rootJob->Reset();
+                        rootJob = CreateJob([](Job*) {});
                 }
                 template <typename Lambda, typename... Args>
                 void Append(Lambda&& lambda, Args&&... args)
@@ -1098,12 +1135,12 @@ inline namespace JobScheduler
                                 ThisJob = CreateJobData(std::forward<Lambda>(lambda));
 
                         ThisJob->Reset(rootJob);
-                        JobSchedulerInternal::Launch(ThisJob);
+                        JobSchedulerInternal::Run(ThisJob);
                 }
                 void Append(Job* job)
                 {
                         job->Reset(rootJob);
-                        JobSchedulerInternal::Launch(job);
+                        JobSchedulerInternal::Run(job);
                 }
                 void Wait()
                 {
@@ -1111,11 +1148,11 @@ inline namespace JobScheduler
                 }
                 void operator()()
                 {
-                        JobSchedulerInternal::Launch(rootJob);
+                        JobSchedulerInternal::Run(rootJob);
                 }
                 Job* GetRootJob()
                 {
                         return rootJob;
                 }
         };
-} // namespace JobScheduler
+} // namespace JobSchedulerAbstractions

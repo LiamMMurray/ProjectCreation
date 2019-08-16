@@ -428,9 +428,9 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 flatPlayerForward = quat.GetForward();
         }
 
-        // auto Test = ParallelForActiveComponents<SpeedboostComponent>([](SpeedboostComponent& speedboostComp) {});
-        //      Test();
-        //      Test.Wait();
+        auto Test = ParallelForActiveComponents<SpeedboostComponent>([](SpeedboostComponent& speedboostComp) {});
+        Test();
+        Test.Wait();
         // auto Test = TempJob();
         // Test.Append([]() {});
         // Test.Append([]() {});
@@ -438,27 +438,27 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
         // Test.Append([]() {});
         // Test();
         // Test.Wait();
-        JobSchedulerInternal::Job* j = TempJobAllocator::Allocate();
-        j->invokeImpl                = [](Job*) {};
-        j->parent                    = 0;
-        j->unfinishedJobs            = 1;
-        JobSchedulerInternal::Job* k = TempJobAllocator::Allocate();
-		
-        k->invokeImpl                = [](Job*) {};
-        k->parent                    = j;
-        k->unfinishedJobs            = 1;
-        k->parent->unfinishedJobs++;
+        /* JobSchedulerInternal::Job* j = TempJobAllocator::Allocate();
+         j->function                = [](Job*) {};
+         j->parent                    = 0;
+         j->unfinishedJobs            = 1;
+         JobSchedulerInternal::Job* k = TempJobAllocator::Allocate();
+         
+         k->invokeImpl                = [](Job*) {};
+         k->parent                    = j;
+         k->unfinishedJobs            = 1;
+         k->parent->unfinishedJobs++;
 
-		_mm_mfence();
+         _mm_mfence();
 
-        Launch(k);
-        Launch(j);
+         Launch(k);
+         Launch(j);
 
-		_mm_mfence();
+         _mm_mfence();
 
-        Wait(j);
+         Wait(j);
 
-		_mm_mfence();
+         _mm_mfence();*/
 
         // m_PlayerEffectRadius                       = 25.0f;
         for (auto& speedComp : m_HandleManager->GetActiveComponents<SpeedboostComponent>())
