@@ -87,7 +87,7 @@ inline namespace JobSchedulerInternal
         {
                 void (*invokeImpl)(Job*);
                 Job*                  parent;
-                std::atomic<unsigned> unfinishedJobs;
+                std::atomic<int> unfinishedJobs;
 
                 static constexpr auto Size               = CACHE_LINE_SIZE;
                 static constexpr auto invokeImplSize     = sizeof(invokeImpl);
@@ -113,10 +113,9 @@ inline namespace JobSchedulerInternal
                 }
                 inline void Finish()
                 {
-
-                        const int32_t _unfinishedJobs = --unfinishedJobs;
-
-                        if ((_unfinishedJobs == 0) && (parent))
+                        //const int32_t _unfinishedJobs = --unfinishedJobs;
+                        --unfinishedJobs;
+                        if ((unfinishedJobs <= 0) && (parent))
                         {
                                 parent->Finish();
                         }

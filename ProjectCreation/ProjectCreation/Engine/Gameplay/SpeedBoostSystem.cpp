@@ -29,8 +29,8 @@
 #include "../AI/AIComponent.h"
 
 #include "../../Utility/Random.h"
+#include "../JobScheduler.h"
 #include "../Particle Systems/EmitterComponent.h"
-
 using namespace DirectX;
 
 std::random_device                    r;
@@ -427,6 +427,38 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 FQuaternion quat  = FQuaternion::FromEulerAngles(euler);
                 flatPlayerForward = quat.GetForward();
         }
+
+        // auto Test = ParallelForActiveComponents<SpeedboostComponent>([](SpeedboostComponent& speedboostComp) {});
+        //      Test();
+        //      Test.Wait();
+        // auto Test = TempJob();
+        // Test.Append([]() {});
+        // Test.Append([]() {});
+        // Test.Append([]() {});
+        // Test.Append([]() {});
+        // Test();
+        // Test.Wait();
+        JobSchedulerInternal::Job* j = TempJobAllocator::Allocate();
+        j->invokeImpl                = [](Job*) {};
+        j->parent                    = 0;
+        j->unfinishedJobs            = 1;
+        JobSchedulerInternal::Job* k = TempJobAllocator::Allocate();
+		
+        k->invokeImpl                = [](Job*) {};
+        k->parent                    = j;
+        k->unfinishedJobs            = 1;
+        k->parent->unfinishedJobs++;
+
+		_mm_mfence();
+
+        Launch(k);
+        Launch(j);
+
+		_mm_mfence();
+
+        Wait(j);
+
+		_mm_mfence();
 
         // m_PlayerEffectRadius                       = 25.0f;
         for (auto& speedComp : m_HandleManager->GetActiveComponents<SpeedboostComponent>())
