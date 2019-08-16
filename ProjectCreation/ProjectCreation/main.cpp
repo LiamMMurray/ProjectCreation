@@ -303,7 +303,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         GEngine::Get()->SetGamePaused(true);
         GEngine::Get()->GetLevelStateManager()->Init();
         UIManager::instance->StartupResAdjust(handle);
-        /*
+
         float GlobalTimer = 0;
         while (GlobalTimer < 20.0f)
         {
@@ -312,26 +312,26 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 GlobalTimer += deltatime;
                 if (GlobalTimer < 5.0f)
                 {
-	                //Full Sail Logo
-                        int x = 5;
+						//Full Sail Logo
+                        UIManager::instance->Splash_FullSail();
                 }
                 else if (GlobalTimer >= 5.0f && GlobalTimer < 10.0f)
                 {
-	                //GP Games Logo
-                        int x = 5;
+						//GP Games Logo
+                        UIManager::instance->Splash_GPGames();
                 }
                 else if (GlobalTimer >= 10.0f && GlobalTimer < 15.0f)
                 {
-	                //Deep!deep Logo
-                        int x = 5;
+						//Deep!deep Logo
+                        UIManager::instance->Splash_Team();
                 }
                 else
                 {
-                        int x = 5;
+                        UIManager::instance->Splash_End();
                         break;
                 }
         }
-		*/
+
         while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
         {
                 GCoreInput::UpdateInput();

@@ -188,6 +188,29 @@ void UIManager::UIClipCursor()
 void UIManager::OnScreenResize()
 {}
 
+//Splash Screen
+void UIManager::Splash_FullSail()
+{
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = true;
+}
+
+void UIManager::Splash_GPGames()
+{
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = true;
+}
+
+void UIManager::Splash_Team()
+{
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = true;
+}
+
+void UIManager::Splash_End()
+{
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = false;
+}
+
 
 // UI Transitions
 void UIManager::WhiteOrbCollected()
@@ -406,6 +429,7 @@ void UIManager::DemoEnd()
 }
 
 
+
 // Core Function
 void UIManager::Initialize(native_handle_type hwnd)
 {
@@ -460,6 +484,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->m_FontTypes[E_FONT_TYPE::CourierNew] =
             new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/couriernew.spritefont");
 
+        
         // Splash Screen
         instance->AddSprite(instance->m_RenderSystem->m_Device,
                             instance->m_RenderSystem->m_Context,
@@ -467,8 +492,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                             L"../Assets/2d/Sprite/Full_Sail_Logo.dds",
                             0.0f,
                             0.0f,
-                            1.0f * ScaleXRatio,
-                            1.0f * ScaleYRatio,
+                            2.0f,
+                            2.0f,
                             false);
 
         instance->AddSprite(instance->m_RenderSystem->m_Device,
@@ -477,10 +502,19 @@ void UIManager::Initialize(native_handle_type hwnd)
                             L"../Assets/2d/Sprite/GPGlogo_solid.dds",
                             0.0f,
                             0.0f,
-                            1.0f * ScaleXRatio,
-                            1.0f * ScaleYRatio,
+                            2.0f,
+                            2.0f,
                             false);
 
+        instance->AddSprite(instance->m_RenderSystem->m_Device,
+                            instance->m_RenderSystem->m_Context,
+                            E_MENU_CATEGORIES::SplashScreen,
+                            L"../Assets/2d/Sprite/Full_Sail_Logo.dds",
+                            0.0f,
+                            0.0f,
+                            2.0f,
+                            2.0f,
+                            false);
         // Main Menu
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
@@ -944,7 +978,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.03f * ScaleYRatio,
                           0.0f * PosXRatio,
                           0.0f * PosYRatio,
-                          true,
+                          false,
                           false);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -956,7 +990,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.05f * ScaleYRatio,
                           -0.15f * PosXRatio,
                           0.1f * PosYRatio,
-                          true,
+                          false,
                           true,
                           true,
                           pauseButtonWidth * ScaleXRatio,
@@ -971,7 +1005,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.05f * ScaleYRatio,
                           0.15f * PosXRatio,
                           0.1f * PosYRatio,
-                          true,
+                          false,
                           true,
                           true,
                           pauseButtonWidth * ScaleXRatio,

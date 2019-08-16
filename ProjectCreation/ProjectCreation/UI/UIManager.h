@@ -106,6 +106,12 @@ class UIManager
         void SupportedResolutions(); // Creates the supported resolutions for the game
         void DemoEnd();
 
+        void Splash_Start();
+        void Splash_FullSail();
+        void Splash_GPGames();
+        void Splash_Team();
+        void Splash_End();
+
 		void WhiteOrbCollected();
         void RedOrbCollected();
         void GreenOrbCollected();
