@@ -438,13 +438,14 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
         // Test.Append([]() {});
         // Test();
         // Test.Wait();
-        /* JobSchedulerInternal::Job* j = TempJobAllocator::Allocate();
-         j->function                = [](Job*) {};
+        /* JobSchedulerInternal::JobInternal* j = TempJobAllocator::Allocate();
+         j->function                = [](JobInternal*) {};
          j->parent                    = 0;
          j->unfinishedJobs            = 1;
-         JobSchedulerInternal::Job* k = TempJobAllocator::Allocate();
-         
-         k->invokeImpl                = [](Job*) {};
+         JobSchedulerInternal::JobInternal* k = TempJobAllocator::Allocate();
+         
+
+         k->invokeImpl                = [](JobInternal*) {};
          k->parent                    = j;
          k->unfinishedJobs            = 1;
          k->parent->unfinishedJobs++;
