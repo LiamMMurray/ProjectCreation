@@ -18,7 +18,7 @@ void Level_03::Enter()
 
         m_SpeedBoostSystem->splineWidth  = 18.0f;
         m_SpeedBoostSystem->splineHeight = 1.5f;
-        m_SpeedBoostSystem->changeColor  = true;
+        m_SpeedBoostSystem->m_changeColor  = true;
 
 		ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         controllerSys->ResetLightOrbCounters();

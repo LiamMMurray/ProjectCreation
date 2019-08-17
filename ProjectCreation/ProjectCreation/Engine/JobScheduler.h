@@ -1016,7 +1016,7 @@ inline namespace JobSchedulerValidation
                 Reads(Args&... args) : data(args...)
                 {}
                 template <std::size_t N>
-                auto& get() const
+                const auto& get() const
                 {
                         return std::get<N>(data);
                 }

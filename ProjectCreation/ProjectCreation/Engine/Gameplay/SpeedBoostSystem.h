@@ -19,6 +19,9 @@ class SpeedboostComponent;
 class SpeedboostSplineComponent;
 class PlayerController;
 
+inline namespace HelperFunctions
+{} // namespace HelperFunctions
+
 class SpeedBoostSystem : public ISystem
 {
     private:
@@ -34,15 +37,33 @@ class SpeedBoostSystem : public ISystem
 
         std::vector<std::vector<DirectX::XMVECTOR>> m_Paths;
 
-        ResourceHandle speedboostMaterials[E_LIGHT_ORBS::COUNT]  = {};
-        std::string speedboostMaterialNames[E_LIGHT_ORBS::COUNT] = {"SpeedboostR", "SpeedboostG", "SpeedboostB", "SpeedboostW"};
+        ResourceHandle speedboostMaterials[E_LIGHT_ORBS::COUNT] = {};
 
+        static constexpr const char* speedboostMaterialNames[E_LIGHT_ORBS::COUNT] = {"SpeedboostR",
+                                                                                     "SpeedboostG",
+                                                                                     "SpeedboostB",
+                                                                                     "SpeedboostW"};
 
-        // void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
-        void RequestDestroySplineOrb(SpeedboostSplineComponent* speedComp);
+    public:
+        static EntityHandle          SpawnLightOrb(const DirectX::XMVECTOR& pos, int color, float boostRadius);
 
-        ComponentHandle latchedSplineHandle;
-        int             latchedSplineIndex = -1;
+    private:
+        static EntityHandle          SpawnSpeedOrb(bool  m_ColorsCollected[4],
+                                                   float BoostLifeSpan,
+                                                   float BoostLifespanVariance,
+                                                   float BoostRadius);
+        static void                  RequestDestroySplineOrb(SpeedboostSplineComponent* speedComp,
+                                                             ComponentHandle            m_latchedSplineHandle,
+                                                             int&                       m_latchedSplineIndex);
+        static EntityHandle SpawnSplineOrb(SplineCluster& cluster,
+                                           int            clusterID,
+                                           bool           tail,
+                                           bool           head,
+                                           bool           changeColor,
+                                           float          boostRadius);
+
+        ComponentHandle m_latchedSplineHandle;
+        int             m_latchedSplineIndex = -1;
 
         bool m_EnableRandomSpawns = false;
 
@@ -102,19 +123,19 @@ class SpeedBoostSystem : public ISystem
         int collectEventTimestamps[3] = {-1, -1, -1};
 
     public:
-        float splineHeight = 0.25f;
-        float splineWidth  = 40.0f;
-        bool  changeColor  = false;
+        float splineHeight  = 0.25f;
+        float splineWidth   = 40.0f;
+        bool  m_changeColor = false;
 
         std::unordered_map<int, SplineCluster> m_SplineClusterSpawners;
 
-		bool ColorsCollected[4] = {false, false, false, false};
+        bool m_ColorsCollected[4] = {false, false, false, false};
 
-        EntityHandle SpawnSpeedOrb();
-        EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
-        EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
+        // EntityHandle SpawnSpeedOrb();
+        // EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
+        // EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
 
-		bool pathExists = false;
+        bool pathExists = false;
 
         inline void SetTargetTerrain(float val)
         {

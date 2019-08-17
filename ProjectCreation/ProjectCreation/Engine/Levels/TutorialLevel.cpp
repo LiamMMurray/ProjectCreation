@@ -136,7 +136,7 @@ void TutorialLevel::SpawnFirstWhiteOrb()
         TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
 
         XMVECTOR pos = m_PlayerTransform->transform.translation + 8.0f * m_PlayerTransform->transform.rotation.GetForward2D();
-        auto     handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::WHITE_LIGHTS);
+		auto handle = SpeedBoostSystem::SpawnLightOrb(pos, E_LIGHT_ORBS::WHITE_LIGHTS, .1f);
 
         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
         speedboostComponent->collisionRadius = 0.1f;
@@ -156,7 +156,7 @@ void TutorialLevel::SpawnFirstRedOrb()
         TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
 
         XMVECTOR pos = m_PlayerTransform->transform.translation + 12.0f * m_PlayerTransform->transform.rotation.GetForward2D();
-        auto     handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::RED_LIGHTS);
+        auto     handle = SpeedBoostSystem::SpawnLightOrb(pos, E_LIGHT_ORBS::RED_LIGHTS, .1f);
 
         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
         speedboostComponent->collisionRadius = 0.1f;
@@ -176,7 +176,7 @@ void TutorialLevel::SpawnFirstBlueOrb()
         TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
 
         XMVECTOR pos = m_PlayerTransform->transform.translation + 12.0f * m_PlayerTransform->transform.rotation.GetForward2D();
-        auto     handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::BLUE_LIGHTS);
+        auto     handle = SpeedBoostSystem::SpawnLightOrb(pos, E_LIGHT_ORBS::BLUE_LIGHTS, .1f);
 
         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
         speedboostComponent->collisionRadius = 0.1f;
@@ -196,7 +196,7 @@ void TutorialLevel::SpawnFirstGreenOrb()
         TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
 
         XMVECTOR pos = m_PlayerTransform->transform.translation + 12.0f * m_PlayerTransform->transform.rotation.GetForward2D();
-        auto     handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::GREEN_LIGHTS);
+        auto     handle = SpeedBoostSystem::SpawnLightOrb(pos, E_LIGHT_ORBS::GREEN_LIGHTS, .1f);
 
         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
         speedboostComponent->collisionRadius = 0.1f;
