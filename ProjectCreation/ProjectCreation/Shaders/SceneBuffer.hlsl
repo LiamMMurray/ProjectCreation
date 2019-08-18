@@ -10,6 +10,6 @@ cbuffer SceneInfoBuffer : register(b1)
         float  _DeltaTime;
         float2 _ScreenDimensions;
         float  _Scale;
-        float  _padding;
+        float  _InstanceReveal;
         float3 _WorldOffsetDelta;
 };

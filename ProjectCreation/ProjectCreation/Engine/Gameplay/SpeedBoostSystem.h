@@ -1,6 +1,4 @@
 #pragma once
-
-
 #include <DirectXMath.h>
 #include <queue>
 #include <vector>
@@ -9,18 +7,17 @@
 #include "../../ECS/SystemManager.h"
 #include "..//ResourceManager/IResource.h"
 
+#include "../Controller/GamePad.h"
 #include "LightOrbColors.h"
 #include "SpeedboostComponent.h"
 #include "SplineCluster.h"
 
+#include "../../Utility/Random.h"
 class TransformComponent;
 class ResourceManager;
 class SpeedboostComponent;
 class SpeedboostSplineComponent;
 class PlayerController;
-
-inline namespace HelperFunctions
-{} // namespace HelperFunctions
 
 class SpeedBoostSystem : public ISystem
 {
@@ -37,49 +34,34 @@ class SpeedBoostSystem : public ISystem
 
         std::vector<std::vector<DirectX::XMVECTOR>> m_Paths;
 
-        ResourceHandle speedboostMaterials[E_LIGHT_ORBS::COUNT] = {};
+        ResourceHandle speedboostMaterials[E_LIGHT_ORBS::COUNT]  = {};
+        std::string speedboostMaterialNames[E_LIGHT_ORBS::COUNT] = {"SpeedboostR", "SpeedboostG", "SpeedboostB", "SpeedboostW"};
 
-        static constexpr const char* speedboostMaterialNames[E_LIGHT_ORBS::COUNT] = {"SpeedboostR",
-                                                                                     "SpeedboostG",
-                                                                                     "SpeedboostB",
-                                                                                     "SpeedboostW"};
 
-    public:
-        static EntityHandle          SpawnLightOrb(const DirectX::XMVECTOR& pos, int color, float boostRadius);
+        // void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
+        void RequestDestroySplineOrb(SpeedboostSplineComponent* speedComp);
 
-    private:
-        static EntityHandle          SpawnSpeedOrb(bool  m_ColorsCollected[4],
-                                                   float BoostLifeSpan,
-                                                   float BoostLifespanVariance,
-                                                   float BoostRadius);
-        static void                  RequestDestroySplineOrb(SpeedboostSplineComponent* speedComp,
-                                                             ComponentHandle            m_latchedSplineHandle,
-                                                             int&                       m_latchedSplineIndex);
-        static EntityHandle SpawnSplineOrb(SplineCluster& cluster,
-                                           int            clusterID,
-                                           bool           tail,
-                                           bool           head,
-                                           bool           changeColor,
-                                           float          boostRadius);
-
-        ComponentHandle m_latchedSplineHandle;
-        int             m_latchedSplineIndex = -1;
+        ComponentHandle latchedSplineHandle;
+        int             latchedSplineIndex = -1;
 
         bool m_EnableRandomSpawns = false;
 
+
         std::vector<float> x;
 
-        void  RequestUnlatchFromSpline(PlayerController* playerController, float deltaTime);
-        float mDelatchTimer = 0.0f;
-        float mDelatchCD    = 0.5f;
-        void  CreateRandomPath(const DirectX::XMVECTOR& start,
-                               const DirectX::XMVECTOR& end,
-                               int                      color,
-                               float                    width     = 40.0f, // 50.0f
-                               unsigned int             waveCount = 5,
-                               float                    heightvar = 0.25f); // 1.6f
+        void RequestUnlatchFromSpline(PlayerController*                       playerController,
+                                             float                                   deltaTime);
+        float       mDelatchTimer = 0.0f;
+        float       mDelatchCD    = 0.5f;
+        void        CreateRandomPath(const DirectX::XMVECTOR& start,
+                                     const DirectX::XMVECTOR& end,
+                                     int                      color,
+                                     float                    width     = 40.0f, // 50.0f
+                                     unsigned int             waveCount = 5,
+                                     float                    heightvar = 0.25f); // 1.6f
 
-        void DestroySpline(int SplineID, int curr);
+        void DestroySpline(int                                     SplineID,
+                                  int                                     curr);
 
         float m_PlayerEffectRadius    = 200.0f;
         float m_SpawnBoostTimer       = 0.0f;
@@ -107,6 +89,7 @@ class SpeedBoostSystem : public ISystem
         static constexpr float m_SplineAttractionForceMax = 1.5f;
         static constexpr float m_SplineHeightOffset       = 0.06f;
 
+
         // TESTING
         int colorCount = 0;
 
@@ -123,17 +106,20 @@ class SpeedBoostSystem : public ISystem
         int collectEventTimestamps[3] = {-1, -1, -1};
 
     public:
-        float splineHeight  = 0.25f;
-        float splineWidth   = 40.0f;
-        bool  m_changeColor = false;
+        float splineHeight = 0.25f;
+        float splineWidth  = 40.0f;
+        bool  changeColor  = false;
+
+        bool inPath;
+        bool inTutorial;
 
         std::unordered_map<int, SplineCluster> m_SplineClusterSpawners;
 
         bool m_ColorsCollected[4] = {false, false, false, false};
 
-        // EntityHandle SpawnSpeedOrb();
-        // EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
-        // EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
+        EntityHandle SpawnSpeedOrb();
+        EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
+        EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
 
         bool pathExists = false;
 

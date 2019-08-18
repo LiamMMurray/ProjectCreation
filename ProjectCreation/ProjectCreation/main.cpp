@@ -28,7 +28,7 @@
 #include "Rendering/Components/CameraComponent.h"
 #include "Rendering/Components/SkeletalMeshComponent.h"
 #include "Rendering/Components/StaticMeshComponent.h"
-
+#include "Engine/Particle Systems/EmitterComponent.h"
 #include "Engine/Animation/AnimationSystem.h"
 #include "Engine/ResourceManager/SkeletalMesh.h"
 /////testing -vic
@@ -138,7 +138,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 )
 {
         ENABLE_LEAK_DETECTION();
-
+        //_CrtSetBreakAlloc(50290);
         _WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
         return 0;
@@ -173,8 +173,13 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         // register window class
         RegisterClassEx(&winInfo);
 
-        RECT wr = {0, 0, 1920, 1080};                        // set the size
-        AdjustWindowRect(&wr, WS_POPUP, FALSE); // adjust the size
+        DWORD style = WS_POPUP;
+        if (GEngine::ShowFPS)
+                style = WS_OVERLAPPEDWINDOW;
+
+        RECT wr = {0, 0, 1600, 900};                       // set the size
+        AdjustWindowRect(&wr, style, FALSE); // adjust the size
+
 
         int posX = GetSystemMetrics(SM_CXSCREEN) / 2 - (wr.right - wr.left) / 2;
         int posY = GetSystemMetrics(SM_CYSCREEN) / 2 - (wr.bottom - wr.top) / 2;
@@ -183,7 +188,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         HWND handle = CreateWindowEx(WS_EX_APPWINDOW,
                                      appName, // Window class name again
                                      appName, // window title text
-                                     WS_POPUP,
+                                     style,
                                      posX,                // x pos
                                      posY,                // y pos
                                      wr.right - wr.left,  // width of the window
@@ -195,10 +200,12 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 
         /** Main init engine **/
+        GamePad::Get()->Init();
         EngineHelpers::InitEngineSystemManagers(handle);
         SystemManager*   systemManager   = GEngine::Get()->GetSystemManager();
         HandleManager*   HandleManager   = GEngine::Get()->GetHandleManager();
         ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
+
 
         // message loop
         ShowWindow(handle, SW_SHOW);
@@ -239,6 +246,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 
 
+
             TransformComponent* transformComp = HandleManager->GetComponent<TransformComponent>(transformHandle);
             transformComp->transform.SetScale(0.1f);*/
         }
@@ -257,12 +265,34 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
                 auto dirLightEntityHandle = HandleManager->CreateEntity();
                 HandleManager->AddComponent<DirectionalLightComponent>(dirLightEntityHandle);
+                HandleManager->AddComponent<TransformComponent>(dirLightEntityHandle);
+                EmitterComponent* emitterComponent =
+                    HandleManager->AddComponent<EmitterComponent>(dirLightEntityHandle).Get<EmitterComponent>();
+
+                // emitter set up
+                XMFLOAT3 position;
+                XMStoreFloat3(&position, dirLightEntityHandle.GetComponent<TransformComponent>()->transform.translation);
+                emitterComponent->FloatParticle(XMFLOAT3(-20.0f, -5.0f, -20.0f),
+                                                XMFLOAT3(20.0f, 20.0f, 20.0f),
+                                                XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+                                                XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+                                                XMFLOAT4(15.0f, 3.0f, 1.0f, 1.0f));
+                emitterComponent->EmitterData.emitterPosition    = position;
+                emitterComponent->rotate                         = false;
+                emitterComponent->maxCount                       = 5000;
+                emitterComponent->spawnRate                      = 1000.0f;
+                emitterComponent->EmitterData.textureIndex       = 3;
+                emitterComponent->EmitterData.minInitialVelocity = {-1.05f, -0.4f, -1.05f};
+                emitterComponent->EmitterData.maxInitialVelocity = {1.05f, 0.05f, 1.05f};
+                emitterComponent->EmitterData.particleScale      = {0.2f, 0.2f};
+
 
                 auto dirComp = dirLightEntityHandle.GetComponent<DirectionalLightComponent>();
                 dirComp->m_LightRotation =
                     XMQuaternionRotationRollPitchYaw(XMConvertToRadians(25.0f), XMConvertToRadians(90.0f), 0.0f);
                 dirComp->m_LightColor   = XMFLOAT4(1.0f, 0.85f, 0.7f, 5.0f);
                 dirComp->m_AmbientColor = XMFLOAT4(1.0f, 0.85f, 0.7f, 1.7f);
+
 
                 GEngine::Get()->m_SunHandle = dirLightEntityHandle;
         }
@@ -296,8 +326,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 systemManager->RegisterSystem(&sysInitProps, aiSystem);
                 aiSystem->m_SystemName = "AISystem";
         }
-
-
+		
         GEngine::Get()->SetGamePaused(true);
         GEngine::Get()->GetLevelStateManager()->Init();
         UIManager::instance->StartupResAdjust(handle);
@@ -366,6 +395,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 GEngine::Get()->GetSystemManager()->Update(deltaTime);
                 GEngine::Get()->m_MainThreadProfilingContext.End();
         }
+        GamePad::Shutdown();
         EngineHelpers::ShutdownEngineSystemManagers();
 
         return 0;

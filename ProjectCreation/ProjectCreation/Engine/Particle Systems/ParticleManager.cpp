@@ -48,7 +48,6 @@ void ParticleManager::update(float deltaTime)
                 if (emitterComponent.active == true)
                 {
 
-
                         if (emitterIndex >= gMaxEmitterCount)
                         {
                                 // emitterIndex--;
@@ -146,7 +145,6 @@ void ParticleManager::update(float deltaTime)
             0, 1, &nullUAV, 0); // Set UAV to null before have other shader able to get data from compute shader
         m_RenderSystem->m_Context->CSSetUnorderedAccessViews(1, 1, &nullUAV, 0);
 
-
         m_RenderSystem->m_Context->VSSetShaderResources(1, 0, &m_ParticleBuffer.m_StructuredView);
         m_RenderSystem->m_Context->GSSetShader(geometryShader->m_GeometryShader, 0, 0);
         m_RenderSystem->m_Context->GSSetShaderResources(1, 1, &m_ParticleBuffer.m_StructuredView);
@@ -223,7 +221,7 @@ void ParticleManager::init()
         m_PixelShaderHandle             = RESOURCE_MANAGER->LoadPixelShader("PurePixelShader");
         m_VertexShaderHandle            = RESOURCE_MANAGER->LoadVertexShader("PureVertexShader");
         m_GeometryShaderHandle          = RESOURCE_MANAGER->LoadGeometryShader("GeometryShaderTesting");
-        m_TextureHandle                 = RESOURCE_MANAGER->LoadTexture2D("spheretest");
+        m_TextureHandle                 = RESOURCE_MANAGER->LoadTexture2D("Particle pattern");
 
 
         D3D11_INPUT_ELEMENT_DESC layout1[] = {

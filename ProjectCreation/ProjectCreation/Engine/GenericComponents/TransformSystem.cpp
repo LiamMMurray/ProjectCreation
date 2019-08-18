@@ -7,12 +7,11 @@
 
 using namespace DirectX;
 void TransformSystem::OnPreUpdate(float deltaTime)
-{
-        playerTransform =
-            controllerSystem->GetCurrentController()->GetControlledEntity().GetComponentHandle<TransformComponent>();
-}
+{}
 void TransformSystem::OnUpdate(float deltaTime)
 {
+        IController* currController = controllerSystem->GetCurrentController();
+        playerTransform             = currController->GetControlledEntity().GetComponentHandle<TransformComponent>();
 
         XMVECTOR& playerPos = playerTransform.Get<TransformComponent>()->transform.translation;
         float     scale     = TerrainManager::Get()->GetScale();
@@ -23,6 +22,8 @@ void TransformSystem::OnUpdate(float deltaTime)
         XMVECTOR newPlayerPos = MathLibrary::WrapPosition(playerPos, min, max);
         XMVECTOR delta        = newPlayerPos - playerPos;
         GEngine::Get()->m_OriginOffset += delta;
+        currController->worldOffset = GEngine::Get()->m_OriginOffset;
+        playerPos                   = newPlayerPos;
         GEngine::Get()->m_WorldOffsetDelta = delta;
         playerPos                          = newPlayerPos;
         if (controllerSystem->GetCurrentControllerIndex() == 0)

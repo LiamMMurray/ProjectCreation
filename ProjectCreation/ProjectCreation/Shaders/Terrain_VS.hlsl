@@ -1,4 +1,3 @@
-#include "MVPBuffer.hlsl"
 #include "Math.hlsl"
 #include "Samplers.hlsl"
 
@@ -11,7 +10,8 @@ struct VertexIn
 
 struct VertexOut
 {
-        float3 PosL : POSITION;
+        float3 PosL : POSITION0;
+        float3 PosW : POSITION1;
         float2 Tex : TEXCOORD0;
 };
 
@@ -22,6 +22,7 @@ VertexOut main(VertexIn vIn)
         vOut.PosL = vIn.PosL;
 
         float3 posWS = mul(float4(vIn.PosL, 1.0f), World).xyz;
+        vOut.PosW    = posWS;
 
         float scale = gScale;
 

@@ -2,13 +2,17 @@
 #include <d3d11.h>
 #include <d3d11_1.h>
 #include < Directxpackedvector.h >
+#include "../..//Engine/ResourceManager/StaticMesh.h"
 #include "../..//FileIO/FileIO.h"
 #include "../..//Utility/StringUtility.h"
+#include "../../Engine/ResourceManager/ComputeShader.h"
 #include "..//..//Engine/Controller/ControllerSystem.h"
 #include "..//..//Engine/CoreInput/CoreInput.h"
 #include "..//..//Engine/GEngine.h"
 #include "..//..//Engine/GenericComponents/TransformComponent.h"
 #include "..//..//Engine/GenericComponents/TransformSystem.h"
+#include "..//..//Engine/ResourceManager/Material.h"
+#include "..//..//Utility/Macros/DirectXMacros.h"
 #include "..//DebugRender/debug_renderer.h"
 #include "..//RenderingSystem.h"
 
@@ -71,18 +75,26 @@ void TerrainManager::_initialize(RenderSystem* rs)
 
         std::wstring str = L"../Assets/Textures/TerrainTest.dds";
 
-        ID3D11Resource* sourceTexture;
-        DirectX::CreateDDSTextureFromFile(renderSystem->GetDevice(), str.c_str(), &sourceTexture, &terrainSourceSRV);
-        terrainSourceTexture = (ID3D11Texture2D*)sourceTexture;
+        ID3D11Resource* resource;
+        DirectX::CreateDDSTextureFromFile(renderSystem->GetDevice(), str.c_str(), &resource, &terrainSourceSRV);
+        ID3D11Texture2D* texture = (ID3D11Texture2D*)resource;
 
         D3D11_TEXTURE2D_DESC desc;
-        terrainSourceTexture->GetDesc(&desc);
+        texture->GetDesc(&desc);
         UINT texwidth         = desc.Width;
         UINT texheight        = desc.Height;
         textureDimensions     = texwidth;
         patchSquareDimensions = ((texwidth - 1) / patchCells) + 1;
         patchQuadCount        = (patchSquareDimensions - 1) * (patchSquareDimensions - 1);
+        texture->Release();
 
+        str = L"../Assets/Textures/TerrainHeightmap_Mask.dds";
+        DirectX::CreateDDSTextureFromFile(renderSystem->GetDevice(), str.c_str(), &resource, &terrainMaskSRV);
+        resource->Release();
+
+        str = L"../Assets/Textures/Terrain_Color.dds";
+        DirectX::CreateDDSTextureFromFile(renderSystem->GetDevice(), str.c_str(), &resource, &terrainColorSRV);
+        resource->Release();
 
         assert(texwidth == texheight);
 
@@ -104,7 +116,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
         terrainConstantBufferCPU.gWorldCellSpace = 8000.0f / texwidth;
         terrainConstantBufferCPU.gScale          = 8000.0f * scale;
         terrainConstantBufferCPU.gTerrainAlpha   = GEngine::Get()->m_TerrainAlpha;
-        terrainConstantBufferCPU.gCellSizeWorld  = 8000.0f / (patchSquareDimensions - 1) * scale;
+        terrainConstantBufferCPU.gCellSizeWorld  = GEngine::Get()->m_InstanceReveal;
 
 
         {
@@ -154,94 +166,6 @@ void TerrainManager::_initialize(RenderSystem* rs)
         mTextureHandles[3] = GEngine::Get()->GetResourceManager()->LoadTexture2D("Soil01_Normal");
         mTextureHandles[4] = GEngine::Get()->GetResourceManager()->LoadTexture2D("Terrain_Roughness");
         mTextureHandles[5] = GEngine::Get()->GetResourceManager()->LoadTexture2D("WaterHigh_NM");
-}
-using namespace DirectX;
-
-void TerrainManager::_update(float deltaTime)
-{
-        using namespace DirectX;
-
-        ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
-
-        XMVECTOR playerPos = GEngine::Get()
-                                  ->GetSystemManager()
-                                  ->GetSystem<TransformSystem>()
-                                  ->GetPlayerWrapTransformHandle()
-                                  .Get<TransformComponent>()
-                                  ->transform.translation;
-
-        XMVECTOR correctedTerrainPos = playerPos;
-        float    cellSize            = terrainConstantBufferCPU.gWorldCellSpace * scale * 8.0f;
-        XMVECTOR cellVector          = XMVectorSet(cellSize, 1.0f, cellSize, 1.0f);
-        XMVECTOR modCell             = XMVectorMod(correctedTerrainPos, cellVector);
-        modCell                      = XMVectorSetW(modCell, 0.0f);
-        correctedTerrainPos -= modCell;
-        correctedTerrainPos  = XMVectorSetY(correctedTerrainPos, 0.0f);
-        TerrainMatrix.r[3]   = correctedTerrainPos;
-        InverseTerrainMatrix = DirectX::XMMatrixInverse(nullptr, TerrainMatrix);
-
-        // GEngine::Get()->m_TerrainAlpha += deltaTime * 0.04f;
-        // GEngine::Get()->m_TerrainAlpha = std::min(1.0f, GEngine::Get()->m_TerrainAlpha);
-
-        UINT stride = sizeof(TerrainVertex);
-        UINT offset = 0;
-
-        renderSystem->m_ConstantBuffer_MVP.World = XMMatrixTranspose(TerrainMatrix);
-        terrainConstantBufferCPU.worldView       = XMMatrixTranspose(TerrainMatrix * renderSystem->m_CachedMainViewMatrix);
-        terrainConstantBufferCPU.gTerrainAlpha   = GEngine::Get()->m_TerrainAlpha;
-
-		XMStoreFloat3(&terrainConstantBufferCPU.gOriginOffset, GEngine::Get()->m_OriginOffset);
-        renderSystem->UpdateConstantBuffer(renderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP],
-                                           &renderSystem->m_ConstantBuffer_MVP,
-                                           sizeof(renderSystem->m_ConstantBuffer_MVP));
-
-        terrainConstantBufferCPU.gScreenDimensions =
-            XMFLOAT2(renderSystem->m_BackBufferWidth, renderSystem->m_BackBufferHeight);
-        terrainConstantBufferCPU.gTriangleSize = 8.0f;
-        renderSystem->UpdateConstantBuffer(
-            terrainConstantBufferGPU, &terrainConstantBufferCPU, sizeof(terrainConstantBufferCPU));
-        renderSystem->m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
-        renderSystem->m_Context->IASetInputLayout(inputLayout);
-        renderSystem->m_Context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-        renderSystem->m_Context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-        renderSystem->m_Context->VSSetShader(vertexShader, nullptr, 0);
-        renderSystem->m_Context->VSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
-        renderSystem->m_Context->VSSetShaderResources(9, 1, &terrainSourceSRV);
-
-        renderSystem->m_Context->HSSetShader(hullShader, nullptr, 0);
-        renderSystem->m_Context->HSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
-        renderSystem->m_Context->HSSetShaderResources(9, 1, &terrainSourceSRV);
-
-        renderSystem->m_Context->DSSetShader(domainShader, nullptr, 0);
-        renderSystem->m_Context->DSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
-        renderSystem->m_Context->DSSetShaderResources(9, 1, &terrainSourceSRV);
-
-        renderSystem->m_Context->PSSetShader(pixelShader, nullptr, 0);
-        renderSystem->m_Context->PSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
-        renderSystem->m_Context->PSSetShaderResources(9, 1, &terrainSourceSRV);
-
-        // Setup textures
-        ID3D11ShaderResourceView* srvs[6];
-        resourceManager->GetSRVs(6, mTextureHandles, srvs);
-        renderSystem->m_Context->PSSetShaderResources(0, 4, srvs);
-        renderSystem->m_Context->PSSetShaderResources(10, 1, &srvs[4]);
-
-        // if (GCoreInput::GetKeyState(KeyCode::T) == KeyState::Down)
-        renderSystem->m_Context->DrawIndexed(patchQuadCount * 4, 0, 0);
-
-        renderSystem->m_Context->DSSetShader(oceanDomainShader, nullptr, 0);
-        renderSystem->m_Context->PSSetShader(oceanPixelShader, nullptr, 0);
-        renderSystem->m_Context->PSSetShaderResources(1, 1, &srvs[5]);
-
-        XMMATRIX oceanMatrix = TerrainMatrix;
-        // oceanMatrix.r[3] = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-        renderSystem->m_ConstantBuffer_MVP.World = XMMatrixTranspose(oceanMatrix);
-        renderSystem->UpdateConstantBuffer(renderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP],
-                                           &renderSystem->m_ConstantBuffer_MVP,
-                                           sizeof(renderSystem->m_ConstantBuffer_MVP));
-
-        renderSystem->m_Context->DrawIndexed(patchQuadCount * 4, 0, 0);
 
         if (true)
         {
@@ -270,11 +194,380 @@ void TerrainManager::_update(float deltaTime)
                         buffer += intermediateMipDimensions * sizeof(float);
                 }
                 renderSystem->GetContext()->Unmap(stagingTextureResource, 0);
+        }
 
-                for (int i = 0; i < stagingTextureCPUElementCount; ++i)
+        // Create instance data and buffers
+
+        GenerateInstanceTransforms(m_InstanceTransforms);
+
+        ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
+
+        FInstanceRenderData renderTestDataFlat;
+        renderTestDataFlat.mesh     = resourceManager->LoadStaticMesh("Tree01");
+        renderTestDataFlat.material = resourceManager->LoadMaterial("Tree01");
+
+
+        m_UpdateInstancesComputeShader = resourceManager->LoadComputeShader("InstanceUpdate");
+
+        using namespace DirectX;
+        HRESULT hr = {};
+        { // Create transform buffer
+                for (unsigned int i = 0; i < gInstanceTransformsCount; ++i)
                 {
-                        terrainHeightArray[i] = terrainConstantBufferCPU.gTerrainAlpha * 2625.f * terrainHeightArray[i] +
-                                                WaterLevel * terrainConstantBufferCPU.gTerrainAlpha;
+                        m_InstanceData[i].mtx = XMMatrixTranspose(m_InstanceTransforms[i].CreateMatrix());
+                }
+
+                // renderSystem->UpdateConstantBuffer(
+                //    instanceBuffer, m_InstanceData, sizeof(XMMATRIX) * gInstanceTransformsCount);
+
+                D3D11_BUFFER_DESC                sbDesc{};
+                D3D11_SUBRESOURCE_DATA           rwData{};
+                D3D11_SHADER_RESOURCE_VIEW_DESC  srvDesc{};
+                D3D11_UNORDERED_ACCESS_VIEW_DESC sbUAVDesc{};
+                ID3D11Buffer*                    tempBuffer;
+                // CD3D11_BUFFER_DESC
+                sbDesc.BindFlags           = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+                sbDesc.CPUAccessFlags      = 0;
+                sbDesc.MiscFlags           = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+                sbDesc.StructureByteStride = sizeof(FInstanceData);
+                sbDesc.ByteWidth           = sizeof(FInstanceData) * gInstanceTransformsCount;
+                sbDesc.Usage               = D3D11_USAGE_DEFAULT;
+                // D3D11_SUBRESOURCE_DATA
+                rwData.pSysMem = m_InstanceData;
+
+
+                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, &rwData, &tempBuffer);
+
+                // D3D11_UNORDERED_ACCESS_VIEW_DESC
+                sbUAVDesc.Buffer.FirstElement = 0;
+                sbUAVDesc.Buffer.Flags        = 0;
+                sbUAVDesc.Buffer.NumElements  = gInstanceTransformsCount * 1;
+                sbUAVDesc.Format              = DXGI_FORMAT_UNKNOWN;
+                sbUAVDesc.ViewDimension       = D3D11_UAV_DIMENSION_BUFFER;
+                hr |= renderSystem->m_Device->CreateUnorderedAccessView(tempBuffer, &sbUAVDesc, &instanceUAV);
+
+                // D3D11_SHADER_RESOURCE_VIEW_DESC
+                srvDesc.Buffer.ElementOffset = 0;
+                srvDesc.Buffer.ElementWidth  = sizeof(FInstanceData);
+                srvDesc.Buffer.FirstElement  = 0;
+                srvDesc.Buffer.NumElements   = gInstanceTransformsCount;
+                srvDesc.Format               = DXGI_FORMAT_UNKNOWN;
+                srvDesc.ViewDimension        = D3D11_SRV_DIMENSION_BUFFER;
+                hr |= renderSystem->m_Device->CreateShaderResourceView(tempBuffer, &srvDesc, &instanceSRV);
+
+                tempBuffer->Release();
+
+                assert(SUCCEEDED(hr));
+        }
+
+        { // Create index steep buffer
+                D3D11_BUFFER_DESC                sbDesc{};
+                D3D11_SUBRESOURCE_DATA           rwData{};
+                D3D11_SHADER_RESOURCE_VIEW_DESC  srvDesc{};
+                D3D11_UNORDERED_ACCESS_VIEW_DESC sbUAVDesc{};
+
+                ID3D11Buffer* tempBufferSteep;
+                ID3D11Buffer* tempBufferFlat;
+                // CD3D11_BUFFER_DESC
+                sbDesc.BindFlags           = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+                sbDesc.CPUAccessFlags      = 0;
+                sbDesc.MiscFlags           = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+                sbDesc.StructureByteStride = sizeof(uint32_t);
+                sbDesc.ByteWidth           = sizeof(uint32_t) * gInstanceTransformsCount;
+                sbDesc.Usage               = D3D11_USAGE_DEFAULT;
+                // D3D11_SUBRESOURCE_DATA
+
+                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, nullptr, &tempBufferSteep);
+                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, nullptr, &tempBufferFlat);
+
+                // D3D11_UNORDERED_ACCESS_VIEW_DESC
+                sbUAVDesc.Buffer.FirstElement = 0;
+                sbUAVDesc.Buffer.Flags        = D3D11_BUFFER_UAV_FLAG_APPEND;
+                sbUAVDesc.Buffer.NumElements  = gInstanceTransformsCount;
+                sbUAVDesc.Format              = DXGI_FORMAT_UNKNOWN;
+                sbUAVDesc.ViewDimension       = D3D11_UAV_DIMENSION_BUFFER;
+                hr |= renderSystem->m_Device->CreateUnorderedAccessView(tempBufferSteep, &sbUAVDesc, &instanceIndexSteepUAV);
+                hr |= renderSystem->m_Device->CreateUnorderedAccessView(tempBufferFlat, &sbUAVDesc, &instanceIndexFlatUAV);
+
+
+                // D3D11_SHADER_RESOURCE_VIEW_DESC
+                srvDesc.Buffer.ElementOffset = 0;
+                srvDesc.Buffer.ElementWidth  = sizeof(uint32_t);
+                srvDesc.Buffer.FirstElement  = 0;
+                srvDesc.Buffer.NumElements   = gInstanceTransformsCount;
+                srvDesc.Format               = DXGI_FORMAT_UNKNOWN;
+                srvDesc.ViewDimension        = D3D11_SRV_DIMENSION_BUFFER;
+                hr |= renderSystem->m_Device->CreateShaderResourceView(tempBufferSteep, &srvDesc, &instanceIndexSteepSRV);
+                hr |= renderSystem->m_Device->CreateShaderResourceView(tempBufferFlat, &srvDesc, &instanceIndexFlatSRV);
+                tempBufferSteep->Release();
+                tempBufferFlat->Release();
+                assert(SUCCEEDED(hr));
+        }
+
+        { // indexCounterHelperBuffer
+                D3D11_BUFFER_DESC               sbDesc{};
+                D3D11_SUBRESOURCE_DATA          rwData{};
+                D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+
+                // CD3D11_BUFFER_DESC
+                sbDesc.BindFlags           = 0;
+                sbDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_READ;
+                sbDesc.MiscFlags           = 0;
+                sbDesc.StructureByteStride = 0;
+                sbDesc.ByteWidth           = sizeof(uint32_t) * 2;
+                sbDesc.Usage               = D3D11_USAGE_STAGING;
+                // D3D11_SUBRESOURCE_DATA
+
+                hr |= renderSystem->m_Device->CreateBuffer(&sbDesc, nullptr, &indexCounterHelperBuffer);
+        }
+
+        instanceDrawCallsDataFlat.push_back(renderTestDataFlat);
+
+        FInstanceRenderData renderTestDataSteep;
+        renderTestDataSteep.mesh     = resourceManager->LoadStaticMesh("RockInstance01");
+        renderTestDataSteep.material = resourceManager->LoadMaterial("RockInstance01");
+
+        instanceDrawCallsDataSteep.push_back(renderTestDataSteep);
+}
+using namespace DirectX;
+
+void CalculateFrustumCorners(XMVECTOR* cornersOut, const XMMATRIX& view, const XMMATRIX& proj)
+{
+        XMVECTOR corners[8] = {{0.f, 0.f, 0.0f, 1.0f},
+                               {0.f, 1.0f, 0.0f, 1.0f},
+                               {1.0f, 1.0f, 0.0f, 1.0f},
+                               {1.0f, 0.f, 0.0f, 1.0f},
+                               {0.f, 0.f, 1.0f, 1.0f},
+                               {0.f, 1.0f, 1.0f, 1.0f},
+                               {1.0f, 1.0f, 1.0f, 1.0f},
+                               {1.0f, 0.f, 1.0f, 1.0f}};
+
+        XMMATRIX identity = XMMatrixIdentity();
+        for (int i = 0; i < 8; i++)
+        {
+                cornersOut[i] = XMVector3Unproject(corners[i], 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, proj, view, identity);
+        }
+}
+
+void CalculateFrustumPlanes(XMFLOAT4* planes, const XMVECTOR* corners)
+{
+        XMVECTOR output[6];
+        output[0] = XMVector3Normalize(XMVector3Cross(corners[4] - corners[0], corners[1] - corners[0]));
+        XMStoreFloat4(&planes[0], output[0]);
+        planes[0].w = XMVectorGetX(XMVector3Dot(output[0], corners[0]));
+
+        output[1] = XMVector3Normalize(XMVector3Cross(corners[5] - corners[1], corners[2] - corners[1]));
+        XMStoreFloat4(&planes[1], output[1]);
+        planes[1].w = XMVectorGetX(XMVector3Dot(output[1], corners[1]));
+
+        output[2] = XMVector3Normalize(XMVector3Cross(corners[6] - corners[2], corners[3] - corners[2]));
+        XMStoreFloat4(&planes[2], output[2]);
+        planes[2].w = XMVectorGetX(XMVector3Dot(output[2], corners[2]));
+
+        output[3] = XMVector3Normalize(XMVector3Cross(corners[7] - corners[3], corners[0] - corners[3]));
+        XMStoreFloat4(&planes[3], output[3]);
+        planes[3].w = XMVectorGetX(XMVector3Dot(output[3], corners[3]));
+
+        output[4] = XMVector3Normalize(XMVector3Cross(corners[1] - corners[0], corners[3] - corners[0]));
+        XMStoreFloat4(&planes[4], output[4]);
+        planes[4].w = XMVectorGetX(XMVector3Dot(output[4], corners[0]));
+
+        output[5] = XMVector3Normalize(XMVector3Cross(corners[6] - corners[7], corners[4] - corners[7]));
+        XMStoreFloat4(&planes[5], output[5]);
+        planes[5].w = XMVectorGetX(XMVector3Dot(output[5], corners[7]));
+}
+
+void TerrainManager::_update(float deltaTime)
+{
+        using namespace DirectX;
+
+        WrapInstanceTransforms();
+
+        ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
+
+        XMVECTOR playerPos = GEngine::Get()
+                                 ->GetSystemManager()
+                                 ->GetSystem<TransformSystem>()
+                                 ->GetPlayerWrapTransformHandle()
+                                 .Get<TransformComponent>()
+                                 ->transform.translation;
+
+        auto cameraComp = GET_SYSTEM(ControllerSystem)
+                              ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
+                              ->GetControlledEntity()
+                              .GetComponent<CameraComponent>();
+
+        XMVECTOR correctedTerrainPos = playerPos;
+        float    cellSize            = terrainConstantBufferCPU.gWorldCellSpace * scale * 8.0f;
+        XMVECTOR cellVector          = XMVectorSet(cellSize, 1.0f, cellSize, 1.0f);
+        XMVECTOR modCell             = XMVectorMod(correctedTerrainPos, cellVector);
+        modCell                      = XMVectorSetW(modCell, 0.0f);
+        correctedTerrainPos -= modCell;
+        correctedTerrainPos  = XMVectorSetY(correctedTerrainPos, 0.0f);
+        TerrainMatrix.r[3]   = correctedTerrainPos;
+        InverseTerrainMatrix = DirectX::XMMatrixInverse(nullptr, TerrainMatrix);
+
+        // Calculate frustum planes
+        {
+                XMVECTOR corners[8];
+
+                CalculateFrustumCorners(corners, cameraComp->_cachedView, cameraComp->_cachedProjection);
+                CalculateFrustumPlanes(terrainConstantBufferCPU.gWorldFrustumPlanes, corners);
+        }
+
+        // GEngine::Get()->m_TerrainAlpha += deltaTime * 0.04f;
+        // GEngine::Get()->m_TerrainAlpha = std::min(1.0f, GEngine::Get()->m_TerrainAlpha);
+
+        UINT stride = sizeof(TerrainVertex);
+        UINT offset = 0;
+
+        terrainConstantBufferCPU.worldView     = XMMatrixTranspose(TerrainMatrix * renderSystem->m_CachedMainViewMatrix);
+        terrainConstantBufferCPU.gTerrainAlpha = GEngine::Get()->m_TerrainAlpha;
+
+        XMStoreFloat3(&terrainConstantBufferCPU.gOriginOffset, GEngine::Get()->m_OriginOffset);
+
+
+        terrainConstantBufferCPU.gScreenDimensions =
+            XMFLOAT2(renderSystem->m_BackBufferWidth, renderSystem->m_BackBufferHeight);
+        terrainConstantBufferCPU.gTriangleSize = 8.0f;
+        renderSystem->UpdateConstantBuffer(
+            terrainConstantBufferGPU, &terrainConstantBufferCPU, sizeof(terrainConstantBufferCPU));
+        renderSystem->m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
+        renderSystem->m_Context->IASetInputLayout(inputLayout);
+        renderSystem->m_Context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+        renderSystem->m_Context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+        renderSystem->m_Context->VSSetShader(vertexShader, nullptr, 0);
+        renderSystem->m_Context->VSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
+        renderSystem->m_Context->VSSetShaderResources(9, 1, &terrainSourceSRV);
+
+        renderSystem->m_Context->HSSetShader(hullShader, nullptr, 0);
+        renderSystem->m_Context->HSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
+        renderSystem->m_Context->HSSetShaderResources(9, 1, &terrainSourceSRV);
+
+        renderSystem->m_Context->DSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
+        renderSystem->m_Context->DSSetShaderResources(9, 1, &terrainSourceSRV);
+
+        renderSystem->m_Context->PSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
+        renderSystem->m_Context->PSSetShaderResources(9, 1, &terrainSourceSRV);
+
+        // Setup textures
+        ID3D11ShaderResourceView* srvs[6];
+        resourceManager->GetSRVs(6, mTextureHandles, srvs);
+        renderSystem->m_Context->PSSetShaderResources(0, 4, srvs);
+        renderSystem->m_Context->PSSetShaderResources(10, 1, &srvs[4]);
+
+        // if (GCoreInput::GetKeyState(KeyCode::T) == KeyState::Down)
+
+
+        { // Ocean
+                renderSystem->m_Context->DSSetShader(oceanDomainShader, nullptr, 0);
+                renderSystem->m_Context->PSSetShader(oceanPixelShader, nullptr, 0);
+                renderSystem->m_Context->PSSetShaderResources(1, 1, &srvs[5]);
+                // oceanMatrix.r[3] = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+                XMMATRIX oceanMatrix                     = TerrainMatrix;
+                renderSystem->m_ConstantBuffer_MVP.World = XMMatrixTranspose(oceanMatrix);
+                renderSystem->UpdateConstantBuffer(renderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP],
+                                                   &renderSystem->m_ConstantBuffer_MVP,
+                                                   sizeof(renderSystem->m_ConstantBuffer_MVP));
+                renderSystem->m_Context->DrawIndexed(patchQuadCount * 4, 0, 0);
+        }
+
+        { // Terrain
+                renderSystem->m_ConstantBuffer_MVP.World = XMMatrixTranspose(TerrainMatrix);
+                renderSystem->UpdateConstantBuffer(renderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP],
+                                                   &renderSystem->m_ConstantBuffer_MVP,
+                                                   sizeof(renderSystem->m_ConstantBuffer_MVP));
+                renderSystem->m_Context->PSSetShaderResources(11, 1, &terrainColorSRV);
+
+                renderSystem->m_Context->PSSetShader(pixelShader, nullptr, 0);
+                renderSystem->m_Context->DSSetShader(domainShader, nullptr, 0);
+                renderSystem->m_Context->DrawIndexed(patchQuadCount * 4, 0, 0);
+        }
+        // Draw instanced
+        if (GEngine::Get()->m_InstanceReveal > 0.0f)
+        {
+                UINT uavCounters[3] = {0, 0, 0};
+
+                renderSystem->m_Context->PSSetConstantBuffers(
+                    0, E_CONSTANT_BUFFER_BASE_PASS::COUNT, renderSystem->m_BasePassConstantBuffers);
+
+                ID3D11ShaderResourceView* nullSRV = nullptr;
+
+                renderSystem->m_Context->VSSetShaderResources(8, 1, &nullSRV);
+                renderSystem->m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+                // Set Compute Shaders
+                ID3D11UnorderedAccessView* nullUAVs[8] = {};
+                ComputeShader*             cs = resourceManager->GetResource<ComputeShader>(m_UpdateInstancesComputeShader);
+                renderSystem->m_Context->CSSetShader(cs->m_ComputerShader, 0, 0);
+                renderSystem->m_Context->CSSetConstantBuffers(
+                    1, 1, &renderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE]);
+                renderSystem->m_Context->CSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
+
+                ID3D11UnorderedAccessView* loadedUAVs[3] = {instanceUAV, instanceIndexSteepUAV, instanceIndexFlatUAV};
+                renderSystem->m_Context->CSSetUnorderedAccessViews(0, 3, loadedUAVs, uavCounters);
+
+                renderSystem->m_Context->CSSetShaderResources(9, 1, &terrainSourceSRV);
+                renderSystem->m_Context->CSSetShaderResources(10, 1, &terrainMaskSRV);
+                // renderSystem->m_Context->CSSetShaderResources(2, 1, &instanceSRV);
+                // instanceIndexSRV ?
+                renderSystem->m_Context->Dispatch(gInstanceTransformsCount, 1, 1);
+                renderSystem->m_Context->CSSetUnorderedAccessViews(0, 3, nullUAVs, 0);
+
+
+                // Transfer append buffer counts to CPU
+                renderSystem->m_Context->CopyStructureCount(indexCounterHelperBuffer, 0, instanceIndexSteepUAV);
+                renderSystem->m_Context->CopyStructureCount(indexCounterHelperBuffer, 4, instanceIndexFlatUAV);
+
+                uint32_t  indexBuffers[2];
+                uint32_t& steepCount = indexBuffers[0];
+                uint32_t& flatCount  = indexBuffers[1];
+
+                D3D11_MAPPED_SUBRESOURCE mappedResource{};
+                renderSystem->GetContext()->Map(indexCounterHelperBuffer, 0, D3D11_MAP_READ, 0, &mappedResource);
+                memcpy(indexBuffers, mappedResource.pData, sizeof(uint32_t) * 2);
+                renderSystem->GetContext()->Unmap(indexCounterHelperBuffer, 0);
+
+                ID3D11HullShader*   nullHull   = nullptr;
+                ID3D11DomainShader* nullDomain = nullptr;
+                renderSystem->m_Context->HSSetShader(nullHull, 0, 0);
+                renderSystem->m_Context->DSSetShader(nullDomain, 0, 0);
+
+                renderSystem->m_Context->VSSetShaderResources(8, 1, &instanceSRV);
+                renderSystem->m_Context->IASetInputLayout(renderSystem->m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
+                for (auto& data : instanceDrawCallsDataFlat)
+                {
+                        StaticMesh* sm  = resourceManager->GetResource<StaticMesh>(data.mesh);
+                        Material*   mat = resourceManager->GetResource<Material>(data.material);
+
+                        ID3D11Buffer* vertexBuffer = sm->m_VertexBuffer;
+                        ID3D11Buffer* indexBuffer  = sm->m_IndexBuffer;
+                        uint32_t      indexCount   = sm->m_IndexCount;
+                        uint32_t      vertexSize   = sizeof(FVertex);
+
+                        uint32_t instancecount = data.instanceCount;
+                        renderSystem->m_Context->VSSetShaderResources(9, 1, &nullSRV);
+
+                        renderSystem->m_Context->VSSetShaderResources(9, 1, &instanceIndexFlatSRV);
+                        renderSystem->DrawMeshInstanced(vertexBuffer, indexBuffer, indexCount, vertexSize, mat, flatCount, 0);
+                }
+
+                for (auto& data : instanceDrawCallsDataSteep)
+                {
+                        StaticMesh* sm  = resourceManager->GetResource<StaticMesh>(data.mesh);
+                        Material*   mat = resourceManager->GetResource<Material>(data.material);
+
+                        ID3D11Buffer* vertexBuffer = sm->m_VertexBuffer;
+                        ID3D11Buffer* indexBuffer  = sm->m_IndexBuffer;
+                        uint32_t      indexCount   = sm->m_IndexCount;
+                        uint32_t      vertexSize   = sizeof(FVertex);
+
+                        uint32_t instancecount = data.instanceCount;
+                        renderSystem->m_Context->VSSetShaderResources(9, 1, &nullSRV);
+
+                        renderSystem->m_Context->VSSetShaderResources(9, 1, &instanceIndexSteepSRV);
+                        renderSystem->DrawMeshInstanced(vertexBuffer, indexBuffer, indexCount, vertexSize, mat, steepCount, 0);
                 }
         }
 
@@ -294,7 +587,6 @@ void TerrainManager::_shutdown()
         oceanPixelShader->Release();
         oceanDomainShader->Release();
 
-        terrainSourceTexture->Release();
         terrainSourceSRV->Release();
 
         terrainIntermediateTexture->Release();
@@ -306,8 +598,45 @@ void TerrainManager::_shutdown()
         vertexBuffer->Release();
         indexBuffer->Release();
 
+        SAFE_RELEASE(instanceSRV);
+        SAFE_RELEASE(instanceIndexSteepSRV);
+        SAFE_RELEASE(instanceIndexFlatSRV);
+        SAFE_RELEASE(instanceUAV);
+        SAFE_RELEASE(instanceIndexSteepUAV);
+        SAFE_RELEASE(instanceIndexFlatUAV);
+        SAFE_RELEASE(terrainMaskSRV);
+        SAFE_RELEASE(terrainColorSRV);
+
+        SAFE_RELEASE(indexCounterHelperBuffer);
+
         terrainConstantBufferGPU->Release();
         stagingTextureResource->Release();
+}
+
+void TerrainManager::GenerateInstanceTransforms(FTransform tArray[gInstanceTransformsCount])
+{
+        float scale = GetScale() / 2.0f;
+        for (int i = 0; i < gInstanceTransformsCount; ++i)
+        {
+                float x               = scale * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
+                float y               = scale * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
+                tArray[i].translation = XMVectorSet(x, 0.0f, y, 1.0f);
+                tArray[i].rotation = FQuaternion::RotateAxisAngle(VectorConstants::Up, MathLibrary::GetRandomFloat() * 360.0f);
+                tArray[i].SetScale(MathLibrary::RandomFloatInRange(0.5f, 1.1f));
+        }
+}
+
+void TerrainManager::WrapInstanceTransforms()
+{
+        /* playerTransform = currController->GetControlledEntity().GetComponentHandle<TransformComponent>();
+
+         XMVECTOR& playerPos = playerTransform.Get<TransformComponent>()->transform.translation;
+         float     scale     = TerrainManager::Get()->GetScale();
+         XMVECTOR  min       = XMVectorSet(-0.5f * scale, 0.0f, -0.5f * scale, 0.0f);
+         XMVECTOR  max       = -min;
+
+
+         XMVECTOR newPlayerPos = MathLibrary::WrapPosition(playerPos, min, max);*/
 }
 
 void TerrainManager::CreateVertexBuffer(ID3D11Buffer** buffer, unsigned int squareDimensions, float waterLevel, float scale)
@@ -435,6 +764,8 @@ DirectX::XMVECTOR TerrainManager::AlignPositionToTerrain(const DirectX::XMVECTOR
 
 
         float height = BilinearFilter(currX, currY, terrainHeightArray, intermediateMipDimensions, intermediateMipDimensions);
+
+        height = terrainConstantBufferCPU.gTerrainAlpha * 2625.f * height + WaterLevel * terrainConstantBufferCPU.gTerrainAlpha;
 
         return DirectX::XMVectorSetY(pos, std::max(height * scale, 0.0f) + groundOffset);
 }

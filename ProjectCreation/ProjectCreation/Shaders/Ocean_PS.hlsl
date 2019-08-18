@@ -156,7 +156,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
         // return fresnel;
         // return fresnelLow;
         float transluscencyExtra = saturate(pow(lerp(fresnelHigh, fresnelLow, 0.7f), 2.0f) * 0.08f);
-        float transluscency = saturate(pow(lerp(transluscentHigh, transluscentLow, 0.7f), 15.0f) * 1.0f + transluscencyExtra);
+        float transluscency = saturate(pow(lerp(transluscentHigh, transluscentLow, 0.4f), 20.0f) * 0.4f + transluscencyExtra);
         float fresnel       = 0.04f * saturate(pow(fresnelLow + fresnelHigh * 0.1f, 25.0f));
         // return fresnel;
         // return transluscency;

@@ -14,6 +14,8 @@
 
 #include <DirectXMath.h>
 
+#include "InstanceData.h"
+
 
 /** Forward Declarations **/
 struct StaticMesh;
@@ -238,6 +240,7 @@ struct FDraw
         DirectX::XMMATRIX mtx;
 };
 
+
 class RenderSystem : public ISystem
 {
         friend class ResourceManager;
@@ -307,6 +310,8 @@ class RenderSystem : public ISystem
                       uint32_t           vertexSize,
                       Material*          material,
                       DirectX::XMMATRIX* mtx);
+
+
         void DrawStaticMesh(StaticMesh* mesh, Material* material, DirectX::XMMATRIX* mtx);
         void DrawSkeletalMesh(SkeletalMesh* mesh, Material* material, DirectX::XMMATRIX* mtx, const Animation::FSkeleton* skel);
 
@@ -332,6 +337,14 @@ class RenderSystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
+        void DrawMeshInstanced(ID3D11Buffer* vertexBuffer,
+                               ID3D11Buffer* indexBuffer,
+                               uint32_t      indexCount,
+                               uint32_t      vertexSize,
+                               Material*     material,
+                               uint32_t      instanceCount,
+                               uint32_t      instanceOffset);
+
         using native_handle_type = void*;
         native_handle_type m_WindowHandle;
 

@@ -14,7 +14,9 @@ void TutorialLevel::Enter()
         GEngine::Get()->SetPlayerRadius(0);
         m_SpeedBoostSystem->SetRandomSpawnEnabled(false);
 
-		m_SpeedBoostSystem->ResetLevel();
+        m_SpeedBoostSystem->ResetLevel();
+
+		m_SpeedBoostSystem->inTutorial = true;
 
         m_PlayerController->SetCollectedPlanetCount(0);
 
@@ -136,7 +138,8 @@ void TutorialLevel::SpawnFirstWhiteOrb()
         TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
 
         XMVECTOR pos = m_PlayerTransform->transform.translation + 8.0f * m_PlayerTransform->transform.rotation.GetForward2D();
-		auto handle = SpeedBoostSystem::SpawnLightOrb(pos, E_LIGHT_ORBS::WHITE_LIGHTS, .1f);
+		
+		auto handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::WHITE_LIGHTS);
 
         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
         speedboostComponent->collisionRadius = 0.1f;
@@ -156,13 +159,14 @@ void TutorialLevel::SpawnFirstRedOrb()
         TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
 
         XMVECTOR pos = m_PlayerTransform->transform.translation + 12.0f * m_PlayerTransform->transform.rotation.GetForward2D();
-        auto     handle = SpeedBoostSystem::SpawnLightOrb(pos, E_LIGHT_ORBS::RED_LIGHTS, .1f);
+        auto handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::RED_LIGHTS);
 
         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
         speedboostComponent->collisionRadius = 0.1f;
         speedboostComponent->lifetime        = 1.0f;
         speedboostComponent->decay           = 0.0f;
         speedboostComponent->color           = E_LIGHT_ORBS::RED_LIGHTS;
+        speedboostComponent->hasParticle     = false;
 }
 
 void TutorialLevel::SpawnFirstBlueOrb()
@@ -176,12 +180,13 @@ void TutorialLevel::SpawnFirstBlueOrb()
         TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
 
         XMVECTOR pos = m_PlayerTransform->transform.translation + 12.0f * m_PlayerTransform->transform.rotation.GetForward2D();
-        auto     handle = SpeedBoostSystem::SpawnLightOrb(pos, E_LIGHT_ORBS::BLUE_LIGHTS, .1f);
+        auto     handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::BLUE_LIGHTS);
 
         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
         speedboostComponent->collisionRadius = 0.1f;
         speedboostComponent->lifetime        = 1.0f;
         speedboostComponent->decay           = 0.0f;
+        speedboostComponent->hasParticle     = false;
         speedboostComponent->color           = E_LIGHT_ORBS::BLUE_LIGHTS;
 }
 
@@ -196,11 +201,12 @@ void TutorialLevel::SpawnFirstGreenOrb()
         TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
 
         XMVECTOR pos = m_PlayerTransform->transform.translation + 12.0f * m_PlayerTransform->transform.rotation.GetForward2D();
-        auto     handle = SpeedBoostSystem::SpawnLightOrb(pos, E_LIGHT_ORBS::GREEN_LIGHTS, .1f);
+        auto     handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::GREEN_LIGHTS);
 
         auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
         speedboostComponent->collisionRadius = 0.1f;
         speedboostComponent->lifetime        = 1.0f;
         speedboostComponent->decay           = 0.0f;
         speedboostComponent->color           = E_LIGHT_ORBS::GREEN_LIGHTS;
+        speedboostComponent->hasParticle   = false;
 }

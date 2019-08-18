@@ -1125,10 +1125,8 @@ inline namespace JobSchedulerAbstractions
         template <typename Allocator = TempJobAllocator>
         struct Job
         {
-            private:
                 JobInternal* rootJob;
 
-            public:
                 template <typename Lambda, typename... Args>
                 Job(Lambda&& lambda, Args&&... args)
                 {
@@ -1139,8 +1137,6 @@ inline namespace JobSchedulerAbstractions
 
                         rootJob->parent = 0;
                         rootJob->unfinished_jobs = 1;
-
-                        JobSchedulerInternal::Run(rootJob);
                 }
                 void Wait()
                 {
@@ -1149,10 +1145,6 @@ inline namespace JobSchedulerAbstractions
                 void operator()()
                 {
                         JobSchedulerInternal::Run(rootJob);
-                }
-                JobInternal* GetRootJob()
-                {
-                        return rootJob;
                 }
         };
 } // namespace JobSchedulerAbstractions

@@ -2,6 +2,7 @@
 #include "ControllerSystem.h"
 
 #include <iostream>
+#include "../..//Rendering/Terrain/TerrainManager.h"
 #include "..//Gameplay/LightOrbColors.h"
 #include "../Controller/IController.h"
 #include "../CoreInput/CoreInput.h"
@@ -16,6 +17,7 @@
 #include "../../UI/UIManager.h"
 
 #include <WinUser.h>
+#include "../CoreInput/InputActions.h"
 
 using namespace std;
 
@@ -97,6 +99,8 @@ void ControllerSystem::OnPreUpdate(float deltaTime)
 
 void ControllerSystem::OnUpdate(float deltaTime)
 {
+
+
         if (GCoreInput::GetKeyState(KeyCode::One) == KeyState::DownFirst)
         {
                 IncreaseOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
@@ -115,10 +119,35 @@ void ControllerSystem::OnUpdate(float deltaTime)
                 std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
         }
 
+        if (IsVibrating == true)
+        {
+                if (rumbleStrength <= 0)
+                {
+                        IsVibrating = false;
+                }
+
+                else
+                {
+                        rumbleStrength = MathLibrary::MoveTowards(rumbleStrength, 0, deltaTime * 1.5f);
+                        GamePad::Get()->IsVibrating(rumbleStrength);
+                }
+        }
+
+
         if (GCoreInput::GetKeyState(KeyCode::Tab) == KeyState::DownFirst)
         {
+                using namespace DirectX;
+
                 m_Controllers[m_CurrentController]->SetEnabled(false);
+
+                IController* prevController = m_Controllers[m_CurrentController];
+
                 m_CurrentController = (E_CONTROLLERS)((m_CurrentController + 1) % E_CONTROLLERS::COUNT);
+
+                IController* currController = m_Controllers[m_CurrentController];
+                currController->GetControlledEntity().GetComponent<TransformComponent>()->transform.translation +=
+                    prevController->worldOffset;
+
                 m_Controllers[m_CurrentController]->SetEnabled(true);
                 HandleManager*  handleManager    = GEngine::Get()->GetHandleManager();
                 EntityHandle    controllerHandle = m_Controllers[m_CurrentController]->GetControlledEntity();
@@ -132,7 +161,7 @@ void ControllerSystem::OnUpdate(float deltaTime)
         int lastColorPressed = -1;
         for (int i = 0; i < 3; ++i)
         {
-                if (GCoreInput::GetKeyState(E_LIGHT_ORBS::ColorInputKeyCodes[i]) == KeyState::Down)
+                if (InputActions::CheckAction(i) == KeyState::Down)
                 {
                         colorsPressed++;
                         lastColorPressed = i;
@@ -164,8 +193,13 @@ void ControllerSystem::OnPostUpdate(float deltaTime)
 
 void ControllerSystem::OnInitialize()
 {
+
+        IsVibrating    = false;
+        rumbleStrength = 0.0f;
+
         m_SystemManager = GEngine::Get()->GetSystemManager();
         m_HandleManager = GEngine::Get()->GetHandleManager();
+
 
         m_Controllers[E_CONTROLLERS::PLAYER] = new PlayerController;
         m_Controllers[E_CONTROLLERS::DEBUG]  = new DebugCameraController;
@@ -200,8 +234,8 @@ void ControllerSystem::OnInitialize()
                 ComponentHandle tHandle = eHandle.AddComponent<TransformComponent>();
                 ComponentHandle cHandle = eHandle.AddComponent<CameraComponent>();
 
-                auto tComp                   = eHandle.GetComponent<TransformComponent>();
-                tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+                auto tComp                             = eHandle.GetComponent<TransformComponent>();
+                tComp->transform.translation           = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
                 tComp->wrapping                        = false;
                 auto cameraComp                        = cHandle.Get<CameraComponent>();
                 cameraComp->m_Settings.m_HorizontalFOV = 90.0f;
