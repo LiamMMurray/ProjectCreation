@@ -39,6 +39,7 @@ class PlayerController : public IController
         float deacceleration = 8.0f;
 
 
+
         int m_CollectedPlanetCount = 0;
 
         DirectX::XMVECTOR m_CurrentInput;
@@ -63,7 +64,8 @@ class PlayerController : public IController
         DirectX::XMVECTOR mNextForward;
 
     public:
-        float m_TimeOnSpline = 0.0f;
+        int m_TotalSplineOrbCount;
+        int m_CollectedSplineOrbCount;
 
         float angularSpeedMod = 5.0f;
 

@@ -140,6 +140,9 @@ void PlayerController::Init(EntityHandle h)
 
         m_EulerAngles = tComp->transform.rotation.ToEulerAngles();
 
+		// Collecting spline orb values
+        m_TotalSplineOrbCount = 0;
+        m_CollectedSplineOrbCount = 0;
 
         // Create any states and set their respective variables here
         m_CinematicState = m_StateMachine.CreateState<PlayerCinematicState>();

@@ -196,7 +196,6 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         playerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
                         playerController->SetCollectedPlanetCount(1 + playerController->GetCollectedPlanetCount());
                         SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->ColorsCollected[goalComp.color] = true;
-                        playerController->m_TimeOnSpline                                               = 0.0f;
                 }
 
                 if (goalComp.goalState == E_GOAL_STATE::Done)
@@ -221,7 +220,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
         nextGoalPos = XMVectorSetY(nextGoalPos, 0.0f);
 
         ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-        if (playerController->m_TimeOnSpline > (goalDistances[goalsCollected] / 4.5f))
+        if (playerController->m_CollectedSplineOrbCount >= (playerController->m_TotalSplineOrbCount - 5) && (playerController->m_TotalSplineOrbCount > 0))
         {
                 for (int i = 0; i < 3; ++i)
                 {
@@ -232,10 +231,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                                 {
                                         if (activeGoal.hasActiveGoal == false || activeGoal.activeColor != i)
                                         { // play sfx when spawned
-                                                auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
-                                                spawnSound->SetVolume(0.8f);
                                                 CreateGoal(i, nextGoalPos);
-                                                spawnSound->Play();
                                         }
                                 }
                         }

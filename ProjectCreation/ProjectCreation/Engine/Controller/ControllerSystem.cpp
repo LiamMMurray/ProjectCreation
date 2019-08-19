@@ -74,7 +74,8 @@ int ControllerSystem::GetOrbCount(int color)
 
 void ControllerSystem::IncreaseOrbCount(int color)
 {
-        if (m_PrevOrbColor != color)
+
+        if (m_PrevOrbColor != color && color != E_LIGHT_ORBS::WHITE_LIGHTS)
         {
                 ResetOrbCount(m_PrevOrbColor);
         }

@@ -114,6 +114,7 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
                 int div       = cluster.current / 10;
                 int color     = (cluster.targetColor + div) % 3;
                 cluster.color = color;
+                m_SplineClusterSpawners.at(clusterID).color = color;
         }
 
         XMVECTOR correctedCurr = curr + GEngine::Get()->m_OriginOffset - cluster.originalWorldOffset;
@@ -332,6 +333,9 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                         if (pathExists == false)
                         {
                                 CreateRandomPath(start, end, i, width, waveCount, height);
+                                auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
+                                spawnSound->SetVolume(0.8f);
+                                spawnSound->Play();
                                 pathExists = true;
                         }
                 }
@@ -358,6 +362,9 @@ void SpeedBoostSystem::RequestUnlatchFromSpline(PlayerController* playerControll
                         DestroySpline(latchedSplineComp->clusterID, latchedSplineComp->index);
                 }
         }
+
+        playerController->m_CollectedSplineOrbCount = 0;
+        playerController->m_TotalSplineOrbCount     = 0;
 
         if (inPath == true)
         {
@@ -410,7 +417,7 @@ void SpeedBoostSystem::DestroySpline(int SplineID, int start)
         toDelete.shouldDestroy    = true;
         toDelete.deleteSeparation = 0;
         toDelete.deleteIndex      = start;
-        pathExists                = false;
+        pathExists                                  = false;
 }
 
 
@@ -704,21 +711,14 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                                 int correctColor = latchedSplineComp->color;
 
-
                                 for (int i = 0; i < E_LIGHT_ORBS::WHITE_LIGHTS; ++i)
                                 {
                                         if (i == correctColor)
                                         {
-                                                // inPath &=
-                                                // ((GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[i]) ==
-                                                // KeyState::Down));
                                                 inPath &= (InputActions::CheckAction(i) == KeyState::Down);
                                         }
                                         else
                                         {
-                                                // inPath &=
-                                                // ~((GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[i]) ==
-                                                // KeyState::Down));
                                                 inPath &= ~(InputActions::CheckAction(i) == KeyState::Down);
                                         }
                                 }
@@ -762,12 +762,12 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                 AudioManager::Get()->PlaySoundAtLocation(currPos, settings);
                                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating    = true;
                                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrength = 0.25f;
+                                                playerController->m_CollectedSplineOrbCount++;
                                         }
 
                                         latchedSplineIndex   = latchedSplineComp->index;
                                         m_EnableRandomSpawns = false;
                                         RequestDestroyAllSpeedboosts();
-                                        playerController->m_TimeOnSpline += deltaTime;
                                         mDelatchTimer = mDelatchCD;
                                         playerController->SetUseGravity(false);
 
@@ -848,7 +848,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                         {
                                                 playerController->SetAngularSpeedMod(5.0f);
                                         }
-
                                         RequestUnlatchFromSpline(playerController, deltaTime);
                                         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
                                         controllerSys->resetCollectedOrbEventID(correctColor);
@@ -865,6 +864,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
         for (auto it = m_SplineClusterSpawners.begin(); it != m_SplineClusterSpawners.end();)
         {
+                playerController->m_TotalSplineOrbCount = it->second.segments;
+
                 if (it->second.shouldDestroy == false)
                 {
                         if (it->second.current <= it->second.segments)

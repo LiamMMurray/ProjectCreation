@@ -17,7 +17,6 @@ class OrbitSystem : public ISystem
 		ResourceManager* m_ResourceManager;
 
         const char* materialNames[3] = {"GlowMatPlanet01", "GlowMatPlanet03", "GlowMatPlanet02"};
-        const char* spawnNames[3]    = {"redPlanetSpawn", "greenPlanetSpawn", "bluePlanetSpawn"};
         int         m_Stage          = 0;
         void        CreateGoal(int color, DirectX::XMVECTOR position);
 
@@ -33,7 +32,7 @@ class OrbitSystem : public ISystem
                 bool         hasActiveGoal = false;
         };
 
-        static constexpr float goalDistances[3] = {65.0f, 65.0f, 65.0f};
+        static constexpr float goalDistances[3] = {10.0f, 10.0f, 10.0f};
 
         std::vector<ComponentHandle> sunAlignedTransforms;
 
