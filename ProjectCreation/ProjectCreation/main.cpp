@@ -29,6 +29,7 @@
 #include "Rendering/Components/SkeletalMeshComponent.h"
 #include "Rendering/Components/StaticMeshComponent.h"
 #include "Engine/Particle Systems/EmitterComponent.h"
+#include"Engine/Particle Systems/ParticleData.h"
 #include "Engine/Animation/AnimationSystem.h"
 #include "Engine/ResourceManager/SkeletalMesh.h"
 /////testing -vic
@@ -279,8 +280,8 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                                                 XMFLOAT4(15.0f, 3.0f, 1.0f, 1.0f));
                 emitterComponent->EmitterData.emitterPosition    = position;
                 emitterComponent->rotate                         = false;
-                emitterComponent->maxCount                       = 5000;
-                emitterComponent->spawnRate                      = 1000.0f;
+                emitterComponent->maxCount                       = ParticleData::gMaxParticleCount;
+                emitterComponent->spawnRate                      = 10000.0f;
                 emitterComponent->EmitterData.textureIndex       = 3;
                 emitterComponent->EmitterData.minInitialVelocity = {-1.05f, -0.4f, -1.05f};
                 emitterComponent->EmitterData.maxInitialVelocity = {1.05f, 0.05f, 1.05f};

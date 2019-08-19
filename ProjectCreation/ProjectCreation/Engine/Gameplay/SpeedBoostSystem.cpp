@@ -83,7 +83,7 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
                     XMFLOAT3(), XMFLOAT3(), orbColor, orbColor, XMFLOAT4(2.0f, 1.0f, 0.5f, 0.5f));
 
                 emitterComponent->EmitterData.minInitialVelocity = {-0.1f, -0.0f, -0.1f};
-                emitterComponent->EmitterData.maxInitialVelocity = {0.3f, 1.0f, 0.3f};
+                emitterComponent->EmitterData.maxInitialVelocity = {0.3f, 1.75f, 0.3f};
                 emitterComponent->EmitterData.acceleration       = {0.0f, 1.05f, 0.0f};
                 emitterComponent->EmitterData.emitterPosition    = orbPos;
                 emitterComponent->rotate                         = true;
