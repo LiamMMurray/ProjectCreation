@@ -138,7 +138,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 )
 {
         ENABLE_LEAK_DETECTION();
-
+        //_CrtSetBreakAlloc(50290);
         _WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
         return 0;
@@ -200,10 +200,12 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 
         /** Main init engine **/
+        GamePad::Get()->Init();
         EngineHelpers::InitEngineSystemManagers(handle);
         SystemManager*   systemManager   = GEngine::Get()->GetSystemManager();
         HandleManager*   HandleManager   = GEngine::Get()->GetHandleManager();
         ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
+
 
         // message loop
         ShowWindow(handle, SW_SHOW);
@@ -324,8 +326,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 systemManager->RegisterSystem(&sysInitProps, aiSystem);
                 aiSystem->m_SystemName = "AISystem";
         }
-
-
+		
         GEngine::Get()->SetGamePaused(true);
         GEngine::Get()->GetLevelStateManager()->Init();
         UIManager::instance->StartupResAdjust(handle);
@@ -394,6 +395,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 GEngine::Get()->GetSystemManager()->Update(deltaTime);
                 GEngine::Get()->m_MainThreadProfilingContext.End();
         }
+        GamePad::Shutdown();
         EngineHelpers::ShutdownEngineSystemManagers();
 
         return 0;

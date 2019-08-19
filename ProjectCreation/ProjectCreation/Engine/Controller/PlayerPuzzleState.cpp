@@ -27,11 +27,23 @@ void PlayerPuzzleState::Update(float deltaTime)
         auto     playerTransformHandle = _playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
         auto     playerTransformComp   = playerTransformHandle.Get<TransformComponent>();
         auto     cameraComponent       = _playerController->GetControlledEntity().GetComponent<CameraComponent>();
-        XMVECTOR input = deltaTime * XMVectorSet((float)GCoreInput::GetMouseX(), (float)-GCoreInput::GetMouseY(), 0.0f, 0.0f);
+        XMVECTOR input = XMVectorZero();
         float    speed = MathLibrary::CalulateVectorLength(dragVelocity);
 
         float dot = MathLibrary::VectorDotProduct(input, dragVelocity);
         float accel;
+
+        if (GamePad::Get()->CheckConnection() == true)
+        {
+                input =
+                    deltaTime * XMVectorSet((float)GamePad::Get()->leftStickX, (float)GamePad::Get()->leftStickY, 0.0f, 0.0f) * 15.0f;
+        }
+
+        if (GamePad::Get()->CheckConnection() == false)
+        {
+                input = deltaTime * XMVectorSet((float)GCoreInput::GetMouseX(), (float)-GCoreInput::GetMouseY(), 0.0f, 0.0f);
+        }
+
 
         XMVECTOR offset = XMVectorZero();
         if (MathLibrary::CalulateVectorLength(input) > 0)

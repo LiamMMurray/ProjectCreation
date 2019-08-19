@@ -28,6 +28,7 @@
 #include "..//CollisionLibary/CollisionLibary.h"
 #include "../AI/AIComponent.h"
 
+#include "../CoreInput/InputActions.h"
 #include "../Particle Systems/EmitterComponent.h"
 
 using namespace DirectX;
@@ -188,6 +189,20 @@ EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int c
         orbComp->m_Color         = color;
         orbComp->m_TargetRadius  = m_BoostRadius;
 
+
+        /*    XMFLOAT3 velMax;
+            XMStoreFloat3(&velMax, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f));
+            emitterComponent->EmitterData.minInitialVelocity = velMax;
+            emitterComponent->EmitterData.maxInitialVelocity = velMax;*/
+
+        /*       emitterComponent->rotate                    = true;
+               emitterComponent->rotationAxis              = VectorConstants::Up;
+               emitterComponent->EmitterData.acceleration  = XMFLOAT3(0.0f, -9.80f, 0.0f);
+               emitterComponent->EmitterData.index         = 2;
+               emitterComponent->EmitterData.particleScale = XMFLOAT2(0.1f, 0.1f);
+               emitterComponent->maxCount                  = 50;
+               emitterComponent->spawnRate                 = 15.0f;
+       */
         return entityHandle;
 }
 
@@ -343,6 +358,11 @@ void SpeedBoostSystem::RequestUnlatchFromSpline(PlayerController* playerControll
                         DestroySpline(latchedSplineComp->clusterID, latchedSplineComp->index);
                 }
         }
+
+        if (inPath == true)
+        {
+                inPath = false;
+        }
 }
 
 void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
@@ -420,6 +440,11 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 targetTerrain = m_targetTerrain;
         }
 
+        // if (InputActions::CheckActionDown(E_LIGHT_ORBS::RED_LIGHTS))
+        //{
+        //        int temp = 0;
+        //}
+
         // Debug Testing CHEAT to spawn a white spline that will carry player to origin
         if (GCoreInput::GetKeyState(KeyCode::J) == KeyState::DownFirst)
         {
@@ -434,7 +459,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 CreateRandomPath(start, end, 3);
         }
 
-
         // GEngine::Get()->m_PlayerRadius = MathLibrary::lerp(GEngine::Get()->m_PlayerRadius, m_PlayerEffectRadius, deltaTime);
 
         XMVECTOR flatPlayerForward;
@@ -443,6 +467,14 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 euler.x           = 0.0f;
                 FQuaternion quat  = FQuaternion::FromEulerAngles(euler);
                 flatPlayerForward = quat.GetForward();
+        }
+
+        auto activeBoosts = m_HandleManager->GetActiveComponents<SpeedboostComponent>();
+
+
+        if (inPath == false && inTutorial == false)
+        {
+                m_EnableRandomSpawns = true;
         }
 
         // m_PlayerEffectRadius                       = 25.0f;
@@ -531,7 +563,18 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                 TransformComponent* transComp = spawnComp.GetParent().GetComponent<TransformComponent>();
                 /* EmitterComponent*   emitterComp = spawnComp.GetParent().GetComponent<EmitterComponent>();
-                 
+                 
+
+
+
+
+
+
+
+
+
+
+
                  int                 count       = controllerSystem->GetOrbCount(spawnComp.m_Color);
                  if (spawnComp.m_Color == E_LIGHT_ORBS::WHITE_LIGHTS)
                  {
@@ -614,6 +657,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         }
                 }
 
+
                 if (latchedSplineIndex != -1 || shouldLatch)
                 {
                         SpeedboostSplineComponent* latchedSplineComp = latchedSplineHandle.Get<SpeedboostSplineComponent>();
@@ -656,7 +700,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 Shapes::FCapsule capsuleA;
                                 Shapes::FCapsule capsuleB;
 
-                                bool inPath = false;
 
                                 capsuleA.startPoint = currPos + offset;
                                 capsuleA.endPoint   = nextPos + offset;
@@ -671,22 +714,32 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                                 int correctColor = latchedSplineComp->color;
 
+
                                 for (int i = 0; i < E_LIGHT_ORBS::WHITE_LIGHTS; ++i)
                                 {
                                         if (i == correctColor)
                                         {
-                                                inPath &= (GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[i]) ==
-                                                           KeyState::Down);
+                                                // inPath &=
+                                                // ((GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[i]) ==
+                                                // KeyState::Down));
+                                                inPath &= (InputActions::CheckAction(i) == KeyState::Down);
                                         }
                                         else
                                         {
-                                                inPath &= ~(GCoreInput::GetKeyState(
-                                                                playerController->m_ColorInputKeyCodes[i]) == KeyState::Down);
+                                                // inPath &=
+                                                // ~((GCoreInput::GetKeyState(playerController->m_ColorInputKeyCodes[i]) ==
+                                                // KeyState::Down));
+                                                inPath &= ~(InputActions::CheckAction(i) == KeyState::Down);
                                         }
                                 }
 
                                 if (inPath)
                                 {
+                                        if (GamePad::Get()->CheckConnection() == true)
+                                        {
+                                                playerController->SetAngularSpeedMod(100.0f);
+                                        }
+
                                         if (latchedSplineIndex != latchedSplineComp->index)
                                         {
                                                 int adjustedIndex = index;
@@ -717,6 +770,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                 settings.flags.set(SoundComponent3D::E_FLAGS::DestroyOnEnd, true);
                                                 settings.m_Volume = 1.0f;
                                                 AudioManager::Get()->PlaySoundAtLocation(currPos, settings);
+                                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating    = true;
+                                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrength = 0.25f;
                                         }
 
                                         latchedSplineIndex   = latchedSplineComp->index;
@@ -794,10 +849,21 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 else
                                 {
                                         // Player has fallen off the spline
+                                        if (GamePad::Get()->CheckConnection() == true)
+                                        {
+                                                playerController->SetAngularSpeedMod(100.0f);
+                                        }
+
+                                        else
+                                        {
+                                                playerController->SetAngularSpeedMod(5.0f);
+                                        }
+
                                         RequestUnlatchFromSpline(playerController, deltaTime);
                                         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
                                         controllerSys->resetCollectedOrbEventID(correctColor);
-                                        m_EnableRandomSpawns = true;
+                                        collectEventTimestamps[correctColor] = -1;
+                                        m_EnableRandomSpawns                 = true;
                                 }
                         }
                 }
@@ -893,9 +959,13 @@ void SpeedBoostSystem::OnPostUpdate(float deltaTime)
 
 void SpeedBoostSystem::OnInitialize()
 {
-        m_HandleManager   = GEngine::Get()->GetHandleManager();
-        m_SystemManager   = GEngine::Get()->GetSystemManager();
-        m_ResourceManager = GEngine::Get()->GetResourceManager();
+
+        inPath     = false;
+        inTutorial = true;
+
+        m_HandleManager    = GEngine::Get()->GetHandleManager();
+        m_SystemManager    = GEngine::Get()->GetSystemManager();
+        m_ResourceManager  = GEngine::Get()->GetResourceManager();
 
         auto baseMatHandle = m_ResourceManager->LoadMaterial("GlowSpeedboostBase");
 

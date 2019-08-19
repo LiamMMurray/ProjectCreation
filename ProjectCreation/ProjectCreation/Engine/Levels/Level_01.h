@@ -1,5 +1,6 @@
 #pragma once
 #include "LevelState.h"
+#include "../GEngine.h"
 #include "../Gameplay/SpeedBoostSystem.h"
 
 

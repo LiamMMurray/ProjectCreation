@@ -13,8 +13,10 @@ struct FCameraSettings
 
 struct CameraComponent : public Component<CameraComponent>
 {
-	FCameraSettings m_Settings;
-	DirectX::XMMATRIX _cachedViewProjection;
-	DirectX::XMMATRIX _cachedProjection;
-	DirectX::XMMATRIX _cachedView;
+        FCameraSettings   m_Settings;
+        DirectX::XMMATRIX _cachedViewProjection;
+        DirectX::XMMATRIX _cachedProjection;
+        DirectX::XMMATRIX _cachedView;
+
+        bool dirty = false;
 };

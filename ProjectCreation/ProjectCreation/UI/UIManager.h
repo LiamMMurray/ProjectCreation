@@ -36,7 +36,7 @@ struct E_FONT_TYPE
         {
                 Angel,
                 Calibri,
-                MyFile,
+                CourierNew,
                 COUNT
         };
 };

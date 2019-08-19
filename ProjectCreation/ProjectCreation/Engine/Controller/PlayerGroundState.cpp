@@ -1,6 +1,8 @@
 #include "PlayerGroundState.h"
+#include <cmath>
 #include <iostream>
 #include "../../UI/UIManager.h"
+#include "..//..//Rendering/Components/CameraComponent.h"
 #include "..//..//Rendering/Components/DirectionalLightComponent.h"
 #include "..//GEngine.h"
 #include "..//GenericComponents/TransformComponent.h"
@@ -8,6 +10,8 @@
 #include "../CoreInput/CoreInput.h"
 #include "PlayerControllerStateMachine.h"
 #include "PlayerMovement.h"
+
+#define _USE_MATH_DEFINES
 
 using namespace DirectX;
 
@@ -19,6 +23,7 @@ void PlayerGroundState::Enter()
         _playerController->SetEulerAngles(playerTransformComponent->transform.rotation.ToEulerAngles());
 
         _playerController->RequestCurrentLevel();
+
 
         // Sets the gravity vector for the player
         //_playerController->SetPlayerGravity(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f));
@@ -62,7 +67,8 @@ void PlayerGroundState::Update(float deltaTime)
 
                 // Reveal Ocean once first planet placed
                 UIManager::instance->DemoEnd();
-                doOnce = true;
+                GEngine::Get()->m_TargetInstanceReveal = 1.0f;
+                doOnce                                 = true;
         }
 
         XMVECTOR currentVelocity = _playerController->GetCurrentVelocity();
@@ -76,22 +82,46 @@ void PlayerGroundState::Update(float deltaTime)
 
         XMFLOAT3 eulerAngles = _playerController->GetEulerAngles();
 
-        float           angularSpeed = XMConvertToRadians(5.0f) * deltaTime;
+        float angularSpeedMod = _playerController->GetAngularSpeedMod();
+
+        float           angularSpeed = XMConvertToRadians(angularSpeedMod) * deltaTime;
         constexpr float pitchLimit   = XMConvertToRadians(90.0f);
         constexpr float rollLimit    = 20.0f;
 
+
         float pitchDelta = eulerAngles.x;
-        eulerAngles.x += GCoreInput::GetMouseY() * angularSpeed;
-        pitchDelta = eulerAngles.x - pitchDelta;
+        float yawDelta   = eulerAngles.y;
+        // Controller Is Connected
+        if (GamePad::Get()->CheckConnection() == true)
+        {
+                _playerController->SetAngularSpeedMod(100.0f);
+                angularSpeed = XMConvertToRadians(angularSpeedMod) * deltaTime;
+                eulerAngles.x += -GamePad::Get()->leftStickY * angularSpeed;
+                pitchDelta = eulerAngles.x - pitchDelta;
 
-        float yawDelta = eulerAngles.y;
-        eulerAngles.y += GCoreInput::GetMouseX() * angularSpeed;
-        yawDelta = eulerAngles.y - yawDelta;
+                eulerAngles.y += GamePad::Get()->leftStickX * angularSpeed;
+                yawDelta = eulerAngles.y - yawDelta;
 
-        eulerAngles.z += GCoreInput::GetMouseX() * angularSpeed;
+                eulerAngles.z += GamePad::Get()->leftStickX * angularSpeed;
 
-        eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
+                eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
+        }
 
+        // Controller Isn't Connected
+        else
+        {
+                // float pitchDelta = eulerAngles.x;
+                eulerAngles.x += GCoreInput::GetMouseY() * angularSpeed;
+                pitchDelta = eulerAngles.x - pitchDelta;
+
+                // float yawDelta = eulerAngles.y;
+                eulerAngles.y += GCoreInput::GetMouseX() * angularSpeed;
+                yawDelta = eulerAngles.y - yawDelta;
+
+                eulerAngles.z += GCoreInput::GetMouseX() * angularSpeed;
+
+                eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
+        }
         // Convert to degrees due to precision errors using small radian values
         float rollDegrees         = XMConvertToDegrees(eulerAngles.z);
         rollDegrees               = MathLibrary::clamp(rollDegrees, -rollLimit, rollLimit);
@@ -189,6 +219,17 @@ void PlayerGroundState::Update(float deltaTime)
         }
 
         _playerController->GetControlledEntity().GetComponent<TransformComponent>()->transform = _cachedTransform;
+        auto cameraComponent = _playerController->GetControlledEntity().GetComponent<CameraComponent>();
+
+        float targetFOV = 100.0f;
+        if (bUseGravity == false)
+        {
+                float forwardSpeed = MathLibrary::CalulateVectorLength(currentVelocity);
+                targetFOV          = MathLibrary::lerp<float>(targetFOV, 150.0f, MathLibrary::saturate(forwardSpeed / 3.0f));
+        }
+        cameraComponent->m_Settings.m_HorizontalFOV =
+            MathLibrary::lerp<float>(cameraComponent->m_Settings.m_HorizontalFOV, targetFOV, deltaTime * 0.5f);
+        cameraComponent->dirty = true;
 
         auto sunComp                        = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>();
         auto sunTransComp                   = GEngine::Get()->m_SunHandle.GetComponent<TransformComponent>();

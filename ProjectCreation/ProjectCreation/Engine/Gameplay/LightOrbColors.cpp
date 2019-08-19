@@ -42,3 +42,4 @@ const DirectX::PackedVector::XMCOLOR E_LIGHT_ORBS::ORB_COLORS[E_LIGHT_ORBS::COUN
 const DirectX::PackedVector::XMCOLOR E_LIGHT_ORBS::RING_COLORS[3] = {C_RED_RING, C_GREEN_RING, C_BLUE_RING};
 
 const KeyCode E_LIGHT_ORBS::ColorInputKeyCodes[E_LIGHT_ORBS::COUNT] = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
+

@@ -38,12 +38,14 @@
     <ClInclude Include="Engine\Controller\ControllerSystem.h" />
     <ClInclude Include="Engine\Controller\DebugCameraController.h" />
     <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
+    <ClInclude Include="Engine\Controller\GamePad.h" />
     <ClInclude Include="Engine\Controller\PlayerCinematicState.h" />
     <ClInclude Include="Engine\Controller\PlayerControllerState.h" />
     <ClInclude Include="Engine\Controller\PlayerControllerStateMachine.h" />
     <ClInclude Include="Engine\Controller\PlayerGroundState.h" />
     <ClInclude Include="Engine\Controller\PlayerPuzzleState.h" />
     <ClInclude Include="Engine\Controller\PlayerStateEvents.h" />
+    <ClInclude Include="Engine\CoreInput\InputActions.h" />
     <ClInclude Include="Engine\EngineInitShutdownHelpers.h" />
     <ClInclude Include="Engine\Entities\EntityFactory.h" />
     <ClInclude Include="Engine\Events\Event.h" />
@@ -226,6 +228,14 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\Ocean_HS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\SimulationComputeShader_CS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
@@ -439,10 +449,12 @@
     <ClCompile Include="Engine\CollisionLibary\Shapes.cpp" />
     <ClCompile Include="Engine\Controller\ControllerSystem.cpp" />
     <ClCompile Include="Engine\Controller\DebugCameraController.cpp" />
+    <ClCompile Include="Engine\Controller\GamePad.cpp" />
     <ClCompile Include="Engine\Controller\PlayerCinematicState.cpp" />
     <ClCompile Include="Engine\Controller\PlayerControllerStateMachine.cpp" />
     <ClCompile Include="Engine\Controller\PlayerGroundState.cpp" />
     <ClCompile Include="Engine\Controller\PlayerPuzzleState.cpp" />
+    <ClCompile Include="Engine\CoreInput\InputActions.cpp" />
     <ClCompile Include="Engine\EngineInitShutdownHelpers.cpp" />
     <ClCompile Include="Engine\Entities\EntityFactory.cpp" />
     <ClCompile Include="Engine\Gameplay\LightOrbColors.cpp" />
@@ -605,7 +617,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>GAudio_DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GAudio_DLL.lib;XInput.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
       <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>
@@ -632,7 +644,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
       <MapExports>true</MapExports>
-      <AdditionalDependencies>GAudio_DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GAudio_DLL.lib;XInput.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
       <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>

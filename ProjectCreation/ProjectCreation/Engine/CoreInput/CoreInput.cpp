@@ -11,12 +11,14 @@ int32_t GCoreInput::mouseWindowPosX = 0;
 int32_t GCoreInput::mouseWindowPosY = 0;
 uint8_t GCoreInput::keyStates[256]{};
 uint8_t GCoreInput::MouseStates[2]{};
+uint8_t GCoreInput::ControllerStates[24]{};
 
 
 void GCoreInput::InitializeInput(HWND hwnd)
 {
-        RAWINPUTDEVICE Rid[2];
 
+        RAWINPUTDEVICE Rid[2];
+		
         Rid[0].usUsagePage = 0x01;
         Rid[0].usUsage     = 0x02;
         Rid[0].dwFlags     = 0; // adds HID mouse and also ignores legacy mouse messages
@@ -84,6 +86,7 @@ void GCoreInput::GatherInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		POINT cursorPos;
         GetCursorPos(&cursorPos);
         ScreenToClient(hWnd, &cursorPos);
+
         mouseWindowPosX = cursorPos.x;
         mouseWindowPosY = cursorPos.y;
 }
@@ -127,4 +130,9 @@ KeyState GCoreInput::GetMouseState(MouseCode target)
 {
         KeyState output = static_cast<KeyState>(0x3 & MouseStates[static_cast<int>(target)]);
         return output;
+}
+
+KeyState GCoreInput::GetControllerState(ControllerCode target)
+{
+        return (KeyState)GamePad::Get()->IsPressed((DWORD)target);
 }

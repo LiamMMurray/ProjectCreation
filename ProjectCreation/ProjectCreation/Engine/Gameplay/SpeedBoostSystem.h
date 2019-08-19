@@ -9,9 +9,11 @@
 #include "../../ECS/SystemManager.h"
 #include "..//ResourceManager/IResource.h"
 
+#include "../Controller/GamePad.h"
 #include "LightOrbColors.h"
 #include "SpeedboostComponent.h"
 #include "SplineCluster.h"
+
 
 class TransformComponent;
 class ResourceManager;
@@ -45,6 +47,7 @@ class SpeedBoostSystem : public ISystem
         int             latchedSplineIndex = -1;
 
         bool m_EnableRandomSpawns = false;
+
 
         std::vector<float> x;
 
@@ -86,6 +89,7 @@ class SpeedBoostSystem : public ISystem
         static constexpr float m_SplineAttractionForceMax = 1.5f;
         static constexpr float m_SplineHeightOffset       = 0.06f;
 
+
         // TESTING
         int colorCount = 0;
 
@@ -106,15 +110,18 @@ class SpeedBoostSystem : public ISystem
         float splineWidth  = 40.0f;
         bool  changeColor  = false;
 
+        bool inPath;
+        bool inTutorial;
+
         std::unordered_map<int, SplineCluster> m_SplineClusterSpawners;
 
-		bool ColorsCollected[4] = {false, false, false, false};
+        bool ColorsCollected[4] = {false, false, false, false};
 
         EntityHandle SpawnSpeedOrb();
         EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
         EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
 
-		bool pathExists = false;
+        bool pathExists = false;
 
         inline void SetTargetTerrain(float val)
         {
