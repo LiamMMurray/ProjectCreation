@@ -1,6 +1,4 @@
 #pragma once
-
-
 #include <DirectXMath.h>
 #include <queue>
 #include <vector>
@@ -14,7 +12,7 @@
 #include "SpeedboostComponent.h"
 #include "SplineCluster.h"
 
-
+#include "../../Utility/Random.h"
 class TransformComponent;
 class ResourceManager;
 class SpeedboostComponent;
@@ -51,17 +49,19 @@ class SpeedBoostSystem : public ISystem
 
         std::vector<float> x;
 
-        void  RequestUnlatchFromSpline(PlayerController* playerController, float deltaTime);
-        float mDelatchTimer = 0.0f;
-        float mDelatchCD    = 0.5f;
-        void  CreateRandomPath(const DirectX::XMVECTOR& start,
-                               const DirectX::XMVECTOR& end,
-                               int                      color,
-                               float                    width     = 40.0f, // 50.0f
-                               unsigned int             waveCount = 5,
-                               float                    heightvar = 0.25f); // 1.6f
+        void RequestUnlatchFromSpline(PlayerController*                       playerController,
+                                             float                                   deltaTime);
+        float       mDelatchTimer = 0.0f;
+        float       mDelatchCD    = 0.5f;
+        void        CreateRandomPath(const DirectX::XMVECTOR& start,
+                                     const DirectX::XMVECTOR& end,
+                                     int                      color,
+                                     float                    width     = 40.0f, // 50.0f
+                                     unsigned int             waveCount = 5,
+                                     float                    heightvar = 0.25f); // 1.6f
 
-        void DestroySpline(int SplineID, int curr);
+        void DestroySpline(int                                     SplineID,
+                                  int                                     curr);
 
         float m_PlayerEffectRadius    = 200.0f;
         float m_SpawnBoostTimer       = 0.0f;
@@ -115,7 +115,7 @@ class SpeedBoostSystem : public ISystem
 
         std::unordered_map<int, SplineCluster> m_SplineClusterSpawners;
 
-        bool ColorsCollected[4] = {false, false, false, false};
+        bool m_ColorsCollected[4] = {false, false, false, false};
 
         EntityHandle SpawnSpeedOrb();
         EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);

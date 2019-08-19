@@ -75,6 +75,9 @@ struct HandleManager
         range<T> GetComponents();
 
         template <typename T>
+        size_t GetComponentCount();
+
+        template <typename T>
         active_range<T> GetActiveComponents();
 
         range<Entity> GetEntities();
@@ -111,6 +114,14 @@ inline active_range<T> HandleManager::GetActiveComponents()
         size_t                   element_count = static_cast<size_t>(m_ComponentRandomAccessPools.m_element_counts[pool_index]);
         NMemory::dynamic_bitset& isActives     = m_ComponentRandomAccessPools.m_element_isactives[pool_index];
         return active_range<T>(data, element_count, isActives);
+}
+template <typename T>
+inline size_t HandleManager::GetComponentCount()
+{
+        NMemory::type_index pool_index = T::SGetTypeIndex();
+        if (m_ComponentRandomAccessPools.m_mem_starts.size() <= pool_index)
+                return 0ULL;
+       return static_cast<size_t>(m_ComponentRandomAccessPools.m_element_counts[pool_index]);
 }
 
 template <typename T>

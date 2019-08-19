@@ -35,6 +35,7 @@
     <ClInclude Include="Engine\CollisionLibary\CollisionLibary.h" />
     <ClInclude Include="Engine\CollisionLibary\CollisionComponents.h" />
     <ClInclude Include="Engine\Commands.h" />
+    <ClInclude Include="Engine\ContainerUtility.h" />
     <ClInclude Include="Engine\Controller\ControllerSystem.h" />
     <ClInclude Include="Engine\Controller\DebugCameraController.h" />
     <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
@@ -64,6 +65,7 @@
     <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
     <ClInclude Include="Engine\GenericComponents\TransformSystem.h" />
+    <ClInclude Include="Engine\JobScheduler.h" />
     <ClInclude Include="Engine\Levels\LevelState.h" />
     <ClInclude Include="Engine\Levels\LevelStateEvents.h" />
     <ClInclude Include="Engine\Levels\LevelStateMachine.h" />
@@ -143,6 +145,7 @@
     <ClInclude Include="Engine\ResourceManager\StaticMesh.h" />
     <ClInclude Include="Engine\ResourceManager\Texture2D.h" />
     <ClInclude Include="Engine\ResourceManager\VertexShader.h" />
+    <ClInclude Include="Utility\BitwiseUtility.h" />
     <ClInclude Include="Utility\Hashing\SpookyHashV2.h" />
     <ClInclude Include="Utility\Macros\GlobalMacros.h" />
     <ClInclude Include="Utility\Profiling.h" />
@@ -464,6 +467,7 @@
     <ClCompile Include="Engine\Gameplay\StateMachine\IState.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
     <ClCompile Include="Engine\GenericComponents\TransformSystem.cpp" />
+    <ClCompile Include="Engine\JobScheduler.cpp" />
     <ClCompile Include="Engine\Levels\LevelStateMachine.cpp" />
     <ClCompile Include="Engine\Levels\LevelStateManager.cpp" />
     <ClCompile Include="Engine\Levels\Level_01.cpp" />
@@ -613,6 +617,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -636,6 +641,7 @@
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
       <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(SolutionDir)DirectXTK-apr2019\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

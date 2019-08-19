@@ -1,7 +1,8 @@
-#include "GEngine.h"
 #include "../Utility/MemoryLeakDetection.h"
-#include "MathLibrary/MathLibrary.h"
 
+#include "../Engine/JobScheduler.h"
+#include "GEngine.h"
+#include "MathLibrary/MathLibrary.h"
 GEngine*         GEngine::instance        = 0;
 bool             GEngine::ShowFPS         = false;
 NMemory::memsize GEngine::s_PoolAllocSize = MB(64);
@@ -21,6 +22,7 @@ void GEngine::SetGamePaused(bool val)
 
 void GEngine::Initialize()
 {
+        JobScheduler::Initialize();
         instance = DBG_NEW GEngine;
 
         NMemory::ReserveGameMemory(instance->m_PoolMemory, s_PoolAllocSize);
@@ -44,6 +46,7 @@ void GEngine::Shutdown()
         instance->m_ResourceManager->Shutdown();
         instance->m_HandleManager->Shutdown();
         instance->m_LevelStateManager->Shutdown();
+        JobScheduler::Shutdown();
         NMemory::FreeGameMemory(instance->m_PoolMemory);
         delete instance->m_HandleManager;
         delete instance->m_SystemManager;
