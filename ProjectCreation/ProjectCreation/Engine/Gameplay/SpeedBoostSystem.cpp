@@ -563,8 +563,18 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                 TransformComponent* transComp = spawnComp.GetParent().GetComponent<TransformComponent>();
                 /* EmitterComponent*   emitterComp = spawnComp.GetParent().GetComponent<EmitterComponent>();
-                 
-
+                 
+
+
+
+
+
+
+
+
+
+
+
                  int                 count       = controllerSystem->GetOrbCount(spawnComp.m_Color);
                  if (spawnComp.m_Color == E_LIGHT_ORBS::WHITE_LIGHTS)
                  {

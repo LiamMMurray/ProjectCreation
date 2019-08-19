@@ -791,10 +791,11 @@ void RenderSystem::RefreshMainCameraSettings()
 {
         using namespace DirectX;
 
-        CameraComponent* camera   = m_MainCameraHandle.Get<CameraComponent>();
-        auto&            settings = camera->m_Settings;
-        settings.m_AspectRatio    = GetWindowAspectRatio();
-        float verticalFOV         = XMConvertToRadians(settings.m_HorizontalFOV / settings.m_AspectRatio);
+        CameraComponent* camera = m_MainCameraHandle.Get<CameraComponent>();
+        camera->dirty           = false;
+        auto& settings          = camera->m_Settings;
+        settings.m_AspectRatio  = GetWindowAspectRatio();
+        float verticalFOV       = XMConvertToRadians(settings.m_HorizontalFOV / settings.m_AspectRatio);
 
         m_CachedMainProjectionMatrix =
             DirectX::XMMatrixPerspectiveFovLH(verticalFOV, settings.m_AspectRatio, settings.m_NearClip, settings.m_FarClip);
@@ -826,7 +827,11 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         /*********/
 
         /** Update Camera Info **/
-        CameraComponent*    mainCamera       = m_MainCameraHandle.Get<CameraComponent>();
+        CameraComponent* mainCamera = m_MainCameraHandle.Get<CameraComponent>();
+
+        if (mainCamera->dirty)
+                RefreshMainCameraSettings();
+
         EntityHandle        mainCameraEntity = mainCamera->GetParent();
         TransformComponent* mainTransform    = mainCameraEntity.GetComponent<TransformComponent>();
 
@@ -845,8 +850,8 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(m_CachedMainViewProjectionMatrix);
         m_ConstantBuffer_MVP.Projection     = XMMatrixTranspose(m_CachedMainProjectionMatrix);
         // get scale
-        m_ConstantBuffer_SCENE.scale = TerrainManager::Get()->GetScale();
-        m_ConstantBuffer_SCENE.screenDimensions = XMFLOAT2(m_BackBufferWidth,m_BackBufferHeight);
+        m_ConstantBuffer_SCENE.scale            = TerrainManager::Get()->GetScale();
+        m_ConstantBuffer_SCENE.screenDimensions = XMFLOAT2(m_BackBufferWidth, m_BackBufferHeight);
         XMStoreFloat3(&m_ConstantBuffer_SCENE.worldOffsetDelta, GEngine::Get()->m_WorldOffsetDelta);
 
         m_ConstantBuffer_SCENE._InstanceReveal = GEngine::Get()->m_InstanceReveal;
@@ -1068,7 +1073,7 @@ void RenderSystem::OnUpdate(float deltaTime)
         m_Context->PSSetConstantBuffers(0, E_CONSTANT_BUFFER_POST_PROCESS::COUNT, m_PostProcessConstantBuffers);
         m_ContstantBuffer_SCREENSPACE.invProj        = XMMatrixTranspose(m_CachedMainInvProjectionMatrix);
         m_ContstantBuffer_SCREENSPACE.invView        = XMMatrixTranspose(m_CachedMainInvViewMatrix);
-        m_ContstantBuffer_SCREENSPACE.Proj        = m_ConstantBuffer_MVP.Projection;
+        m_ContstantBuffer_SCREENSPACE.Proj           = m_ConstantBuffer_MVP.Projection;
         m_ContstantBuffer_SCREENSPACE.time           = m_ConstantBuffer_SCENE.time;
         m_ContstantBuffer_SCREENSPACE.playerPosition = m_ConstantBuffer_SCENE.eyePosition;
 

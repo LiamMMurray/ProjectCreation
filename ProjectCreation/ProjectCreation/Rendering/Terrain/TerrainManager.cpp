@@ -39,6 +39,10 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 rs->GetDevice()->CreateHullShader(
                     hullShaderData.bytes.data(), hullShaderData.bytes.size(), nullptr, &hullShader);
 
+                FileIO::LoadShaderDataFromFile("Ocean", "_HS", &hullShaderData);
+                rs->GetDevice()->CreateHullShader(
+                    hullShaderData.bytes.data(), hullShaderData.bytes.size(), nullptr, &oceanHullShader);
+
                 FileIO::FShaderData pixelShaderData;
                 FileIO::LoadShaderDataFromFile("Terrain", "_PS", &pixelShaderData);
                 rs->GetDevice()->CreatePixelShader(
@@ -441,7 +445,7 @@ void TerrainManager::_update(float deltaTime)
         renderSystem->m_Context->VSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
         renderSystem->m_Context->VSSetShaderResources(9, 1, &terrainSourceSRV);
 
-        renderSystem->m_Context->HSSetShader(hullShader, nullptr, 0);
+        renderSystem->m_Context->HSSetShader(oceanHullShader, nullptr, 0);
         renderSystem->m_Context->HSSetConstantBuffers(4, 1, &terrainConstantBufferGPU);
         renderSystem->m_Context->HSSetShaderResources(9, 1, &terrainSourceSRV);
 
@@ -473,6 +477,7 @@ void TerrainManager::_update(float deltaTime)
                 renderSystem->m_Context->DrawIndexed(patchQuadCount * 4, 0, 0);
         }
 
+        renderSystem->m_Context->HSSetShader(hullShader, nullptr, 0);
         { // Terrain
                 renderSystem->m_ConstantBuffer_MVP.World = XMMatrixTranspose(TerrainMatrix);
                 renderSystem->UpdateConstantBuffer(renderSystem->m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP],
@@ -582,6 +587,7 @@ void TerrainManager::_shutdown()
         inputLayout->Release();
         vertexShader->Release();
         hullShader->Release();
+        oceanHullShader->Release();
         domainShader->Release();
         pixelShader->Release();
         oceanPixelShader->Release();
@@ -621,7 +627,11 @@ void TerrainManager::GenerateInstanceTransforms(FTransform tArray[gInstanceTrans
                 float x               = scale * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
                 float y               = scale * (MathLibrary::GetRandomFloat() * 2.0f - 1.0f);
                 tArray[i].translation = XMVectorSet(x, 0.0f, y, 1.0f);
-                tArray[i].rotation = FQuaternion::RotateAxisAngle(VectorConstants::Up, MathLibrary::GetRandomFloat() * 360.0f);
+
+                float pitch        = MathLibrary::GetRandomFloatInRange(-0.2f, 0.2f);
+                float yaw          = MathLibrary::GetRandomFloatInRange(-0.2f, 0.2f);
+                float roll         = MathLibrary::GetRandomFloatInRange(-0.2f, 0.2f);
+                tArray[i].rotation = FQuaternion::FromEulerAngles(pitch, yaw, roll);
                 tArray[i].SetScale(MathLibrary::RandomFloatInRange(0.5f, 1.1f));
         }
 }
