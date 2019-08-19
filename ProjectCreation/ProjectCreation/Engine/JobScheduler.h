@@ -107,7 +107,7 @@ inline namespace JobScheduler
         struct alignas(64) JobInternal
         {
                 JobFunction           function;
-                JobInternal*                  parent;
+                JobInternal*          parent;
                 volatile long         unfinished_jobs;
                 static constexpr auto PADDING_SIZE =
                     CACHE_LINE_SIZE - sizeof(function) - sizeof(parent) - sizeof(unfinished_jobs);
@@ -118,9 +118,11 @@ inline namespace JobScheduler
         {
                 static constexpr uint64_t MAX_JOBS = nextPowerOf2(MAX_JOBS);
                 static constexpr uint64_t MASK     = MAX_JOBS - 1;
-                alignas(8) JobInternal* job_buffer         = 0;
+                alignas(8) JobInternal* job_buffer = 0;
                 alignas(8) uint64_t allocated_jobs = 0;
                 JobAllocator()
+                {}
+                void Initialize()
                 {
                         job_buffer = (JobInternal*)_aligned_malloc(sizeof(JobInternal) * MAX_JOBS, 64);
                 }
@@ -128,10 +130,12 @@ inline namespace JobScheduler
                 {
                         return job_buffer + (allocated_jobs++ & MASK);
                 }
-                ~JobAllocator()
+                void Release()
                 {
                         _aligned_free(job_buffer);
                 }
+                ~JobAllocator()
+                {}
         };
 
         template <unsigned MAX_JOBS>
@@ -139,7 +143,7 @@ inline namespace JobScheduler
         {
                 static constexpr auto MAX_JOBS = nextPowerOf2(MAX_JOBS);
                 static constexpr auto MASK     = MAX_JOBS - 1;
-                JobInternal**                 m_jobs;
+                JobInternal**         m_jobs;
                 alignas(8) volatile int64_t m_bottom;
                 alignas(8) volatile int64_t m_top;
                 JobQueue()
@@ -264,7 +268,7 @@ inline namespace JobSchedulerInternal
         }
         inline JobInternal* CreateJob(JobFunction function)
         {
-                JobInternal* job             = AllocateJob();
+                JobInternal* job     = AllocateJob();
                 job->function        = function;
                 job->parent          = nullptr;
                 job->unfinished_jobs = 1;
@@ -273,7 +277,7 @@ inline namespace JobSchedulerInternal
         inline JobInternal* CreateJobAsChild(JobInternal* parent, JobFunction function)
         {
                 InterlockedIncrement(&parent->unfinished_jobs);
-                JobInternal* job             = AllocateJob();
+                JobInternal* job     = AllocateJob();
                 job->function        = function;
                 job->parent          = parent;
                 job->unfinished_jobs = 1;
@@ -298,8 +302,8 @@ inline namespace JobSchedulerInternal
         }
         inline JobInternal* GetJob()
         {
-                auto& queue = GetWorkerThreadQueue();
-                JobInternal*  job   = queue.Pop();
+                auto&        queue = GetWorkerThreadQueue();
+                JobInternal* job   = queue.Pop();
                 if (!job)
                 {
                         // this is not a valid job because our own queue is empty, so try stealing from some other queue
@@ -354,6 +358,8 @@ inline namespace JobScheduler
 {
         inline void Initialize()
         {
+                g_thread_local_job_allocator_static.Initialize();
+                g_thread_local_job_allocator_temp.Initialize();
                 unsigned thread_index = 0;
                 g_job_queues          = (volatile JobQueue<MAX_JOBS_PER_FRAME>*)_aligned_malloc(
                     sizeof(JobQueue<MAX_JOBS_PER_FRAME>) * g_num_threads, alignof(JobQueue<MAX_JOBS_PER_FRAME>));
@@ -364,13 +370,17 @@ inline namespace JobScheduler
                 TlsSetValue(g_tls_access_value, (LPVOID)thread_index);
                 thread_index++;
                 for (; thread_index < g_num_threads; thread_index++)
-                        g_worker_threads.push_back(std::move(std::thread(WorkerThreadMain, thread_index)));
+                        g_worker_threads.push_back(std::thread(WorkerThreadMain, thread_index));
         }
         inline void Shutdown()
         {
+                g_thread_local_job_allocator_static.Release();
+                g_thread_local_job_allocator_temp.Release();
                 g_worker_thread_active = false;
                 for (auto& itr : g_worker_threads)
                         itr.join();
+                for (auto& itr : g_worker_threads)
+                        itr.~thread();
                 for (unsigned i = 0; i < g_num_threads; i++)
                         g_job_queues[i].Shutdown();
                 _aligned_free(const_cast<JobQueue<MAX_JOBS_PER_FRAME>*>(g_job_queues));
@@ -440,8 +450,8 @@ inline namespace JobSchedulerAbstractionsInternal
 
                 JobInternal* CreateParallelForSubJobImpl(Lambda&& lambda, unsigned begin, unsigned end)
                 {
-                        JobInternal*  thisJob     = Allocator::Allocate();
-                        char* bufferAlias = thisJob->padding;
+                        JobInternal* thisJob     = Allocator::Allocate();
+                        char*        bufferAlias = thisJob->padding;
 
                         InPlaceForwardConstruct(bufferAlias, std::forward<Lambda>(lambda));
                         bufferAlias += sizeof(Lambda);
@@ -476,7 +486,10 @@ inline namespace JobSchedulerAbstractionsInternal
                 }
 
                 template <typename Lambda>
-                std::vector<JobInternal*> CreateParallelForSubJobs(Lambda&& lambda, unsigned begin, unsigned end, unsigned chunkSize)
+                std::vector<JobInternal*> CreateParallelForSubJobs(Lambda&& lambda,
+                                                                   unsigned begin,
+                                                                   unsigned end,
+                                                                   unsigned chunkSize)
                 {
                         std::vector<JobInternal*> output;
                         if (end - begin <= chunkSize)
@@ -604,8 +617,8 @@ inline namespace JobSchedulerAbstractionsInternal
                 {
 
 
-                        JobInternal*  thisJob     = JobAllocator::Allocate();
-                        char* bufferAlias = thisJob->padding;
+                        JobInternal* thisJob     = JobAllocator::Allocate();
+                        char*        bufferAlias = thisJob->padding;
 
                         InPlaceForwardConstruct(bufferAlias, std::forward<Lambda>(lambda));
                         bufferAlias += sizeof(Lambda);
@@ -660,7 +673,10 @@ inline namespace JobSchedulerAbstractionsInternal
                         return thisJob;
                 }
                 template <typename Lambda>
-                std::vector<JobInternal*> CreateParallelForSubJobs(Lambda&& lambda, unsigned begin, unsigned end, unsigned chunkSize)
+                std::vector<JobInternal*> CreateParallelForSubJobs(Lambda&& lambda,
+                                                                   unsigned begin,
+                                                                   unsigned end,
+                                                                   unsigned chunkSize)
                 {
                         std::vector<JobInternal*> output;
                         if (end - begin <= chunkSize)
@@ -797,8 +813,8 @@ inline namespace JobSchedulerAbstractionsInternal
 
                 JobInternal* CreateParallelForSubJobImpl(Lambda&& lambda, unsigned begin, unsigned end)
                 {
-                        JobInternal*  thisJob     = JobAllocator::Allocate();
-                        char* bufferAlias = thisJob->padding;
+                        JobInternal* thisJob     = JobAllocator::Allocate();
+                        char*        bufferAlias = thisJob->padding;
 
                         InPlaceForwardConstruct(bufferAlias, std::forward<Lambda>(lambda));
                         bufferAlias += sizeof(Lambda);
@@ -851,7 +867,10 @@ inline namespace JobSchedulerAbstractionsInternal
                         return thisJob;
                 }
                 template <typename Lambda>
-                std::vector<JobInternal*> CreateParallelForSubJobs(Lambda&& lambda, unsigned begin, unsigned end, unsigned chunkSize)
+                std::vector<JobInternal*> CreateParallelForSubJobs(Lambda&& lambda,
+                                                                   unsigned begin,
+                                                                   unsigned end,
+                                                                   unsigned chunkSize)
                 {
                         std::vector<JobInternal*> output;
                         if (end - begin <= chunkSize)
@@ -1131,11 +1150,12 @@ inline namespace JobSchedulerAbstractions
                 Job(Lambda&& lambda, Args&&... args)
                 {
                         if constexpr (sizeof...(Args))
-                                rootJob = CreateJobData<Allocator>(std::forward<Lambda>(lambda), std::forward<Args...>(args...));
+                                rootJob =
+                                    CreateJobData<Allocator>(std::forward<Lambda>(lambda), std::forward<Args...>(args...));
                         else
                                 rootJob = CreateJobData<Allocator>(std::forward<Lambda>(lambda));
 
-                        rootJob->parent = 0;
+                        rootJob->parent          = 0;
                         rootJob->unfinished_jobs = 1;
                 }
                 void Wait()

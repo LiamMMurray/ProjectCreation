@@ -138,7 +138,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 )
 {
         ENABLE_LEAK_DETECTION();
-        //_CrtSetBreakAlloc(50290);
+        _CrtSetBreakAlloc(160);
         _WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
         return 0;
@@ -147,7 +147,6 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
 int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-
         std::srand(unsigned(std::time(0)));
 
         constexpr char appName[] = "Inanis";
