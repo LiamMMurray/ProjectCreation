@@ -238,8 +238,6 @@ void UIManager::GameplayUpdate()
         // Pause & Unpause
         if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled == true)
         {
-                // Joseph Updated the main menu ui to match to input keys
-                // Changed 'Space', 'Q', and 'E' to 'A', 'S', and 'D'
                 if (GCoreInput::GetKeyState(KeyCode::Enter) == KeyState::Down)
                 {
                         instance->MainTilteUnpause();
@@ -325,16 +323,25 @@ void UIManager::GameplayUpdate()
 void UIManager::Splash_FullSail()
 {
         instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = true;
+
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = false;
 }
 
 void UIManager::Splash_GPGames()
 {
         instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = true;
+
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = false;
 }
 
 void UIManager::Splash_Team()
 {
         instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = true;
+
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = false;
 }
 
 void UIManager::SplashUpdate(float globalTimer)
@@ -675,7 +682,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddSprite(instance->m_RenderSystem->m_Device,
                             instance->m_RenderSystem->m_Context,
                             E_MENU_CATEGORIES::SplashScreen,
-                            L"../Assets/2d/Sprite/Full_Sail_Logo.dds",
+                            L"../Assets/2d/Sprite/Deep!deep_Logo.dds",
                             0.0f,
                             0.0f,
                             2.0f,
@@ -690,15 +697,15 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.06f * ScaleXRatio,
                           0.06f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          -0.35f * PosYRatio,
+                          -0.25f * PosYRatio,
                           false,
                           false);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Calibri,
-                          "Press Enter to continue. . .",
+                          E_FONT_TYPE::CourierNew,
+                          "Press Enter To Continue...",
                           0.06f * ScaleXRatio,
                           0.06f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -765,15 +772,15 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.06f * ScaleXRatio,
                           0.06f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          -0.35f * PosYRatio,
+                          -0.25f * PosYRatio,
                           false,
                           false);
 
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Resume",
+                          E_FONT_TYPE::Calibri,
+                          "RESUME",
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -787,8 +794,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Levels",
+                          E_FONT_TYPE::Calibri,
+                          "LEVELS",
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -802,8 +809,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Options",
+                          E_FONT_TYPE::Calibri,
+                          "OPTIONS",
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -817,8 +824,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Controls",
+                          E_FONT_TYPE::Calibri,
+                          "CONTROLS",
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -832,8 +839,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::PauseMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Exit",
+                          E_FONT_TYPE::Calibri,
+                          "EXIT",
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -848,8 +855,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Back",
+                          E_FONT_TYPE::Calibri,
+                          "BACK",
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -863,8 +870,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Windowed",
+                          E_FONT_TYPE::Calibri,
+                          "WINDOWED",
                           0.04f * ScaleXRatio,
                           0.04f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -878,8 +885,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Resolution",
+                          E_FONT_TYPE::Calibri,
+                          "RESOLUTION",
                           0.04f * ScaleXRatio,
                           0.04f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -893,8 +900,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Apply",
+                          E_FONT_TYPE::Calibri,
+                          "APPLY",
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -908,8 +915,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Master Volume",
+                          E_FONT_TYPE::Calibri,
+                          "MASTER VOLUME",
                           0.03f * ScaleXRatio,
                           0.03f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -924,8 +931,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Off",
+                          E_FONT_TYPE::Calibri,
+                          "OFF",
                           0.04f * ScaleXRatio,
                           0.04f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -936,8 +943,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::CourierNew,
-                          "On",
+                          E_FONT_TYPE::Calibri,
+                          "ON",
                           0.04f * ScaleXRatio,
                           0.04f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -948,7 +955,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::CourierNew,
+                          E_FONT_TYPE::Calibri,
                           "<",
                           0.04f * ScaleXRatio,
                           0.04f * ScaleYRatio,
@@ -960,7 +967,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::CourierNew,
+                          E_FONT_TYPE::Calibri,
                           ">",
                           0.04f * ScaleXRatio,
                           0.04f * ScaleYRatio,
@@ -974,7 +981,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::OptionsSubmenu,
-                                  E_FONT_TYPE::CourierNew,
+                                  E_FONT_TYPE::Calibri,
                                   std::to_string(instance->resDescriptors[i].Width) + "x" +
                                       std::to_string(instance->resDescriptors[i].Height),
                                   0.04f * ScaleXRatio,
@@ -990,8 +997,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Back",
+                          E_FONT_TYPE::Calibri,
+                          "BACK",
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -1005,8 +1012,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Tutorial",
+                          E_FONT_TYPE::Calibri,
+                          "TUTORIAL",
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -1020,8 +1027,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Level 1",
+                          E_FONT_TYPE::Calibri,
+                          "LEVEL 1",
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -1035,8 +1042,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Level 2",
+                          E_FONT_TYPE::Calibri,
+                          "LEVEL 2",
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -1050,8 +1057,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::LevelMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Level 3",
+                          E_FONT_TYPE::Calibri,
+                          "LEVEL 3",
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -1066,8 +1073,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Back",
+                          E_FONT_TYPE::Calibri,
+                          "BACK",
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -1081,8 +1088,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Collect Red Light: A",
+                          E_FONT_TYPE::Calibri,
+                          "COLLECT RED LIGHT: A",
                           0.03f * ScaleXRatio,
                           0.03f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -1093,8 +1100,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Collect Green Light: S",
+                          E_FONT_TYPE::Calibri,
+                          "COLLECT GREEN LIGHT: S",
                           0.03f * ScaleXRatio,
                           0.03f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -1105,8 +1112,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Collect Blue Light: D",
+                          E_FONT_TYPE::Calibri,
+                          "COLLECT BLUE LIGHT: D",
                           0.03f * ScaleXRatio,
                           0.03f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -1117,8 +1124,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Movement: Left Mouse ",
+                          E_FONT_TYPE::Calibri,
+                          "MOVEMENT: Left Mouse ",
                           0.03f * ScaleXRatio,
                           0.03f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -1142,8 +1149,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::Demo,
-                          E_FONT_TYPE::CourierNew,
-                          "Continue",
+                          E_FONT_TYPE::Calibri,
+                          "CONTINUE",
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           -0.15f * PosXRatio,
@@ -1157,8 +1164,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::Demo,
-                          E_FONT_TYPE::CourierNew,
-                          "Exit",
+                          E_FONT_TYPE::Calibri,
+                          "EXIT",
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.15f * PosXRatio,
@@ -1642,8 +1649,8 @@ void UIManager::Update()
         instance->m_TexelSize    = XMFLOAT2{1.0f / instance->m_ScreenSize.x, 1.0f / instance->m_ScreenSize.y};
 
         static float GlobalTimer = 0.0f;
-
-        if (GlobalTimer < 16.0f)
+		
+        if (GlobalTimer < 15.1f || instance->m_SkipSplash == true)
         {
                 instance->SplashUpdate(GlobalTimer);
                 GlobalTimer += GEngine::Get()->GetDeltaTime();
