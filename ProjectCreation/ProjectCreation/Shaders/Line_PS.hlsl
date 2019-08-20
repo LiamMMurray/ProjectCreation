@@ -1,22 +1,11 @@
 #include "SceneBuffer.hlsl"
 
-cbuffer CSurfaceProperties : register(b2)
-{
-        float3 _diffuseColor;
-        float  _ambientIntensity;
-        float3 _emissiveColor;
-        float  _specular;
-        float  _roughnessMin;
-        float  _roughnessMax;
-        float  _metallic;
-        float  _normalIntensity;
-        int    _textureFlags;
-};
 
 struct INPUT_PIXEL
 {
         float4 Pos : SV_POSITION;
         float3 PosWS : POSITION;
+        float4 Color : COLOR;
         float2 Tex : TEXCOORD0;
 };
 
@@ -36,15 +25,15 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
 
         float3 blendedColor;
 
-        float  grayscale    = dot(_emissiveColor, float3(0.21, 0.71, 0.07));
-        float3 closeColor   = _emissiveColor;
-        float3 farColor     = lerp(_emissiveColor, grayscale, 0.6f);
-        float3 veryFarColor = _emissiveColor;
+        float  grayscale    = dot(pIn.Color.xyz, float3(0.21, 0.71, 0.07));
+        float3 closeColor   = pIn.Color.xyz;
+        float3 farColor     = lerp(pIn.Color.xyz, grayscale, 0.6f);
+        float3 veryFarColor = pIn.Color.xyz;
         blendedColor        = lerp(closeColor, farColor, desaturationMaskA);
         blendedColor        = lerp(blendedColor, veryFarColor, desaturationMaskB);
 
         float  uvMaskY       = 1.0f - saturate((abs(pIn.Tex.y * 2.0f - 1.0f) - 0.2f) * 5.0f);
-        float  sinDistortion = 0.5f * (sin(_Time * 10.0f - pIn.Tex.y * 20.0f ));
+        float  sinDistortion = 0.5f * (sin(_Time * 10.0f - pIn.Tex.y * 20.0f));
         float2 uv            = pIn.Tex + float2(sinDistortion, 0.0f);
         float  uvMask        = 1.0f - saturate((abs(uv.x * 2.0f - 1.0f) - 0.2f) * 5.0f);
         uvMask *= uvMaskY;

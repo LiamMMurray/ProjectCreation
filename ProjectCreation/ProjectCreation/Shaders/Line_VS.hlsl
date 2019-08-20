@@ -2,20 +2,21 @@
 struct OUTPUT_VERTEX
 {
         float4 Pos : SV_POSITION;
-        float4 Color : COLOR;
+        uint   ColorID : COLOR;
 };
 
 struct INPUT_VERTEX
 {
-        float3 Pos : POSITION;
-        float4 Color : COLOR;
+        float4 Pos : POSITION;
+        uint   ColorID : COLOR;
 };
 
-OUTPUT_VERTEX main(INPUT_VERTEX vIn)
+OUTPUT_VERTEX
+main(INPUT_VERTEX vIn)
 {
         OUTPUT_VERTEX output = (OUTPUT_VERTEX)0;
-        output.Pos           = float4(vIn.Pos, 1.0f);
-        output.Color         = vIn.Color;
+        output.Pos           = vIn.Pos;
+        output.ColorID       = vIn.ColorID;
 
         return output;
 }
