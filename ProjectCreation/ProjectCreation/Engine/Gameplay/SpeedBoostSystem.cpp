@@ -363,9 +363,6 @@ void SpeedBoostSystem::RequestUnlatchFromSpline(PlayerController* playerControll
                 }
         }
 
-        playerController->m_CollectedSplineOrbCount = 0;
-        playerController->m_TotalSplineOrbCount     = 0;
-
         if (inPath == true)
         {
                 inPath = false;
@@ -654,6 +651,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         }
                 }
 
+				int latchedColor = -1;
 
                 if (latchedSplineIndex != -1 || shouldLatch)
                 {
@@ -710,6 +708,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 inPath |= CollisionLibary::PointInCapsule(playerTransform->transform.translation, capsuleB);
 
                                 int correctColor = latchedSplineComp->color;
+                                latchedColor     = correctColor;
 
                                 for (int i = 0; i < E_LIGHT_ORBS::WHITE_LIGHTS; ++i)
                                 {
@@ -849,8 +848,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                 playerController->SetAngularSpeedMod(5.0f);
                                         }
                                         RequestUnlatchFromSpline(playerController, deltaTime);
-                                        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-                                        controllerSys->resetCollectedOrbEventID(correctColor);
                                         collectEventTimestamps[correctColor] = -1;
                                         m_EnableRandomSpawns                 = true;
                                 }
@@ -859,6 +856,12 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 else
                 {
                         RequestUnlatchFromSpline(playerController, deltaTime);
+
+                        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+                        controllerSys->resetCollectedOrbEventID(latchedColor);
+
+                        playerController->m_CollectedSplineOrbCount = 0;
+                        playerController->m_TotalSplineOrbCount     = 0;
                 }
         }
 
