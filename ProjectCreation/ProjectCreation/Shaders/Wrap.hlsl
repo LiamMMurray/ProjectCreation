@@ -1,4 +1,4 @@
-//Credit - Lari Norri
+// Credit - Lari Norri
 
 // This file defines HLSL specific functions & structures shared across shaders.
 

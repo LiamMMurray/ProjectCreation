@@ -66,9 +66,9 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
         // color *= 1.5f;
         color = pow(color, 1.f / 2.2f);
 
-		//float ao = AO.Sample(sampleTypeClamp, texCoord).r;
+		float ao = AO.Sample(sampleTypeClamp, texCoord).r;
         //return ao;
-        //color *= ao;
+        color *= ao;
 
         color = lerp(color, colorVignette, vignetteIntensity);
 

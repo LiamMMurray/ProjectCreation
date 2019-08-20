@@ -130,9 +130,9 @@ void PlayerGroundState::Update(float deltaTime)
         _cachedTransform.rotation = FQuaternion::FromEulerAngles(eulerAngles);
 
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, yawDelta));
-        currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, yawDelta));
+        //currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, yawDelta));
 
-        currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, pitchDelta));
+        //currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, pitchDelta));
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, pitchDelta));
 
         // Get the Speed from the gathered input
