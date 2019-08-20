@@ -147,7 +147,6 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 
 int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-
         std::srand(unsigned(std::time(0)));
 
         constexpr char appName[] = "Inanis";
