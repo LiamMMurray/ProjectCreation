@@ -16,9 +16,10 @@ class OrbitSystem : public ISystem
 
 		ResourceManager* m_ResourceManager;
 
-        const char* materialNames[3] = {"GlowMatPlanet01", "GlowMatPlanet03", "GlowMatPlanet02"};
+        const char* materialNames[4] = {"GlowMatPlanet01", "GlowMatPlanet03", "GlowMatPlanet02", "GlowMatSun"};
         int         m_Stage          = 0;
         void        CreateGoal(int color, DirectX::XMVECTOR position);
+        void        CreateTutorialGoal(int color, DirectX::XMVECTOR position);
 
         float             orbitOffset = 1300.0f;
         FQuaternion       sunRotation;

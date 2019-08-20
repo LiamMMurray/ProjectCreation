@@ -2,6 +2,7 @@
 #include "LevelState.h"
 #include "../GEngine.h"
 #include "../Gameplay/SpeedBoostSystem.h"
+#include "../Gameplay/OrbitSystem.h"
 
 
 // LEVEL 1: SPACE
@@ -10,6 +11,7 @@ class Level_01 : public ILevelState
         friend class SpeedBoostSystem;
 
         SpeedBoostSystem* m_SpeedBoostSystem;
+        OrbitSystem*      m_OrbitSystem;
 
     public:
         // Inherited via ILevelState

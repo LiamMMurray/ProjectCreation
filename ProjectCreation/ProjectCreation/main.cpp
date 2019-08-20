@@ -226,6 +226,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         auto music = AudioManager::Get()->LoadMusic("Ambience 16-48k");
         AudioManager::Get()->ActivateMusicAndPause(music, true);
 
+
         music->ResumeStream();
 
         // Entity tests
@@ -329,6 +330,15 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         GEngine::Get()->SetGamePaused(true);
         GEngine::Get()->GetLevelStateManager()->Init();
         UIManager::instance->StartupResAdjust(handle);
+
+       //auto waveMusic = AudioManager::Get()->LoadMusic("Ambience_andWaves");
+       //// waveMusic->SetVolume(0.8f);
+       //AudioManager::Get()->ActivateMusicAndPause(waveMusic, true);
+	   //
+       //if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() >= E_Level_States::LEVEL_02)
+       //{
+       //        music = AudioManager::Get()->LoadMusic("Ambience_andWaves")
+       //}
 
         while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
         {
