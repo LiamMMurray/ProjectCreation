@@ -344,8 +344,7 @@ void RenderSystem::CreateInputLayouts()
 
         D3D11_INPUT_ELEMENT_DESC vLayoutLine[] = {
             {"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-            {"COLOR", 0, DXGI_FORMAT_R32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
-		};
+            {"COLOR", 0, DXGI_FORMAT_R32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}};
 
         er = FileIO::LoadShaderDataFromFile("Line", "_VS", &shaderData);
 
@@ -575,7 +574,7 @@ void RenderSystem::DrawDebug()
 
 void RenderSystem::DrawLines()
 {
-        //return;
+        // return;
         using namespace DirectX;
 
         UINT stride = sizeof(SplinePoint);
@@ -628,28 +627,26 @@ void RenderSystem::DrawLines()
                     m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE], &surf, sizeof(FSurfaceProperties));
 
 
-                        if (lengthA > 1)
-                        {
-                                D3D11_MAPPED_SUBRESOURCE mappedResource{};
-                                m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+                if (lengthA > 1)
+                {
+                        D3D11_MAPPED_SUBRESOURCE mappedResource{};
+                        m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
-                                memcpy(mappedResource.pData, it.second.cachedPoints.data(), (lengthA) * sizeof(SplinePoint));
-                                m_Context->Unmap(m_LineVertexBuffer, 0);
+                        memcpy(mappedResource.pData, it.second.cachedPoints.data(), (lengthA) * sizeof(SplinePoint));
+                        m_Context->Unmap(m_LineVertexBuffer, 0);
 
-                                m_Context->Draw(lengthA, 0);
-                        }
+                        m_Context->Draw(lengthA, 0);
+                }
 
-                        if (lengthB > 1)
-                        {
-                                D3D11_MAPPED_SUBRESOURCE mappedResource{};
-                                m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-                                memcpy(mappedResource.pData,
-                                       it.second.cachedPoints.data() + startB,
-                                       (lengthB) * sizeof(SplinePoint));
-                                m_Context->Unmap(m_LineVertexBuffer, 0);
+                if (lengthB > 1)
+                {
+                        D3D11_MAPPED_SUBRESOURCE mappedResource{};
+                        m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+                        memcpy(mappedResource.pData, it.second.cachedPoints.data() + startB, (lengthB) * sizeof(SplinePoint));
+                        m_Context->Unmap(m_LineVertexBuffer, 0);
 
-                                m_Context->Draw(lengthB, 0);
-                        }
+                        m_Context->Draw(lengthB, 0);
+                }
         }
         ID3D11GeometryShader* nullGS = nullptr;
         m_Context->GSSetShader(nullGS, 0, 0);
@@ -875,6 +872,7 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         XMStoreFloat3(&m_ConstantBuffer_SCENE.worldOffsetDelta, GEngine::Get()->m_WorldOffsetDelta);
 
         m_ConstantBuffer_SCENE._InstanceReveal = GEngine::Get()->m_InstanceReveal;
+        m_ConstantBuffer_SCENE.puzzleState     = GEngine::Get()->m_CurrentPuzzleState;
 
         /** Prepare draw calls **/
         m_TransluscentDraws.clear();
@@ -1039,9 +1037,9 @@ void RenderSystem::OnUpdate(float deltaTime)
         {
                 /*if (m_OpaqueDraws[i].meshType == FDraw::EDrawType::Static)
                 {*/
-                        StaticMesh* mesh = m_ResourceManager->GetResource<StaticMesh>(m_OpaqueDraws[i].meshResource);
-                        Material*   mat  = m_ResourceManager->GetResource<Material>(m_OpaqueDraws[i].materialHandle);
-                        DrawStaticMesh(mesh, mat, &m_OpaqueDraws[i].mtx);
+                StaticMesh* mesh = m_ResourceManager->GetResource<StaticMesh>(m_OpaqueDraws[i].meshResource);
+                Material*   mat  = m_ResourceManager->GetResource<Material>(m_OpaqueDraws[i].materialHandle);
+                DrawStaticMesh(mesh, mat, &m_OpaqueDraws[i].mtx);
                 /*}
                 else
                 {
@@ -1060,9 +1058,9 @@ void RenderSystem::OnUpdate(float deltaTime)
         {
                 /*if (m_TransluscentDraws[i].meshType == FDraw::EDrawType::Static)
                 {*/
-                        StaticMesh* mesh = m_ResourceManager->GetResource<StaticMesh>(m_TransluscentDraws[i].meshResource);
-                        Material*   mat  = m_ResourceManager->GetResource<Material>(m_TransluscentDraws[i].materialHandle);
-                        DrawStaticMesh(mesh, mat, &m_TransluscentDraws[i].mtx);
+                StaticMesh* mesh = m_ResourceManager->GetResource<StaticMesh>(m_TransluscentDraws[i].meshResource);
+                Material*   mat  = m_ResourceManager->GetResource<Material>(m_TransluscentDraws[i].materialHandle);
+                DrawStaticMesh(mesh, mat, &m_TransluscentDraws[i].mtx);
                 /*}
                 else
                 {

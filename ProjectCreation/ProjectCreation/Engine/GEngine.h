@@ -44,10 +44,10 @@ class GEngine
         float m_RadiusTransitionSpeed = 5.0f;
 
     public:
-        void Signal();
-        DirectX::XMVECTOR m_OriginOffset = DirectX::XMVECTORF32{0.0f, 0.0f, 0.0f, 0.0f};
+        void              Signal();
+        DirectX::XMVECTOR m_OriginOffset     = DirectX::XMVECTORF32{0.0f, 0.0f, 0.0f, 0.0f};
         DirectX::XMVECTOR m_WorldOffsetDelta = DirectX::XMVECTORF32{0.0f, 0.0f, 0.0f, 0.0f};
-        inline void SetPlayerRadius(float r)
+        inline void       SetPlayerRadius(float r)
         {
                 m_PlayerRadius = m_DesiredPlayerRadius = r;
         }
@@ -121,7 +121,9 @@ class GEngine
         {
                 m_WantsGameExit = true;
         }
-        float       m_InstanceReveal = 0.0f;
+        float       m_InstanceReveal       = 0.0f;
         float       m_TargetInstanceReveal = 0.0f;
+        float       m_TargetPuzzleState    = 0.0f;
+        float       m_CurrentPuzzleState   = 0.0f;
         static bool ShowFPS;
 };

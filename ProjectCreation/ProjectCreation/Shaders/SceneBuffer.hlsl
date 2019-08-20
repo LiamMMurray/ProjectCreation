@@ -12,4 +12,5 @@ cbuffer SceneInfoBuffer : register(b1)
         float  _Scale;
         float  _InstanceReveal;
         float3 _WorldOffsetDelta;
+        float  _PuzzleState;
 };
