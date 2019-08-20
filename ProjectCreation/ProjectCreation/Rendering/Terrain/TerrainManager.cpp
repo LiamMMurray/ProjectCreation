@@ -332,6 +332,17 @@ void TerrainManager::_initialize(RenderSystem* rs)
         renderTestDataSteep.material = resourceManager->LoadMaterial("RockInstance01");
 
         instanceDrawCallsDataSteep.push_back(renderTestDataSteep);
+
+        // Load smoke
+        {
+                FInstanceRenderData otherData;
+                FTransform          otherTransform;
+
+                otherData.material = resourceManager->LoadMaterial(");
+                otherData.mesh     = resourceManager->LoadStaticMesh(staticMeshName);
+
+                otherDrawCalls.push_back(otherData);
+        }
 }
 using namespace DirectX;
 
@@ -489,6 +500,14 @@ void TerrainManager::_update(float deltaTime)
                 renderSystem->m_Context->DSSetShader(domainShader, nullptr, 0);
                 renderSystem->m_Context->DrawIndexed(patchQuadCount * 4, 0, 0);
         }
+
+        // Volcano Stuff
+        {
+
+
+                renderSystem->DrawMesh();
+        }
+
         // Draw instanced
         if (GEngine::Get()->m_InstanceReveal > 0.0f)
         {
