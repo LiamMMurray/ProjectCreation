@@ -249,7 +249,8 @@ void UIManager::GameplayUpdate()
         {
                 if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
                 {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
+					//Left Click Image
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = false;
 
                         for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::Demo].size(); i++)
                         {
@@ -272,11 +273,11 @@ void UIManager::GameplayUpdate()
         }
 
         // Left Click
-        if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled == true)
+        if (instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled == true)
         {
                 if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
                 {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = false;
                 }
         }
 
@@ -375,24 +376,24 @@ void UIManager::Splash_End()
 // UI Transitions
 void UIManager::WhiteOrbCollected()
 {
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled = true;
 }
 
 void UIManager::RedOrbCollected()
 {
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = false;
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][4].mEnabled = true;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled = true;
 }
 
 void UIManager::GreenOrbCollected()
 {
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][4].mEnabled = false;
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][5].mEnabled = true;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
 }
 
 void UIManager::BlueOrbCollected()
 {
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][5].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].mEnabled = false;
 }
 
 
@@ -405,7 +406,8 @@ void UIManager::MainTilteUnpause()
                 instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][i].mEnabled = false;
         }
 
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = true;
+        // Left Click Image
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = true;
 }
 
 void UIManager::Pause()
@@ -704,53 +706,45 @@ void UIManager::Initialize(native_handle_type hwnd)
                           false,
                           false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Calibri,
-                          "Hold Left Click to Move",
-                          0.06f * ScaleXRatio,
-                          0.06f * ScaleYRatio,
-                          0.0f * PosXRatio,
-                          0.1f * PosYRatio,
-                          false,
-                          false);
+        instance->AddSprite(instance->m_RenderSystem->m_Device,
+                            instance->m_RenderSystem->m_Context,
+                            E_MENU_CATEGORIES::MainMenu,
+                            L"../Assets/2d/Sprite/Mouse_Key.dds",
+                            0.0f * PosXRatio,
+                            0.1f * PosYRatio,
+                            0.1f * ScaleXRatio,
+                            0.1f * ScaleYRatio,
+                            false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Calibri,
-                          "Hold A to get a boost from Red lights",
-                          0.06f * ScaleXRatio,
-                          0.06f * ScaleYRatio,
-                          0.0f * PosXRatio,
-                          0.1f * PosYRatio,
-                          false,
-                          false);
+        instance->AddSprite(instance->m_RenderSystem->m_Device,
+                            instance->m_RenderSystem->m_Context,
+                            E_MENU_CATEGORIES::MainMenu,
+                            L"../Assets/2d/Sprite/A_Key.dds",
+                            0.0f * PosXRatio,
+                            0.1f * PosYRatio,
+                            0.1f * ScaleXRatio,
+                            0.1f * ScaleYRatio,
+                            false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Calibri,
-                          "Hold S to get a boost from Green lights",
-                          0.06f * ScaleXRatio,
-                          0.06f * ScaleYRatio,
-                          0.0f * PosXRatio,
-                          0.1f * PosYRatio,
-                          false,
-                          false);
+        instance->AddSprite(instance->m_RenderSystem->m_Device,
+                            instance->m_RenderSystem->m_Context,
+                            E_MENU_CATEGORIES::MainMenu,
+                            L"../Assets/2d/Sprite/S_Key.dds",
+                            0.0f * PosXRatio,
+                            0.1f * PosYRatio,
+                            0.1f * ScaleXRatio,
+                            0.1f * ScaleYRatio,
+                            false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Calibri,
-                          "Hold D to get a boost from Blue lights",
-                          0.06f * ScaleXRatio,
-                          0.06f * ScaleYRatio,
-                          0.0f * PosXRatio,
-                          0.1f * PosYRatio,
-                          false,
-                          false);
+        instance->AddSprite(instance->m_RenderSystem->m_Device,
+                            instance->m_RenderSystem->m_Context,
+                            E_MENU_CATEGORIES::MainMenu,
+                            L"../Assets/2d/Sprite/D_Key.dds",
+                            0.0f * PosXRatio,
+                            0.1f * PosYRatio,
+                            0.1f * ScaleXRatio,
+                            0.1f * ScaleYRatio,
+                            false);
 
         // Pause Menu
         instance->AddSprite(instance->m_RenderSystem->m_Device,
@@ -783,7 +777,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          -0.15f * PosYRatio,
+                          -0.13f * PosYRatio,
                           false,
                           true,
                           true,
@@ -798,7 +792,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          -0.05f * PosYRatio,
+                          -0.06f * PosYRatio,
                           false,
                           true,
                           true,
@@ -813,7 +807,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          0.05f * PosYRatio,
+                          0.01f * PosYRatio,
                           false,
                           true,
                           true,
@@ -828,7 +822,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          0.15f * PosYRatio,
+                          0.08f * PosYRatio,
                           false,
                           true,
                           true,
@@ -843,7 +837,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          0.25f * PosYRatio,
+                          0.15f * PosYRatio,
                           false,
                           true,
                           true,
@@ -859,7 +853,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          -0.35f * PosYRatio,
+                          -0.20f * PosYRatio,
                           false,
                           true,
                           true,
@@ -874,7 +868,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.04f * ScaleXRatio,
                           0.04f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          0.08f * PosYRatio,
+                          0.01f * PosYRatio,
                           false,
                           true,
                           true,
@@ -889,7 +883,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.04f * ScaleXRatio,
                           0.04f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          0.25f * PosYRatio,
+                          0.15f * PosYRatio,
                           false,
                           true,
                           true,
@@ -904,7 +898,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          -0.25f * PosYRatio,
+                          -0.26f * PosYRatio,
                           false,
                           true,
                           true,
@@ -919,7 +913,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.03f * ScaleXRatio,
                           0.03f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          -0.1f * PosYRatio,
+                          -0.13f * PosYRatio,
                           false,
                           true,
                           true,
@@ -935,7 +929,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.04f * ScaleXRatio,
                           0.04f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          0.16f * PosYRatio,
+                          0.07f * PosYRatio,
                           false,
                           false);
 
@@ -947,7 +941,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.04f * ScaleXRatio,
                           0.04f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          0.16f * PosYRatio,
+                          0.07f * PosYRatio,
                           false,
                           false);
 
@@ -959,7 +953,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.04f * ScaleXRatio,
                           0.04f * ScaleYRatio,
                           -0.12f * PosXRatio,
-                          0.35f * PosYRatio,
+                          0.22f * PosYRatio,
                           false,
                           true);
 
@@ -971,7 +965,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.04f * ScaleXRatio,
                           0.04f * ScaleYRatio,
                           0.12f * PosXRatio,
-                          0.35f * PosYRatio,
+                          0.22f * PosYRatio,
                           false,
                           true);
 
@@ -986,7 +980,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   0.04f * ScaleXRatio,
                                   0.04f * ScaleYRatio,
                                   0.0f * PosXRatio,
-                                  0.35f * PosYRatio,
+                                  0.22f * PosYRatio,
                                   false,
                                   false);
         }
@@ -1001,7 +995,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          -0.35f * PosYRatio,
+                          -0.20f * PosYRatio,
                           false,
                           true,
                           true,
@@ -1016,7 +1010,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          -0.1f * PosYRatio,
+                          -0.10f * PosYRatio,
                           false,
                           true,
                           true,
@@ -1031,7 +1025,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          0.0f * PosYRatio,
+                          -0.03f * PosYRatio,
                           false,
                           true,
                           true,
@@ -1046,7 +1040,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          0.1f * PosYRatio,
+                          0.04f * PosYRatio,
                           false,
                           true,
                           true,
@@ -1061,7 +1055,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          0.2f * PosYRatio,
+                          0.11f * PosYRatio,
                           false,
                           true,
                           true,
@@ -1077,7 +1071,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           0.05f * ScaleXRatio,
                           0.05f * ScaleYRatio,
                           0.0f * PosXRatio,
-                          -0.3f * PosYRatio,
+                          -0.20f * PosYRatio,
                           false,
                           true,
                           true,
@@ -1649,7 +1643,7 @@ void UIManager::Update()
 
         static float GlobalTimer = 0.0f;
 
-        if (GlobalTimer < 20.0f)
+        if (GlobalTimer < 16.0f)
         {
                 instance->SplashUpdate(GlobalTimer);
                 GlobalTimer += GEngine::Get()->GetDeltaTime();
