@@ -223,7 +223,7 @@ void ControllerSystem::OnInitialize()
                     DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(0.0f), 0.0f, 0.0f);
 
                 CameraComponent* cameraComp            = cHandle.Get<CameraComponent>();
-                cameraComp->m_Settings.m_HorizontalFOV = 90.0f;
+                cameraComp->m_Settings.m_HorizontalFOV = 100.0f;
 
                 GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->SetMainCameraComponent(cHandle);
                 m_Controllers[E_CONTROLLERS::PLAYER]->Init(eHandle);

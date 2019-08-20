@@ -3,6 +3,7 @@
 #include <stack>
 #include <vector>
 #include "../../../Utility/MemoryLeakDetection.h"
+#include "../../../Utility/Random.h"
 MazeGenerator::MazePoint MazeGenerator::GetRandomNeighbor(MazePoint point, unsigned rows, unsigned cols, bool** visited)
 {
         std::vector<MazePoint> neigh(4);
@@ -10,7 +11,7 @@ MazeGenerator::MazePoint MazeGenerator::GetRandomNeighbor(MazePoint point, unsig
         neigh[1] = point.Move(-1, 0);
         neigh[2] = point.Move(0, 1);
         neigh[3] = point.Move(0, -1);
-        std::random_shuffle(neigh.begin(), neigh.end() - 1);
+        std::shuffle(neigh.begin(), neigh.end() - 1, default_random_engine);
 
         for (auto& n : neigh)
         {

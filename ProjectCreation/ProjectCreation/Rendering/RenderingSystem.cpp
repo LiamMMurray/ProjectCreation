@@ -20,6 +20,7 @@
 #include "../Utility/Macros/DirectXMacros.h"
 
 #include "../Engine/ResourceManager/AnimationClip.h"
+#include "../Engine/ResourceManager/GeometryShader.h"
 #include "../Engine/ResourceManager/Material.h"
 #include "../Engine/ResourceManager/PixelShader.h"
 #include "../Engine/ResourceManager/SkeletalMesh.h"
@@ -272,7 +273,8 @@ void RenderSystem::CreateRasterizerStates()
         CD3D11_RASTERIZER_DESC desc(D3D11_FILL_SOLID, D3D11_CULL_BACK, FALSE, 0, 0.f, 0.f, TRUE, FALSE, FALSE, FALSE);
         m_Device->CreateRasterizerState(&desc, &m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
 
-        desc.AntialiasedLineEnable = true;
+        desc.AntialiasedLineEnable = false;
+        desc.CullMode              = D3D11_CULL_NONE;
         m_Device->CreateRasterizerState(&desc, &m_DefaultRasterizerStates[E_RASTERIZER_STATE::LINE]);
 
         desc.FillMode              = D3D11_FILL_WIREFRAME;
@@ -362,7 +364,8 @@ void RenderSystem::CreateCommonShaders()
         m_CommonVertexShaderHandles[E_VERTEX_SHADERS::LINE]    = m_ResourceManager->LoadVertexShader("Line");
         m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEFAULT]   = m_ResourceManager->LoadPixelShader("Default");
         m_CommonPixelShaderHandles[E_PIXEL_SHADERS::DEBUG]     = m_ResourceManager->LoadPixelShader("Debug");
-        m_CommonPixelShaderHandles[E_PIXEL_SHADERS::LINE]      = m_ResourceManager->LoadPixelShader("LINE");
+        m_CommonPixelShaderHandles[E_PIXEL_SHADERS::LINE]      = m_ResourceManager->LoadPixelShader("Line");
+        m_LineGeometryShader                                   = m_ResourceManager->LoadGeometryShader("Line");
 }
 
 void RenderSystem::CreateCommonConstantBuffers()
@@ -577,6 +580,8 @@ void RenderSystem::DrawLines()
         UINT offset = 0;
 
         m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::LINE]);
+        if (GCoreInput::GetKeyState(KeyCode::Shift) == KeyState::Down)
+                m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::WIREFRAME]);
 
         SpeedBoostSystem* speedboostSystem = GEngine::Get()->GetSystemManager()->GetSystem<SpeedBoostSystem>();
         OrbitSystem*      orbitSystem      = GEngine::Get()->GetSystemManager()->GetSystem<OrbitSystem>();
@@ -588,11 +593,17 @@ void RenderSystem::DrawLines()
             m_ResourceManager->GetResource<VertexShader>(m_CommonVertexShaderHandles[E_VERTEX_SHADERS::LINE])->m_VertexShader;
         ID3D11PixelShader* ps =
             m_ResourceManager->GetResource<PixelShader>(m_CommonVertexShaderHandles[E_PIXEL_SHADERS::LINE])->m_PixelShader;
+        ID3D11GeometryShader* gs = m_ResourceManager->GetResource<GeometryShader>(m_LineGeometryShader)->m_GeometryShader;
 
         m_Context->VSSetShader(vs, 0, 0);
         m_Context->VSSetConstantBuffers(
             E_CONSTANT_BUFFER_BASE_PASS::MVP, 1, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP]);
         m_Context->PSSetShader(ps, 0, 0);
+        m_Context->GSSetShader(gs, 0, 0);
+        m_Context->GSSetConstantBuffers(
+            E_CONSTANT_BUFFER_BASE_PASS::MVP, 1, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP]);
+        m_Context->GSSetConstantBuffers(
+            E_CONSTANT_BUFFER_BASE_PASS::SCENE, 1, &m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SCENE]);
         FSurfaceProperties surf;
 
         for (auto& it : speedboostSystem->m_SplineClusterSpawners)
@@ -614,26 +625,33 @@ void RenderSystem::DrawLines()
                 UpdateConstantBuffer(
                     m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE], &surf, sizeof(FSurfaceProperties));
 
-                if (lengthA > 0)
-                {
-                        D3D11_MAPPED_SUBRESOURCE mappedResource{};
-                        m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-                        memcpy(mappedResource.pData, it.second.cachedPoints.data(), lengthA * sizeof(XMVECTOR));
-                        m_Context->Unmap(m_LineVertexBuffer, 0);
 
-                        m_Context->Draw(lengthA, 0);
-                }
+                        if (lengthA > 1)
+                        {
+                                D3D11_MAPPED_SUBRESOURCE mappedResource{};
+                                m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
-                if (lengthB > 0)
-                {
-                        D3D11_MAPPED_SUBRESOURCE mappedResource{};
-                        m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-                        memcpy(mappedResource.pData, it.second.cachedPoints.data() + startB, (lengthB) * sizeof(XMVECTOR));
-                        m_Context->Unmap(m_LineVertexBuffer, 0);
+                                memcpy(mappedResource.pData, it.second.cachedPoints.data(), (lengthA) * sizeof(XMVECTOR));
+                                m_Context->Unmap(m_LineVertexBuffer, 0);
 
-                        m_Context->Draw(lengthB, 0);
-                }
+                                m_Context->Draw(lengthA, 0);
+                        }
+
+                        if (lengthB > 1)
+                        {
+                                D3D11_MAPPED_SUBRESOURCE mappedResource{};
+                                m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+                                memcpy(mappedResource.pData,
+                                       it.second.cachedPoints.data() + startB,
+                                       (lengthB) * sizeof(XMVECTOR));
+                                m_Context->Unmap(m_LineVertexBuffer, 0);
+
+                                m_Context->Draw(lengthB, 0);
+                        }
         }
+        ID3D11GeometryShader* nullGS = nullptr;
+        m_Context->GSSetShader(nullGS, 0, 0);
+
 
         if (orbitSystem->activeGoal.hasActiveGoal == true)
         {
@@ -791,10 +809,11 @@ void RenderSystem::RefreshMainCameraSettings()
 {
         using namespace DirectX;
 
-        CameraComponent* camera   = m_MainCameraHandle.Get<CameraComponent>();
-        auto&            settings = camera->m_Settings;
-        settings.m_AspectRatio    = GetWindowAspectRatio();
-        float verticalFOV         = XMConvertToRadians(settings.m_HorizontalFOV / settings.m_AspectRatio);
+        CameraComponent* camera = m_MainCameraHandle.Get<CameraComponent>();
+        camera->dirty           = false;
+        auto& settings          = camera->m_Settings;
+        settings.m_AspectRatio  = GetWindowAspectRatio();
+        float verticalFOV       = XMConvertToRadians(settings.m_HorizontalFOV / settings.m_AspectRatio);
 
         m_CachedMainProjectionMatrix =
             DirectX::XMMatrixPerspectiveFovLH(verticalFOV, settings.m_AspectRatio, settings.m_NearClip, settings.m_FarClip);
@@ -826,7 +845,11 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         /*********/
 
         /** Update Camera Info **/
-        CameraComponent*    mainCamera       = m_MainCameraHandle.Get<CameraComponent>();
+        CameraComponent* mainCamera = m_MainCameraHandle.Get<CameraComponent>();
+
+        if (mainCamera->dirty)
+                RefreshMainCameraSettings();
+
         EntityHandle        mainCameraEntity = mainCamera->GetParent();
         TransformComponent* mainTransform    = mainCameraEntity.GetComponent<TransformComponent>();
 
@@ -845,8 +868,8 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(m_CachedMainViewProjectionMatrix);
         m_ConstantBuffer_MVP.Projection     = XMMatrixTranspose(m_CachedMainProjectionMatrix);
         // get scale
-        m_ConstantBuffer_SCENE.scale = TerrainManager::Get()->GetScale();
-        m_ConstantBuffer_SCENE.screenDimensions = XMFLOAT2(m_BackBufferWidth,m_BackBufferHeight);
+        m_ConstantBuffer_SCENE.scale            = TerrainManager::Get()->GetScale();
+        m_ConstantBuffer_SCENE.screenDimensions = XMFLOAT2(m_BackBufferWidth, m_BackBufferHeight);
         XMStoreFloat3(&m_ConstantBuffer_SCENE.worldOffsetDelta, GEngine::Get()->m_WorldOffsetDelta);
 
         m_ConstantBuffer_SCENE._InstanceReveal = GEngine::Get()->m_InstanceReveal;
@@ -1068,7 +1091,7 @@ void RenderSystem::OnUpdate(float deltaTime)
         m_Context->PSSetConstantBuffers(0, E_CONSTANT_BUFFER_POST_PROCESS::COUNT, m_PostProcessConstantBuffers);
         m_ContstantBuffer_SCREENSPACE.invProj        = XMMatrixTranspose(m_CachedMainInvProjectionMatrix);
         m_ContstantBuffer_SCREENSPACE.invView        = XMMatrixTranspose(m_CachedMainInvViewMatrix);
-        m_ContstantBuffer_SCREENSPACE.Proj        = m_ConstantBuffer_MVP.Projection;
+        m_ContstantBuffer_SCREENSPACE.Proj           = m_ConstantBuffer_MVP.Projection;
         m_ContstantBuffer_SCREENSPACE.time           = m_ConstantBuffer_SCENE.time;
         m_ContstantBuffer_SCREENSPACE.playerPosition = m_ConstantBuffer_SCENE.eyePosition;
 

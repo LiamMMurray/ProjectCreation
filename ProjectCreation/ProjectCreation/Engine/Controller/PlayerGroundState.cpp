@@ -1,6 +1,8 @@
 #include "PlayerGroundState.h"
+#include <cmath>
 #include <iostream>
 #include "../../UI/UIManager.h"
+#include "..//..//Rendering/Components/CameraComponent.h"
 #include "..//..//Rendering/Components/DirectionalLightComponent.h"
 #include "..//GEngine.h"
 #include "..//GenericComponents/TransformComponent.h"
@@ -8,7 +10,6 @@
 #include "../CoreInput/CoreInput.h"
 #include "PlayerControllerStateMachine.h"
 #include "PlayerMovement.h"
-#include <cmath>
 
 #define _USE_MATH_DEFINES
 
@@ -67,7 +68,7 @@ void PlayerGroundState::Update(float deltaTime)
                 // Reveal Ocean once first planet placed
                 UIManager::instance->DemoEnd();
                 GEngine::Get()->m_TargetInstanceReveal = 1.0f;
-                doOnce = true;
+                doOnce                                 = true;
         }
 
         XMVECTOR currentVelocity = _playerController->GetCurrentVelocity();
@@ -97,12 +98,12 @@ void PlayerGroundState::Update(float deltaTime)
                 angularSpeed = XMConvertToRadians(angularSpeedMod) * deltaTime;
                 eulerAngles.x += -GamePad::Get()->leftStickY * angularSpeed;
                 pitchDelta = eulerAngles.x - pitchDelta;
-				
+
                 eulerAngles.y += GamePad::Get()->leftStickX * angularSpeed;
                 yawDelta = eulerAngles.y - yawDelta;
-				
+
                 eulerAngles.z += GamePad::Get()->leftStickX * angularSpeed;
-				
+
                 eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
         }
 
@@ -129,9 +130,9 @@ void PlayerGroundState::Update(float deltaTime)
         _cachedTransform.rotation = FQuaternion::FromEulerAngles(eulerAngles);
 
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, yawDelta));
-        currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, yawDelta));
+        //currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, yawDelta));
 
-        currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, pitchDelta));
+        //currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, pitchDelta));
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, pitchDelta));
 
         // Get the Speed from the gathered input
@@ -218,6 +219,17 @@ void PlayerGroundState::Update(float deltaTime)
         }
 
         _playerController->GetControlledEntity().GetComponent<TransformComponent>()->transform = _cachedTransform;
+        auto cameraComponent = _playerController->GetControlledEntity().GetComponent<CameraComponent>();
+
+        float targetFOV = 100.0f;
+        if (bUseGravity == false)
+        {
+                float forwardSpeed = MathLibrary::CalulateVectorLength(currentVelocity);
+                targetFOV          = MathLibrary::lerp<float>(targetFOV, 150.0f, MathLibrary::saturate(forwardSpeed / 3.0f));
+        }
+        cameraComponent->m_Settings.m_HorizontalFOV =
+            MathLibrary::lerp<float>(cameraComponent->m_Settings.m_HorizontalFOV, targetFOV, deltaTime * 0.5f);
+        cameraComponent->dirty = true;
 
         auto sunComp                        = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>();
         auto sunTransComp                   = GEngine::Get()->m_SunHandle.GetComponent<TransformComponent>();

@@ -883,7 +883,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 0.2f,
                                 0.5f,
                                 false);
-                                
+                                
+
 
 
 
@@ -1616,7 +1617,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 for (int i = 0; i < 4; ++i)
                 {
-                        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->ColorsCollected[i] = false;
+                        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[i] = false;
                 }
         });
 
