@@ -1650,7 +1650,7 @@ void UIManager::Update()
 
         static float GlobalTimer = 0.0f;
 		
-        if (GlobalTimer < 15.1f || instance->m_SkipSplash == true)
+        if (GlobalTimer < 15.1f)
         {
                 instance->SplashUpdate(GlobalTimer);
                 GlobalTimer += GEngine::Get()->GetDeltaTime();
