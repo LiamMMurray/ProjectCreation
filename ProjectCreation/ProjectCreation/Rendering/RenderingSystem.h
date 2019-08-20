@@ -288,6 +288,7 @@ class RenderSystem : public ISystem
 
         ResourceHandle m_CommonVertexShaderHandles[E_VERTEX_SHADERS::COUNT];
         ResourceHandle m_CommonPixelShaderHandles[E_PIXEL_SHADERS::COUNT];
+        ResourceHandle m_LineGeometryShader;
 
         /** Base pass constant buffers **/
         ID3D11Buffer*    m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::COUNT] = {};

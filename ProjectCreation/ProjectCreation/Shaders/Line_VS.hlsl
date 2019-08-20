@@ -1,23 +1,22 @@
 #include "MVPBuffer.hlsl"
-
-struct INPUT_PIXEL
+struct OUTPUT_VERTEX
 {
         float4 Pos : SV_POSITION;
-        float3 PosWS : POSITION;
+        uint   ColorID : COLOR;
 };
 
 struct INPUT_VERTEX
 {
         float4 Pos : POSITION;
+        uint   ColorID : COLOR;
 };
 
-INPUT_PIXEL main(INPUT_VERTEX vIn)
+OUTPUT_VERTEX
+main(INPUT_VERTEX vIn)
 {
-        INPUT_PIXEL  output = (INPUT_PIXEL)0;
-        const float4 Pos    = float4(vIn.Pos.xyz, 1);
-        output.PosWS        = Pos.xyz;
-        output.Pos          = mul(Pos, ViewProjection);
-
+        OUTPUT_VERTEX output = (OUTPUT_VERTEX)0;
+        output.Pos           = vIn.Pos;
+        output.ColorID       = vIn.ColorID;
 
         return output;
 }

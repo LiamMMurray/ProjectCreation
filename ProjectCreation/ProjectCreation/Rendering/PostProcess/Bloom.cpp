@@ -248,6 +248,7 @@ void Bloom::Render(ID3D11ShaderResourceView** inSRV, ID3D11RenderTargetView** ou
         // Blur AO
         UINT AOTargetIndex = E_PASSES::MASK;
         m_Context->PSSetShader(AOBlur_PS->m_PixelShader, nullptr, 0);
+		
         {
                 UINT div        = (UINT)pow(2, 0);
                 viewport.Width  = FLOAT(m_Width / div);

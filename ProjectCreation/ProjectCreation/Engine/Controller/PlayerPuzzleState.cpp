@@ -16,8 +16,9 @@ void PlayerPuzzleState::Enter()
 {
         dragVelocity = XMVectorZero();
 
-        auto goalComp       = _playerController->GetGoalComponent().Get<GoalComponent>();
-        goalComp->goalState = E_GOAL_STATE::Puzzle;
+        auto goalComp                       = _playerController->GetGoalComponent().Get<GoalComponent>();
+        goalComp->goalState                 = E_GOAL_STATE::Puzzle;
+        GEngine::Get()->m_TargetPuzzleState = 1.0f;
 }
 
 void PlayerPuzzleState::Update(float deltaTime)
@@ -27,16 +28,16 @@ void PlayerPuzzleState::Update(float deltaTime)
         auto     playerTransformHandle = _playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
         auto     playerTransformComp   = playerTransformHandle.Get<TransformComponent>();
         auto     cameraComponent       = _playerController->GetControlledEntity().GetComponent<CameraComponent>();
-        XMVECTOR input = XMVectorZero();
-        float    speed = MathLibrary::CalulateVectorLength(dragVelocity);
+        XMVECTOR input                 = XMVectorZero();
+        float    speed                 = MathLibrary::CalulateVectorLength(dragVelocity);
 
         float dot = MathLibrary::VectorDotProduct(input, dragVelocity);
         float accel;
 
         if (GamePad::Get()->CheckConnection() == true)
         {
-                input =
-                    deltaTime * XMVectorSet((float)GamePad::Get()->leftStickX, (float)GamePad::Get()->leftStickY, 0.0f, 0.0f) * 15.0f;
+                input = deltaTime *
+                        XMVectorSet((float)GamePad::Get()->leftStickX, (float)GamePad::Get()->leftStickY, 0.0f, 0.0f) * 15.0f;
         }
 
         if (GamePad::Get()->CheckConnection() == false)
@@ -95,4 +96,6 @@ void PlayerPuzzleState::Update(float deltaTime)
 }
 
 void PlayerPuzzleState::Exit()
-{}
+{
+        GEngine::Get()->m_TargetPuzzleState = 0.0f;
+}

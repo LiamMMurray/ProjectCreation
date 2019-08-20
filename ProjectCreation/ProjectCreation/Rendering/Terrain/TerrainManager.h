@@ -62,6 +62,7 @@ class TerrainManager
         ID3D11InputLayout*  inputLayout;
         ID3D11VertexShader* vertexShader;
         ID3D11HullShader*   hullShader;
+        ID3D11HullShader*   oceanHullShader;
         ID3D11DomainShader* domainShader;
         ID3D11DomainShader* oceanDomainShader;
         ID3D11PixelShader*  pixelShader;
