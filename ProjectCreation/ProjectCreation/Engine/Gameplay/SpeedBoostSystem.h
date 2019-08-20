@@ -115,7 +115,7 @@ class SpeedBoostSystem : public ISystem
 
         std::unordered_map<int, SplineCluster> m_SplineClusterSpawners;
 
-        bool        ColorsCollected[4] = {false, false, false, false};
+        bool        m_ColorsCollected[4] = {false, false, false, false};
         const char* spawnNames[3]       = {"redPlanetSpawn", "greenPlanetSpawn", "bluePlanetSpawn"};
         bool        m_ColorChangeInPath = false;
 

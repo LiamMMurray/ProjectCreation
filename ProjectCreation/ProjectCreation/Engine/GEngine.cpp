@@ -4,7 +4,7 @@
 #include "GEngine.h"
 #include "MathLibrary/MathLibrary.h"
 GEngine*         GEngine::instance        = 0;
-bool             GEngine::ShowFPS         = false;
+bool             GEngine::ShowFPS         = true;
 NMemory::memsize GEngine::s_PoolAllocSize = MB(64);
 
 void GEngine::SetGamePaused(bool val)

@@ -361,6 +361,11 @@ void SpeedBoostSystem::RequestUnlatchFromSpline(PlayerController* playerControll
                         SpeedboostSplineComponent* latchedSplineComp = latchedSplineHandle.Get<SpeedboostSplineComponent>();
                         TransformComponent*        playerTransform =
                             playerController->GetControlledEntity().GetComponent<TransformComponent>();
+                        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+                        controllerSys->resetCollectedOrbEventID(latchedSplineComp->color);
+
+                        playerController->m_CollectedSplineOrbCount = 0;
+                        playerController->m_TotalSplineOrbCount     = 0;
                         // Destroy the old spline
                         DestroySpline(latchedSplineComp->clusterID, latchedSplineComp->index);
                 }
@@ -871,11 +876,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 {
                         RequestUnlatchFromSpline(playerController, deltaTime);
 
-                        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-                        controllerSys->resetCollectedOrbEventID(latchedColor);
-
-                        playerController->m_CollectedSplineOrbCount = 0;
-                        playerController->m_TotalSplineOrbCount     = 0;
                 }
         }
 

@@ -195,7 +195,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         transComp->wrapping = false;
                         playerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
                         playerController->SetCollectedPlanetCount(1 + playerController->GetCollectedPlanetCount());
-                        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->ColorsCollected[goalComp.color] = true;
+                        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[goalComp.color] = true;
                 }
 
                 if (goalComp.goalState == E_GOAL_STATE::Done)
