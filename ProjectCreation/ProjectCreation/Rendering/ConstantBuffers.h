@@ -23,7 +23,7 @@ struct alignas(16) CSceneInfoBuffer
         float             scale;
         float             _InstanceReveal;
         DirectX::XMFLOAT3 worldOffsetDelta;
-        float             otherPadding;
+        float             puzzleState;
 };
 
 struct alignas(16) CAnimationBuffer

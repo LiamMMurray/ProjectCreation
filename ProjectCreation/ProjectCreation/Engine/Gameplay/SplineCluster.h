@@ -4,13 +4,19 @@
 #include "..//..//ECS/ECSTypes.h"
 #include "..//MathLibrary/Splines/FGoodSpline.h"
 #include "..//MathLibrary/Transform.h"
+
+struct SplinePoint
+{
+        DirectX::XMVECTOR pos;
+        unsigned int      color;
+};
+
 struct SplineCluster
 {
         SplineCluster(const FGoodSpline&);
 
         std::vector<ComponentHandle>   splineComponentList;
-        std::vector<DirectX::XMVECTOR> cachedPoints;
-        std::vector<int>               cachedColors;
+        std::vector<SplinePoint>       cachedPoints;
         FGoodSpline                    spline;
         DirectX::XMMATRIX              transform;
         DirectX::XMVECTOR              currPos;

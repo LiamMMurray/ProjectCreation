@@ -129,8 +129,10 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
         }
 
         XMVECTOR correctedCurr = curr + GEngine::Get()->m_OriginOffset - cluster.originalWorldOffset;
-        cluster.cachedPoints.push_back(correctedCurr);
-        cluster.cachedColors.push_back(cluster.color);
+        SplinePoint point;
+        point.pos = correctedCurr;
+        point.color = cluster.color;
+        cluster.cachedPoints.push_back(point);
         auto entityH = SpawnLightOrb(correctedCurr, cluster.color);
         auto splineH = entityH.AddComponent<SpeedboostSplineComponent>();
 
@@ -662,8 +664,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
 
                         XMVECTOR pos = splineComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
-                        clusterIt->second.cachedPoints[index] = pos;
-                        clusterIt->second.cachedColors[index] = splineComp.color;
+                        clusterIt->second.cachedPoints[index].pos = pos;
+                        clusterIt->second.cachedPoints[index].color = splineComp.color;
                         int splineColor                       = splineComp.color;
 
                         XMVECTOR dirVector = pos - playerTransform->transform.translation;
@@ -699,7 +701,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         }
                         else
                         {
-                                XMVECTOR currPos = clusterIt->second.cachedPoints[index];
+                                XMVECTOR currPos = clusterIt->second.cachedPoints[index].pos;
                                 XMVECTOR nextPos;
                                 XMVECTOR prevPos;
 
@@ -710,7 +712,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                                 else
                                 {
-                                        prevPos = clusterIt->second.cachedPoints[index - 1];
+                                        prevPos = clusterIt->second.cachedPoints[index - 1].pos;
                                 }
 
                                 if (index >= clusterIt->second.cachedPoints.size() - 1)
@@ -720,7 +722,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                                 else
                                 {
-                                        nextPos = clusterIt->second.cachedPoints[index + 1];
+                                        nextPos = clusterIt->second.cachedPoints[index + 1].pos;
                                 }
 
 

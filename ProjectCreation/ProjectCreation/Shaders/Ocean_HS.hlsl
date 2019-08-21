@@ -77,7 +77,7 @@ float CalculateTessellationFactor(float3 Control0, float3 Control1)
 bool AABBToPlane(float3 center, float3 extents, float4 plane)
 {
         float3 n = abs(plane.xyz);
-        float  r = dot(extents, n) ;
+        float  r = dot(extents, n);
         float  s = dot(center, plane.xyz) - plane.w;
         return (s + r) < 0.0f;
 }
@@ -97,8 +97,8 @@ bool AABBToFrustum(float3 center, float3 extents)
 
 float3 CalcGerstnerWaveOffset(float3 v)
 {
-        float  scale = gScale / 8000.0f;
-        float3 inPos = v - gOriginOffset;
+        float  scale  = gScale / 8000.0f;
+        float3 inPos  = v - gOriginOffset;
         float3 output = inPos;
 
         float dist          = distance(_EyePosition, v) - 50.0f;
@@ -124,7 +124,7 @@ float3 CalcGerstnerWaveOffset(float3 v)
 
                 output.xz += alpha * (c + 1.0f) * wave.amplitude * scale * Qi * wave.dir;
         }
-
+        output += gOriginOffset;
         return output;
 }
 
@@ -133,8 +133,8 @@ HullConstantDataOut CalcHSPatchConstants(InputPatch<VertexOut, NUM_CONTROL_POINT
 {
         HullConstantDataOut hCDOut;
 
-        float minY = -20.0f;
-        float maxY = 10.0f;
+        float minY = -30.0f;
+        float maxY = 20.0f;
 
         float3 vMin = ip[0].PosW;
         float3 vMax = ip[0].PosW;

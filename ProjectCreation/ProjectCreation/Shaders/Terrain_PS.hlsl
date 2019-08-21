@@ -32,6 +32,14 @@ struct DomainOutput
 
 float4 main(DomainOutput pIn) : SV_TARGET
 {
+        float  aspectRatio = _ScreenDimensions.x / _ScreenDimensions.y;
+        float2 screenPos   = (pIn.Pos.xy / _ScreenDimensions) * 2.0f - 1.0f;
+        screenPos.x *= aspectRatio;
+
+        float distanceToCenter = sqrt(dot(screenPos, screenPos)) + (1.0f - _PuzzleState);
+
+        clip(distanceToCenter < 0.8f ? -1 : 1);
+
         float2 leftTex   = pIn.Tex + float2(-gTexelSize, 0.0f);
         float2 rightTex  = pIn.Tex + float2(gTexelSize, 0.0f);
         float2 bottomTex = pIn.Tex + float2(0.0f, -gTexelSize);

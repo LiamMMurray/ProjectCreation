@@ -225,10 +225,10 @@ void PlayerGroundState::Update(float deltaTime)
         if (bUseGravity == false)
         {
                 float forwardSpeed = MathLibrary::CalulateVectorLength(currentVelocity);
-                targetFOV          = MathLibrary::lerp<float>(targetFOV, 150.0f, MathLibrary::saturate(forwardSpeed / 3.0f));
+                targetFOV          = MathLibrary::lerp<float>(targetFOV, 200.0f, MathLibrary::saturate(forwardSpeed / 3.0f));
         }
         cameraComponent->m_Settings.m_HorizontalFOV =
-            MathLibrary::lerp<float>(cameraComponent->m_Settings.m_HorizontalFOV, targetFOV, deltaTime * 0.5f);
+            MathLibrary::lerp<float>(cameraComponent->m_Settings.m_HorizontalFOV, targetFOV, deltaTime * 1.5f);
         cameraComponent->dirty = true;
 
         auto sunComp                        = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>();

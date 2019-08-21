@@ -69,7 +69,8 @@ float GEngine::Update()
 
         m_PlayerRadius = MathLibrary::MoveTowards(m_PlayerRadius, m_DesiredPlayerRadius, m_RadiusTransitionSpeed * deltaTime);
 
-        m_InstanceReveal = MathLibrary::MoveTowards(m_InstanceReveal, m_TargetInstanceReveal, 0.05f * deltaTime);
+        m_InstanceReveal     = MathLibrary::MoveTowards(m_InstanceReveal, m_TargetInstanceReveal, 0.05f * deltaTime);
+        m_CurrentPuzzleState = MathLibrary::MoveTowards(m_CurrentPuzzleState, m_TargetPuzzleState, 1.0f * deltaTime);
 
         GetLevelStateManager()->Update(deltaTime);
         return deltaTime;

@@ -343,7 +343,8 @@ void RenderSystem::CreateInputLayouts()
         assert(SUCCEEDED(hr));
 
         D3D11_INPUT_ELEMENT_DESC vLayoutLine[] = {
-            {"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}};
+            {"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"COLOR", 0, DXGI_FORMAT_R32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}};
 
         er = FileIO::LoadShaderDataFromFile("Line", "_VS", &shaderData);
 
@@ -576,7 +577,7 @@ void RenderSystem::DrawLines()
         // return;
         using namespace DirectX;
 
-        UINT stride = sizeof(XMVECTOR);
+        UINT stride = sizeof(SplinePoint);
         UINT offset = 0;
 
         m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::LINE]);
@@ -626,34 +627,32 @@ void RenderSystem::DrawLines()
                     m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE], &surf, sizeof(FSurfaceProperties));
 
 
-                        if (lengthA > 1)
-                        {
-                                D3D11_MAPPED_SUBRESOURCE mappedResource{};
-                                m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+                if (lengthA > 1)
+                {
+                        D3D11_MAPPED_SUBRESOURCE mappedResource{};
+                        m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
-                                memcpy(mappedResource.pData, it.second.cachedPoints.data(), (lengthA) * sizeof(XMVECTOR));
-                                m_Context->Unmap(m_LineVertexBuffer, 0);
+                        memcpy(mappedResource.pData, it.second.cachedPoints.data(), (lengthA) * sizeof(SplinePoint));
+                        m_Context->Unmap(m_LineVertexBuffer, 0);
 
-                                m_Context->Draw(lengthA, 0);
-                        }
+                        m_Context->Draw(lengthA, 0);
+                }
 
-                        if (lengthB > 1)
-                        {
-                                D3D11_MAPPED_SUBRESOURCE mappedResource{};
-                                m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-                                memcpy(mappedResource.pData,
-                                       it.second.cachedPoints.data() + startB,
-                                       (lengthB) * sizeof(XMVECTOR));
-                                m_Context->Unmap(m_LineVertexBuffer, 0);
+                if (lengthB > 1)
+                {
+                        D3D11_MAPPED_SUBRESOURCE mappedResource{};
+                        m_Context->Map(m_LineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+                        memcpy(mappedResource.pData, it.second.cachedPoints.data() + startB, (lengthB) * sizeof(SplinePoint));
+                        m_Context->Unmap(m_LineVertexBuffer, 0);
 
-                                m_Context->Draw(lengthB, 0);
-                        }
+                        m_Context->Draw(lengthB, 0);
+                }
         }
         ID3D11GeometryShader* nullGS = nullptr;
         m_Context->GSSetShader(nullGS, 0, 0);
 
 
-        if (orbitSystem->activeGoal.hasActiveGoal == true)
+        /*if (orbitSystem->activeGoal.hasActiveGoal == true)
         {
                 int vertexCount = 2;
 
@@ -673,7 +672,7 @@ void RenderSystem::DrawLines()
                     m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::SURFACE], &surf, sizeof(FSurfaceProperties));
 
                 m_Context->Draw(vertexCount, 0);
-        }
+        }*/
 
         m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
         m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -873,6 +872,7 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         XMStoreFloat3(&m_ConstantBuffer_SCENE.worldOffsetDelta, GEngine::Get()->m_WorldOffsetDelta);
 
         m_ConstantBuffer_SCENE._InstanceReveal = GEngine::Get()->m_InstanceReveal;
+        m_ConstantBuffer_SCENE.puzzleState     = GEngine::Get()->m_CurrentPuzzleState;
 
         /** Prepare draw calls **/
         m_TransluscentDraws.clear();
@@ -1035,19 +1035,19 @@ void RenderSystem::OnUpdate(float deltaTime)
         /** Render opaque meshes **/
         for (size_t i = 0, n = m_OpaqueDraws.size(); i < n; ++i)
         {
-                if (m_OpaqueDraws[i].meshType == FDraw::EDrawType::Static)
-                {
-                        StaticMesh* mesh = m_ResourceManager->GetResource<StaticMesh>(m_OpaqueDraws[i].meshResource);
-                        Material*   mat  = m_ResourceManager->GetResource<Material>(m_OpaqueDraws[i].materialHandle);
-                        DrawStaticMesh(mesh, mat, &m_OpaqueDraws[i].mtx);
-                }
+                /*if (m_OpaqueDraws[i].meshType == FDraw::EDrawType::Static)
+                {*/
+                StaticMesh* mesh = m_ResourceManager->GetResource<StaticMesh>(m_OpaqueDraws[i].meshResource);
+                Material*   mat  = m_ResourceManager->GetResource<Material>(m_OpaqueDraws[i].materialHandle);
+                DrawStaticMesh(mesh, mat, &m_OpaqueDraws[i].mtx);
+                /*}
                 else
                 {
                         SkeletalMesh* mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_OpaqueDraws[i].meshResource);
                         Material*     mat  = m_ResourceManager->GetResource<Material>(m_OpaqueDraws[i].materialHandle);
                         SkeletalMeshComponent* meshComp = m_OpaqueDraws[i].componentHandle.Get<SkeletalMeshComponent>();
                         DrawSkeletalMesh(mesh, mat, &m_OpaqueDraws[i].mtx, &meshComp->m_Skeleton);
-                }
+                }*/
         }
 
 
@@ -1056,19 +1056,19 @@ void RenderSystem::OnUpdate(float deltaTime)
         m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Additive], blendFactor, sampleMask);
         for (size_t i = 0, n = m_TransluscentDraws.size(); i < n; ++i)
         {
-                if (m_TransluscentDraws[i].meshType == FDraw::EDrawType::Static)
-                {
-                        StaticMesh* mesh = m_ResourceManager->GetResource<StaticMesh>(m_TransluscentDraws[i].meshResource);
-                        Material*   mat  = m_ResourceManager->GetResource<Material>(m_TransluscentDraws[i].materialHandle);
-                        DrawStaticMesh(mesh, mat, &m_TransluscentDraws[i].mtx);
-                }
+                /*if (m_TransluscentDraws[i].meshType == FDraw::EDrawType::Static)
+                {*/
+                StaticMesh* mesh = m_ResourceManager->GetResource<StaticMesh>(m_TransluscentDraws[i].meshResource);
+                Material*   mat  = m_ResourceManager->GetResource<Material>(m_TransluscentDraws[i].materialHandle);
+                DrawStaticMesh(mesh, mat, &m_TransluscentDraws[i].mtx);
+                /*}
                 else
                 {
                         SkeletalMesh* mesh = m_ResourceManager->GetResource<SkeletalMesh>(m_TransluscentDraws[i].meshResource);
                         Material*     mat  = m_ResourceManager->GetResource<Material>(m_TransluscentDraws[i].materialHandle);
                         SkeletalMeshComponent* meshComp = m_TransluscentDraws[i].componentHandle.Get<SkeletalMeshComponent>();
                         DrawSkeletalMesh(mesh, mat, &m_TransluscentDraws[i].mtx, &meshComp->m_Skeleton);
-                }
+                }*/
         }
         DrawLines();
 
@@ -1156,6 +1156,11 @@ void RenderSystem::OnInitialize()
                 EntityFactory::CreateStaticMeshEntity("SkyDome01", "SkyMat01", &m_SkyHandle);
                 auto transComp = m_SkyHandle.Get<TransformComponent>();
                 transComp->transform.SetScale(1400.0f);
+        }
+        {
+                EntityFactory::CreateStaticMeshEntity("SkyDome01", "CloudMat01", &m_SkyHandle);
+                auto transComp = m_SkyHandle.Get<TransformComponent>();
+                transComp->transform.SetScale(1000.0f);
         }
 }
 
