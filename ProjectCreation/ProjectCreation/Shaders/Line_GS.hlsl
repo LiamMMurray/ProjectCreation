@@ -14,7 +14,7 @@ struct INPUT_PIXEL
         float2 Tex : TEXCOORD0;
 };
 
-static float4 colors[3] = {float4(1.0f, 0.0f, 0.0f, 1.0f), float4(0.0f, 1.0f, 0.0f, 1.0f), float4(0.0f, 0.0f, 1.0f, 0.0f)};
+static float4 colors[3] = {float4(2.0f, 0.0f, 0.0f, 1.0f), float4(0.0f, 2.0f, 0.0f, 1.0f), float4(0.0f, 2.0f, 4.0f, 0.0f)};
 
 [maxvertexcount(64)] void main(line OUTPUT_VERTEX input[2], uint primID
                                : SV_PrimitiveID, inout TriangleStream<INPUT_PIXEL> output) {
