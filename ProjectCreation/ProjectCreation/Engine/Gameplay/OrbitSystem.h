@@ -33,7 +33,7 @@ class OrbitSystem : public ISystem
                 bool         hasActiveGoal = false;
         };
 
-        static constexpr float goalDistances[3] = {10.0f, 10.0f, 10.0f};
+        static constexpr float goalDistances[4] = {10.0f, 10.0f, 10.0f, 10.0f};
 
         std::vector<ComponentHandle> sunAlignedTransforms;
 
@@ -50,7 +50,8 @@ class OrbitSystem : public ISystem
         virtual void OnResume() override;
         virtual void OnSuspend() override;
 
-        int collectEventTimestamps[3] = {-1, -1, -1};
+        int collectEventTimestamps[4] = {-1, -1, -1, -1};
+        bool tutorialPlanets[4]        = {false, false, false, false};
 
     public:
         std::vector<ComponentHandle> sunAlignedTransformsSpawning;

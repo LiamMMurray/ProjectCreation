@@ -122,9 +122,9 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
 
         if (changeColor)
         {
-                int div       = cluster.current / 10;
-                int color     = (cluster.targetColor + div) % 3;
-                cluster.color = color;
+                int div                                     = cluster.current / 10;
+                int color                                   = (cluster.targetColor + div) % 3;
+                cluster.color                               = color;
                 m_SplineClusterSpawners.at(clusterID).color = color;
         }
 
@@ -295,7 +295,13 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
 
         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
 
-        for (int i = 0; i < 3; ++i)
+
+        //if (inTutorial == true && controllerSys->GetOrbCount(4) >= 3)
+        //{
+        //        CreateRandomPath(start, end, 4, width, waveCount, height);
+        //}
+
+        for (int i = 0; i < 4; ++i)
         {
 
                 if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
@@ -321,11 +327,11 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                         XMVECTOR delta    = endPos - start;
                         float    distance = MathLibrary::CalulateVectorLength(delta);
                         XMVECTOR dir      = XMVector3Normalize(delta);
-
+						
                         float actualDistance = std::min(pathLength, distance - 5.0f);
-
+						
                         XMVECTOR end = start + dir * actualDistance;
-
+						
                         float width     = splineWidth * actualDistance / pathLength;
                         float height    = splineHeight * actualDistance / pathLength;
                         int   waveCount = std::lroundf(3.0f * actualDistance / pathLength);
@@ -336,9 +342,12 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                         if (pathExists == false)
                         {
                                 CreateRandomPath(start, end, i, width, waveCount, height);
-                                auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
-                                spawnSound->SetVolume(0.8f);
-                                spawnSound->Play();
+                                if (i < 3)
+                                {
+                                        auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
+                                        spawnSound->SetVolume(0.8f);
+                                        spawnSound->Play();
+                                }
                                 pathExists = true;
                         }
                 }
@@ -421,7 +430,7 @@ void SpeedBoostSystem::DestroySpline(int SplineID, int start)
         toDelete.shouldDestroy    = true;
         toDelete.deleteSeparation = 0;
         toDelete.deleteIndex      = start;
-        pathExists                                  = false;
+        pathExists                = false;
 }
 
 
@@ -449,6 +458,14 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
         {
                 SetTargetTerrain(1.0f);
                 targetTerrain = m_targetTerrain;
+        }
+
+        if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() >= E_Level_States::LEVEL_02)
+        {
+                auto Waves = AudioManager::Get()->LoadMusic("Ambience_andWaves");
+                Waves->SetVolume(0.6f);
+                AudioManager::Get()->ActivateMusicAndPause(Waves, true);
+                Waves->ResumeStream();
         }
 
         // if (InputActions::CheckActionDown(E_LIGHT_ORBS::RED_LIGHTS))
@@ -610,9 +627,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
         testJob.Wait();
 
 
-
-
-
         {
                 const XMVECTOR offset = m_SplineHeightOffset * VectorConstants::Up;
 
@@ -669,7 +683,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         }
                 }
 
-				int latchedColor = -1;
+                int latchedColor = -1;
 
                 if (latchedSplineIndex != -1 || shouldLatch)
                 {
@@ -774,10 +788,14 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                         variation = totalVariations - variation;
                                                 }
 
+
                                                 settings.m_SoundVaration = variation;
                                                 settings.flags.set(SoundComponent3D::E_FLAGS::DestroyOnEnd, true);
                                                 settings.m_Volume = 1.0f;
-                                                AudioManager::Get()->PlaySoundAtLocation(currPos, settings);
+                                                if (latchedSplineComp->color != E_LIGHT_ORBS::WHITE_LIGHTS)
+                                                {
+                                                        AudioManager::Get()->PlaySoundAtLocation(currPos, settings);
+                                                }
                                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating    = true;
                                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrength = 0.25f;
                                                 playerController->m_CollectedSplineOrbCount++;
@@ -875,7 +893,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 else
                 {
                         RequestUnlatchFromSpline(playerController, deltaTime);
-
                 }
         }
 
@@ -975,6 +992,9 @@ void SpeedBoostSystem::OnInitialize()
         m_HandleManager   = GEngine::Get()->GetHandleManager();
         m_SystemManager   = GEngine::Get()->GetSystemManager();
         m_ResourceManager = GEngine::Get()->GetResourceManager();
+
+        // m_Spline_Ambience = AudioManager::Get()->LoadMusic("RED_SPLINE_AMBIENT");
+        // m_Spline_Ambience->SetVolume(0.4f);
 
         auto baseMatHandle = m_ResourceManager->LoadMaterial("GlowSpeedboostBase");
 

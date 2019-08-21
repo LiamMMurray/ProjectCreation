@@ -8,6 +8,7 @@
 #include "..//GEngine.h"
 #include "../Controller/ControllerSystem.h"
 #include "../GenericComponents/TransformComponent.h"
+#include "../Levels/TutorialLevel.h"
 #include "../Particle Systems/EmitterComponent.h"
 #include "../ResourceManager/Material.h"
 #include "SpeedBoostSystem.h"
@@ -77,8 +78,8 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
 
 void OrbitSystem::CreateTutorialGoal(int color, DirectX::XMVECTOR position)
 {
-        color = std::min(2, color);
-
+        color = std::min(3, color);
+        tutorialPlanets[color] = true;
         if (activeGoal.hasActiveGoal)
         {
                 activeGoal.activeGoalGround.Free();
@@ -132,7 +133,8 @@ void OrbitSystem::CreateTutorialGoal(int color, DirectX::XMVECTOR position)
         emitterComponent->maxCount                  = 0;
         emitterComponent->spawnRate                 = 0.0f;
         emitterComponent->EmitterData.textureIndex  = 3;
-        /*** REFACTORING CODE END ***/}
+        /*** REFACTORING CODE END ***/
+}
 
         void OrbitSystem::UpdateSunAlignedObjects()
         {
@@ -213,130 +215,143 @@ void OrbitSystem::CreateTutorialGoal(int color, DirectX::XMVECTOR position)
 
                         XMVECTOR offset1 = XMVectorSet(x, y, 0, 0.0f);
 
-                        // if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() ==
-                        // E_Level_States::TUTORIAL_LEVEL)
-                        //{
-                        //        offset1 = XMVector3Rotate(offset1, sunRotation.data);
-                        //
-                        //        goalComp.goalTransform.translation = orbitCenter + offset1 * 150.f * (goalComp.color + 1.0f);
-                        //        transCompPuzzle->transform         = goalComp.goalTransform;
-                        //
-                        //        if (goalComp.goalState == E_GOAL_STATE::Spawning)
-                        //        {
-                        //                float scale       = transComp->transform.GetRadius();
-                        //                float targetScale = goalComp.initialTransform.GetRadius();
-                        //                float newScale    = MathLibrary::MoveTowards(scale, targetScale, deltaTime * 0.25f);
-                        //                transComp->transform.SetScale(newScale);
-                        //
-                        //                if (scale >= targetScale)
-                        //                        goalComp.goalState = E_GOAL_STATE::Idle;
-                        //
-                        //                return;
-                        //        }
-                        //
-                        //        float distanceSq = MathLibrary::CalulateDistanceSq(playerTransform->transform.translation,
-                        //                                                           transComp->transform.translation);
-                        //
-                        //        auto emitterComponent = goalParent.GetComponent<EmitterComponent>();
-                        //        if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 80.0f)
-                        //        {
-                        //
-                        //                emitterComponent->spawnRate = 50.0f;
-                        //                emitterComponent->maxCount  = 2048;
-                        //        }
-                        //        XMVECTOR deltaDistance =
-                        //            transCompPuzzle->transform.translation - transComp->transform.translation;
-                        //        XMVECTOR offset = 1.0f * XMVector3Normalize(deltaDistance);
-                        //        XMStoreFloat3(&emitterComponent->EmitterData.minInitialVelocity, XMVectorZero());
-                        //        XMStoreFloat3(&emitterComponent->EmitterData.maxInitialVelocity, +offset);
-                        //        XMStoreFloat3(&emitterComponent->EmitterData.acceleration, deltaDistance / 100.0f);
-                        //
-                        //        if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 3.5f)
-                        //        {
-                        //                // goalComp.targetAlpha = 1.0f;
-                        //                // playerController->SetGoalComponent(goalComp.GetHandle());
-                        //                goalComp.goalState  = E_GOAL_STATE::InitialTransition;
-                        //                transComp->wrapping = false;
-                        //        }
-                        //
-                        //        if (goalComp.goalState == E_GOAL_STATE::Done)
-                        //        {
-                        //                goalComp.targetAlpha = 1.0f;
-                        //
-                        //                float dist  = MathLibrary::CalulateDistance(goalComp.initialTransform.translation,
-                        //                                                           goalComp.goalTransform.translation);
-                        //
-                        //                float speed = MathLibrary::lerp(goalComp.transitionInitialSpeed,
-                        //                                                goalComp.transitionFinalSpeed,
-                        //                                                std::min(1.0f, goalComp.currAlpha));
-                        //                goalComp.currAlpha = MathLibrary::MoveTowards(
-                        //                    goalComp.currAlpha, goalComp.targetAlpha, speed * deltaTime * 1.0f / dist);
-                        //
-                        //                transComp->transform = FTransform::Lerp(goalComp.initialTransform,
-                        //                                                        goalComp.goalTransform,
-                        //                                                        std::min(1.0f, goalComp.currAlpha));
-                        //        }
-                        //}
-
-                        offset1 = XMVector3Rotate(offset1, sunRotation.data);
-
-                        goalComp.goalTransform.translation = orbitCenter + offset1 * 150.f * (goalComp.color + 1.0f);
-                        transCompPuzzle->transform         = goalComp.goalTransform;
-
-                        if (goalComp.goalState == E_GOAL_STATE::Spawning)
+                        if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() ==
+                            E_Level_States::TUTORIAL_LEVEL)
                         {
-                                float scale       = transComp->transform.GetRadius();
-                                float targetScale = goalComp.initialTransform.GetRadius();
-                                float newScale    = MathLibrary::MoveTowards(scale, targetScale, deltaTime * 0.25f);
-                                transComp->transform.SetScale(newScale);
+                                offset1 = XMVector3Rotate(offset1, sunRotation.data);
 
-                                if (scale >= targetScale)
-                                        goalComp.goalState = E_GOAL_STATE::Idle;
+                                goalComp.goalTransform.translation = orbitCenter + offset1 * 150.f * (goalComp.color + 1.0f);
+                                transCompPuzzle->transform         = goalComp.goalTransform;
 
-                                return;
+                                if (goalComp.goalState == E_GOAL_STATE::Spawning)
+                                {
+                                        float scale       = transComp->transform.GetRadius();
+                                        float targetScale = goalComp.initialTransform.GetRadius();
+                                        float newScale    = MathLibrary::MoveTowards(scale, targetScale, deltaTime * 0.25f);
+                                        transComp->transform.SetScale(newScale);
+
+                                        if (scale >= targetScale)
+                                                goalComp.goalState = E_GOAL_STATE::Idle;
+
+                                        return;
+                                }
+
+                                float distanceSq = MathLibrary::CalulateDistanceSq(playerTransform->transform.translation,
+                                                                                   transComp->transform.translation);
+
+                                auto emitterComponent = goalParent.GetComponent<EmitterComponent>();
+                                if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 80.0f)
+                                {
+
+                                        emitterComponent->spawnRate = 50.0f;
+                                        emitterComponent->maxCount  = 2048;
+                                }
+                                XMVECTOR deltaDistance =
+                                    transCompPuzzle->transform.translation - transComp->transform.translation;
+                                XMVECTOR offset = 1.0f * XMVector3Normalize(deltaDistance);
+                                XMStoreFloat3(&emitterComponent->EmitterData.minInitialVelocity, XMVectorZero());
+                                XMStoreFloat3(&emitterComponent->EmitterData.maxInitialVelocity, +offset);
+                                XMStoreFloat3(&emitterComponent->EmitterData.acceleration, deltaDistance / 100.0f);
+
+                                if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 4.0f)
+                                {
+                                        // goalComp.targetAlpha = 1.0f;
+                                        // playerController->SetGoalComponent(goalComp.GetHandle());
+                                        goalComp.goalState  = E_GOAL_STATE::Done;
+                                        transComp->wrapping = false;
+                                        TutorialLevel::Get()->RequestNextPhase();
+                                        //playerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
+                                        //playerController->SetCollectedPlanetCount(1 +
+                                        //                                          playerController->GetCollectedPlanetCount());
+                                        //SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[goalComp.color] = true;
+                                }
+
+                                if (goalComp.goalState == E_GOAL_STATE::Done)
+                                {
+                                        //goalComp.targetAlpha = 1.0f;
+										//
+                                        //float dist = MathLibrary::CalulateDistance(goalComp.initialTransform.translation,
+                                        //                                           goalComp.goalTransform.translation);
+										//
+                                        //float speed        = MathLibrary::lerp(goalComp.transitionInitialSpeed,
+                                        //                                goalComp.transitionFinalSpeed,
+                                        //                                std::min(1.0f, goalComp.currAlpha));
+                                        //goalComp.currAlpha = MathLibrary::MoveTowards(
+                                        //    goalComp.currAlpha, goalComp.targetAlpha, speed * deltaTime * 1.0f / dist);
+										//
+                                        //transComp->transform = FTransform::Lerp(goalComp.initialTransform,
+                                        //                                        goalComp.goalTransform,
+                                        //                                        std::min(1.0f, goalComp.currAlpha));
+                                        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->inPath = false;
+                                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->ResetOrbCount(goalComp.color);
+                                        DestroyPlanet(&goalComp);
+                                }
                         }
-
-                        float distanceSq = MathLibrary::CalulateDistanceSq(playerTransform->transform.translation,
-                                                                           transComp->transform.translation);
-
-                        auto emitterComponent = goalParent.GetComponent<EmitterComponent>();
-                        if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 80.0f)
+                        else
                         {
+                                offset1 = XMVector3Rotate(offset1, sunRotation.data);
 
-                                emitterComponent->spawnRate = 50.0f;
-                                emitterComponent->maxCount  = 2048;
-                        }
-                        XMVECTOR deltaDistance = transCompPuzzle->transform.translation - transComp->transform.translation;
-                        XMVECTOR offset        = 1.0f * XMVector3Normalize(deltaDistance);
-                        XMStoreFloat3(&emitterComponent->EmitterData.minInitialVelocity, XMVectorZero());
-                        XMStoreFloat3(&emitterComponent->EmitterData.maxInitialVelocity, +offset);
-                        XMStoreFloat3(&emitterComponent->EmitterData.acceleration, deltaDistance / 100.0f);
+                                goalComp.goalTransform.translation = orbitCenter + offset1 * 150.f * (goalComp.color + 1.0f);
+                                transCompPuzzle->transform         = goalComp.goalTransform;
 
-                        if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 3.5f)
-                        {
-                                // goalComp.targetAlpha = 1.0f;
-                                // playerController->SetGoalComponent(goalComp.GetHandle());
-                                goalComp.goalState  = E_GOAL_STATE::InitialTransition;
-                                transComp->wrapping = false;
-                                playerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
-                                playerController->SetCollectedPlanetCount(1 + playerController->GetCollectedPlanetCount());
-                                SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[goalComp.color] = true;
-                        }
+                                if (goalComp.goalState == E_GOAL_STATE::Spawning)
+                                {
+                                        float scale       = transComp->transform.GetRadius();
+                                        float targetScale = goalComp.initialTransform.GetRadius();
+                                        float newScale    = MathLibrary::MoveTowards(scale, targetScale, deltaTime * 0.25f);
+                                        transComp->transform.SetScale(newScale);
 
-                        if (goalComp.goalState == E_GOAL_STATE::Done)
-                        {
-                                goalComp.targetAlpha = 1.0f;
+                                        if (scale >= targetScale)
+                                                goalComp.goalState = E_GOAL_STATE::Idle;
 
-                                float dist         = MathLibrary::CalulateDistance(goalComp.initialTransform.translation,
-                                                                           goalComp.goalTransform.translation);
-                                float speed        = MathLibrary::lerp(goalComp.transitionInitialSpeed,
-                                                                goalComp.transitionFinalSpeed,
-                                                                std::min(1.0f, goalComp.currAlpha));
-                                goalComp.currAlpha = MathLibrary::MoveTowards(
-                                    goalComp.currAlpha, goalComp.targetAlpha, speed * deltaTime * 1.0f / dist);
+                                        return;
+                                }
 
-                                transComp->transform = FTransform::Lerp(
-                                    goalComp.initialTransform, goalComp.goalTransform, std::min(1.0f, goalComp.currAlpha));
+                                float distanceSq = MathLibrary::CalulateDistanceSq(playerTransform->transform.translation,
+                                                                                   transComp->transform.translation);
+
+                                auto emitterComponent = goalParent.GetComponent<EmitterComponent>();
+                                if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 80.0f)
+                                {
+
+                                        emitterComponent->spawnRate = 50.0f;
+                                        emitterComponent->maxCount  = 2048;
+                                }
+                                XMVECTOR deltaDistance =
+                                    transCompPuzzle->transform.translation - transComp->transform.translation;
+                                XMVECTOR offset = 1.0f * XMVector3Normalize(deltaDistance);
+                                XMStoreFloat3(&emitterComponent->EmitterData.minInitialVelocity, XMVectorZero());
+                                XMStoreFloat3(&emitterComponent->EmitterData.maxInitialVelocity, +offset);
+                                XMStoreFloat3(&emitterComponent->EmitterData.acceleration, deltaDistance / 100.0f);
+
+                                if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 3.5f)
+                                {
+                                        // goalComp.targetAlpha = 1.0f;
+                                        // playerController->SetGoalComponent(goalComp.GetHandle());
+                                        goalComp.goalState  = E_GOAL_STATE::InitialTransition;
+                                        transComp->wrapping = false;
+                                        playerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
+                                        playerController->SetCollectedPlanetCount(1 +
+                                                                                  playerController->GetCollectedPlanetCount());
+                                        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[goalComp.color] = true;
+                                }
+
+                                if (goalComp.goalState == E_GOAL_STATE::Done)
+                                {
+                                        goalComp.targetAlpha = 1.0f;
+
+                                        float dist  = MathLibrary::CalulateDistance(goalComp.initialTransform.translation,
+                                                                                   goalComp.goalTransform.translation);
+                                        float speed = MathLibrary::lerp(goalComp.transitionInitialSpeed,
+                                                                        goalComp.transitionFinalSpeed,
+                                                                        std::min(1.0f, goalComp.currAlpha));
+                                        goalComp.currAlpha = MathLibrary::MoveTowards(
+                                            goalComp.currAlpha, goalComp.targetAlpha, speed * deltaTime * 1.0f / dist);
+
+                                        transComp->transform = FTransform::Lerp(goalComp.initialTransform,
+                                                                                goalComp.goalTransform,
+                                                                                std::min(1.0f, goalComp.currAlpha));
+                                }
                         }
                 }
 
@@ -346,10 +361,28 @@ void OrbitSystem::CreateTutorialGoal(int color, DirectX::XMVECTOR position)
                 nextGoalPos = XMVectorSetY(nextGoalPos, 0.0f);
 
                 ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+
+                if (GCoreInput::GetKeyState(KeyCode::Four) == KeyState::DownFirst)
+                {
+                        CreateTutorialGoal(0, nextGoalPos);
+                }
+                if (GCoreInput::GetKeyState(KeyCode::Five) == KeyState::DownFirst)
+                {
+                        CreateTutorialGoal(1, nextGoalPos);
+                }
+                if (GCoreInput::GetKeyState(KeyCode::Six) == KeyState::DownFirst)
+                {
+                        CreateTutorialGoal(2, nextGoalPos);
+                }
+                if (GCoreInput::GetKeyState(KeyCode::Seven) == KeyState::DownFirst)
+                {
+                        CreateTutorialGoal(3, nextGoalPos);
+                }
+
                 if (playerController->m_CollectedSplineOrbCount >= (playerController->m_TotalSplineOrbCount - 5) &&
                     (playerController->m_TotalSplineOrbCount > 0))
                 {
-                        for (int i = 0; i < 3; ++i)
+                        for (int i = 0; i < 4; ++i)
                         {
                                 if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
                                 {
@@ -358,7 +391,17 @@ void OrbitSystem::CreateTutorialGoal(int color, DirectX::XMVECTOR position)
                                         {
                                                 if (activeGoal.hasActiveGoal == false || activeGoal.activeColor != i)
                                                 { // play sfx when spawned
-                                                        CreateGoal(i, nextGoalPos);
+                                                        if ((GEngine::Get()
+                                                                ->GetLevelStateManager()
+                                                                ->GetCurrentLevelState()
+                                                                ->GetLevelType() == E_Level_States::TUTORIAL_LEVEL) && (tutorialPlanets[i] == false))
+                                                        {
+                                                                CreateTutorialGoal(i, nextGoalPos);
+                                                        }
+                                                        else
+                                                        {
+                                                                CreateGoal(i, nextGoalPos);
+														}
                                                 }
                                         }
                                 }

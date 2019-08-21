@@ -24,7 +24,7 @@ class ControllerSystem : public ISystem
         float             desiredColorAlpha = 0.0f;
         float             currentColorAlpha = 0.0f;
 
-        int CollectOrbEventIDs[3] = {-1, -1, -1};
+        int CollectOrbEventIDs[4] = {-1, -1, -1, -1};
 
     public:
         // bool m_toggleDebugCamera = false;

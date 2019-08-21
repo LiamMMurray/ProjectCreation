@@ -3,7 +3,6 @@
 
 #include "../Controller/ControllerSystem.h"
 
-
 void Level_02::Enter()
 {
         m_OrbitSystem->sunAlignedTransformsSpawning.push_back(m_OrbitSystem->sunHandle);
@@ -28,6 +27,9 @@ void Level_02::Enter()
 		ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         controllerSys->ResetLightOrbCounters();
 
+        AudioManager::Get()->ActivateMusicAndPause(Waves, true);
+        Waves->ResumeStream();
+
         m_LevelType = E_Level_States::LEVEL_02;
 }
 
@@ -42,4 +44,6 @@ Level_02::Level_02()
         m_OrbitSystem      = GEngine::Get()->GetSystemManager()->GetSystem<OrbitSystem>();
         m_LevelType        = E_Level_States::LEVEL_02;
         m_SpeedBoostSystem = GEngine::Get()->GetSystemManager()->GetSystem<SpeedBoostSystem>();
+        Waves         = AudioManager::Get()->LoadMusic("Ambience_andWaves");
+        Waves->SetVolume(0.6f);
 }

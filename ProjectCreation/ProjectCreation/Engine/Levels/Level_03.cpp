@@ -28,6 +28,9 @@ void Level_03::Enter()
 		ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         controllerSys->ResetLightOrbCounters();
 
+        AudioManager::Get()->ActivateMusicAndPause(Waves, true);
+        Waves->ResumeStream();
+
         m_SpeedBoostSystem->SetTargetTerrain(1.0f);
 }
 
@@ -44,4 +47,6 @@ Level_03::Level_03()
         m_OrbitSystem      = GEngine::Get()->GetSystemManager()->GetSystem<OrbitSystem>();
         m_LevelType        = E_Level_States::LEVEL_03;
         m_SpeedBoostSystem = GEngine::Get()->GetSystemManager()->GetSystem<SpeedBoostSystem>();
+        Waves              = AudioManager::Get()->LoadMusic("Ambience_andWaves");
+        Waves->SetVolume(0.6f);
 }

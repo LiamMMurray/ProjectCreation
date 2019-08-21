@@ -1,13 +1,16 @@
 #pragma once
-#include "LevelState.h"
-#include "../Gameplay/SpeedBoostSystem.h"
+#include "../Audio/AudioManager.h"
 #include "../Gameplay/OrbitSystem.h"
+#include "../Gameplay/SpeedBoostSystem.h"
+#include "LevelState.h"
 
 // LEVEL 2 : OCEAN
 class Level_02 : public ILevelState
 {
-        SpeedBoostSystem* m_SpeedBoostSystem;
-        OrbitSystem*      m_OrbitSystem;
+        SpeedBoostSystem*  m_SpeedBoostSystem;
+        OrbitSystem*       m_OrbitSystem;
+        GW::AUDIO::GMusic* Waves;
+
     public:
         // Inherited via ILevelState
         void Enter() override;

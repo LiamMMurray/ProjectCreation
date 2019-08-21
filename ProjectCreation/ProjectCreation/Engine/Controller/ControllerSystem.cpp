@@ -120,6 +120,12 @@ void ControllerSystem::OnUpdate(float deltaTime)
                 std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
         }
 
+        if (GCoreInput::GetKeyState(KeyCode::Zero) == KeyState::DownFirst)
+        {
+                IncreaseOrbCount(E_LIGHT_ORBS::WHITE_LIGHTS);
+                std::cout << "White Count: " << GetOrbCount(E_LIGHT_ORBS::WHITE_LIGHTS) << std::endl;
+        }
+
         if (IsVibrating == true)
         {
                 if (rumbleStrength <= 0)

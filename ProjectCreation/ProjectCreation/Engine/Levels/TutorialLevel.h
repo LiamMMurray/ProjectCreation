@@ -37,11 +37,12 @@ class TutorialLevel : public ILevelState
                 PHASE_2,
                 PHASE_3,
                 PHASE_4,
+                PHASE_5,
                 COUNT
         };
 
-        E_TUTORIAL_PHASE phases[E_TUTORIAL_PHASE::COUNT];
-        E_TUTORIAL_PHASE currPhase;
+        E_TUTORIAL_PHASE        phases[E_TUTORIAL_PHASE::COUNT] = {PHASE_1, PHASE_2, PHASE_3, PHASE_4, PHASE_5};
+        static E_TUTORIAL_PHASE currPhase;
         int              currPhaseIndex;
         // Inherited via ILevelState
         void Enter() override;
@@ -54,18 +55,13 @@ class TutorialLevel : public ILevelState
         int  whiteCount, redCount, blueCount, greenCount, levelRequested;
         bool finished;
 
-        inline void RequestNextPhase()
-        {
-                if (currPhaseIndex >= E_TUTORIAL_PHASE::COUNT)
-                {
-                        finished = true;
-                }
+        void RequestNextPhase();
 
-                else
-                {
-                        currPhase = phases[currPhaseIndex];
-                }
-        }
+		void UpdatePhase1(float deltaTime);
+		void UpdatePhase2(float deltaTime);
+		void UpdatePhase3(float deltaTime);
+		void UpdatePhase4(float deltaTime);
+		void UpdatePhase5(float deltaTime);
 
         void                  SpawnFirstWhiteOrb();
         void                  SpawnFirstRedOrb();

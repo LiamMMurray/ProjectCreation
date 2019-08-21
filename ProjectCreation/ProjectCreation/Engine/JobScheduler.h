@@ -604,8 +604,9 @@ inline namespace JobSchedulerAbstractionsInternal
 
                         auto  rg_PoolIndex                  = Component::SGetTypeIndex();
                         auto& rg_ComponentRandomAccessPools = GEngine::Get()->GetHandleManager()->m_ComponentRandomAccessPools;
-                        auto  rg_ComponentCount             = rg_ComponentRandomAccessPools.m_element_counts[rg_PoolIndex];
-
+                        if (rg_ComponentRandomAccessPools.m_mem_starts.size() <= rg_PoolIndex)
+								return;
+                        auto rg_ComponentCount = rg_ComponentRandomAccessPools.m_element_counts[rg_PoolIndex];
                         children = CreateParallelForSubJobs(std::forward<Lambda>(lambda), 0, rg_ComponentCount, chunkSize);
                 }
 

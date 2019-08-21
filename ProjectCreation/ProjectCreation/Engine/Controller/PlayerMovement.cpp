@@ -140,8 +140,8 @@ void PlayerController::Init(EntityHandle h)
 
         m_EulerAngles = tComp->transform.rotation.ToEulerAngles();
 
-		// Collecting spline orb values
-        m_TotalSplineOrbCount = 0;
+        // Collecting spline orb values
+        m_TotalSplineOrbCount     = 0;
         m_CollectedSplineOrbCount = 0;
 
         // Create any states and set their respective variables here
@@ -199,8 +199,8 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 m_SpeedBoostPoolCounter[color]++;
                 m_SpeedBoostPoolCounter[color] %= MAX_SPEEDBOOST_SOUNDS;
 
-				SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating = true;
-				SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrength = 0.5f;
+                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating    = true;
+                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrength = 0.5f;
 
                 return true;
         }

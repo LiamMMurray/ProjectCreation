@@ -37,6 +37,7 @@ class SpeedBoostSystem : public ISystem
         ResourceHandle speedboostMaterials[E_LIGHT_ORBS::COUNT]  = {};
         std::string speedboostMaterialNames[E_LIGHT_ORBS::COUNT] = {"SpeedboostR", "SpeedboostG", "SpeedboostB", "SpeedboostW"};
 
+		//GW::AUDIO::GMusic* m_Spline_Ambience;
 
         // void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
         void RequestDestroySplineOrb(SpeedboostSplineComponent* speedComp);
@@ -103,7 +104,7 @@ class SpeedBoostSystem : public ISystem
         virtual void OnResume() override;
         virtual void OnSuspend() override;
 
-        int collectEventTimestamps[3] = {-1, -1, -1};
+        int collectEventTimestamps[4] = {-1, -1, -1, -1};
 
     public:
         float splineHeight = 0.25f;
