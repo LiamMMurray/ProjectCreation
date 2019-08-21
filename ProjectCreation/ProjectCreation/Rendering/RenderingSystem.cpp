@@ -1157,6 +1157,11 @@ void RenderSystem::OnInitialize()
                 auto transComp = m_SkyHandle.Get<TransformComponent>();
                 transComp->transform.SetScale(1400.0f);
         }
+        {
+                EntityFactory::CreateStaticMeshEntity("SkyDome01", "CloudMat01", &m_SkyHandle);
+                auto transComp = m_SkyHandle.Get<TransformComponent>();
+                transComp->transform.SetScale(1000.0f);
+        }
 }
 
 void RenderSystem::OnShutdown()

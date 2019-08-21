@@ -33,7 +33,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         blendedColor        = lerp(blendedColor, veryFarColor, desaturationMaskB);
 
         float  uvMaskY       = 1.0f - saturate((abs(pIn.Tex.y * 2.0f - 1.0f) - 0.2f) * 5.0f);
-        float  sinDistortion = 0.5f * (sin(_Time * 10.0f - pIn.Tex.y * 20.0f));
+        float  sinDistortion = 0.3f * (sin(_Time * 10.0f - pIn.Tex.y * 20.0f));
         float2 uv            = pIn.Tex + float2(sinDistortion, 0.0f);
         float  uvMask        = 1.0f - saturate((abs(uv.x * 2.0f - 1.0f) - 0.2f) * 5.0f);
         uvMask *= uvMaskY;
