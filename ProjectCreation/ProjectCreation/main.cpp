@@ -1,4 +1,5 @@
 #include "Utility/StaticSentinelDumpMemoryLeaks.h"
+#include "Utility/StaticSentinelDumpMemoryLeaks.h"
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #define NOMINMAX

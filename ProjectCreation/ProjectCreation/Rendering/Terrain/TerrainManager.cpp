@@ -8,9 +8,12 @@
 #include "../../Engine/ResourceManager/ComputeShader.h"
 #include "..//..//Engine/Controller/ControllerSystem.h"
 #include "..//..//Engine/CoreInput/CoreInput.h"
+#include "..//..//Engine/Entities/EntityFactory.h"
 #include "..//..//Engine/GEngine.h"
 #include "..//..//Engine/GenericComponents/TransformComponent.h"
 #include "..//..//Engine/GenericComponents/TransformSystem.h"
+#include "..//..//Engine/Particle Systems/EmitterComponent.h"
+#include "..//..//Engine/Particle Systems/ParticleManager.h"
 #include "..//..//Engine/ResourceManager/Material.h"
 #include "..//..//Utility/Macros/DirectXMacros.h"
 #include "..//DebugRender/debug_renderer.h"
@@ -335,13 +338,24 @@ void TerrainManager::_initialize(RenderSystem* rs)
 
         // Load smoke
         {
-                FInstanceRenderData otherData;
-                FTransform          otherTransform;
+                ComponentHandle transHandle;
+                EntityHandle entityH = EntityFactory::CreateStaticMeshEntity("VolcanoSmoke00", "VolcanoMaterial", &transHandle);
+                TransformComponent* trans         = transHandle.Get<TransformComponent>();
+                ComponentHandle     emitterHandle = entityH.AddComponent<EmitterComponent>();
+                EmitterComponent*   emitterComp   = emitterHandle.Get<EmitterComponent>();
+                emitterComp->active               = true;
+                emitterComp->FloatParticle(XMFLOAT3(-1.0f, 0.0f, -1.0f),
+                                           XMFLOAT3(1.0f, 0.0f, 1.0f),
+                                           {10.0f,0.0f,0.0f,1.0f},
+                                           {5.0f, 5.0f, 0.0f, 0.6f},
+                                           XMFLOAT4(10.0f, 2.0f, 1.0f, 1.0f));
 
-                otherData.material = resourceManager->LoadMaterial(");
-                otherData.mesh     = resourceManager->LoadStaticMesh(staticMeshName);
-
-                otherDrawCalls.push_back(otherData);
+                XMStoreFloat3(&emitterComp->EmitterData.emitterPosition, trans->transform.translation);
+                emitterComp->spawnRate                      = 10.0f;
+                emitterComp->maxCount                       = 1000;
+                emitterComp->EmitterData.textureIndex       = 3;
+                emitterComp->EmitterData.particleScale      = {0.1f, 0.5f};
+                emitterComp->EmitterData.minInitialVelocity = XMFLOAT3();
         }
 }
 using namespace DirectX;
@@ -503,9 +517,12 @@ void TerrainManager::_update(float deltaTime)
 
         // Volcano Stuff
         {
-
-
-                renderSystem->DrawMesh();
+                ID3D11HullShader*   nullHull   = nullptr;
+                ID3D11DomainShader* nullDomain = nullptr;
+                renderSystem->m_Context->HSSetShader(nullHull, 0, 0);
+                renderSystem->m_Context->DSSetShader(nullDomain, 0, 0);
+                renderSystem->m_Context->IASetInputLayout(renderSystem->m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
+                renderSystem->m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         }
 
         // Draw instanced
@@ -553,13 +570,8 @@ void TerrainManager::_update(float deltaTime)
                 memcpy(indexBuffers, mappedResource.pData, sizeof(uint32_t) * 2);
                 renderSystem->GetContext()->Unmap(indexCounterHelperBuffer, 0);
 
-                ID3D11HullShader*   nullHull   = nullptr;
-                ID3D11DomainShader* nullDomain = nullptr;
-                renderSystem->m_Context->HSSetShader(nullHull, 0, 0);
-                renderSystem->m_Context->DSSetShader(nullDomain, 0, 0);
 
                 renderSystem->m_Context->VSSetShaderResources(8, 1, &instanceSRV);
-                renderSystem->m_Context->IASetInputLayout(renderSystem->m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
                 for (auto& data : instanceDrawCallsDataFlat)
                 {
                         StaticMesh* sm  = resourceManager->GetResource<StaticMesh>(data.mesh);

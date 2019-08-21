@@ -103,8 +103,6 @@ class TerrainManager
 
         std::vector<FInstanceRenderData> instanceDrawCallsDataFlat;
         std::vector<FInstanceRenderData> instanceDrawCallsDataSteep;
-        std::vector<FInstanceRenderData> otherDrawCalls;
-        std::vector<FTransform>          otherTransforms;
 
         void GenerateInstanceTransforms(FTransform tArray[gInstanceTransformsCount]);
         void WrapInstanceTransforms();
