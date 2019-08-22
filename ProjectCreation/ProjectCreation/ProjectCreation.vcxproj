@@ -118,6 +118,7 @@
     <ClInclude Include="Shaders\Interpolation.hlsl" />
     <ClInclude Include="Shaders\MVPBuffer.hlsl" />
     <ClInclude Include="Shaders\PBRMath.hlsl" />
+    <ClInclude Include="Engine\Audio\SoundComponent.h" />
     <ClInclude Include="UI\FontComponent.h" />
     <ClInclude Include="Engine\Particle Systems\ParticleBufferSetup.h" />
     <ClInclude Include="Engine\Particle Systems\ParticleData.h" />
@@ -508,6 +509,7 @@
     <ClCompile Include="Engine\XTime.cpp" />
     <ClCompile Include="FileIO\FileIO.cpp" />
     <ClCompile Include="Rendering\Terrain\TerrainManager.cpp" />
+    <ClCompile Include="Engine\Audio\SoundComponent.cpp" />
     <ClCompile Include="UI\FontComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\MathLibrary\MathLibrary.cpp" />
