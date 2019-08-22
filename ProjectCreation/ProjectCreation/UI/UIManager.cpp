@@ -940,6 +940,21 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   true,
                                   pauseButtonWidth * ScaleXRatio,
                                   pauseButtonHeight * ScaleYRatio);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "SENSITIVITY",
+                                  0.03f * ScaleXRatio,
+                                  0.03f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.03f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
         }
         // Options Submenu
         {
@@ -966,7 +981,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   0.11f * PosYRatio,
                                   false,
                                   false);
-				//Resolutions
+                // Resolutions
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::OptionsSubmenu,
@@ -990,6 +1005,67 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   0.22f * PosYRatio,
                                   false,
                                   true);
+                // Sensitivity
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "<",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  -0.12f * PosXRatio,
+                                  0.02f * PosYRatio,
+                                  false,
+                                  true);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::Calibri,
+                                  ">",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  0.12f * PosXRatio,
+                                  0.02f * PosYRatio,
+                                  false,
+                                  true);
+
+                // Text for Sensitivity
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Low",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.02f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Medium",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.02f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "High",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.02f * PosYRatio,
+                                  false,
+                                  false);
 
                 for (auto i = 0; i < instance->resDescriptors.size(); i++)
                 {
@@ -1174,7 +1250,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   -0.2f * PosYRatio,
                                   false,
                                   false);
-                
+
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::Demo,
@@ -1344,6 +1420,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   pauseButtonHeight * ScaleYRatio);
         }
 
+
         // Pause Menu
 
         // Resume Button
@@ -1415,7 +1492,34 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = true;
                 }
+                
+        		//Disable other Sensitivities
+                if (instance->CSettings.m_Sensitivity == 0)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = true;
 
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+	                
+                }
+                else if (instance->CSettings.m_Sensitivity == 1)
+                {
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                }
+                else
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
+                }
+
+
+                // Fullscreen on/off Check
                 if (instance->CSettings.m_IsFullscreen == false)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = false; // Off
@@ -1427,11 +1531,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
                 }
 
-                for (int i = 4; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                for (int i = 9; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 4].mEnabled = true;
+                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 9].mEnabled = true;
         });
 
         // Controls Button
@@ -1467,7 +1571,7 @@ void UIManager::Initialize(native_handle_type hwnd)
             [](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
 
 
-			// Options
+        // Options
 
         // Back Button
         instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
@@ -1510,6 +1614,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 instance->CSettings.m_Resolution   = instance->PSettings.m_Resolution;
                 instance->CSettings.m_Volume       = instance->PSettings.m_Volume;
                 instance->CSettings.m_IsFullscreen = instance->PSettings.m_IsFullscreen;
+                instance->CSettings.m_Sensitivity  = instance->PSettings.m_Sensitivity;
 
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->PSettings.m_Resolution].Width,
@@ -1577,6 +1682,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 instance->PSettings.m_Resolution   = instance->CSettings.m_Resolution;
                 instance->PSettings.m_Volume       = instance->CSettings.m_Volume;
                 instance->PSettings.m_IsFullscreen = instance->CSettings.m_IsFullscreen;
+                instance->PSettings.m_Sensitivity  = instance->CSettings.m_Sensitivity;
 
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Width,
@@ -1596,11 +1702,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->CSettings.m_Resolution--;
                 }
 
-                for (int i = 4; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                for (int i = 9; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 4].mEnabled = true;
+                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 9].mEnabled = true;
                 // Change Resolution HERE
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Width,
@@ -1618,19 +1724,93 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->CSettings.m_Resolution++;
                 }
 
-                for (int i = 4; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                for (int i = 9; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 4].mEnabled = true;
+                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 9].mEnabled = true;
                 // Change Resolution HERE
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Width,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Height);
         });
 
+        // Left Sensitivity Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                if (instance->CSettings.m_Sensitivity - 1 <= -1)
+                {
+                        instance->CSettings.m_Sensitivity = 2;
+                }
+                else
+                {
+                        instance->CSettings.m_Sensitivity--;
+                }
 
-			// Level Select
+                // Disable other Sensitivities
+                if (instance->CSettings.m_Sensitivity == 0)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                }
+                else if (instance->CSettings.m_Sensitivity == 1)
+                {
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                }
+                else
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
+                }
+                // Change Sensitivity HERE
+        });
+
+        // Right Sensitivity Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                if (instance->CSettings.m_Sensitivity + 1 >= 3)
+                {
+                        instance->CSettings.m_Sensitivity = 0;
+                }
+                else
+                {
+                        instance->CSettings.m_Sensitivity++;
+                }
+
+                // Disable other Sensitivities
+                if (instance->CSettings.m_Sensitivity == 0)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                }
+                else if (instance->CSettings.m_Sensitivity == 1)
+                {
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                }
+                else
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
+                }
+                // Change Sensitivity HERE
+        });
+
+
+        // Level Select
 
         // Back Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
@@ -1769,7 +1949,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         });
 
 
-			// Controls Select
+        // Controls Select
 
         // Back Button
         instance->m_AllSprites[E_MENU_CATEGORIES::ControlsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
@@ -1799,7 +1979,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         });
 
 
-			// Demo
+        // Demo
 
         // Continue
         instance->m_AllSprites[E_MENU_CATEGORIES::Demo][0].OnMouseDown.AddEventListener(

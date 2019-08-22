@@ -47,12 +47,14 @@ struct PrevSettings
         bool m_IsFullscreen = false;
         int  m_Resolution   = 8; // 0-8 Representing the resDescriptors resolutions
         int  m_Volume       = 100;
+        int  m_Sensitivity  = 1;
 };
 struct CurrSettings
 {
         bool m_IsFullscreen = false;
         int  m_Resolution   = 8; // 0-8 Representing the resDescriptors resolutions
         int  m_Volume       = 100;
+        int  m_Sensitivity  = 1;
 };
 
 class UIManager
