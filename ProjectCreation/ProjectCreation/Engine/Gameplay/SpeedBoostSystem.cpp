@@ -81,7 +81,7 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
                 XMStoreFloat3(&velMax, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f));
                 XMStoreFloat3(&orbPos, pos);
                 emitterComponent->ParticleswithGravity(
-                    XMFLOAT3(), XMFLOAT3(1.5f, 0.0f, 1.0f), orbColor, orbColor, XMFLOAT4(2.0f, 1.0f, 0.5f, 0.5f));
+                    XMFLOAT3(), XMFLOAT3(0.5f, 0.0f, 0.5f), orbColor, orbColor, XMFLOAT4(2.0f, 1.0f, 0.5f, 0.5f));
 
                 emitterComponent->EmitterData.minInitialVelocity = {-0.1f, -0.0f, -0.1f};
                 emitterComponent->EmitterData.maxInitialVelocity = {0.3f, 1.75f, 0.3f};
@@ -557,11 +557,13 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                     emitterComp->EmitterData.acceleration.y       = 2.5f;
                                     emitterComp->EmitterData.maxInitialVelocity.y = 2.5f;
                                     emitterComp->EmitterData.particleScale.y      = 0.1f;
+                                    emitterComp->EmitterData.maxOffset            = {0.25, 0.0f, 0.25f};
                                     break;
                             case 3:
                                     emitterComp->EmitterData.acceleration.y       = 3.5f;
                                     emitterComp->EmitterData.maxInitialVelocity.y = 3.5f;
                                     emitterComp->EmitterData.particleScale.y      = 0.15;
+                                    emitterComp->EmitterData.maxOffset            = {0.0f, 0.0f, 0.0f};
                                     break;
                     }
             }); // SpeedBoostPickupAndDespawnJob
