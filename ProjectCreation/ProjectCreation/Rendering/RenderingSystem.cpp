@@ -712,6 +712,7 @@ void RenderSystem::DrawMesh(ID3D11Buffer*      vertexBuffer,
         m_ResourceManager->GetSRVsFromMaterial(material, srvs);
 
         m_Context->PSSetShaderResources(0, E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, srvs);
+        m_Context->VSSetShaderResources(0, E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, srvs);
 
         m_ConstantBuffer_MVP.World = XMMatrixTranspose(*mtx);
 

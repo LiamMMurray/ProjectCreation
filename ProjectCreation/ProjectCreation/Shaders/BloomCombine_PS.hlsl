@@ -55,7 +55,7 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
         color                   = lerp(color, bw, desaturationMask);
         float  fogMask  = saturate((linearDepth - 10.0f) / 300.0f) * 0.8f * (1.0f - saturate((linearDepth - 500.0f) / 100.0f));
         float3 fogColor = float3(0.6f, 0.7f, 1.0f);
-        color           = lerp(color, fogColor, fogMask);
+        //color           = lerp(color, fogColor, fogMask);
 
 
         float3 dither = InterleavedGradientNoise(pos.xy + _time);

@@ -340,13 +340,14 @@ void TerrainManager::_initialize(RenderSystem* rs)
         {
                 ComponentHandle transHandle;
                 EntityHandle entityH = EntityFactory::CreateStaticMeshEntity("VolcanoSmoke00", "VolcanoMaterial", &transHandle);
+                entityH.SetIsActive(false);
                 TransformComponent* trans         = transHandle.Get<TransformComponent>();
                 ComponentHandle     emitterHandle = entityH.AddComponent<EmitterComponent>();
                 EmitterComponent*   emitterComp   = emitterHandle.Get<EmitterComponent>();
-                emitterComp->active               = true;
+                emitterComp->active               = false;
                 emitterComp->FloatParticle(XMFLOAT3(-1.0f, 0.0f, -1.0f),
                                            XMFLOAT3(1.0f, 0.0f, 1.0f),
-                                           {10.0f,0.0f,0.0f,1.0f},
+                                           {10.0f, 0.0f, 0.0f, 1.0f},
                                            {5.0f, 5.0f, 0.0f, 0.6f},
                                            XMFLOAT4(10.0f, 2.0f, 1.0f, 1.0f));
 
@@ -425,7 +426,7 @@ void TerrainManager::_update(float deltaTime)
                               ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
                               ->GetControlledEntity()
                               .GetComponent<CameraComponent>();
-
+        
         XMVECTOR correctedTerrainPos = playerPos;
         float    cellSize            = terrainConstantBufferCPU.gWorldCellSpace * scale * 8.0f;
         XMVECTOR cellVector          = XMVectorSet(cellSize, 1.0f, cellSize, 1.0f);

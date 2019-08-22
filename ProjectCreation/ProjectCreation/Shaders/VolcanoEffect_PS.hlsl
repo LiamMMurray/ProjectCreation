@@ -39,6 +39,7 @@ float4 main(INPUT_PIXEL input) : SV_TARGET
         float3     specColor   = 0.04f;
         float4     defultColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
         float      time        = _Time;
+        float4     output      = (0.0f, 0.0f, 0.0f, 0.0f);
         surface.diffuseColor   = 1.0f;
         surface.metallic       = 0.0f;
         surface.emissiveColor  = 0.0f;
@@ -55,19 +56,32 @@ float4 main(INPUT_PIXEL input) : SV_TARGET
 
         surface.ambient = 0.0f;
         color           = 0.0f;
+
+
+        float4 diffuseSample;
+
+
+        diffuseSample = 0.6f * diffuseMap.Sample(sampleTypeWrap, input.Tex);
+
+        clip(diffuseSample.a < 0.1f ? -1 : 1); // masked
+
+        surface.diffuseColor *= diffuseSample.xyz;
+        surface.diffuseColor = saturate(diffuseSample);
+
         // Directional Light
         {
-                float3 radiance = float3(5.0f, 0.0f, 0.0f);
+               /* float3 radiance = float3(5.0f, 0.0f, 0.0f);
                 float3 lightDir = float3(0.0f, 1.0f, 0.0f);
-                color += radiance * PBR(surface, -lightDir, viewWS, specColor);
+                color += radiance * PBR(surface, -lightDir, viewWS, specColor);*/
         }
         // point light
-		{
-               /* float3 ptColor    = 0.0f;
-                float3 PtLightPos = float3(0.0f,0.0f,0.0f);
-                float3 dir      = (PtLightPos - input.PosWS);
-                float  distance = length(dir);
-                dir             = normalize(dir);
+        {
+                float  ptRange    = 6.0f;
+                float3 ptColor    = {5.0f,0.0f,0.0f};
+                float3 PtLightPos = float3(0.0f, 0.0f, 0.0f);
+                float3 dir        = (PtLightPos - input.PosWS);
+                float  distance   = length(dir);
+                dir               = normalize(dir);
 
                 float amountLight = saturate(dot(dir, input.NormalWS));
 
@@ -77,31 +91,18 @@ float4 main(INPUT_PIXEL input) : SV_TARGET
                 {
                         ptColor += amountLight * lightIntensity;
                         float3 reflection = normalize(reflect(normalize(-dir), input.NormalWS));
-                        specular          = pow(saturate(dot(viewWS, reflection)), specularPower);
                 }
 
                 if (amountLight > 0.0f)
                 {
-                        float attenuation = 1.0f - saturate(distance / ptLight.range);
+                        float attenuation = 1.0f - saturate(distance / ptRange);
 
-                        ptColor += amountLight * diffuse * ptLight.diffuse * attenuation;
-                        ptColor += specular * float4(1.0f, 1.0f, 1.0f, 1.0f);
-                }*/
-		}
-        //return float4(color, 1.0f);
+                        ptColor += amountLight * surface.diffuseColor * attenuation;
+                }
 
-        float4 diffuseSample;
+				color += ptColor * PBR(surface, -dir, viewWS, specColor);
+        }
 
-
-        diffuseSample = 1.3f * diffuseMap.Sample(sampleTypeWrap, input.Tex);
-
-        clip(diffuseSample.a < 0.1f ? -1 : 1); // masked
-
-        surface.diffuseColor *= diffuseSample.xyz;
-        surface.diffuseColor = saturate(diffuseSample);
-
-        float4 output = (1.0f, 1.0f, 1.0f, 1.0f);
-        output        = diffuseMap.Sample(sampleTypeWrap, input.Tex * 4.0f);
-        output += float4(color, 0.0f);
+        output += float4(color, 1.0f);
         return output;
 }
