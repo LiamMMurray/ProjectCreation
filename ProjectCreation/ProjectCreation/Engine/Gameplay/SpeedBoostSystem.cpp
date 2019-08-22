@@ -80,8 +80,7 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
                 XMStoreFloat4(&orbColor, 4.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[color]));
                 XMStoreFloat3(&velMax, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f));
                 XMStoreFloat3(&orbPos, pos);
-                emitterComponent->ParticleswithGravity(
-                    XMFLOAT3(), XMFLOAT3(), orbColor, orbColor, XMFLOAT4(2.0f, 1.0f, 0.5f, 0.5f));
+                emitterComponent->ParticleswithGravity(XMFLOAT3(), XMFLOAT3(1.5f,0.0f,1.0f), orbColor, orbColor, XMFLOAT4(2.0f, 1.0f, 0.5f, 0.5f));
 
                 emitterComponent->EmitterData.minInitialVelocity = {-0.1f, -0.0f, -0.1f};
                 emitterComponent->EmitterData.maxInitialVelocity = {0.3f, 1.75f, 0.3f};
@@ -127,9 +126,9 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
                 cluster.color = color;
         }
 
-        XMVECTOR correctedCurr = curr + GEngine::Get()->m_OriginOffset - cluster.originalWorldOffset;
+        XMVECTOR    correctedCurr = curr + GEngine::Get()->m_OriginOffset - cluster.originalWorldOffset;
         SplinePoint point;
-        point.pos = correctedCurr;
+        point.pos   = correctedCurr;
         point.color = cluster.color;
         cluster.cachedPoints.push_back(point);
         auto entityH = SpawnLightOrb(correctedCurr, cluster.color);
@@ -603,9 +602,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
         testJob.Wait();
 
 
-
-
-
         {
                 const XMVECTOR offset = m_SplineHeightOffset * VectorConstants::Up;
 
@@ -641,9 +637,9 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
 
                         XMVECTOR pos = splineComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
-                        clusterIt->second.cachedPoints[index].pos = pos;
+                        clusterIt->second.cachedPoints[index].pos   = pos;
                         clusterIt->second.cachedPoints[index].color = splineComp.color;
-                        int splineColor                       = splineComp.color;
+                        int splineColor                             = splineComp.color;
 
                         XMVECTOR dirVector = pos - playerTransform->transform.translation;
                         float    distance  = MathLibrary::CalulateVectorLength(dirVector);

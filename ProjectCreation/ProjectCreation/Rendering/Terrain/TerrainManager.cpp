@@ -16,6 +16,7 @@
 #include "..//..//Engine/Particle Systems/ParticleManager.h"
 #include "..//..//Engine/ResourceManager/Material.h"
 #include "..//..//Utility/Macros/DirectXMacros.h"
+#include "..//Components/StaticMeshComponent.h"
 #include "..//DebugRender/debug_renderer.h"
 #include "..//RenderingSystem.h"
 
@@ -338,25 +339,31 @@ void TerrainManager::_initialize(RenderSystem* rs)
 
         // Load smoke
         {
-                ComponentHandle transHandle;
-                EntityHandle entityH = EntityFactory::CreateStaticMeshEntity("VolcanoSmoke00", "VolcanoMaterial", &transHandle);
-                entityH.SetIsActive(false);
-                TransformComponent* trans         = transHandle.Get<TransformComponent>();
-                ComponentHandle     emitterHandle = entityH.AddComponent<EmitterComponent>();
-                EmitterComponent*   emitterComp   = emitterHandle.Get<EmitterComponent>();
-                emitterComp->active               = false;
-                emitterComp->FloatParticle(XMFLOAT3(-1.0f, 0.0f, -1.0f),
-                                           XMFLOAT3(1.0f, 0.0f, 1.0f),
-                                           {10.0f, 0.0f, 0.0f, 1.0f},
-                                           {5.0f, 5.0f, 0.0f, 0.6f},
-                                           XMFLOAT4(10.0f, 2.0f, 1.0f, 1.0f));
+                ComponentHandle transHandle, statHandle;
+                EntityHandle    entityH =
+                    EntityFactory::CreateStaticMeshEntity("VolcanoSmoke00", "VolcanoMaterial", &transHandle, &statHandle);
+                TransformComponent*  trans         = transHandle.Get<TransformComponent>();
+                StaticMeshComponent* sm            = statHandle.Get<StaticMeshComponent>();
+                ComponentHandle      emitterHandle = entityH.AddComponent<EmitterComponent>();
+                EmitterComponent*    emitterComp   = emitterHandle.Get<EmitterComponent>();
+                emitterComp->SetIsActive(false);
+                sm->SetIsActive(false);
+                staticMeshesShowWithTerrain.push_back(statHandle);
+                emitterComp->ParticleswithGravity(XMFLOAT3(1.0f, 0.0f, 1.0f),
+                                                  XMFLOAT3(5.0f, 3.0f, 5.0f),
+                                                  {10.0f, 0.0f, 0.0f, 1.0f},
+                                                  {10.0f, 5.0f, 0.0f, 0.6f},
+                                                  XMFLOAT4(50.0f, 10.0f, 1.0f, 1.0f));
 
                 XMStoreFloat3(&emitterComp->EmitterData.emitterPosition, trans->transform.translation);
                 emitterComp->spawnRate                      = 10.0f;
-                emitterComp->maxCount                       = 1000;
+                emitterComp->maxCount                       = 1000000;
                 emitterComp->EmitterData.textureIndex       = 3;
-                emitterComp->EmitterData.particleScale      = {0.1f, 0.5f};
-                emitterComp->EmitterData.minInitialVelocity = XMFLOAT3();
+                emitterComp->EmitterData.particleScale      = {0.5f, 1.0f};
+                emitterComp->EmitterData.minInitialVelocity = {0.0f, 4.0f, 0.0f};
+                emitterComp->EmitterData.maxInitialVelocity = {5.0f, 20.0f, 5.0f};
+                emitterComp->EmitterData.acceleration       = {-0.5, -3.0f, -0.5f};
+				
         }
 }
 using namespace DirectX;
@@ -426,7 +433,7 @@ void TerrainManager::_update(float deltaTime)
                               ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
                               ->GetControlledEntity()
                               .GetComponent<CameraComponent>();
-        
+
         XMVECTOR correctedTerrainPos = playerPos;
         float    cellSize            = terrainConstantBufferCPU.gWorldCellSpace * scale * 8.0f;
         XMVECTOR cellVector          = XMVectorSet(cellSize, 1.0f, cellSize, 1.0f);
@@ -608,6 +615,21 @@ void TerrainManager::_update(float deltaTime)
                 }
         }
 
+        for (auto& compHandle : staticMeshesShowWithTerrain)
+        {
+                auto sm = compHandle.Get<StaticMeshComponent>();
+                auto emitter = compHandle.Get()->GetParent().GetComponent<EmitterComponent>();
+                bool active = sm->IsActive();
+
+                if (active && terrainConstantBufferCPU.gTerrainAlpha <= 0.0f)
+                        sm->SetIsActive(false);
+
+                if (!active && terrainConstantBufferCPU.gTerrainAlpha > 0.0f)
+                {
+                        sm->SetIsActive(true);
+                        emitter->SetIsActive(true);
+                }
+        }
         // debug_renderer::AddSphere(Shapes::FSphere(test, 0.1f), 32, XMMatrixIdentity());
 
         renderSystem->m_Context->DSSetShader(nullptr, nullptr, 0);
