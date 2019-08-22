@@ -58,11 +58,11 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         float timeBlendA = (sin(_Time + noiseD * 0.1f) * 0.5f + 0.5f);
         float timeBlendB = 1.0f - timeBlendA;
 
-        //skyA = saturate(skyA - timeBlendA);
-        //skyA = saturate(skyA + (skyA * timeBlendA));
-		//
-        //skyB = saturate(skyB - timeBlendB);
-        //skyB = saturate(skyB + (skyB * timeBlendB));
+        // skyA = saturate(skyA - timeBlendA);
+        // skyA = saturate(skyA + (skyA * timeBlendA));
+        //
+        // skyB = saturate(skyB - timeBlendB);
+        // skyB = saturate(skyB + (skyB * timeBlendB));
 
         float cloudSample = saturate(skyA);
         // return cloudSample;
@@ -109,7 +109,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
 
         color = lerp(color, horizonColor, horizonMask);
 
-        clip(cloudBlendAlpha < 0.5f ? -1 : 1);
+        clip(cloudBlendAlpha * revealAlpha < 0.5f ? -1 : 1);
 
         return float4(color * revealAlpha, 1.0f);
 }
