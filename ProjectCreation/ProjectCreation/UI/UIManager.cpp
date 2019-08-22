@@ -966,7 +966,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   0.11f * PosYRatio,
                                   false,
                                   false);
-
+				//Resolutions
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::OptionsSubmenu,
@@ -1156,10 +1156,160 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::Demo,
                                   E_FONT_TYPE::Calibri,
                                   "Thank you for playing!",
-                                  0.06f * ScaleXRatio,
-                                  0.03f * ScaleYRatio,
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
                                   0.0f * PosXRatio,
+                                  -0.25f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "CREDITS",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.2f * PosYRatio,
+                                  false,
+                                  false);
+                
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Jose Villarroel:",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  -0.3f * PosXRatio,
+                                  -0.1f * PosYRatio,
+                                  false,
+                                  false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Graphics Programmer",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.3f * PosXRatio,
+                                  -0.1f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Liam Murray:",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  -0.3f * PosXRatio,
+                                  -0.05f * PosYRatio,
+                                  false,
+                                  false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Engine Programmer",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.3f * PosXRatio,
+                                  -0.05f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Joseph Gill:",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  -0.3f * PosXRatio,
                                   0.0f * PosYRatio,
+                                  false,
+                                  false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Gameplay Programmer",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.3f * PosXRatio,
+                                  0.0f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Victoria Kiang:",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  -0.3f * PosXRatio,
+                                  0.05f * PosYRatio,
+                                  false,
+                                  false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Math and Collision Engineer",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.3f * PosXRatio,
+                                  0.05f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Nolan Bys:",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  -0.3f * PosXRatio,
+                                  0.1f * PosYRatio,
+                                  false,
+                                  false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "User Interface Programmer",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.3f * PosXRatio,
+                                  0.1f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "John Joseph Beckmeyer:",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  -0.3f * PosXRatio,
+                                  0.15f * PosYRatio,
+                                  false,
+                                  false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Audio Developer",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.3f * PosXRatio,
+                                  0.15f * PosYRatio,
                                   false,
                                   false);
 
@@ -1171,7 +1321,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   0.05f * ScaleXRatio,
                                   0.05f * ScaleYRatio,
                                   -0.15f * PosXRatio,
-                                  0.1f * PosYRatio,
+                                  0.3f * PosYRatio,
                                   false,
                                   true,
                                   true,
@@ -1186,7 +1336,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   0.05f * ScaleXRatio,
                                   0.05f * ScaleYRatio,
                                   0.15f * PosXRatio,
-                                  0.1f * PosYRatio,
+                                  0.3f * PosYRatio,
                                   false,
                                   true,
                                   true,
@@ -1195,6 +1345,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         }
 
         // Pause Menu
+
         // Resume Button
         instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][1].OnMouseDown.AddEventListener(
             [](UIMouseEvent* e) { instance->Unpause(); });
@@ -1316,7 +1467,8 @@ void UIManager::Initialize(native_handle_type hwnd)
             [](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
 
 
-        // Options
+			// Options
+
         // Back Button
         instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
@@ -1478,7 +1630,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         });
 
 
-        // Level Select
+			// Level Select
+
         // Back Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
@@ -1616,7 +1769,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         });
 
 
-        // Controls Select
+			// Controls Select
+
         // Back Button
         instance->m_AllSprites[E_MENU_CATEGORIES::ControlsMenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 // Back button to go from the options menu to the pause menu
@@ -1645,7 +1799,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         });
 
 
-        // Demo
+			// Demo
+
         // Continue
         instance->m_AllSprites[E_MENU_CATEGORIES::Demo][0].OnMouseDown.AddEventListener(
             [](UIMouseEvent* e) { instance->Unpause(); });
