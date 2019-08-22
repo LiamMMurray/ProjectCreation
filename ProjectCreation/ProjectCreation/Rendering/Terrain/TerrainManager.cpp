@@ -341,7 +341,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
         {
                 ComponentHandle transHandle, statHandle;
                 EntityHandle    entityH =
-                    EntityFactory::CreateStaticMeshEntity("VolcanoSmoke00", "VolcanoMaterial", &transHandle, &statHandle);
+                    EntityFactory::CreateStaticMeshEntity("Volcano00", "VolcanoMaterial", &transHandle, &statHandle);
                 TransformComponent*  trans         = transHandle.Get<TransformComponent>();
                 StaticMeshComponent* sm            = statHandle.Get<StaticMeshComponent>();
                 ComponentHandle      emitterHandle = entityH.AddComponent<EmitterComponent>();
@@ -351,8 +351,8 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 staticMeshesShowWithTerrain.push_back(statHandle);
                 emitterComp->ParticleswithGravity(XMFLOAT3(1.0f, 0.0f, 1.0f),
                                                   XMFLOAT3(5.0f, 3.0f, 5.0f),
-                                                  {10.0f, 0.0f, 0.0f, 1.0f},
-                                                  {10.0f, 5.0f, 0.0f, 0.6f},
+                                                  {30.0f, 0.0f, 0.0f, 1.0f},
+                                                  {20.0f, 10.0f, 0.0f, 0.6f},
                                                   XMFLOAT4(50.0f, 10.0f, 1.0f, 1.0f));
 
                 XMStoreFloat3(&emitterComp->EmitterData.emitterPosition, trans->transform.translation);
@@ -361,7 +361,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 emitterComp->EmitterData.textureIndex       = 3;
                 emitterComp->EmitterData.particleScale      = {0.5f, 1.0f};
                 emitterComp->EmitterData.minInitialVelocity = {0.0f, 4.0f, 0.0f};
-                emitterComp->EmitterData.maxInitialVelocity = {5.0f, 20.0f, 5.0f};
+                emitterComp->EmitterData.maxInitialVelocity = {5.0f, 40.0f, 5.0f};
                 emitterComp->EmitterData.acceleration       = {-0.5, -3.0f, -0.5f};
 				
         }
