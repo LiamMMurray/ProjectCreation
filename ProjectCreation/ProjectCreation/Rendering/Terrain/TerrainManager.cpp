@@ -349,20 +349,22 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 emitterComp->SetIsActive(false);
                 sm->SetIsActive(false);
                 staticMeshesShowWithTerrain.push_back(statHandle);
-                emitterComp->ParticleswithGravity(XMFLOAT3(1.0f, 0.0f, 1.0f),
+                trans->transform.scale = XMVectorSet(0.1f, 0.1f, 0.1f, 0.1f);
+                emitterComp->ParticleswithGravity(XMFLOAT3(0.0f, 0.0f, 0.0f),
                                                   XMFLOAT3(5.0f, 3.0f, 5.0f),
-                                                  {30.0f, 0.0f, 0.0f, 1.0f},
-                                                  {20.0f, 10.0f, 0.0f, 0.6f},
+                                                  {50.0f, 0.0f, 0.0f, 1.0f},
+                                                  {25.0f, 15.0f, 0.0f, 0.6f},
                                                   XMFLOAT4(50.0f, 10.0f, 1.0f, 1.0f));
 
                 XMStoreFloat3(&emitterComp->EmitterData.emitterPosition, trans->transform.translation);
-                emitterComp->spawnRate                      = 10.0f;
-                emitterComp->maxCount                       = 1000000;
+                emitterComp->spawnRate                      = 10000.0f;
+                emitterComp->maxCount                       = 10000000;
                 emitterComp->EmitterData.textureIndex       = 3;
                 emitterComp->EmitterData.particleScale      = {0.5f, 1.0f};
                 emitterComp->EmitterData.minInitialVelocity = {0.0f, 4.0f, 0.0f};
-                emitterComp->EmitterData.maxInitialVelocity = {5.0f, 40.0f, 5.0f};
-                emitterComp->EmitterData.acceleration       = {-0.5, -3.0f, -0.5f};
+                emitterComp->EmitterData.maxInitialVelocity = {5.0f, 30.0f, 5.0f};
+                emitterComp->EmitterData.acceleration       = {-0.5, -3.8f, -0.5f};
+                emitterComp->EmitterData.flags              = 1;
 				
         }
 }

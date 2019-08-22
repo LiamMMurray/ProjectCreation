@@ -13,7 +13,7 @@ namespace ParticleData
         struct FEmitterGPU
         {
                 DirectX::XMFLOAT4 lifeSpan; // x is life time, y is variance, z,w is fade in ad out
-                unsigned int      flags = 0;
+                unsigned int      flags = 0; // defult collision, ==1 is no collision on particles
                 DirectX::XMFLOAT3 emitterPosition;
                 DirectX::XMFLOAT3 minOffset;
                 DirectX::XMFLOAT3 maxOffset;
