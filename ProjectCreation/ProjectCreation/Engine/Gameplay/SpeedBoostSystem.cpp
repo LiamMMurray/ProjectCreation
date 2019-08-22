@@ -128,9 +128,9 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
                 m_SplineClusterSpawners.at(clusterID).color = color;
         }
 
-        XMVECTOR correctedCurr = curr + GEngine::Get()->m_OriginOffset - cluster.originalWorldOffset;
+        XMVECTOR    correctedCurr = curr + GEngine::Get()->m_OriginOffset - cluster.originalWorldOffset;
         SplinePoint point;
-        point.pos = correctedCurr;
+        point.pos   = correctedCurr;
         point.color = cluster.color;
         cluster.cachedPoints.push_back(point);
         auto entityH = SpawnLightOrb(correctedCurr, cluster.color);
@@ -298,59 +298,113 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
 
 
-        //if (inTutorial == true && controllerSys->GetOrbCount(4) >= 3)
+        // if (inTutorial == true && controllerSys->GetOrbCount(4) >= 3)
         //{
         //        CreateRandomPath(start, end, 4, width, waveCount, height);
         //}
-
-        for (int i = 0; i < 4; ++i)
+        if (inTutorial == true)
         {
-
-                if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
+                for (int i = 0; i < 4; ++i)
                 {
-                        float pathLength = maxPathLength[orbitSystem->goalsCollected];
 
-                        collectEventTimestamps[i] = controllerSys->GetCollectOrbEventID(i);
-
-                        start =
-                            playerTransform->transform.translation + 5.0f * playerTransform->transform.rotation.GetForward2D();
-
-                        XMVECTOR endPos;
-                        if (orbitSystem->activeGoal.hasActiveGoal && i == orbitSystem->activeGoal.activeColor)
+                        if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
                         {
-                                endPos = orbitSystem->activeGoal.activeGoalGround.GetComponent<TransformComponent>()
-                                             ->transform.translation;
-                        }
-                        else
-                        {
-                                endPos = start + pathLength * playerTransform->transform.rotation.GetForward2D();
-                        }
+                                float pathLength = maxTutorialPathLength[orbitSystem->goalsCollected];
 
-                        XMVECTOR delta    = endPos - start;
-                        float    distance = MathLibrary::CalulateVectorLength(delta);
-                        XMVECTOR dir      = XMVector3Normalize(delta);
-						
-                        float actualDistance = std::min(pathLength, distance - 5.0f);
-						
-                        XMVECTOR end = start + dir * actualDistance;
-						
-                        float width     = splineWidth * actualDistance / pathLength;
-                        float height    = splineHeight * actualDistance / pathLength;
-                        int   waveCount = std::lroundf(3.0f * actualDistance / pathLength);
+                                collectEventTimestamps[i] = controllerSys->GetCollectOrbEventID(i);
 
-                        start = XMVectorSetY(start, 0.0f);
-                        end   = XMVectorSetY(end, 0.0f);
+                                start = playerTransform->transform.translation +
+                                        5.0f * playerTransform->transform.rotation.GetForward2D();
 
-                        if (pathExists == false)
-                        {
-                                CreateRandomPath(start, end, i, width, waveCount, height);
-                                if (i < 3)
+                                XMVECTOR endPos;
+                                if (orbitSystem->activeGoal.hasActiveGoal && i == orbitSystem->activeGoal.activeColor)
                                 {
+                                        endPos = orbitSystem->activeGoal.activeGoalGround.GetComponent<TransformComponent>()
+                                                     ->transform.translation;
+                                }
+                                else
+                                {
+                                        endPos = start + pathLength * playerTransform->transform.rotation.GetForward2D();
+                                }
+
+                                XMVECTOR delta    = endPos - start;
+                                float    distance = MathLibrary::CalulateVectorLength(delta);
+                                XMVECTOR dir      = XMVector3Normalize(delta);
+
+                                float actualDistance = std::min(pathLength, distance - 5.0f);
+
+                                XMVECTOR end = start + dir * actualDistance;
+
+                                float width     = splineWidth * actualDistance / pathLength;
+                                float height    = splineHeight * actualDistance / pathLength;
+                                int   waveCount = std::lroundf(3.0f * actualDistance / pathLength);
+
+                                start = XMVectorSetY(start, 0.0f);
+                                end   = XMVectorSetY(end, 0.0f);
+
+                                if (pathExists == false)
+                                {
+                                        CreateRandomPath(start, end, i, width, waveCount, height);
+                                        if (i < 3)
+                                        {
+                                                auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
+                                                spawnSound->SetVolume(0.8f);
+                                                spawnSound->Play();
+                                        }
+                                        pathExists = true;
+                                }
+                        }
+                }
+        }
+
+        else
+        {
+                for (int i = 0; i < 3; ++i)
+                {
+
+                        if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
+                        {
+                                float pathLength = maxPathLength[orbitSystem->goalsCollected];
+
+                                collectEventTimestamps[i] = controllerSys->GetCollectOrbEventID(i);
+
+                                start = playerTransform->transform.translation +
+                                        5.0f * playerTransform->transform.rotation.GetForward2D();
+
+                                XMVECTOR endPos;
+                                if (orbitSystem->activeGoal.hasActiveGoal && i == orbitSystem->activeGoal.activeColor)
+                                {
+                                        endPos = orbitSystem->activeGoal.activeGoalGround.GetComponent<TransformComponent>()
+                                                     ->transform.translation;
+                                }
+                                else
+                                {
+                                        endPos = start + pathLength * playerTransform->transform.rotation.GetForward2D();
+                                }
+
+                                XMVECTOR delta    = endPos - start;
+                                float    distance = MathLibrary::CalulateVectorLength(delta);
+                                XMVECTOR dir      = XMVector3Normalize(delta);
+
+                                float actualDistance = std::min(pathLength, distance - 5.0f);
+
+                                XMVECTOR end = start + dir * actualDistance;
+
+                                float width     = splineWidth * actualDistance / pathLength;
+                                float height    = splineHeight * actualDistance / pathLength;
+                                int   waveCount = std::lroundf(3.0f * actualDistance / pathLength);
+
+                                start = XMVectorSetY(start, 0.0f);
+                                end   = XMVectorSetY(end, 0.0f);
+
+                                if (pathExists == false)
+                                {
+                                        CreateRandomPath(start, end, i, width, waveCount, height);
                                         auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
                                         spawnSound->SetVolume(0.8f);
                                         spawnSound->Play();
+                                        pathExists = true;
                                 }
-                                pathExists = true;
                         }
                 }
         }
@@ -664,9 +718,9 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
 
                         XMVECTOR pos = splineComp.GetParent().GetComponent<TransformComponent>()->transform.translation;
-                        clusterIt->second.cachedPoints[index].pos = pos;
+                        clusterIt->second.cachedPoints[index].pos   = pos;
                         clusterIt->second.cachedPoints[index].color = splineComp.color;
-                        int splineColor                       = splineComp.color;
+                        int splineColor                             = splineComp.color;
 
                         XMVECTOR dirVector = pos - playerTransform->transform.translation;
                         float    distance  = MathLibrary::CalulateVectorLength(dirVector);

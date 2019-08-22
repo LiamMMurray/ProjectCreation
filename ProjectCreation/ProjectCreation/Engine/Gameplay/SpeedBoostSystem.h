@@ -75,7 +75,8 @@ class SpeedBoostSystem : public ISystem
         float m_BoostShrinkSpeed      = m_BoostRadius;
         float m_targetTerrain         = 0.0f;
 
-        float maxPathLength[4] = {120.0f, 120.0f, 120.0f, 100.0f};
+        float maxTutorialPathLength[4] = {25.0f, 25.0f, 25.0f, 25.0f};
+        float maxPathLength[3] = {30.0f, 60.0f, 90.0f};
 
         static constexpr float m_SplineLengthPerOrb       = 2.5f;
         static constexpr float m_SplineLatchRadius        = 0.2f;

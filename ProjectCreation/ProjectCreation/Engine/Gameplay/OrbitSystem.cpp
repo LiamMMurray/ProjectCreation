@@ -89,51 +89,111 @@ void OrbitSystem::CreateTutorialGoal(int color, DirectX::XMVECTOR position)
         /*** REFACTORING CODE START ***/
         ComponentHandle transHandle, transHandle2;
 
-        auto entityH1   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle);
-        auto goalHandle = entityH1.AddComponent<GoalComponent>();
-        auto goalComp   = goalHandle.Get<GoalComponent>();
-        auto transComp  = transHandle.Get<TransformComponent>();
 
-        auto entityH2 = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle2, nullptr, false);
-        auto transComp2           = transHandle2.Get<TransformComponent>();
-        goalComp->color           = color;
-        goalComp->collisionHandle = transHandle2;
-        goalComp->goalTransform.SetScale(50.0f);
-        goalComp->initialTransform.SetScale(1.0f);
-        goalComp->initialTransform.translation = position;
-        goalComp->goalState                    = E_GOAL_STATE::Spawning;
-        transComp->transform                   = goalComp->initialTransform;
-        transComp->transform.SetScale(0.0f);
+        if (color == E_LIGHT_ORBS::WHITE_LIGHTS)
+        {
+                auto entityH1   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle);
+                auto goalHandle = entityH1.AddComponent<GoalComponent>();
+                auto goalComp   = goalHandle.Get<GoalComponent>();
+                auto transComp  = transHandle.Get<TransformComponent>();
 
-        float time = float(GEngine::Get()->GetTotalTime() / (1.0f + color) + color * 3.7792f);
-        float x    = sin(time);
-        float y    = cos(time);
+                auto entityH2 =
+                    EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle2, nullptr, false);
+                auto transComp2           = transHandle2.Get<TransformComponent>();
+                goalComp->color           = color;
+                goalComp->collisionHandle = transHandle2;
+                goalComp->goalTransform.SetScale(50.0f);
+                goalComp->initialTransform.SetScale(1.0f);
+                goalComp->initialTransform.translation = position;
+                goalComp->goalState                    = E_GOAL_STATE::Spawning;
+                transComp->transform                   = goalComp->initialTransform;
+                transComp->transform.SetScale(0.0f);
 
-        XMVECTOR offset1 = XMVectorSet(x, 0, y, 0.0f);
+                float time = float(GEngine::Get()->GetTotalTime() / (1.0f + color) + color * 3.7792f);
+                float x    = sin(time);
+                float y    = cos(time);
 
-        goalComp->goalTransform.translation = orbitCenter + offset1 * 150.f * (color + 1.0f);
-        transComp2->transform               = goalComp->goalTransform;
+                XMVECTOR offset1 = XMVectorSet(x, 0, y, 0.0f);
 
-        activeGoal.hasActiveGoal    = true;
-        activeGoal.activeGoalGround = entityH1;
-        activeGoal.activeGoalOrbit  = entityH2;
-        activeGoal.activeColor      = color;
+                goalComp->goalTransform.translation = orbitCenter + offset1 * 150.f * (color + 1.0f);
+                transComp2->transform               = goalComp->goalTransform;
 
-        // check if player is in range
-        // particle fly up
-        XMFLOAT4 goalColor;
-        XMStoreFloat4(&goalColor, 4.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[color]));
-        goalColor.w                        = 0.4f;
-        goalHandle                         = entityH1.AddComponent<EmitterComponent>();
-        EmitterComponent* emitterComponent = goalHandle.Get<EmitterComponent>();
-        emitterComponent->ParticleFloatUp(
-            XMFLOAT3(-0.3f, -0.3f, -0.3f), XMFLOAT3(0.3f, 0.3f, 0.3f), goalColor, goalColor, XMFLOAT4(3.0f, 1.0f, 0.1f, 0.1f));
-        emitterComponent->EmitterData.index         = 2;
-        emitterComponent->EmitterData.particleScale = XMFLOAT2(0.2f, 0.2f);
-        emitterComponent->maxCount                  = 0;
-        emitterComponent->spawnRate                 = 0.0f;
-        emitterComponent->EmitterData.textureIndex  = 3;
-        /*** REFACTORING CODE END ***/
+                activeGoal.hasActiveGoal    = true;
+                activeGoal.activeGoalGround = entityH1;
+                activeGoal.activeGoalOrbit  = entityH2;
+                activeGoal.activeColor      = color;
+
+                // check if player is in range
+                // particle fly up
+                XMFLOAT4 goalColor;
+                XMStoreFloat4(&goalColor, 4.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[color]));
+                goalColor.w                        = 0.4f;
+                goalHandle                         = entityH1.AddComponent<EmitterComponent>();
+                EmitterComponent* emitterComponent = goalHandle.Get<EmitterComponent>();
+                emitterComponent->ParticleFloatUp(XMFLOAT3(-0.3f, -0.3f, -0.3f),
+                                                  XMFLOAT3(0.3f, 0.3f, 0.3f),
+                                                  goalColor,
+                                                  goalColor,
+                                                  XMFLOAT4(3.0f, 1.0f, 0.1f, 0.1f));
+                emitterComponent->EmitterData.index         = 2;
+                emitterComponent->EmitterData.particleScale = XMFLOAT2(0.2f, 0.2f);
+                emitterComponent->maxCount                  = 0;
+                emitterComponent->spawnRate                 = 0.0f;
+                emitterComponent->EmitterData.textureIndex  = 3;
+                /*** REFACTORING CODE END ***/
+        }
+
+        else
+        {
+                auto entityH1   = EntityFactory::CreateStaticMeshEntity("Ring01", materialNames[color], &transHandle);
+                auto goalHandle = entityH1.AddComponent<GoalComponent>();
+                auto goalComp   = goalHandle.Get<GoalComponent>();
+                auto transComp  = transHandle.Get<TransformComponent>();
+
+                auto entityH2 =
+                    EntityFactory::CreateStaticMeshEntity("Ring01", materialNames[color], &transHandle2, nullptr, false);
+                auto transComp2           = transHandle2.Get<TransformComponent>();
+                goalComp->color           = color;
+                goalComp->collisionHandle = transHandle2;
+                goalComp->goalTransform.SetScale(50.0f);
+                goalComp->initialTransform.SetScale(1.0f);
+                goalComp->initialTransform.translation = position;
+                goalComp->goalState                    = E_GOAL_STATE::Spawning;
+                transComp->transform                   = goalComp->initialTransform;
+                transComp->transform.SetScale(0.0f);
+
+                float time = float(GEngine::Get()->GetTotalTime() / (1.0f + color) + color * 3.7792f);
+                float x    = sin(time);
+                float y    = cos(time);
+
+                XMVECTOR offset1 = XMVectorSet(x, 0, y, 0.0f);
+
+                goalComp->goalTransform.translation = orbitCenter + offset1 * 150.f * (color + 1.0f);
+                transComp2->transform               = goalComp->goalTransform;
+
+                activeGoal.hasActiveGoal    = true;
+                activeGoal.activeGoalGround = entityH1;
+                activeGoal.activeGoalOrbit  = entityH2;
+                activeGoal.activeColor      = color;
+
+                // check if player is in range
+                // particle fly up
+                XMFLOAT4 goalColor;
+                XMStoreFloat4(&goalColor, 4.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[color]));
+                goalColor.w                        = 0.4f;
+                goalHandle                         = entityH1.AddComponent<EmitterComponent>();
+                EmitterComponent* emitterComponent = goalHandle.Get<EmitterComponent>();
+                emitterComponent->ParticleFloatUp(XMFLOAT3(-0.3f, -0.3f, -0.3f),
+                                                  XMFLOAT3(0.3f, 0.3f, 0.3f),
+                                                  goalColor,
+                                                  goalColor,
+                                                  XMFLOAT4(3.0f, 1.0f, 0.1f, 0.1f));
+                emitterComponent->EmitterData.index         = 2;
+                emitterComponent->EmitterData.particleScale = XMFLOAT2(0.2f, 0.2f);
+                emitterComponent->maxCount                  = 0;
+                emitterComponent->spawnRate                 = 0.0f;
+                emitterComponent->EmitterData.textureIndex  = 3;
+                /*** REFACTORING CODE END ***/}
 }
 
 void OrbitSystem::UpdateSunAlignedObjects()
@@ -266,23 +326,23 @@ void OrbitSystem::OnUpdate(float deltaTime)
 
                         if (goalComp.goalState == E_GOAL_STATE::Done)
                         {
-                                // goalComp.targetAlpha = 1.0f;
-                                //
-                                // float dist = MathLibrary::CalulateDistance(goalComp.initialTransform.translation,
-                                //                                           goalComp.goalTransform.translation);
-                                //
-                                // float speed        = MathLibrary::lerp(goalComp.transitionInitialSpeed,
-                                //                                goalComp.transitionFinalSpeed,
-                                //                                std::min(1.0f, goalComp.currAlpha));
-                                // goalComp.currAlpha = MathLibrary::MoveTowards(
-                                //    goalComp.currAlpha, goalComp.targetAlpha, speed * deltaTime * 1.0f / dist);
-                                //
-                                // transComp->transform = FTransform::Lerp(goalComp.initialTransform,
-                                //                                        goalComp.goalTransform,
-                                //                                        std::min(1.0f, goalComp.currAlpha));
+                                goalComp.targetAlpha = 1.0f;
+                                
+                                float dist = MathLibrary::CalulateDistance(goalComp.initialTransform.translation,
+                                                                          goalComp.goalTransform.translation);
+                                
+                                float speed        = MathLibrary::lerp(goalComp.transitionInitialSpeed,
+                                                               goalComp.transitionFinalSpeed,
+                                                               std::min(1.0f, goalComp.currAlpha));
+                                goalComp.currAlpha = MathLibrary::MoveTowards(
+                                   goalComp.currAlpha, goalComp.targetAlpha, speed * deltaTime * 1.0f / dist);
+                                
+                                transComp->transform = FTransform::Lerp(goalComp.initialTransform,
+                                                                       goalComp.goalTransform,
+                                                                       std::min(1.0f, goalComp.currAlpha));
                                 SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->inPath = false;
-                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->ResetOrbCount(goalComp.color);
-                                DestroyPlanet(&goalComp);
+                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->ResetOrbCount(activeGoal.activeColor);
+                                //DestroyPlanet(&goalComp);
                         }
                 }
                 else
@@ -375,13 +435,11 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 CreateTutorialGoal(3, nextGoalPos);
         }
 
-        if (playerController->m_CollectedSplineOrbCount >= (playerController->m_TotalSplineOrbCount - 5) &&
-            (playerController->m_TotalSplineOrbCount > 0))
+        if ((GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() == E_Level_States::TUTORIAL_LEVEL))
         {
-                if ((GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() ==
-                     E_Level_States::TUTORIAL_LEVEL))
+                if (playerController->m_CollectedSplineOrbCount >= (playerController->m_TotalSplineOrbCount - 1) &&
+                    (playerController->m_TotalSplineOrbCount > 0))
                 {
-
                         for (int i = 0; i < 4; ++i)
                         {
                                 if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
@@ -395,23 +453,34 @@ void OrbitSystem::OnUpdate(float deltaTime)
                                                         if (tutorialPlanets[i] == false)
                                                         {
                                                                 CreateTutorialGoal(i, nextGoalPos);
+                                                                // SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->inPath =
+                                                                // false;
+                                                                // SYSTEM_MANAGER->GetSystem<ControllerSystem>()->ResetOrbCount(i);
+                                                                // TutorialLevel::Get()->RequestNextPhase();
                                                         }
                                                 }
                                         }
                                 }
                         }
                 }
+        }
 
-                for (int i = 0; i < 3; ++i)
+        else
+        {
+                if (playerController->m_CollectedSplineOrbCount >= (playerController->m_TotalSplineOrbCount - 5) &&
+                    (playerController->m_TotalSplineOrbCount > 0))
                 {
-                        if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
+                        for (int i = 0; i < 3; ++i)
                         {
-                                collectEventTimestamps[i] = controllerSystem->GetCollectOrbEventID(i);
-                                if (collectedMask[i] == false)
+                                if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
                                 {
-                                        if (activeGoal.hasActiveGoal == false || activeGoal.activeColor != i)
-                                        { // play sfx when spawned
-                                                CreateGoal(i, nextGoalPos);
+                                        collectEventTimestamps[i] = controllerSystem->GetCollectOrbEventID(i);
+                                        if (collectedMask[i] == false)
+                                        {
+                                                if (activeGoal.hasActiveGoal == false || activeGoal.activeColor != i)
+                                                { // play sfx when spawned
+                                                        CreateGoal(i, nextGoalPos);
+                                                }
                                         }
                                 }
                         }

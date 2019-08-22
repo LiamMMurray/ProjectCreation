@@ -883,7 +883,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 0.2f,
                                 0.5f,
                                 false);
-                                
+                                
 
 
 
@@ -980,63 +980,128 @@ void UIManager::Initialize(native_handle_type hwnd)
                           pauseButtonHeight);
 
         // Controls Menu
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Back",
-                          0.05f,
-                          0.0f,
-                          -0.3f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Collect Red Light: A",
-                          0.03f,
-                          0.0f,
-                          -0.1f,
-                          false,
-                          false);
+        if (GamePad::Get()->CheckConnection() == true)
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Back",
+                                  0.05f,
+                                  0.0f,
+                                  -0.3f,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth,
+                                  pauseButtonHeight);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Collect Green Light: S",
-                          0.03f,
-                          0.0f,
-                          0.0f,
-                          false,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Collect Red Light: B",
+                                  0.03f,
+                                  0.0f,
+                                  -0.1f,
+                                  false,
+                                  false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Collect Blue Light: D",
-                          0.03f,
-                          0.0f,
-                          0.1f,
-                          false,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Collect Green Light: A",
+                                  0.03f,
+                                  0.0f,
+                                  0.0f,
+                                  false,
+                                  false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Movement: Left Mouse ",
-                          0.03f,
-                          0.0f,
-                          0.2f,
-                          false,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Collect Blue Light: X",
+                                  0.03f,
+                                  0.0f,
+                                  0.1f,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Movement: Right Trigger ",
+                                  0.03f,
+                                  0.0f,
+                                  0.2f,
+                                  false,
+                                  false);
+        }
+
+        else
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Back",
+                                  0.05f,
+                                  0.0f,
+                                  -0.3f,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth,
+                                  pauseButtonHeight);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Collect Red Light: A",
+                                  0.03f,
+                                  0.0f,
+                                  -0.1f,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Collect Green Light: S",
+                                  0.03f,
+                                  0.0f,
+                                  0.0f,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Collect Blue Light: D",
+                                  0.03f,
+                                  0.0f,
+                                  0.1f,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Movement: Left Mouse ",
+                                  0.03f,
+                                  0.0f,
+                                  0.2f,
+                                  false,
+                                  false);
+        }
 
         // Demo
         instance->AddText(instance->m_RenderSystem->m_Device,
