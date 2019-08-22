@@ -136,6 +136,7 @@ class UIManager
         bool         m_FirstFull      = true; // Turns false when the game is put to fullscreen on launch
         bool         m_InMenu         = false;
         bool         m_AdjustedScreen = false;
+        bool         m_BreakSplash    = false;
         PrevSettings PSettings;
         CurrSettings CSettings;
         float        m_SliderHandle;

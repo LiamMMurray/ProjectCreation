@@ -347,24 +347,33 @@ void UIManager::Splash_Team()
 void UIManager::SplashUpdate(float globalTimer)
 {
         float deltatime = GEngine::Get()->GetDeltaTime();
-        if (globalTimer < 5.0f)
+        
+		if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
         {
-                // Full Sail Logo
-                UIManager::instance->Splash_FullSail();
-        }
-        else if (globalTimer >= 5.0f && globalTimer < 10.0f)
-        {
-                // GP Games Logo
-                UIManager::instance->Splash_GPGames();
-        }
-        else if (globalTimer >= 10.0f && globalTimer < 15.0f)
-        {
-                // Deep!deep Logo
-                UIManager::instance->Splash_Team();
+                instance->m_BreakSplash = true;
+                UIManager::instance->Splash_End();
         }
         else
         {
-                UIManager::instance->Splash_End();
+                if (globalTimer < 5.0f)
+                {
+                        // Full Sail Logo
+                        UIManager::instance->Splash_FullSail();
+                }
+                else if (globalTimer >= 5.0f && globalTimer < 10.0f)
+                {
+                        // GP Games Logo
+                        UIManager::instance->Splash_GPGames();
+                }
+                else if (globalTimer >= 10.0f && globalTimer < 15.0f)
+                {
+                        // Deep!deep Logo
+                        UIManager::instance->Splash_Team();
+                }
+                else
+                {
+                        UIManager::instance->Splash_End();
+                }
         }
 }
 
@@ -638,6 +647,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         }
 
         instance->m_WindowHandle = hwnd;
+        instance->m_BreakSplash  = false;
 
         // Create supported resolutions
         instance->SupportedResolutions();
@@ -1138,7 +1148,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::Demo,
                           E_FONT_TYPE::Calibri,
-                          "Thank you for playing our demo!",
+                          "Thank you for playing!",
                           0.06f * ScaleXRatio,
                           0.03f * ScaleYRatio,
                           0.0f * PosXRatio,
@@ -1650,7 +1660,7 @@ void UIManager::Update()
 
         static float GlobalTimer = 0.0f;
 		
-        if (GlobalTimer < 15.1f)
+        if (GlobalTimer < 15.1f && !instance->m_BreakSplash)
         {
                 instance->SplashUpdate(GlobalTimer);
                 GlobalTimer += GEngine::Get()->GetDeltaTime();
