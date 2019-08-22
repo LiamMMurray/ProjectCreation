@@ -36,6 +36,7 @@ class SpeedBoostSystem : public ISystem
 
         ResourceHandle speedboostMaterials[E_LIGHT_ORBS::COUNT]  = {};
         std::string speedboostMaterialNames[E_LIGHT_ORBS::COUNT] = {"SpeedboostR", "SpeedboostG", "SpeedboostB", "SpeedboostW"};
+        std::string speedboostMeshNames[E_LIGHT_ORBS::COUNT]     = {"RedOrb00", "GreenOrb00", "BlueOrb00", "WhiteOrb00"};
 
 
         // void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
@@ -49,19 +50,17 @@ class SpeedBoostSystem : public ISystem
 
         std::vector<float> x;
 
-        void RequestUnlatchFromSpline(PlayerController*                       playerController,
-                                             float                                   deltaTime);
-        float       mDelatchTimer = 0.0f;
-        float       mDelatchCD    = 0.5f;
-        void        CreateRandomPath(const DirectX::XMVECTOR& start,
-                                     const DirectX::XMVECTOR& end,
-                                     int                      color,
-                                     float                    width     = 40.0f, // 50.0f
-                                     unsigned int             waveCount = 5,
-                                     float                    heightvar = 0.25f); // 1.6f
+        void  RequestUnlatchFromSpline(PlayerController* playerController, float deltaTime);
+        float mDelatchTimer = 0.0f;
+        float mDelatchCD    = 0.5f;
+        void  CreateRandomPath(const DirectX::XMVECTOR& start,
+                               const DirectX::XMVECTOR& end,
+                               int                      color,
+                               float                    width     = 40.0f, // 50.0f
+                               unsigned int             waveCount = 5,
+                               float                    heightvar = 0.25f); // 1.6f
 
-        void DestroySpline(int                                     SplineID,
-                                  int                                     curr);
+        void DestroySpline(int SplineID, int curr);
 
         float m_PlayerEffectRadius    = 200.0f;
         float m_SpawnBoostTimer       = 0.0f;

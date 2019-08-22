@@ -80,7 +80,8 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
                 XMStoreFloat4(&orbColor, 4.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[color]));
                 XMStoreFloat3(&velMax, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f));
                 XMStoreFloat3(&orbPos, pos);
-                emitterComponent->ParticleswithGravity(XMFLOAT3(), XMFLOAT3(1.5f,0.0f,1.0f), orbColor, orbColor, XMFLOAT4(2.0f, 1.0f, 0.5f, 0.5f));
+                emitterComponent->ParticleswithGravity(
+                    XMFLOAT3(), XMFLOAT3(1.5f, 0.0f, 1.0f), orbColor, orbColor, XMFLOAT4(2.0f, 1.0f, 0.5f, 0.5f));
 
                 emitterComponent->EmitterData.minInitialVelocity = {-0.1f, -0.0f, -0.1f};
                 emitterComponent->EmitterData.maxInitialVelocity = {0.3f, 1.75f, 0.3f};
@@ -188,8 +189,8 @@ EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int c
 {
         ComponentHandle orbHandle;
         ComponentHandle transHandle;
-        auto            entityHandle =
-            EntityFactory::CreateStaticMeshEntity("Sphere01", speedboostMaterialNames[color].c_str(), &orbHandle);
+        auto            entityHandle = EntityFactory::CreateStaticMeshEntity(
+            speedboostMeshNames[color].c_str(), speedboostMaterialNames[color].c_str(), &orbHandle);
         orbHandle = m_HandleManager->AddComponent<OrbComponent>(entityHandle);
 
         OrbComponent*       orbComp       = orbHandle.Get<OrbComponent>();
