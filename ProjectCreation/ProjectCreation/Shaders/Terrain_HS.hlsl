@@ -80,7 +80,7 @@ HullConstantDataOut CalcHSPatchConstants(InputPatch<VertexOut, NUM_CONTROL_POINT
         HullConstantDataOut hCDOut;
 
         float minY = -50.0f;
-        float maxY = 50.0f;
+        float maxY = 150.0f;
 
         float3 vMin = ip[0].PosW;
         float3 vMax = ip[0].PosW;

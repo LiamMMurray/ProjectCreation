@@ -87,6 +87,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
         DirectX::CreateDDSTextureFromFile(renderSystem->GetDevice(), str.c_str(), &resource, &terrainSourceSRV);
         ID3D11Texture2D* texture = (ID3D11Texture2D*)resource;
 
+
         D3D11_TEXTURE2D_DESC desc;
         texture->GetDesc(&desc);
         UINT texwidth         = desc.Width;
@@ -177,8 +178,13 @@ void TerrainManager::_initialize(RenderSystem* rs)
 
         if (true)
         {
+                ID3D11ShaderResourceView* collisionSRV;
+                str = L"../Assets/Textures/TerrainCollision.dds";
+                DirectX::CreateDDSTextureFromFile(renderSystem->GetDevice(), str.c_str(), &resource, &collisionSRV);
+                resource->Release();
+
                 ID3D11Resource* sourceResource;
-                terrainSourceSRV->GetResource(&sourceResource);
+                collisionSRV->GetResource(&sourceResource);
                 sourceResource->Release();
                 renderSystem->GetContext()->CopySubresourceRegion(
                     terrainIntermediateTexture, 0, 0, 0, 0, sourceResource, 0, nullptr);
@@ -202,6 +208,8 @@ void TerrainManager::_initialize(RenderSystem* rs)
                         buffer += intermediateMipDimensions * sizeof(float);
                 }
                 renderSystem->GetContext()->Unmap(stagingTextureResource, 0);
+
+                collisionSRV->Release();
         }
 
         // Create instance data and buffers

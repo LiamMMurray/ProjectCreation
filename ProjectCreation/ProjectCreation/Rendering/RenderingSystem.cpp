@@ -861,7 +861,7 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         m_CachedMainViewMatrix           = view;
         m_CachedMainViewProjectionMatrix = view * m_CachedMainProjectionMatrix;
 
-        mainCamera->_cachedView           = m_CachedMainInvViewMatrix;
+        mainCamera->_cachedView           = m_CachedMainViewMatrix;
         mainCamera->_cachedProjection     = m_CachedMainProjectionMatrix;
         mainCamera->_cachedViewProjection = m_CachedMainViewProjectionMatrix;
 
