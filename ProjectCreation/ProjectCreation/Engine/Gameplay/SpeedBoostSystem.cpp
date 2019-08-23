@@ -115,6 +115,9 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
 {
         XMVECTOR prev, curr, next;
 
+        ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+        PlayerController* playerController =
+            (PlayerController*)controllerSystem->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
 
         cluster.BakeNextPointOnSpline(prev, curr, next);
 
@@ -122,7 +125,15 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
 
         if (changeColor)
         {
-                int div                                     = cluster.current / 10;
+                int div = 1;
+                if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() == E_Level_States::LEVEL_02)
+                {
+                        div = cluster.current / 15;
+                }
+                else if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() == E_Level_States::LEVEL_03)
+                {
+                        div = cluster.current / 10;
+                }
                 int color                                   = (cluster.targetColor + div) % 3;
                 cluster.color                               = color;
                 m_SplineClusterSpawners.at(clusterID).color = color;

@@ -2,19 +2,22 @@
 
 #include "../../ECS/HandleManager.h"
 #include "../../ECS/SystemManager.h"
+#include "..//ResourceManager/IResource.h"
 #include "../MathLibrary/MathLibrary.h"
 #include "GoalComponent.h"
-#include "..//ResourceManager/IResource.h"
 
 class TransformComponent;
 class ResourceManager;
+class PlayerController;
 
 class OrbitSystem : public ISystem
 {
     private:
         HandleManager* m_HandleManager;
 
-		ResourceManager* m_ResourceManager;
+        ResourceManager* m_ResourceManager;
+
+        PlayerController* m_PlayerController;
 
         const char* materialNames[4] = {"GlowMatPlanet01", "GlowMatPlanet03", "GlowMatPlanet02", "GlowMatSun"};
         int         m_Stage          = 0;
@@ -33,7 +36,7 @@ class OrbitSystem : public ISystem
                 bool         hasActiveGoal = false;
         };
 
-        static constexpr float goalDistances[4] = {5.0f, 5.0f, 5.0f, 5.0f};
+        static constexpr float goalDistances[4] = {10.0f, 10.0f, 10.0f, 10.0f};
 
         std::vector<ComponentHandle> sunAlignedTransforms;
 
@@ -50,14 +53,21 @@ class OrbitSystem : public ISystem
         virtual void OnResume() override;
         virtual void OnSuspend() override;
 
-        int collectEventTimestamps[4] = {-1, -1, -1, -1};
-        bool tutorialPlanets[4]        = {false, false, false, false};
+        bool tutorialPlanets[4] = {false, false, false, false};
 
     public:
+        int                          collectEventTimestamps[4] = {-1, -1, -1, -1};
+        double                       PlanetPickupTimestamps[3] = {-1, -1, -1};
         std::vector<ComponentHandle> sunAlignedTransformsSpawning;
+
+        void InstantCreateOrbitSystem();
+
+        void InstantInOrbit(int color);
+        void InstantRemoveFromOrbit();
+
         unsigned int    goalsCollected   = 0;
         bool            collectedMask[3] = {};
         FActiveGoalInfo activeGoal;
-        void                         DestroyPlanet(GoalComponent* toDestroy);
-        ComponentHandle              sunHandle, ring1Handle, ring2Handle, ring3Handle;
+        void            DestroyPlanet(GoalComponent* toDestroy);
+        ComponentHandle sunHandle, ring1Handle, ring2Handle, ring3Handle;
 };

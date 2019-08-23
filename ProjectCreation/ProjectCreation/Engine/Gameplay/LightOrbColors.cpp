@@ -17,7 +17,7 @@ DirectX::PackedVector::XMCOLOR C_GREEN_RING = DirectX::PackedVector::XMCOLOR{0xF
 DirectX::PackedVector::XMCOLOR C_BLUE = DirectX::PackedVector::XMCOLOR{0xFF003AFF};
 
 // Blue Ring Color
-DirectX::PackedVector::XMCOLOR C_BLUE_RING = DirectX::PackedVector::XMCOLOR{0xFF2222FF};
+DirectX::PackedVector::XMCOLOR C_BLUE_RING = DirectX::PackedVector::XMCOLOR{0xFF223AFF};
 
 // Yellow Color
 DirectX::PackedVector::XMCOLOR C_YELLOW = DirectX::PackedVector::XMCOLOR{0xFFFFFF00};

@@ -34,7 +34,7 @@ void LevelStateManager::Init()
 
 	// Button level 2 transitions
         m_LevelStateMachine.AddTransition(levelStates[2], levelStates[0], E_LevelStateEvents::LEVEL_02_TO_TUTORIAL_LEVEL);
-        m_LevelStateMachine.AddTransition(levelStates[2], levelStates[2], E_LevelStateEvents::LEVEL_02_TO_LEVEL_01);
+        m_LevelStateMachine.AddTransition(levelStates[2], levelStates[1], E_LevelStateEvents::LEVEL_02_TO_LEVEL_01);
         m_LevelStateMachine.AddTransition(levelStates[2], levelStates[3], E_LevelStateEvents::LEVEL_02_TO_LEVEL_03);
 
 	// Button level 3 transitions

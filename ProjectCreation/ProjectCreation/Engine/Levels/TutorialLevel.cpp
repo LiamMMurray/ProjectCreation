@@ -13,9 +13,10 @@ TutorialLevel::E_TUTORIAL_PHASE TutorialLevel::currPhase = E_TUTORIAL_PHASE::PHA
 void TutorialLevel::Enter()
 {
         // Update(GEngine::Get()->GetDeltaTime());
+		
         Instance       = new TutorialLevel();
-        currPhaseIndex = 0;
         currPhase      = phases[currPhaseIndex];
+
         GEngine::Get()->SetPlayerRadius(0);
 
         m_SpeedBoostSystem->splineWidth  = 1.0f;
@@ -74,13 +75,11 @@ void TutorialLevel::Update(float deltaTime)
                 }
                 break;
         }
-
 }
 
 
 void TutorialLevel::Exit()
-{
-}
+{}
 
 TutorialLevel::TutorialLevel()
 {
@@ -97,6 +96,8 @@ TutorialLevel::TutorialLevel()
         m_PlayerTransform = m_PlayerEntityHandle.GetComponent<TransformComponent>();
 
         m_HandleManager = GEngine::Get()->GetHandleManager();
+
+        currPhaseIndex = 0;
 }
 
 void TutorialLevel::RequestNextPhase()
@@ -111,7 +112,7 @@ void TutorialLevel::RequestNextPhase()
         {
                 currPhase = phases[currPhaseIndex];
         }
-        //m_SpeedBoostSystem->RequestDestroyAllSpeedboosts();
+        m_SpeedBoostSystem->RequestDestroyAllSpeedboosts();
 }
 
 void TutorialLevel::UpdatePhase1(float deltaTime)
@@ -171,90 +172,6 @@ void TutorialLevel::UpdatePhase5(float deltaTime)
         m_OrbitSystem->sunAlignedTransformsSpawning.push_back(m_OrbitSystem->ring3Handle);
         levelRequested += 1;
         GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_01);
-}
-
-void TutorialLevel::SpawnFirstWhiteOrb()
-{
-        whiteCount += 1;
-        EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                        ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-                                        ->GetControlledEntity();
-
-
-        TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
-
-        XMVECTOR pos = m_PlayerTransform->transform.translation + 8.0f * m_PlayerTransform->transform.rotation.GetForward2D();
-
-        auto handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::WHITE_LIGHTS);
-
-        auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
-        speedboostComponent->collisionRadius = 0.1f;
-        speedboostComponent->lifetime        = 1.0f;
-        speedboostComponent->decay           = 0.0f;
-        speedboostComponent->color           = E_LIGHT_ORBS::WHITE_LIGHTS;
-}
-
-void TutorialLevel::SpawnFirstRedOrb()
-{
-        redCount += 1;
-        EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                        ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-                                        ->GetControlledEntity();
-
-
-        TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
-
-        XMVECTOR pos = m_PlayerTransform->transform.translation + 12.0f * m_PlayerTransform->transform.rotation.GetForward2D();
-        auto     handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::RED_LIGHTS);
-
-        auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
-        speedboostComponent->collisionRadius = 0.1f;
-        speedboostComponent->lifetime        = 1.0f;
-        speedboostComponent->decay           = 0.0f;
-        speedboostComponent->color           = E_LIGHT_ORBS::RED_LIGHTS;
-        speedboostComponent->hasParticle     = false;
-}
-
-void TutorialLevel::SpawnFirstBlueOrb()
-{
-        blueCount += 1;
-        EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                        ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-                                        ->GetControlledEntity();
-
-
-        TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
-
-        XMVECTOR pos = m_PlayerTransform->transform.translation + 12.0f * m_PlayerTransform->transform.rotation.GetForward2D();
-        auto     handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::BLUE_LIGHTS);
-
-        auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
-        speedboostComponent->collisionRadius = 0.1f;
-        speedboostComponent->lifetime        = 1.0f;
-        speedboostComponent->decay           = 0.0f;
-        speedboostComponent->hasParticle     = false;
-        speedboostComponent->color           = E_LIGHT_ORBS::BLUE_LIGHTS;
-}
-
-void TutorialLevel::SpawnFirstGreenOrb()
-{
-        greenCount += 1;
-        EntityHandle playerEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                        ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
-                                        ->GetControlledEntity();
-
-
-        TransformComponent* m_PlayerTransform = playerEntity.GetComponent<TransformComponent>();
-
-        XMVECTOR pos = m_PlayerTransform->transform.translation + 12.0f * m_PlayerTransform->transform.rotation.GetForward2D();
-        auto     handle = m_SpeedBoostSystem->SpawnLightOrb(pos, E_LIGHT_ORBS::GREEN_LIGHTS);
-
-        auto speedboostComponent             = handle.AddComponent<SpeedboostComponent>().Get<SpeedboostComponent>();
-        speedboostComponent->collisionRadius = 0.1f;
-        speedboostComponent->lifetime        = 1.0f;
-        speedboostComponent->decay           = 0.0f;
-        speedboostComponent->color           = E_LIGHT_ORBS::GREEN_LIGHTS;
-        speedboostComponent->hasParticle     = false;
 }
 
 TutorialLevel* TutorialLevel::Get()

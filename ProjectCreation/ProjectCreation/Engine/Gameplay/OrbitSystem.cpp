@@ -2,7 +2,6 @@
 #include <limits>
 #include "../../Rendering/Components/StaticMeshComponent.h"
 #include "..//..//Rendering/Components/DirectionalLightComponent.h"
-#include "..//Controller/PlayerMovement.h"
 #include "..//CoreInput/CoreInput.h"
 #include "..//Entities/EntityFactory.h"
 #include "..//GEngine.h"
@@ -18,7 +17,7 @@ using namespace DirectX;
 
 void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
 {
-        color = std::min(2, color);
+        color = min(2, color);
 
         if (activeGoal.hasActiveGoal)
         {
@@ -78,7 +77,7 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
 
 void OrbitSystem::CreateTutorialGoal(int color, DirectX::XMVECTOR position)
 {
-        color                  = std::min(3, color);
+        color                  = min(3, color);
         tutorialPlanets[color] = true;
         if (activeGoal.hasActiveGoal)
         {
@@ -222,6 +221,7 @@ void OrbitSystem::UpdateSunAlignedObjects()
                         }
                 }
         }
+
         for (auto& h : sunAlignedTransforms)
         {
                 TransformComponent* tc    = h.Get<TransformComponent>();
@@ -232,11 +232,9 @@ void OrbitSystem::UpdateSunAlignedObjects()
 
 void OrbitSystem::OnPreUpdate(float deltaTime)
 {
-        PlayerController* playerController = (PlayerController*)SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                                 ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
 
         ComponentHandle playerTransformHandle =
-            playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
+            m_PlayerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
         TransformComponent* playerTransform = playerTransformHandle.Get<TransformComponent>();
 
         sunRotation = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>()->m_LightRotation;
@@ -248,11 +246,9 @@ void OrbitSystem::OnPreUpdate(float deltaTime)
 
 void OrbitSystem::OnUpdate(float deltaTime)
 {
-        PlayerController* playerController = (PlayerController*)SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                                 ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
 
         ComponentHandle playerTransformHandle =
-            playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
+            m_PlayerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
         TransformComponent* playerTransform = playerTransformHandle.Get<TransformComponent>();
 
         double totalTime = GEngine::Get()->GetTotalTime();
@@ -314,35 +310,35 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 4.0f)
                         {
                                 // goalComp.targetAlpha = 1.0f;
-                                // playerController->SetGoalComponent(goalComp.GetHandle());
+                                // m_PlayerController->SetGoalComponent(goalComp.GetHandle());
                                 goalComp.goalState  = E_GOAL_STATE::Done;
                                 transComp->wrapping = false;
                                 TutorialLevel::Get()->RequestNextPhase();
-                                // playerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
-                                // playerController->SetCollectedPlanetCount(1 +
-                                //                                          playerController->GetCollectedPlanetCount());
+                                // m_PlayerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
+                                // m_PlayerController->SetCollectedPlanetCount(1 +
+                                //                                          m_PlayerController->GetCollectedPlanetCount());
                                 // SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[goalComp.color] = true;
                         }
 
                         if (goalComp.goalState == E_GOAL_STATE::Done)
                         {
                                 goalComp.targetAlpha = 1.0f;
-                                
+
                                 float dist = MathLibrary::CalulateDistance(goalComp.initialTransform.translation,
-                                                                          goalComp.goalTransform.translation);
-                                
+                                                                           goalComp.goalTransform.translation);
+
                                 float speed        = MathLibrary::lerp(goalComp.transitionInitialSpeed,
-                                                               goalComp.transitionFinalSpeed,
-                                                               std::min(1.0f, goalComp.currAlpha));
+                                                                goalComp.transitionFinalSpeed,
+                                                                min(1.0f, goalComp.currAlpha));
                                 goalComp.currAlpha = MathLibrary::MoveTowards(
-                                   goalComp.currAlpha, goalComp.targetAlpha, speed * deltaTime * 1.0f / dist);
-                                
-                                transComp->transform = FTransform::Lerp(goalComp.initialTransform,
-                                                                       goalComp.goalTransform,
-                                                                       std::min(1.0f, goalComp.currAlpha));
+                                    goalComp.currAlpha, goalComp.targetAlpha, speed * deltaTime * 1.0f / dist);
+
+                                transComp->transform = FTransform::Lerp(
+                                    goalComp.initialTransform, goalComp.goalTransform, min(1.0f, goalComp.currAlpha));
+
                                 SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->inPath = false;
                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->ResetOrbCount(activeGoal.activeColor);
-                                //DestroyPlanet(&goalComp);
+                                DestroyPlanet(&goalComp);
                         }
                 }
                 else
@@ -384,12 +380,13 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 3.5f)
                         {
                                 // goalComp.targetAlpha = 1.0f;
-                                // playerController->SetGoalComponent(goalComp.GetHandle());
-                                goalComp.goalState  = E_GOAL_STATE::InitialTransition;
-                                transComp->wrapping = false;
-                                playerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
-                                playerController->SetCollectedPlanetCount(1 + playerController->GetCollectedPlanetCount());
-                                SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[goalComp.color] = true;
+                                // m_PlayerController->SetGoalComponent(goalComp.GetHandle());
+                                PlanetPickupTimestamps[goalComp.color] = GEngine::Get()->GetTotalTime();
+                                goalComp.goalState                     = E_GOAL_STATE::InitialTransition;
+                                transComp->wrapping                    = false;
+                                m_PlayerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
+                                m_PlayerController->SetCollectedPlanetCount(1 + m_PlayerController->GetCollectedPlanetCount());
+                                SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[activeGoal.activeColor] = true;
                         }
 
                         if (goalComp.goalState == E_GOAL_STATE::Done)
@@ -400,20 +397,22 @@ void OrbitSystem::OnUpdate(float deltaTime)
                                                                            goalComp.goalTransform.translation);
                                 float speed        = MathLibrary::lerp(goalComp.transitionInitialSpeed,
                                                                 goalComp.transitionFinalSpeed,
-                                                                std::min(1.0f, goalComp.currAlpha));
+                                                                min(1.0f, goalComp.currAlpha));
                                 goalComp.currAlpha = MathLibrary::MoveTowards(
                                     goalComp.currAlpha, goalComp.targetAlpha, speed * deltaTime * 1.0f / dist);
 
                                 transComp->transform = FTransform::Lerp(
-                                    goalComp.initialTransform, goalComp.goalTransform, std::min(1.0f, goalComp.currAlpha));
+                                    goalComp.initialTransform, goalComp.goalTransform, min(1.0f, goalComp.currAlpha));
                         }
                 }
         }
 
 
-        goalsCollected       = std::min<unsigned int>(goalsCollected, 3);
+        goalsCollected = std::min<unsigned int>(goalsCollected, 3);
+
         XMVECTOR nextGoalPos = playerTransform->transform.translation +
                                goalDistances[goalsCollected] * playerTransform->transform.rotation.GetForward2D();
+
         nextGoalPos = XMVectorSetY(nextGoalPos, 0.0f);
 
         ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
@@ -437,8 +436,8 @@ void OrbitSystem::OnUpdate(float deltaTime)
 
         if ((GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() == E_Level_States::TUTORIAL_LEVEL))
         {
-                if (playerController->m_CollectedSplineOrbCount >= (playerController->m_TotalSplineOrbCount - 1) &&
-                    (playerController->m_TotalSplineOrbCount > 0))
+                if (m_PlayerController->m_CollectedSplineOrbCount >= (m_PlayerController->m_TotalSplineOrbCount - 1) &&
+                    (m_PlayerController->m_TotalSplineOrbCount > 0))
                 {
                         for (int i = 0; i < 4; ++i)
                         {
@@ -467,8 +466,8 @@ void OrbitSystem::OnUpdate(float deltaTime)
 
         else
         {
-                if (playerController->m_CollectedSplineOrbCount >= (playerController->m_TotalSplineOrbCount - 5) &&
-                    (playerController->m_TotalSplineOrbCount > 0))
+                if (m_PlayerController->m_CollectedSplineOrbCount >= (m_PlayerController->m_TotalSplineOrbCount - 1) &&
+                    (m_PlayerController->m_TotalSplineOrbCount > 0))
                 {
                         for (int i = 0; i < 3; ++i)
                         {
@@ -496,11 +495,11 @@ void OrbitSystem::OnInitialize()
         m_HandleManager   = GEngine::Get()->GetHandleManager();
         m_ResourceManager = GEngine::Get()->GetResourceManager();
 
-        PlayerController* playerController = (PlayerController*)SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                                 ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
+        m_PlayerController = (PlayerController*)SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+                                 ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
 
         ComponentHandle playerTransformHandle =
-            playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
+            m_PlayerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
         TransformComponent* playerTransform = playerTransformHandle.Get<TransformComponent>();
 
         sunRotation = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>()->m_LightRotation;
@@ -585,7 +584,7 @@ void OrbitSystem::OnInitialize()
         // Blue Light
         auto planetMat02Handle = GEngine::Get()->GetResourceManager()->LoadMaterial("GlowMatPlanet02");
         auto planetMat02       = GEngine::Get()->GetResourceManager()->GetResource<Material>(planetMat02Handle);
-        planetMat02->m_SurfaceProperties.diffuseColor  = {0.7f, 0.7f, 0.9f};
+        planetMat02->m_SurfaceProperties.diffuseColor  = {0.0f, 0.23f, 1.0f};
         planetMat02->m_SurfaceProperties.emissiveColor = {0.01f, 0.1f, 1.5f};
 
         // Green Light
@@ -603,6 +602,93 @@ void OrbitSystem::OnResume()
 
 void OrbitSystem::OnSuspend()
 {}
+
+void OrbitSystem::InstantCreateOrbitSystem()
+{
+        sunAlignedTransforms.push_back(sunHandle);
+        sunAlignedTransforms.push_back(ring1Handle);
+        sunAlignedTransforms.push_back(ring2Handle);
+        sunAlignedTransforms.push_back(ring3Handle);
+
+        for (int i = 0; i < sunAlignedTransforms.size(); ++i)
+        {
+                sunAlignedTransforms.at(i).Get<TransformComponent>()->transform.SetScale(150.0f);
+        }
+}
+
+void OrbitSystem::InstantInOrbit(int color)
+{
+        color = min(2, color);
+
+        if (activeGoal.hasActiveGoal)
+        {
+                activeGoal.activeGoalGround.Free();
+                activeGoal.activeGoalOrbit.Free();
+        }
+
+        /*** REFACTORING CODE START ***/
+        ComponentHandle transHandle, transHandle2;
+
+        auto entityH1   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle);
+        auto goalHandle = entityH1.AddComponent<GoalComponent>();
+        auto goalComp   = goalHandle.Get<GoalComponent>();
+        auto transComp  = transHandle.Get<TransformComponent>();
+
+        auto entityH2 = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle2, nullptr, false);
+        auto transComp2           = transHandle2.Get<TransformComponent>();
+        goalComp->color           = color;
+        goalComp->collisionHandle = transHandle2;
+        goalComp->goalTransform.SetScale(50.0f);
+        goalComp->initialTransform.SetScale(1.0f);
+        goalComp->initialTransform.translation = transComp2->transform.translation;
+        goalComp->goalState                    = E_GOAL_STATE::Done;
+        transComp->transform                   = goalComp->initialTransform;
+        transComp->transform.SetScale(0.0f);
+
+        float time = float(GEngine::Get()->GetTotalTime() / (1.0f + color) + color * 3.7792f);
+        float x    = sin(time);
+        float y    = cos(time);
+
+        XMVECTOR offset1 = XMVectorSet(x, 0, y, 0.0f);
+
+        goalComp->goalTransform.translation = orbitCenter + offset1 * 150.f * (color + 1.0f);
+        transComp2->transform               = goalComp->goalTransform;
+
+        activeGoal.hasActiveGoal    = false;
+        activeGoal.activeGoalGround = entityH1;
+        activeGoal.activeGoalOrbit  = entityH2;
+        activeGoal.activeColor      = color;
+
+        // check if player is in range
+        // particle fly up
+        XMFLOAT4 goalColor;
+        XMStoreFloat4(&goalColor, 4.0f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[color]));
+        goalColor.w                        = 0.4f;
+        goalHandle                         = entityH1.AddComponent<EmitterComponent>();
+        EmitterComponent* emitterComponent = goalHandle.Get<EmitterComponent>();
+        emitterComponent->ParticleFloatUp(
+            XMFLOAT3(-0.3f, -0.3f, -0.3f), XMFLOAT3(0.3f, 0.3f, 0.3f), goalColor, goalColor, XMFLOAT4(3.0f, 1.0f, 0.1f, 0.1f));
+        emitterComponent->EmitterData.index         = 2;
+        emitterComponent->EmitterData.particleScale = XMFLOAT2(0.2f, 0.2f);
+        emitterComponent->maxCount                  = 0;
+        emitterComponent->spawnRate                 = 0.0f;
+        emitterComponent->EmitterData.textureIndex  = 3;
+
+
+        m_PlayerController->SetCollectedPlanetCount(1 + m_PlayerController->GetCollectedPlanetCount());
+        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[color] = true;
+        /*** REFACTORING CODE END ***/
+}
+
+void OrbitSystem::InstantRemoveFromOrbit()
+{
+        m_PlayerController->SetCollectedPlanetCount(0);
+        for (auto& iter : m_HandleManager->GetActiveComponents<GoalComponent>())
+        {
+                        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[iter.color] = false;
+                        DestroyPlanet(&iter);
+        }
+}
 
 void OrbitSystem::DestroyPlanet(GoalComponent* toDestroy)
 {
