@@ -38,6 +38,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         float  uvMask        = 1.0f - saturate((abs(uv.x * 2.0f - 1.0f) - 0.2f) * 5.0f);
         uvMask *= uvMaskY;
         float alpha = 1.0f * uvMask;
-
+        float closeBlend = saturate(distance / 0.08f);
+        alpha *= closeBlend;
         return float4(blendedColor * alpha, saturate(alpha));
 }

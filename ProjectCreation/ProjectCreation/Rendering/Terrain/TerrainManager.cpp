@@ -365,7 +365,6 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 emitterComp->EmitterData.maxInitialVelocity = {5.0f, 30.0f, 5.0f};
                 emitterComp->EmitterData.acceleration       = {-0.5, -3.8f, -0.5f};
                 emitterComp->EmitterData.flags              = 1;
-				
         }
 }
 using namespace DirectX;
@@ -619,9 +618,11 @@ void TerrainManager::_update(float deltaTime)
 
         for (auto& compHandle : staticMeshesShowWithTerrain)
         {
-                auto sm = compHandle.Get<StaticMeshComponent>();
+                auto sm      = compHandle.Get<StaticMeshComponent>();
                 auto emitter = compHandle.Get()->GetParent().GetComponent<EmitterComponent>();
-                bool active = sm->IsActive();
+                bool active  = sm->IsActive();
+
+                sm->GetParent().GetComponent<TransformComponent>()->transform.SetScale(terrainConstantBufferCPU.gTerrainAlpha);
 
                 if (active && terrainConstantBufferCPU.gTerrainAlpha <= 0.0f)
                         sm->SetIsActive(false);
