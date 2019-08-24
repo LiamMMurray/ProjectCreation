@@ -82,8 +82,6 @@ void PlayerPuzzleState::Update(float deltaTime)
                 _playerController->RequestCinematicTransition(
                     1, &playerTransformHandle, &targetTransform, E_PLAYERSTATE_EVENT::TO_GROUND, 4.0f, 1.0f);
 
-                m_CollectedPlanetCount++;
-                _playerController->SetCollectedPlanetCount(m_CollectedPlanetCount);
                 goalComp->initialTransform = goalTransform->transform;
                 goalComp->goalState        = E_GOAL_STATE::Done;
                 goalComp->goalState        = E_GOAL_STATE::Done;

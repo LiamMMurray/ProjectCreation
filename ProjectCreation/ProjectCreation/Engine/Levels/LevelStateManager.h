@@ -25,5 +25,6 @@ class LevelStateManager
         void Shutdown();
 
         void RequestState(int level);
+        void ForceLoadState(int level);
         void RequestNextLevel();
 };

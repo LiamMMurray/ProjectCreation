@@ -1,7 +1,7 @@
 #pragma once
+#include <DirectXMath.h>
 #include <Windows.h>
 #include <vector>
-#include <DirectXMath.h>
 #include "splines.hpp"
 
 struct FGoodSpline
@@ -9,21 +9,23 @@ struct FGoodSpline
     public:
         FGoodSpline(const std::vector<DirectX::XMVECTOR>& points);
         DirectX::XMVECTOR GetCurrentPoint();
-        void         AdvanceDistance(float distance);
-        inline float GetCurrentDistance()
+        DirectX::XMVECTOR GetPointAtTime(float time);
+        DirectX::XMVECTOR GetSpeedAtTime(float time);
+        void              AdvanceDistance(float distance);
+        inline float      GetCurrentDistance()
         {
                 return pointer;
         }
 
-		inline float GetLength()
+        inline float GetLength()
         {
                 return length;
         }
 
-		inline void ResetPointer()
-		{
+        inline void ResetPointer()
+        {
                 pointer = 0.0f;
-		}
+        }
 
     private:
         float                            pointer;

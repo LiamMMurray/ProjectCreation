@@ -38,10 +38,6 @@ class PlayerController : public IController
         float acceleration   = 1.0;
         float deacceleration = 8.0f;
 
-
-
-        int m_CollectedPlanetCount = 0;
-
         DirectX::XMVECTOR m_CurrentInput;
         DirectX::XMVECTOR m_CurrentVelocity;
         DirectX::XMVECTOR m_CurrentForward;
@@ -63,9 +59,16 @@ class PlayerController : public IController
 
         DirectX::XMVECTOR mNextForward;
 
+        int m_CollectedSplineOrbCount;
+
     public:
         int m_TotalSplineOrbCount;
-        int m_CollectedSplineOrbCount;
+
+        void        IncreaseCollectedSplineOrbCount(int color);
+        inline void ResetCollectedSplineOrbCount()
+        {
+                m_CollectedSplineOrbCount = 0;
+        }
 
         float angularSpeedMod = 5.0f;
 
@@ -105,15 +108,6 @@ class PlayerController : public IController
         virtual void Init(EntityHandle h) override;
         bool         SpeedBoost(DirectX::XMVECTOR boostPos, int color);
 
-        inline void SetCollectedPlanetCount(int val)
-        {
-                m_CollectedPlanetCount = val;
-        };
-
-        inline int GetCollectedPlanetCount()
-        {
-                return m_CollectedPlanetCount;
-        };
 
         inline void SetCurrentMaxSpeed(float val)
         {

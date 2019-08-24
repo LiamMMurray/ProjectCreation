@@ -1,42 +1,41 @@
 #include "Level_01.h"
+#include <DirectXMath.h>
 #include "../Controller/ControllerSystem.h"
 #include "../Gameplay/OrbitSystem.h"
-
-#include <DirectXMath.h>
+#include "LevelStateMachine.h"
 
 using namespace DirectX;
 
 void Level_01::Enter()
 {
-        //m_OrbitSystem->sunAlignedTransformsSpawning.push_back(m_OrbitSystem->sunHandle);
-        //m_OrbitSystem->sunAlignedTransformsSpawning.push_back(m_OrbitSystem->ring1Handle);
-        //m_OrbitSystem->sunAlignedTransformsSpawning.push_back(m_OrbitSystem->ring2Handle);
-        //m_OrbitSystem->sunAlignedTransformsSpawning.push_back(m_OrbitSystem->ring3Handle);	
+        if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
+        {
+                m_OrbitSystem->InstantCreateOrbitSystem();
 
-		m_OrbitSystem->InstantCreateOrbitSystem();
-        m_OrbitSystem->InstantRemoveFromOrbit();
+                m_SpeedBoostSystem->m_ColorsCollected[0] = false;
+                m_SpeedBoostSystem->m_ColorsCollected[1] = false;
+                m_SpeedBoostSystem->m_ColorsCollected[2] = false;
+                m_SpeedBoostSystem->m_ColorsCollected[3] = true;
 
-        m_SpeedBoostSystem->m_ColorsCollected[0] = false;
-        m_SpeedBoostSystem->m_ColorsCollected[1] = false;
-        m_SpeedBoostSystem->m_ColorsCollected[2] = false;
-        m_SpeedBoostSystem->m_ColorsCollected[3] = true;
-
+                m_OrbitSystem->ClearCollectedMask();
+        }
 
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);
         GEngine::Get()->SetPlayerRadius(0);
-        GEngine::Get()->m_TerrainAlpha   = 0.0f;
-        GEngine::Get()->m_TargetInstanceReveal = 0.0f;
 
-		m_SpeedBoostSystem->splineWidth  = 3.0f;
+        m_SpeedBoostSystem->SetTargetTerrain(0.0f);
+        GEngine::Get()->m_TerrainAlpha = 0.0f;
+
+        GEngine::Get()->ForceSetInstanceReveal(0.0f);
+
+        m_SpeedBoostSystem->splineWidth  = 3.0f;
         m_SpeedBoostSystem->splineHeight = 0.35f;
-        m_SpeedBoostSystem->changeColor  = false;
-        m_SpeedBoostSystem->inTutorial   = false;
         m_SpeedBoostSystem->SetTargetTerrain(0.0f);
 
         m_SpeedBoostSystem->ResetLevel();
 
         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-        controllerSys->ResetLightOrbCounters();
+        controllerSys->ResetOrbCount();
 }
 
 void Level_01::Update(float deltaTime)

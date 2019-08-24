@@ -9,6 +9,9 @@
 #include "DebugCameraController.h"
 #include "PlayerMovement.h"
 
+#include "..//Gameplay/OrbitSystem.h"
+#include "..//Gameplay/SpeedboostSystem.h"
+
 #include "../../Rendering/DebugRender/debug_renderer.h"
 #include "../../Rendering/RenderingSystem.h"
 
@@ -33,13 +36,6 @@ float ControllerSystem::GetCurrentColorAlpha() const
         return currentColorAlpha;
 }
 
-void ControllerSystem::ResetLightOrbCounters()
-{
-        for (int i = 0; i < E_LIGHT_ORBS::COUNT; ++i)
-        {
-                m_OrbCounts[i] = 0;
-        }
-}
 
 void ControllerSystem::DisplayConsoleMenu()
 {
@@ -67,32 +63,36 @@ void ControllerSystem::DisplayConsoleMenu()
         cout << endl;
 }
 
-int ControllerSystem::GetOrbCount(int color)
+int ControllerSystem::GetOrbCount()
 {
-        return m_OrbCounts[color];
+        return m_OrbCount;
 }
 
 void ControllerSystem::IncreaseOrbCount(int color)
 {
+        int levelType = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType();
 
-        if (m_PrevOrbColor != color && color != E_LIGHT_ORBS::WHITE_LIGHTS)
+        if (color == E_LIGHT_ORBS::WHITE_LIGHTS && levelType != E_Level_States::TUTORIAL_LEVEL)
+                return;
+
+        if (m_PrevOrbColor != color)
         {
-                ResetOrbCount(m_PrevOrbColor);
+                ResetOrbCount();
         }
+        m_OrbCount++;
 
-        m_OrbCounts[color]++;
-
-        if (m_OrbCounts[color] % 3 == 0 && m_OrbCounts[color] > 0)
+        if (m_OrbCount >= 3)
         {
-                CollectOrbEventIDs[color]++;
+                ResetOrbCount();
+                GET_SYSTEM(SpeedBoostSystem)->RequestPath(color);
         }
 
         m_PrevOrbColor = color;
 }
 
-void ControllerSystem::ResetOrbCount(int color)
+void ControllerSystem::ResetOrbCount()
 {
-        m_OrbCounts[color] = 0;
+        m_OrbCount = 0;
 }
 
 void ControllerSystem::OnPreUpdate(float deltaTime)
@@ -100,30 +100,24 @@ void ControllerSystem::OnPreUpdate(float deltaTime)
 
 void ControllerSystem::OnUpdate(float deltaTime)
 {
-
-
         if (GCoreInput::GetKeyState(KeyCode::One) == KeyState::DownFirst)
         {
                 IncreaseOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
-                std::cout << "Red Count: " << GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) << std::endl;
         }
 
         if (GCoreInput::GetKeyState(KeyCode::Two) == KeyState::DownFirst)
         {
                 IncreaseOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
-                std::cout << "Blue Count: " << GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) << std::endl;
         }
 
         if (GCoreInput::GetKeyState(KeyCode::Three) == KeyState::DownFirst)
         {
                 IncreaseOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
-                std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
         }
 
         if (GCoreInput::GetKeyState(KeyCode::Zero) == KeyState::DownFirst)
         {
                 IncreaseOrbCount(E_LIGHT_ORBS::WHITE_LIGHTS);
-                std::cout << "White Count: " << GetOrbCount(E_LIGHT_ORBS::WHITE_LIGHTS) << std::endl;
         }
 
         if (IsVibrating == true)

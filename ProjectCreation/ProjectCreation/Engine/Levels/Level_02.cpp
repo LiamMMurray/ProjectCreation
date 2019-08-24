@@ -7,53 +7,37 @@
 
 void Level_02::Enter()
 {
-        if (m_PlayerController->GetCollectedPlanetCount() <= 0)
+        if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
+                m_OrbitSystem->InstantCreateOrbitSystem();
+
                 m_SpeedBoostSystem->m_ColorsCollected[0] = true;
                 m_SpeedBoostSystem->m_ColorsCollected[1] = false;
                 m_SpeedBoostSystem->m_ColorsCollected[2] = false;
                 m_SpeedBoostSystem->m_ColorsCollected[3] = true;
 
-                m_OrbitSystem->InstantCreateOrbitSystem();
-                m_OrbitSystem->InstantRemoveFromOrbit();
+                m_OrbitSystem->ClearCollectedMask();
+				m_OrbitSystem->collectedMask[E_LIGHT_ORBS::RED_LIGHTS] = true;
                 m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::RED_LIGHTS);
-                m_SpeedBoostSystem->m_ColorsCollected[0] = true;
-                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->CollectOrbEventIDs[0] = 0;
-        }
+                GEngine::Get()->SetPlayerRadius(1500.0f);
 
-        else if (m_PlayerController->GetCollectedPlanetCount() > 1)
-        {
-                m_OrbitSystem->InstantRemoveFromOrbit();
-                double smallestTimestamp = DBL_MAX;
-                int    firstIndex        = -1;
-                for (int i = 0; i < 3; ++i)
-                {
-                        if (m_OrbitSystem->PlanetPickupTimestamps[i] < smallestTimestamp &&
-                            m_OrbitSystem->PlanetPickupTimestamps[i] >= 0)
-                        {
-                                firstIndex = i;
-                        }
-                }
-                m_OrbitSystem->InstantInOrbit(firstIndex);
-                m_SpeedBoostSystem->m_ColorsCollected[firstIndex] = true;
         }
 
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);
         GEngine::Get()->SetDesiredPlayerRadius(1500.0f);
         GEngine::Get()->SetTransitionSpeed(15.0f);
         GEngine::Get()->Update();
-        GEngine::Get()->m_TargetInstanceReveal = 0.0f;
+        GEngine::Get()->ForceSetInstanceReveal(0.0f);
 
         m_SpeedBoostSystem->splineWidth  = 6.0f;
         m_SpeedBoostSystem->splineHeight = 0.7f;
-        m_SpeedBoostSystem->changeColor  = true;
         m_SpeedBoostSystem->ResetLevel();
 
         m_SpeedBoostSystem->SetTargetTerrain(0.0f);
         GEngine::Get()->m_TerrainAlpha = 0.0f;
 
         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-        controllerSys->ResetLightOrbCounters();
+        controllerSys->ResetOrbCount();
 
         AudioManager::Get()->ActivateMusicAndPause(Waves, true);
         Waves->ResumeStream();

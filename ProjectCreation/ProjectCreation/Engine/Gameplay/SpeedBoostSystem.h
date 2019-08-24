@@ -75,7 +75,7 @@ class SpeedBoostSystem : public ISystem
         float m_targetTerrain         = 0.0f;
 
         float maxTutorialPathLength[4] = {25.0f, 25.0f, 25.0f, 25.0f};
-        float maxPathLength[3]         = {30.0f, 60.0f, 90.0f};
+        float maxPathLength[4]         = {30.0f, 60.0f, 90.0f, 100.0f};
 
         static constexpr float m_SplineLengthPerOrb       = 2.5f;
         static constexpr float m_SplineLatchRadius        = 0.2f;
@@ -104,28 +104,25 @@ class SpeedBoostSystem : public ISystem
         virtual void OnSuspend() override;
 
 
+        uint8_t m_PendingPathCounts[4] = {0, 0, 0, 0};
+
     public:
-        int collectEventTimestamps[4] = {-1, -1, -1, -1};
+        DirectX::XMVECTOR m_CurrentPathEnd;
+
+        void RequestPath(int color);
 
         float splineHeight = 0.25f;
         float splineWidth  = 40.0f;
-        bool  changeColor  = false;
-
-        bool inPath;
-        bool inTutorial;
 
         std::unordered_map<int, SplineCluster> m_SplineClusterSpawners;
 
         bool        m_ColorsCollected[4] = {false, false, false, false};
         const char* spawnNames[3]        = {"redPlanetSpawn", "greenPlanetSpawn", "bluePlanetSpawn"};
-        bool        m_ColorChangeInPath  = false;
 
         EntityHandle SpawnSpeedOrb();
         EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
 
         EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
-
-        bool pathExists = false;
 
         inline void SetTargetTerrain(float val)
         {

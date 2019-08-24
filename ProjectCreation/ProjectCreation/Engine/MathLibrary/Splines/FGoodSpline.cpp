@@ -24,6 +24,16 @@ DirectX::XMVECTOR FGoodSpline::GetCurrentPoint()
         return m_Spline.eval_f(pointer / length);
 }
 
+DirectX::XMVECTOR FGoodSpline::GetPointAtTime(float time)
+{
+        return m_Spline.eval_f(time);
+}
+
+DirectX::XMVECTOR FGoodSpline::GetSpeedAtTime(float time)
+{
+        return m_Spline.eval_df(time);
+}
+
 void FGoodSpline::AdvanceDistance(float distance)
 {
         pointer += distance;

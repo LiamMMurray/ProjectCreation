@@ -6,99 +6,23 @@
 
 void Level_03::Enter()
 {
-
-        m_SpeedBoostSystem->m_ColorsCollected[0] = false;
-        m_SpeedBoostSystem->m_ColorsCollected[1] = false;
-        m_SpeedBoostSystem->m_ColorsCollected[2] = false;
-        m_SpeedBoostSystem->m_ColorsCollected[3] = true;
-
-
-        if (m_PlayerController->GetCollectedPlanetCount() <= 0)
+        if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
                 m_OrbitSystem->InstantCreateOrbitSystem();
-                m_OrbitSystem->InstantRemoveFromOrbit();
 
+                m_SpeedBoostSystem->m_ColorsCollected[0] = true;
+                m_SpeedBoostSystem->m_ColorsCollected[1] = true;
+                m_SpeedBoostSystem->m_ColorsCollected[2] = false;
+                m_SpeedBoostSystem->m_ColorsCollected[3] = true;
+
+                m_OrbitSystem->ClearCollectedMask();
+                m_OrbitSystem->collectedMask[E_LIGHT_ORBS::RED_LIGHTS]   = true;
+                m_OrbitSystem->collectedMask[E_LIGHT_ORBS::GREEN_LIGHTS] = true;
                 m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::RED_LIGHTS);
-                m_SpeedBoostSystem->m_ColorsCollected[0]                             = true;
-                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->CollectOrbEventIDs[0] = 0;
+                m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::GREEN_LIGHTS);
+                GEngine::Get()->SetPlayerRadius(1500.0f);
 
-                m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::BLUE_LIGHTS);
-                m_SpeedBoostSystem->m_ColorsCollected[2]                             = true;
-                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->CollectOrbEventIDs[2] = 0;
-        }
-
-        else if (m_PlayerController->GetCollectedPlanetCount() <= 1 && m_PlayerController->GetCollectedPlanetCount() > 0)
-        {
-                m_OrbitSystem->InstantRemoveFromOrbit();
-
-                double smallestTimestamp     = DBL_MAX;
-                double nextSmallestTimestamp = DBL_MAX;
-
-                int firstIndex  = -1;
-                int secondIndex = -1;
-                for (int i = 0; i < 3; ++i)
-                {
-                        if (m_OrbitSystem->PlanetPickupTimestamps[i] < smallestTimestamp &&
-                            m_OrbitSystem->PlanetPickupTimestamps[i] >= 0)
-                        {
-                                firstIndex = i;
-                        }
-                }
-                m_OrbitSystem->InstantInOrbit(firstIndex);
-                m_SpeedBoostSystem->m_ColorsCollected[firstIndex] = true;
-
-                if (firstIndex == E_LIGHT_ORBS::BLUE_LIGHTS)
-                {
-                        m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::RED_LIGHTS);
-                        m_SpeedBoostSystem->m_ColorsCollected[0]                             = true;
-                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->CollectOrbEventIDs[0] = 0;
-                }
-
-                else
-                {
-                        m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::BLUE_LIGHTS);
-                        m_SpeedBoostSystem->m_ColorsCollected[2]                             = true;
-                        SYSTEM_MANAGER->GetSystem<ControllerSystem>()->CollectOrbEventIDs[2] = 0;
-                }
-        }
-
-        else if (m_PlayerController->GetCollectedPlanetCount() > 2)
-        {
-
-                m_OrbitSystem->InstantRemoveFromOrbit();
-
-                double smallestTimestamp     = DBL_MAX;
-                double nextSmallestTimestamp = DBL_MAX;
-
-                int firstIndex  = -1;
-                int secondIndex = -1;
-
-                for (int i = 0; i < 3; ++i)
-                {
-                        if (m_OrbitSystem->PlanetPickupTimestamps[i] < smallestTimestamp)
-                        {
-                                if (m_OrbitSystem->PlanetPickupTimestamps[i] >= 0)
-                                {
-                                        firstIndex = secondIndex = i;
-                                }
-                        }
-
-                        else if (m_OrbitSystem->PlanetPickupTimestamps[i] < nextSmallestTimestamp)
-                        {
-                                if (m_OrbitSystem->PlanetPickupTimestamps[i] >= 0)
-                                {
-                                        secondIndex = i;
-                                }
-                        }
-                }
-
-                // Keep first planet collected
-                m_OrbitSystem->InstantInOrbit(firstIndex);
-                m_SpeedBoostSystem->m_ColorsCollected[firstIndex] = true;
-
-                // Keep second planet collected
-                m_OrbitSystem->InstantInOrbit(firstIndex);
-                m_SpeedBoostSystem->m_ColorsCollected[firstIndex] = true;
+                GEngine::Get()->m_TerrainAlpha = 1.0f;
         }
 
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);
@@ -109,14 +33,13 @@ void Level_03::Enter()
                 GEngine::Get()->Update();
         }
         m_SpeedBoostSystem->ResetLevel();
-        GEngine::Get()->m_TargetInstanceReveal = 0.0f;
+        GEngine::Get()->ForceSetInstanceReveal(0.0f);
 
         m_SpeedBoostSystem->splineWidth  = 18.0f;
         m_SpeedBoostSystem->splineHeight = 1.5f;
-        m_SpeedBoostSystem->changeColor  = true;
 
         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-        controllerSys->ResetLightOrbCounters();
+        controllerSys->ResetOrbCount();
 
         AudioManager::Get()->ActivateMusicAndPause(Waves, true);
         Waves->ResumeStream();

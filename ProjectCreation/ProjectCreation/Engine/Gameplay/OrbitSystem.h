@@ -19,8 +19,10 @@ class OrbitSystem : public ISystem
 
         PlayerController* m_PlayerController;
 
-        const char* materialNames[4] = {"GlowMatPlanet01", "GlowMatPlanet03", "GlowMatPlanet02", "GlowMatSun"};
-        int         m_Stage          = 0;
+        const char* materialNames[4]     = {"GlowMatPlanet01", "GlowMatPlanet03", "GlowMatPlanet02", "GlowMatSun"};
+        const char* ringMaterialNames[3] = {"Ring01Mat", "Ring02Mat", "Ring03Mat"};
+        const char* ringMeshNames[3]     = {"Ring01", "Ring02", "Ring03"};
+        int         m_Stage              = 0;
         void        CreateGoal(int color, DirectX::XMVECTOR position);
         void        CreateTutorialGoal(int color, DirectX::XMVECTOR position);
 
@@ -41,7 +43,7 @@ class OrbitSystem : public ISystem
         std::vector<ComponentHandle> sunAlignedTransforms;
 
 
-        void UpdateSunAlignedObjects();
+        void UpdateSunAlignedObjects(float delta);
 
     protected:
         // Inherited via ISystem
@@ -56,18 +58,26 @@ class OrbitSystem : public ISystem
         bool tutorialPlanets[4] = {false, false, false, false};
 
     public:
-        int                          collectEventTimestamps[4] = {-1, -1, -1, -1};
-        double                       PlanetPickupTimestamps[3] = {-1, -1, -1};
-        std::vector<ComponentHandle> sunAlignedTransformsSpawning;
+        uint8_t m_PendingGoalCounts[4] = {0, 0, 0, 0};
 
+        void CreateSun();
+        void CreateRing(int color);
         void InstantCreateOrbitSystem();
+        void InstantRemoveOrbitSystem();
 
         void InstantInOrbit(int color);
         void InstantRemoveFromOrbit();
 
-        unsigned int    goalsCollected   = 0;
-        bool            collectedMask[3] = {};
+        unsigned int goalsCollected   = 0;
+        bool         collectedMask[3] = {};
+
+		inline void ClearCollectedMask()
+        {
+                collectedMask[0] = false;
+                collectedMask[1] = false;
+                collectedMask[2] = false;
+		}
+
         FActiveGoalInfo activeGoal;
         void            DestroyPlanet(GoalComponent* toDestroy);
-        ComponentHandle sunHandle, ring1Handle, ring2Handle, ring3Handle;
 };

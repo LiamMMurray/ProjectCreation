@@ -26,18 +26,7 @@ class ControllerSystem : public ISystem
 
 
     public:
-        int CollectOrbEventIDs[4] = {-1, -1, -1, -1};
         // bool m_toggleDebugCamera = false;
-
-        inline int GetCollectOrbEventID(int color) const
-        {
-                return CollectOrbEventIDs[color];
-        }
-
-        inline void resetCollectedOrbEventID(int color)
-        {
-                CollectOrbEventIDs[color] = -1;
-        }
 
         DirectX::XMFLOAT3 GetCurrentColorSelection() const;
         float             GetCurrentColorAlpha() const;
@@ -67,30 +56,30 @@ class ControllerSystem : public ISystem
 
         E_CONTROLLERS m_CurrentController;
 
-        void ResetLightOrbCounters();
-
-
-        int m_OrbCounts[E_LIGHT_ORBS::COUNT] = {};
+        int m_OrbCount = 0;
         int m_PrevOrbColor;
 
-		bool IsVibrating;
+        bool IsVibrating;
 
-		float rumbleStrength;
+        float rumbleStrength;
 
         void DisplayConsoleMenu();
 
         // Returns the number of orbs collected of a certain color based on passed in parameter
         // 0 = Red Lights, 1 = Green Lights, 2 = Blue Lights
-        int GetOrbCount(int color);
+        int GetOrbCount();
 
         // Adds one orb to a certain color based on passed in parameter
         // 0 = Red Lights, 1 = Green Lights, 2 = Blue Lights
         void IncreaseOrbCount(int color);
 
+        int GetPrevOrbColor() const
+        {
+                return m_PrevOrbColor;
+        }
         // Resets the orb count of a certain color based on passed in parameter
         // 0 = Red Lights, 1 = Green Lights, 2 = Blue Lights
-        void ResetOrbCount(int color);
-
+        void ResetOrbCount();
 
 
         // Inherited via ISystem

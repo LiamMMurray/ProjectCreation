@@ -11,6 +11,8 @@
 #include "SpeedboostComponent.h"
 #include "SplineElementComponent.h"
 
+#include "../Levels/TutorialLevel.h"
+
 #include <cmath>
 #include <map>
 #include <random>
@@ -122,27 +124,33 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
         cluster.BakeNextPointOnSpline(prev, curr, next);
 
         // cluster.color = MathLibrary::GetRandomIntInRange(0, E_LIGHT_ORBS::COUNT);
+        int levelType    = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType();
+        int desiredColor = cluster.targetColor;
 
-        if (changeColor)
+
+        if (levelType == E_Level_States::LEVEL_02 || levelType == E_Level_States::LEVEL_03)
         {
                 int div = 1;
                 if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() == E_Level_States::LEVEL_02)
                 {
                         div = cluster.current / 15;
                 }
-                else if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() == E_Level_States::LEVEL_03)
+                else if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() ==
+                         E_Level_States::LEVEL_03)
                 {
                         div = cluster.current / 10;
                 }
                 int color                                   = (cluster.targetColor + div) % 3;
                 cluster.color                               = color;
                 m_SplineClusterSpawners.at(clusterID).color = color;
+                desiredColor                                = cluster.color;
         }
+
 
         XMVECTOR    correctedCurr = curr + GEngine::Get()->m_OriginOffset - cluster.originalWorldOffset;
         SplinePoint point;
         point.pos   = correctedCurr;
-        point.color = cluster.color;
+        point.color = desiredColor;
         cluster.cachedPoints.push_back(point);
         auto entityH = SpawnLightOrb(correctedCurr, cluster.color);
         auto splineH = entityH.AddComponent<SpeedboostSplineComponent>();
@@ -241,7 +249,6 @@ void SpeedBoostSystem::RequestDestroySpeedboost(SpeedboostComponent* speedComp)
 
 void SpeedBoostSystem::RequestDestroyAllSplines()
 {
-
         for (auto& iter : m_SplineClusterSpawners)
         {
                 DestroySpline(iter.first, 0);
@@ -287,19 +294,6 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                                             ->GetControlledEntity();
         TransformComponent* playerTransform = controlledEntity.GetComponent<TransformComponent>();
 
-        static bool bFirstStage = false;
-        {
-                if (!bFirstStage)
-                {
-                        int count = controllerSystem->GetOrbCount(E_LIGHT_ORBS::WHITE_LIGHTS);
-                        if (count >= 1)
-                        {
-                                // m_EnableRandomSpawns = true;
-                                bFirstStage = true;
-                        }
-                }
-        }
-
         auto orbitSystem = SYSTEM_MANAGER->GetSystem<OrbitSystem>();
 
         XMVECTOR start = XMVectorZero();
@@ -313,16 +307,13 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
         //{
         //        CreateRandomPath(start, end, 4, width, waveCount, height);
         //}
-        if (inTutorial == true)
+        if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() == E_Level_States::TUTORIAL_LEVEL)
         {
-                for (int i = 0; i < 4; ++i)
+                for (int i = 0; i < 3; ++i)
                 {
-
-                        if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
+                        if (m_PendingPathCounts[i] > 0)
                         {
                                 float pathLength = maxTutorialPathLength[orbitSystem->goalsCollected];
-
-                                collectEventTimestamps[i] = controllerSys->GetCollectOrbEventID(i);
 
                                 start = playerTransform->transform.translation +
                                         5.0f * playerTransform->transform.rotation.GetForward2D();
@@ -353,18 +344,22 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                                 start = XMVectorSetY(start, 0.0f);
                                 end   = XMVectorSetY(end, 0.0f);
 
-                                if (pathExists == false)
+                                CreateRandomPath(start, end, i, width, waveCount, height);
+                                if (i < 3)
                                 {
-                                        CreateRandomPath(start, end, i, width, waveCount, height);
-                                        if (i < 3)
-                                        {
-                                                auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
-                                                spawnSound->SetVolume(0.8f);
-                                                spawnSound->Play();
-                                        }
-                                        pathExists = true;
+                                        auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
+                                        spawnSound->SetVolume(0.8f);
+                                        spawnSound->Play();
                                 }
+
+                                m_PendingPathCounts[i]--;
                         }
+                }
+
+                if (m_PendingPathCounts[3] > 0)
+                {
+                        TutorialLevel::Get()->RequestNextPhase();
+                        m_PendingPathCounts[3]--;
                 }
         }
 
@@ -372,12 +367,9 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
         {
                 for (int i = 0; i < 3; ++i)
                 {
-
-                        if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
+                        if (m_PendingPathCounts[i] > 0)
                         {
                                 float pathLength = maxPathLength[orbitSystem->goalsCollected];
-
-                                collectEventTimestamps[i] = controllerSys->GetCollectOrbEventID(i);
 
                                 start = playerTransform->transform.translation +
                                         5.0f * playerTransform->transform.rotation.GetForward2D();
@@ -408,14 +400,12 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                                 start = XMVectorSetY(start, 0.0f);
                                 end   = XMVectorSetY(end, 0.0f);
 
-                                if (pathExists == false)
-                                {
-                                        CreateRandomPath(start, end, i, width, waveCount, height);
-                                        auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
-                                        spawnSound->SetVolume(0.8f);
-                                        spawnSound->Play();
-                                        pathExists = true;
-                                }
+                                CreateRandomPath(start, end, i, width, waveCount, height);
+                                auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
+                                spawnSound->SetVolume(0.8f);
+                                spawnSound->Play();
+
+                                m_PendingPathCounts[i]--;
                         }
                 }
         }
@@ -438,18 +428,12 @@ void SpeedBoostSystem::RequestUnlatchFromSpline(PlayerController* playerControll
                         TransformComponent*        playerTransform =
                             playerController->GetControlledEntity().GetComponent<TransformComponent>();
                         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-                        controllerSys->resetCollectedOrbEventID(latchedSplineComp->color);
 
-                        playerController->m_CollectedSplineOrbCount = 0;
-                        playerController->m_TotalSplineOrbCount     = 0;
+                        playerController->ResetCollectedSplineOrbCount();
+                        playerController->m_TotalSplineOrbCount = 0;
                         // Destroy the old spline
                         DestroySpline(latchedSplineComp->clusterID, latchedSplineComp->index);
                 }
-        }
-
-        if (inPath == true)
-        {
-                inPath = false;
         }
 }
 
@@ -485,6 +469,7 @@ void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
         it.first->second.spawnTimer = it.first->second.spawnCD = m_SplineSpawnCD;
         XMVECTOR dummy;
         it.first->second.BakeNextPointOnSpline(dummy, dummy, dummy);
+        it.first->second.BakeStartAndEnd();
         it.first->second.current = 0;
 
 
@@ -497,7 +482,6 @@ void SpeedBoostSystem::DestroySpline(int SplineID, int start)
         toDelete.shouldDestroy    = true;
         toDelete.deleteSeparation = 0;
         toDelete.deleteIndex      = start;
-        pathExists                = false;
 }
 
 
@@ -566,12 +550,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
         auto activeBoosts = m_HandleManager->GetActiveComponents<SpeedboostComponent>();
 
-
-        if (inPath == false && inTutorial == false)
-        {
-                m_EnableRandomSpawns = true;
-        }
-
         auto SpeedBoostPickupAndDespawnJobReadData = JobSchedulerValidation::Reads(
             deltaTime, playerTransform, playerController, m_EnableRandomSpawns, flatPlayerForward, controllerSystem);
         auto ScaleOrbsJobReadData = Reads(deltaTime, m_BoostShrinkSpeed);
@@ -619,21 +597,14 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                             return;
                     }
 
-                    if (distanceSq < (checkRadius * checkRadius))
-                    {
-                            //
-                            SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(speedComp.color);
-                            // playerController->SpeedBoost(center, speedComp.color);
-                            // RequestDestroySpeedboost(&speedComp);
-                    }
-
                     if (speedComp.hasParticle == false)
                             return;
 
                     EmitterComponent*   emitterComp = speedComp.GetParent().GetComponent<EmitterComponent>();
                     TransformComponent* transComp   = speedComp.GetParent().GetComponent<TransformComponent>();
-                    int                 count       = r_controllerSystem->GetOrbCount(speedComp.color);
-                    if (speedComp.color == E_LIGHT_ORBS::WHITE_LIGHTS)
+                    int                 count       = r_controllerSystem->GetOrbCount();
+                    int                 prevColor   = r_controllerSystem->GetPrevOrbColor();
+                    if (speedComp.color == E_LIGHT_ORBS::WHITE_LIGHTS || speedComp.color != prevColor)
                     {
                             count = 0;
                     }
@@ -752,6 +723,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                 int latchedColor = -1;
 
+                bool inPath = false;
                 if (latchedSplineIndex != -1 || shouldLatch)
                 {
                         SpeedboostSplineComponent* latchedSplineComp = latchedSplineHandle.Get<SpeedboostSplineComponent>();
@@ -769,6 +741,9 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 XMVECTOR currPos = clusterIt->second.cachedPoints[index].pos;
                                 XMVECTOR nextPos;
                                 XMVECTOR prevPos;
+
+                                playerController->m_TotalSplineOrbCount = clusterIt->second.segments;
+
 
                                 if (index <= 0)
                                 {
@@ -865,7 +840,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                 }
                                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating    = true;
                                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrength = 0.25f;
-                                                playerController->m_CollectedSplineOrbCount++;
+                                                playerController->IncreaseCollectedSplineOrbCount(
+                                                    clusterIt->second.targetColor);
                                         }
 
                                         latchedSplineIndex   = latchedSplineComp->index;
@@ -888,6 +864,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                 dir      = dirNext;
                                                 dirVel   = (capsuleA.endPoint - playerTransform->transform.translation);
                                                 dirVel   = (capsuleA.endPoint - playerTransform->transform.translation);
+
+                                                m_CurrentPathEnd = clusterIt->second.end;
                                         }
                                         else if (MathLibrary::VectorDotProduct(playerTransform->transform.GetForward(),
                                                                                dirPrev) > 0.3f)
@@ -895,6 +873,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                 attached = true;
                                                 dir      = dirPrev;
                                                 dirVel   = (capsuleB.endPoint - playerTransform->transform.translation);
+
+                                                m_CurrentPathEnd = clusterIt->second.start;
                                         }
 
 
@@ -952,8 +932,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                 playerController->SetAngularSpeedMod(5.0f);
                                         }
                                         RequestUnlatchFromSpline(playerController, deltaTime);
-                                        collectEventTimestamps[correctColor] = -1;
-                                        m_EnableRandomSpawns                 = true;
+                                        m_EnableRandomSpawns = true;
                                 }
                         }
                 }
@@ -961,13 +940,17 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 {
                         RequestUnlatchFromSpline(playerController, deltaTime);
                 }
+
+                if (inPath == false && (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() !=
+                                        E_Level_States::TUTORIAL_LEVEL))
+                {
+                        m_EnableRandomSpawns = true;
+                }
         }
 
 
         for (auto it = m_SplineClusterSpawners.begin(); it != m_SplineClusterSpawners.end();)
         {
-                playerController->m_TotalSplineOrbCount = it->second.segments;
-
                 if (it->second.shouldDestroy == false)
                 {
                         if (it->second.current <= it->second.segments)
@@ -1052,10 +1035,6 @@ void SpeedBoostSystem::OnPostUpdate(float deltaTime)
 
 void SpeedBoostSystem::OnInitialize()
 {
-
-        inPath     = false;
-        inTutorial = true;
-
         m_HandleManager   = GEngine::Get()->GetHandleManager();
         m_SystemManager   = GEngine::Get()->GetSystemManager();
         m_ResourceManager = GEngine::Get()->GetResourceManager();
@@ -1100,3 +1079,15 @@ void SpeedBoostSystem::OnResume()
 
 void SpeedBoostSystem::OnSuspend()
 {}
+
+void SpeedBoostSystem::RequestPath(int color)
+{
+        if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() != E_Level_States::TUTORIAL_LEVEL &&
+            color == E_LIGHT_ORBS::WHITE_LIGHTS)
+        {
+                return;
+        }
+
+        RequestDestroyAllSplines();
+        m_PendingPathCounts[color]++;
+}

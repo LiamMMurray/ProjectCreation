@@ -883,7 +883,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 0.2f,
                                 0.5f,
                                 false);
-                                
+                                
 
 
 
@@ -1542,23 +1542,23 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(
                             E_LevelStateEvents::TUTORIAL_LEVEL_TO_TUTORIAL_LEVEL);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_01)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_01_TO_TUTORIAL_LEVEL);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_TUTORIAL_LEVEL);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_02)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_TUTORIAL_LEVEL);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_TUTORIAL_LEVEL);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_03)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_TUTORIAL_LEVEL);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_TUTORIAL_LEVEL);
                 }
         });
 
@@ -1570,22 +1570,22 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_01);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_01);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_01)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_01);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_01);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_02)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_01);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_01);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_03)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_01);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_01);
                 }
         });
 
@@ -1597,22 +1597,22 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_02);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_02);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_01)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_02);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_02);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_02)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_02);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_02);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_03)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_02);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_02);
                 }
         });
 
@@ -1624,22 +1624,22 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_03);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_03);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_01)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_03);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_03);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_02)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_03);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_03);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_03)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_03);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_03);
                 }
         });
 

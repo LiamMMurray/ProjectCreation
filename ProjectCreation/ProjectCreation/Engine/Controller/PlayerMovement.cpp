@@ -1,15 +1,15 @@
 #include "PlayerMovement.h"
 #include "../../ECS/Entity.h"
+#include "..//Gameplay/GoalComponent.h"
+#include "..//Gameplay/OrbitSystem.h"
+#include "../CollisionLibary/CollisionLibary.h"
+#include "../CollisionLibary/CollisionResult.h"
 #include "../CoreInput/CoreInput.h"
 #include "../GEngine.h"
+#include "../GenericComponents/TransformComponent.h"
 #include "../MathLibrary/MathLibrary.h"
 #include "../MathLibrary/Quaternion.h"
 #include "ControllerSystem.h"
-
-#include "..//Gameplay/GoalComponent.h"
-#include "../CollisionLibary/CollisionLibary.h"
-#include "../CollisionLibary/CollisionResult.h"
-#include "../GenericComponents/TransformComponent.h"
 
 #include "PlayerCinematicState.h"
 #include "PlayerGroundState.h"
@@ -122,6 +122,17 @@ void PlayerController::DebugPrintSpeedBoostColor(int color)
                 case 3:
                         ConsoleWindow::PrintMessage("Boosting on white light", "PlayerMovement");
                         break;
+        }
+}
+
+void PlayerController::IncreaseCollectedSplineOrbCount(int color)
+{
+        m_CollectedSplineOrbCount++;
+
+        if (m_CollectedSplineOrbCount >= m_TotalSplineOrbCount * 0.7f)
+        {
+                m_CollectedSplineOrbCount = 0;
+                GET_SYSTEM(OrbitSystem)->m_PendingGoalCounts[color]++;
         }
 }
 

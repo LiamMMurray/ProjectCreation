@@ -7,6 +7,25 @@ using namespace DirectX;
 SplineCluster::SplineCluster(const FGoodSpline& _spline) : spline(_spline)
 {}
 
+
+void SplineCluster::BakeStartAndEnd()
+{
+        float alpha;
+
+        start           = spline.GetPointAtTime(0.0f);
+        start           = XMVector3Transform(start, transform);
+        XMVECTOR start2 = spline.GetPointAtTime(0.01f);
+        start2          = XMVector3Transform(start2, transform);
+
+        end           = spline.GetPointAtTime(1.0f);
+        end           = XMVector3Transform(end, transform);
+        XMVECTOR end2 = spline.GetPointAtTime(0.99);
+        end2          = XMVector3Transform(end2, transform);
+
+        start -= XMVector3Normalize(start - start2) * 5.0f;
+        end += XMVector3Normalize(end - end2) * 5.0f;
+}
+
 void SplineCluster::BakeNextPointOnSpline(DirectX::XMVECTOR& prev, DirectX::XMVECTOR& curr, DirectX::XMVECTOR& next)
 {
         float baseLength = spline.GetLength();

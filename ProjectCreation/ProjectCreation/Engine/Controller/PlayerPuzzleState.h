@@ -11,7 +11,6 @@ class PlayerPuzzleState : public IPlayerControllerState
         float             dragAcceleration   = 0.6f;
         float             dragDeacceleration = 0.9f;
 
-        int m_CollectedPlanetCount = 0;
 
     public:
         // Inherited via IPlayerControllerState
