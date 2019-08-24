@@ -251,7 +251,8 @@ void SpeedBoostSystem::RequestDestroyAllSplines()
 {
         for (auto& iter : m_SplineClusterSpawners)
         {
-                DestroySpline(iter.first, 0);
+                if (iter.second.shouldDestroy == false)
+                        DestroySpline(iter.first, 0);
         }
 }
 
