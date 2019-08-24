@@ -255,68 +255,62 @@ void OrbitSystem::OnUpdate(float deltaTime)
 
                 XMVECTOR offset1 = XMVectorSet(x, y, 0, 0.0f);
 
-                if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() ==
-                    E_Level_States::TUTORIAL_LEVEL)
-                {}
-                else
+
+                offset1 = XMVector3Rotate(offset1, sunRotation.data);
+
+                goalComp.goalTransform.translation = orbitCenter + offset1 * 150.f * (goalComp.color + 1.0f);
+                transCompPuzzle->transform         = goalComp.goalTransform;
+
+                if (goalComp.goalState == E_GOAL_STATE::Spawning)
                 {
-                        offset1 = XMVector3Rotate(offset1, sunRotation.data);
+                        float scale       = transComp->transform.GetRadius();
+                        float targetScale = goalComp.initialTransform.GetRadius();
+                        float newScale    = MathLibrary::MoveTowards(scale, targetScale, deltaTime * 1.0f);
+                        transComp->transform.SetScale(newScale);
 
-                        goalComp.goalTransform.translation = orbitCenter + offset1 * 150.f * (goalComp.color + 1.0f);
-                        transCompPuzzle->transform         = goalComp.goalTransform;
+                        if (scale >= targetScale)
+                                goalComp.goalState = E_GOAL_STATE::Idle;
 
-                        if (goalComp.goalState == E_GOAL_STATE::Spawning)
-                        {
-                                float scale       = transComp->transform.GetRadius();
-                                float targetScale = goalComp.initialTransform.GetRadius();
-                                float newScale    = MathLibrary::MoveTowards(scale, targetScale, deltaTime * 0.25f);
-                                transComp->transform.SetScale(newScale);
+                        return;
+                }
 
-                                if (scale >= targetScale)
-                                        goalComp.goalState = E_GOAL_STATE::Idle;
+                float distanceSq =
+                    MathLibrary::CalulateDistanceSq(playerTransform->transform.translation, transComp->transform.translation);
 
-                                return;
-                        }
+                auto emitterComponent = goalParent.GetComponent<EmitterComponent>();
+                if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 80.0f)
+                {
 
-                        float distanceSq = MathLibrary::CalulateDistanceSq(playerTransform->transform.translation,
-                                                                           transComp->transform.translation);
+                        emitterComponent->spawnRate = 50.0f;
+                        emitterComponent->maxCount  = 2048;
+                }
+                XMVECTOR deltaDistance = transCompPuzzle->transform.translation - transComp->transform.translation;
+                XMVECTOR offset        = 1.0f * XMVector3Normalize(deltaDistance);
+                XMStoreFloat3(&emitterComponent->EmitterData.minInitialVelocity, XMVectorZero());
+                XMStoreFloat3(&emitterComponent->EmitterData.maxInitialVelocity, +offset);
+                XMStoreFloat3(&emitterComponent->EmitterData.acceleration, deltaDistance / 100.0f);
 
-                        auto emitterComponent = goalParent.GetComponent<EmitterComponent>();
-                        if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 80.0f)
-                        {
+                if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 3.5f)
+                {
+                        goalComp.goalState  = E_GOAL_STATE::InitialTransition;
+                        transComp->wrapping = false;
+                        m_PlayerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
+                        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[activeGoal.activeColor] = true;
+                }
 
-                                emitterComponent->spawnRate = 50.0f;
-                                emitterComponent->maxCount  = 2048;
-                        }
-                        XMVECTOR deltaDistance = transCompPuzzle->transform.translation - transComp->transform.translation;
-                        XMVECTOR offset        = 1.0f * XMVector3Normalize(deltaDistance);
-                        XMStoreFloat3(&emitterComponent->EmitterData.minInitialVelocity, XMVectorZero());
-                        XMStoreFloat3(&emitterComponent->EmitterData.maxInitialVelocity, +offset);
-                        XMStoreFloat3(&emitterComponent->EmitterData.acceleration, deltaDistance / 100.0f);
+                if (goalComp.goalState == E_GOAL_STATE::Done)
+                {
+                        goalComp.targetAlpha = 1.0f;
 
-                        if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 3.5f)
-                        {
-                                goalComp.goalState  = E_GOAL_STATE::InitialTransition;
-                                transComp->wrapping = false;
-                                m_PlayerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
-                                SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[activeGoal.activeColor] = true;
-                        }
+                        float dist  = MathLibrary::CalulateDistance(goalComp.initialTransform.translation,
+                                                                   goalComp.goalTransform.translation);
+                        float speed = MathLibrary::lerp(
+                            goalComp.transitionInitialSpeed, goalComp.transitionFinalSpeed, min(1.0f, goalComp.currAlpha));
+                        goalComp.currAlpha =
+                            MathLibrary::MoveTowards(goalComp.currAlpha, goalComp.targetAlpha, speed * deltaTime * 1.0f / dist);
 
-                        if (goalComp.goalState == E_GOAL_STATE::Done)
-                        {
-                                goalComp.targetAlpha = 1.0f;
-
-                                float dist         = MathLibrary::CalulateDistance(goalComp.initialTransform.translation,
-                                                                           goalComp.goalTransform.translation);
-                                float speed        = MathLibrary::lerp(goalComp.transitionInitialSpeed,
-                                                                goalComp.transitionFinalSpeed,
-                                                                min(1.0f, goalComp.currAlpha));
-                                goalComp.currAlpha = MathLibrary::MoveTowards(
-                                    goalComp.currAlpha, goalComp.targetAlpha, speed * deltaTime * 1.0f / dist);
-
-                                transComp->transform = FTransform::Lerp(
-                                    goalComp.initialTransform, goalComp.goalTransform, min(1.0f, goalComp.currAlpha));
-                        }
+                        transComp->transform =
+                            FTransform::Lerp(goalComp.initialTransform, goalComp.goalTransform, min(1.0f, goalComp.currAlpha));
                 }
         }
 

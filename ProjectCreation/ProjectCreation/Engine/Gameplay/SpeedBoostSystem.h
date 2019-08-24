@@ -84,7 +84,7 @@ class SpeedBoostSystem : public ISystem
         static constexpr float m_MinSpawnDistance         = 5.0f;
         static constexpr float m_SpawnAngle               = DirectX::XMConvertToRadians(110.0f);
         static constexpr float m_DespawnDistanceOffset    = 5.0f;
-        static constexpr float m_BoostRadius              = 0.1f;
+        static constexpr float m_BoostRadius              = 0.15f;
         static constexpr float m_PullSearchRadius         = 1.0f;
         static constexpr float m_SplineAttractionForceMin = 0.0f;
         static constexpr float m_SplineAttractionForceMax = 1.5f;
