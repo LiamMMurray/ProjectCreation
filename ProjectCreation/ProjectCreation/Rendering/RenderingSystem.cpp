@@ -735,7 +735,8 @@ void RenderSystem::DrawMeshInstanced(ID3D11Buffer* vertexBuffer,
                                      uint32_t      indexCount,
                                      uint32_t      vertexSize,
                                      Material*     material,
-                                     uint32_t      instanceCount)
+                                     uint32_t      instanceCount,
+                                     uint32_t      instanceOffset)
 {
         using namespace DirectX;
 

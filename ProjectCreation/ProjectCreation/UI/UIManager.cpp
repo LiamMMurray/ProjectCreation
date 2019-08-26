@@ -2,7 +2,6 @@
 #include <Windows.h>
 #include <iostream>
 
-#include "../Engine/Audio/AudioManager.h"
 #include "../Engine/Controller/ControllerSystem.h"
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
@@ -12,10 +11,6 @@
 #include "../Utility/MemoryLeakDetection.h"
 
 #include "../Engine/ConsoleWindow/ConsoleWindow.h"
-#include "../Engine/Controller/GamePad.h"
-#include "../Engine/CoreInput/InputActions.h"
-#include "../Engine/Gameplay/SpeedBoostSystem.h"
-
 
 class TutorialLevel;
 
@@ -57,8 +52,8 @@ void UIManager::AddSprite(ID3D11Device*        device,
         cSprite.mHeight = TextureDesc.Height;
 
         // Scale
-        cSprite.mScaleX = scaleX * 1.0f / cSprite.mWidth;
-        cSprite.mScaleY = scaleY * 1.0f / cSprite.mHeight;
+        cSprite.mScaleX = scaleX / cSprite.mWidth;
+        cSprite.mScaleY = scaleY / cSprite.mHeight;
 
         // Add the origin to the sprite
         cSprite.mOrigin.x = (float)(cSprite.mWidth * 0.5f);
@@ -86,7 +81,8 @@ void UIManager::AddText(ID3D11Device*        device,
                         int                  category,
                         int                  fontType,
                         std::string          TextDisplay,
-                        float                scale,
+                        float                scaleX,
+                        float                scaleY,
                         float                PositionX,
                         float                PositionY,
                         bool                 enabled,
@@ -109,8 +105,8 @@ void UIManager::AddText(ID3D11Device*        device,
         float aspectRatio = dimensions.x / dimensions.y;
 
         cFont.mOrigin = XMVectorSet(dimensions.x * 0.5f, dimensions.y * 0.5f, 0.0f, 1.0f);
-        cFont.mScaleX = aspectRatio * scale * 1.0f / (dimensions.x);
-        cFont.mScaleY = scale * 1.0f / (dimensions.y);
+        cFont.mScaleX = aspectRatio * scaleX * 1.0f / (dimensions.x);
+        cFont.mScaleY = scaleY * 1.0f / (dimensions.y);
         // Text Screen Position
         cFont.mScreenOffset.x = PositionX;
         cFont.mScreenOffset.y = PositionY;
@@ -130,10 +126,9 @@ void UIManager::AddText(ID3D11Device*        device,
 
         if (bOverrideButtonDimensions)
         {
-                bWidth  = buttonwidth;
-                bHeight = buttonheight;
+                scaleX = buttonwidth;
+                scaleY = buttonheight;
         }
-
         if (AddButton)
         {
                 instance->AddSprite(device,
@@ -142,8 +137,8 @@ void UIManager::AddText(ID3D11Device*        device,
                                     L"../Assets/2d/Sprite/Grey Box Test.dds",
                                     PositionX,
                                     PositionY,
-                                    bWidth,
-                                    bHeight,
+                                    scaleX,
+                                    scaleY,
                                     enabled);
         }
 }
@@ -189,7 +184,6 @@ void UIManager::UIClipCursor()
 
         ClipCursor(&rect);
 }
-
 
 void UIManager::DrawSprites()
 {
@@ -395,6 +389,7 @@ void UIManager::Splash_End()
 // UI Transitions
 void UIManager::WhiteOrbCollected()
 {
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = false;
         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled = true;
 }
 
@@ -433,7 +428,6 @@ void UIManager::Pause()
 {
         instance->m_InMenu = true;
         GEngine::Get()->SetGamePaused(true);
-
         if (instance->m_InMenu)
         {
                 while (ShowCursor(TRUE) < 0)
@@ -477,17 +471,6 @@ void UIManager::Pause()
         {
                 instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
         }
-
-        // Main Menu
-        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu].size(); i++)
-        {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][i].mEnabled = false;
-        }
-        // Text
-        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu].size(); i++)
-        {
-                instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][i].mEnabled = false;
-        }
 }
 
 void UIManager::Unpause()
@@ -509,10 +492,7 @@ void UIManager::Unpause()
         {
                 for (auto& sprite : it.second)
                 {
-                        if (it.first != E_MENU_CATEGORIES::MainMenu)
-                        {
-                                sprite.mEnabled = false;
-                        }
+                        sprite.mEnabled = false;
                 }
         }
 
@@ -557,15 +537,8 @@ void UIManager::StartupResAdjust(HWND window)
 
 void UIManager::AdjustResolution(HWND window, int wWidth, int wHeight)
 {
-        RECT wr = {0, 0, wWidth, wHeight}; // set the size
-
-        DWORD style = WS_OVERLAPPEDWINDOW;
-
-        if (GEngine::ShowFPS)
-                style = WS_POPUP;
-
-
-        AdjustWindowRect(&wr, style, FALSE); // adjust the size
+        RECT wr = {0, 0, wWidth, wHeight};                 // set the size
+        AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE); // adjust the size
 
         DXGI_MODE_DESC& desc = instance->resDescriptors.back();
 
@@ -676,6 +649,11 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         // Create supported resolutions
         instance->SupportedResolutions();
+        const float ScaleXRatio = 1.2f;
+        const float ScaleYRatio = 2.0f;
+
+        const float PosXRatio = 1.2f;
+        const float PosYRatio = 2.0f;
 
         constexpr float pauseButtonWidth  = 0.25f;
         constexpr float pauseButtonHeight = 0.05f;
@@ -785,65 +763,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     0.1f * ScaleYRatio,
                                     false);
         }
-        // GamePad is not connected
-        if (GamePad::Get()->CheckConnection() == false)
-        {
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  E_MENU_CATEGORIES::MainMenu,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_FONT_TYPE::CourierNew,
-                                  "Press Enter to continue. . .",
-                                  0.04f,
-                                  0.0f,
-                                  0.15f,
-                                  true,
-                                  false);
-
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_FONT_TYPE::Calibri,
-                                  E_MENU_CATEGORIES::MainMenu,
-                                  "Hold Left Click to Move",
-                                  0.04f,
-                                  0.0f,
-                                  false,
-                                  0.15f,
-                                  false);
-
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::MainMenu,
-
-        }
-                                  false);
-                                  false,
-                                  0.15f,
-                                  0.0f,
-                                  0.04f,
-                                  "Hold D to collect Blue lights",
-                                  E_FONT_TYPE::Calibri,
-                                  E_MENU_CATEGORIES::MainMenu,
-                                  instance->m_RenderSystem->m_Context,
-                instance->AddText(instance->m_RenderSystem->m_Device,
-
-                                  false);
-                                  false,
-                                  0.15f,
-                                  0.0f,
-                                  0.04f,
-                                  E_FONT_TYPE::Calibri,
-                                  "Hold S to collect Green lights",
-                                  E_MENU_CATEGORIES::MainMenu,
-                                  instance->m_RenderSystem->m_Context,
-                instance->AddText(instance->m_RenderSystem->m_Device,
-
-                                  false);
-                                  false,
-                                  0.15f,
-                                  0.0f,
-                                  0.04f,
-                                  "Hold A to collect Red lights",
-                                  E_FONT_TYPE::Calibri,
         // Pause Menu
         {
                 instance->AddSprite(instance->m_RenderSystem->m_Device,
@@ -1108,45 +1027,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   0.02f * PosYRatio,
                                   false,
                                   true);
-                          E_FONT_TYPE::CourierNew,
 
                 // Text for Sensitivity
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::CourierNew,
-                          "<",
-                          0.04f,
-                          -0.12f,
-                          -0.01f,
-                          false,
-                          true);
-
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::CourierNew,
-                          ">",
-                          0.04f,
-                          0.12f,
-                          -0.01f,
-                          false,
-                          true);
-        // Volumes
-        for (auto i = 0; i <= 100; i += 10)
-        {
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::OptionsSubmenu,
-                                  E_FONT_TYPE::CourierNew,
-                                  std::to_string(i),
-                                  0.04f,
-                                  0.0f,
-                                  -0.01f,
-                                  false,
-                                  false);
-        }
-
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::OptionsSubmenu,
@@ -1293,128 +1175,54 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   pauseButtonWidth * ScaleXRatio,
                                   pauseButtonHeight * ScaleYRatio);
 
-        if (GamePad::Get()->CheckConnection() == true)
-        {
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::ControlsMenu,
-                                  E_FONT_TYPE::CourierNew,
-                                  "Back",
-                                  0.05f,
-                                  0.0f,
-                                  -0.3f,
-                                  false,
-                                  true,
-                                  true,
-                                  pauseButtonWidth,
-                                  pauseButtonHeight);
-
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::ControlsMenu,
-                                  E_FONT_TYPE::CourierNew,
-                                  "Collect Red Light: B",
-                                  0.03f,
-                                  0.0f,
-                                  -0.1f,
+                                  E_FONT_TYPE::Calibri,
+                                  "COLLECT RED LIGHT: A",
+                                  0.03f * ScaleXRatio,
+                                  0.03f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.1f * PosYRatio,
                                   false,
                                   false);
 
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::ControlsMenu,
-                                  E_FONT_TYPE::CourierNew,
-                                  "Collect Green Light: A",
-                                  0.03f,
-                                  0.0f,
-                                  0.0f,
+                                  E_FONT_TYPE::Calibri,
+                                  "COLLECT GREEN LIGHT: S",
+                                  0.03f * ScaleXRatio,
+                                  0.03f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.0f * PosYRatio,
                                   false,
                                   false);
 
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::ControlsMenu,
-                                  E_FONT_TYPE::CourierNew,
-                                  "Collect Blue Light: X",
-                                  0.03f,
-                                  0.0f,
-                                  0.1f,
+                                  E_FONT_TYPE::Calibri,
+                                  "COLLECT BLUE LIGHT: D",
+                                  0.03f * ScaleXRatio,
+                                  0.03f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.1f * PosYRatio,
                                   false,
                                   false);
 
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::ControlsMenu,
-                                  E_FONT_TYPE::CourierNew,
-                                  "Movement: Right Trigger ",
-                                  0.03f,
-                                  0.0f,
-                                  0.2f,
+                                  E_FONT_TYPE::Calibri,
+                                  "MOVEMENT: Left Mouse ",
+                                  0.03f * ScaleXRatio,
+                                  0.03f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.2f * PosYRatio,
                                   false,
                                   false);
         }
-
-        else
-        {
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::ControlsMenu,
-                                  E_FONT_TYPE::CourierNew,
-                                  "Back",
-                                  0.05f,
-                                  0.0f,
-                                  -0.3f,
-                                  false,
-                                  true,
-                                  true,
-                                  pauseButtonWidth,
-                                  pauseButtonHeight);
-
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::ControlsMenu,
-                                  E_FONT_TYPE::CourierNew,
-                                  "Collect Red Light: A",
-                                  0.03f,
-                                  0.0f,
-                                  -0.1f,
-                                  false,
-                                  false);
-
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::ControlsMenu,
-                                  E_FONT_TYPE::CourierNew,
-                                  "Collect Green Light: S",
-                                  0.03f,
-                                  0.0f,
-                                  0.0f,
-                                  false,
-                                  false);
-
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::ControlsMenu,
-                                  E_FONT_TYPE::CourierNew,
-                                  "Collect Blue Light: D",
-                                  0.03f,
-                                  0.0f,
-                                  0.1f,
-                                  false,
-                                  false);
-
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::ControlsMenu,
-                                  E_FONT_TYPE::CourierNew,
-                                  "Movement: Left Mouse ",
-                                  0.03f,
-                                  0.0f,
-                                  0.2f,
-                                  false,
-                                  false);
-        }
-
         // Demo
         {
                 instance->AddText(instance->m_RenderSystem->m_Device,
@@ -1682,15 +1490,14 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = true;
                 }
-                
-        		//Disable other Sensitivities
+
+                // Disable other Sensitivities
                 if (instance->CSettings.m_Sensitivity == 0)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = true;
 
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
-	                
                 }
                 else if (instance->CSettings.m_Sensitivity == 1)
                 {
@@ -1811,8 +1618,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                                            instance->resDescriptors[instance->PSettings.m_Resolution].Height);
 
                 instance->m_RenderSystem->SetFullscreen(instance->PSettings.m_IsFullscreen);
-
-                AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
         });
 
         // Window Mode
@@ -1881,7 +1686,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Height);
 
                 instance->m_RenderSystem->SetFullscreen(instance->CSettings.m_IsFullscreen);
-                AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
         });
 
         // Left Resolution Button
@@ -2040,23 +1844,23 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                        GEngine::Get()->GetLevelStateManager()->RequestState(
                             E_LevelStateEvents::TUTORIAL_LEVEL_TO_TUTORIAL_LEVEL);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_01)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_TUTORIAL_LEVEL);
+                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_01_TO_TUTORIAL_LEVEL);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_02)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_TUTORIAL_LEVEL);
+                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_TUTORIAL_LEVEL);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_03)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_TUTORIAL_LEVEL);
+                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_TUTORIAL_LEVEL);
                 }
         });
 
@@ -2068,22 +1872,22 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_01);
+                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_01);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_01)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_01);
+                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_01);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_02)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_01);
+                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_01);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_03)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_01);
+                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_01);
                 }
         });
 
@@ -2095,22 +1899,22 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_02);
+                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_02);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_01)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_02);
+                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_02);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_02)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_02);
+                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_02);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_03)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_02);
+                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_02);
                 }
         });
 
@@ -2122,22 +1926,22 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_03);
+                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_03);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_01)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_03);
+                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_03);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_02)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_03);
+                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_03);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_03)
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_03);
+                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_03);
                 }
         });
 
@@ -2175,14 +1979,8 @@ void UIManager::Initialize(native_handle_type hwnd)
         // Demo
 
         // Continue
-        instance->m_AllSprites[E_MENU_CATEGORIES::Demo][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                instance->Unpause();
-
-                for (int i = 0; i < 4; ++i)
-                {
-                        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[i] = false;
-                }
-        });
+        instance->m_AllSprites[E_MENU_CATEGORIES::Demo][0].OnMouseDown.AddEventListener(
+            [](UIMouseEvent* e) { instance->Unpause(); });
 
         // Exit
         instance->m_AllSprites[E_MENU_CATEGORIES::Demo][1].OnMouseDown.AddEventListener(
@@ -2193,7 +1991,6 @@ void UIManager::Update()
 {
         GEngine::Get()->m_MainThreadProfilingContext.Begin("UIManager", "UIManager");
         using namespace DirectX;
-        GamePad::Get()->Refresh();
 
         instance->m_ScreenSize =
             XMFLOAT2{instance->m_RenderSystem->m_BackBufferWidth, instance->m_RenderSystem->m_BackBufferHeight};
@@ -2221,14 +2018,14 @@ void UIManager::Update()
                                 instance->m_SpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
                                                                instance->m_States->NonPremultiplied());
 
-                                XMVECTOR position = XMVectorSet(font.mScreenOffset.x * instance->m_ScreenSize.x,
-                                                                font.mScreenOffset.y * instance->m_ScreenSize.y,
+                                XMVECTOR position = XMVectorSet(font.mScreenOffset.x * instance->m_ScreenSize.x / 2.0f,
+                                                                font.mScreenOffset.y * instance->m_ScreenSize.y / 2.0f,
                                                                 0.0f,
                                                                 0.0f) +
                                                     instance->m_ScreenCenter;
 
-                                XMVECTOR scale = XMVectorSet(font.mScaleX * instance->m_ScreenSize.x,
-                                                             aspectRatio * font.mScaleY * instance->m_ScreenSize.y,
+                                XMVECTOR scale = XMVectorSet(font.mScaleX * instance->m_ScreenSize.x / 2.0f,
+                                                             font.mScaleY * instance->m_ScreenSize.y / 2.0f,
                                                              0.0f,
                                                              0.0f);
 
