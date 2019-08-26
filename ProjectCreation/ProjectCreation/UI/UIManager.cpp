@@ -71,7 +71,7 @@ void UIManager::AddSprite(ID3D11Device*        device,
         cSprite.mEnabled = enabled;
 
         cSprite.mRectangle.center  = XMVectorSet(PositionX, PositionY, 0.0f, 1.0f);
-        cSprite.mRectangle.extents = XMVectorSet(scaleX * 0.5f, scaleY * 0.8f, 0.0f, 1.0f);
+        cSprite.mRectangle.extents = 0.5f * XMVectorSet(scaleX, scaleY, 0.0f, 1.0f);
         // Push back to the vector
         m_AllSprites[category].emplace_back(cSprite);
 
@@ -125,8 +125,8 @@ void UIManager::AddText(ID3D11Device*        device,
         }
         m_AllFonts[category].emplace_back(std::move(cFont));
 
-        float bWidth  = scale * aspectRatio;
-        float bHeight = scale;
+        scaleX *= aspectRatio;
+        scaleY = scaleY;
 
         if (bOverrideButtonDimensions)
         {
@@ -191,28 +191,228 @@ void UIManager::UIClipCursor()
 }
 
 
+void UIManager::DrawSprites()
+{
+        for (auto& it : instance->m_AllSprites)
+                for (auto& sprite : it.second)
+                {
+                        if (sprite.mEnabled)
+                        {
+                                instance->m_SpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
+                                                               instance->m_States->NonPremultiplied());
+
+                                XMVECTOR position = XMVectorSet(sprite.mScreenOffset.x * instance->m_ScreenSize.x / 2.0f,
+                                                                sprite.mScreenOffset.y * instance->m_ScreenSize.y / 2.0f,
+                                                                0.0f,
+                                                                0.0f) +
+                                                    instance->m_ScreenCenter;
+
+                                XMVECTOR scale = XMVectorSet(sprite.mScaleX * instance->m_ScreenSize.x / 2.0f,
+                                                             sprite.mScaleY * instance->m_ScreenSize.y / 2.0f,
+                                                             0.0f,
+                                                             1.0f);
+
+                                instance->m_SpriteBatch->Draw(
+                                    sprite.mTexture, position, nullptr, DirectX::Colors::White, 0.0f, sprite.mOrigin, scale);
+
+
+                                instance->m_SpriteBatch->End();
+                        }
+                }
+}
+
+void UIManager::Present()
+{
+        m_RenderSystem->Present();
+}
+
+void UIManager::GameplayUpdate()
+{
+        float aspectRatio = instance->m_ScreenSize.x / instance->m_ScreenSize.y;
+        if (instance->m_InMenu)
+        {
+                ClipCursor(nullptr);
+        }
+        else
+        {
+                instance->UIClipCursor();
+        }
+
+        // Pause & Unpause
+        if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled == true)
+        {
+                if (GCoreInput::GetKeyState(KeyCode::Enter) == KeyState::Down)
+                {
+                        instance->MainTilteUnpause();
+                }
+        }
+        else
+        {
+                if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
+                {
+                        // Left Click Image
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = false;
+
+                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::Demo].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::Demo][i].mEnabled = false;
+                        }
+                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::Demo].size(); i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::Demo][i].mEnabled = false;
+                        }
+
+                        if (GEngine::Get()->GetGamePaused() == false)
+                        {
+                                instance->Pause();
+                        }
+                        else
+                        {
+                                instance->Unpause();
+                        }
+                }
+        }
+
+        // Left Click
+        if (instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled == true)
+        {
+                if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = false;
+                }
+        }
+
+        UIMouseEvent e;
+        e.mouseX = (float)GCoreInput::GetMouseWindowPosX();
+        e.mouseY = (float)GCoreInput::GetMouseWindowPosY();
+        std::vector<SpriteComponent*> clickedSprites;
+
+        RECT rect;
+        GetWindowRect((HWND)(instance->m_RenderSystem->m_WindowHandle), &rect);
+        XMUINT4 xmRect = XMUINT4(rect.top, rect.left, rect.bottom, rect.right);
+
+        POINT cursorPoint;
+        GetCursorPos(&cursorPoint);
+        XMFLOAT2 cursorCoords = {(float)cursorPoint.x, (float)cursorPoint.y};
+        XMVECTOR point        = UI::ConvertScreenPosToNDC(cursorCoords, instance->m_ScreenSize, xmRect);
+
+        instance->DrawSprites();
+
+        for (auto& it : instance->m_AllSprites)
+                for (auto& sprite : it.second)
+                {
+                        if (sprite.mEnabled)
+                        {
+                                if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Release)
+                                {
+
+                                        if (UI::PointInRect(sprite.mRectangle, point))
+                                        {
+                                                // Button Was Pressed
+                                                clickedSprites.push_back(&sprite);
+                                        }
+                                }
+                        }
+                }
+
+        for (auto& sprite : clickedSprites)
+        {
+                e.sprite = sprite;
+                sprite->OnMouseDown.Invoke(&e);
+        }
+}
+
+// Splash Screen
+void UIManager::Splash_FullSail()
+{
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = true;
+
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = false;
+}
+
+void UIManager::Splash_GPGames()
+{
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = true;
+
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = false;
+}
+
+void UIManager::Splash_Team()
+{
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = true;
+
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = false;
+}
+
+void UIManager::SplashUpdate(float globalTimer)
+{
+        float deltatime = GEngine::Get()->GetDeltaTime();
+
+        if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
+        {
+                instance->m_BreakSplash = true;
+                UIManager::instance->Splash_End();
+        }
+        else
+        {
+                if (globalTimer < 5.0f)
+                {
+                        // Full Sail Logo
+                        UIManager::instance->Splash_FullSail();
+                }
+                else if (globalTimer >= 5.0f && globalTimer < 10.0f)
+                {
+                        // GP Games Logo
+                        UIManager::instance->Splash_GPGames();
+                }
+                else if (globalTimer >= 10.0f && globalTimer < 15.0f)
+                {
+                        // Deep!deep Logo
+                        UIManager::instance->Splash_Team();
+                }
+                else
+                {
+                        UIManager::instance->Splash_End();
+                }
+        }
+}
+
+void UIManager::Splash_End()
+{
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = false;
+
+
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled = true;
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][1].mEnabled = true;
+}
+
+
 // UI Transitions
 void UIManager::WhiteOrbCollected()
 {
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled = true;
 }
 
 void UIManager::RedOrbCollected()
 {
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][3].mEnabled = false;
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][4].mEnabled = true;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled = true;
 }
 
 void UIManager::GreenOrbCollected()
 {
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][4].mEnabled = false;
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][5].mEnabled = true;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
 }
 
 void UIManager::BlueOrbCollected()
 {
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][5].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].mEnabled = false;
 }
 
 
@@ -225,7 +425,8 @@ void UIManager::MainTilteUnpause()
                 instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][i].mEnabled = false;
         }
 
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = true;
+        // Left Click Image
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = true;
 }
 
 void UIManager::Pause()
@@ -439,6 +640,11 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         instance->m_RenderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 
+        instance->m_ScreenSize =
+            XMFLOAT2{instance->m_RenderSystem->m_BackBufferWidth, instance->m_RenderSystem->m_BackBufferHeight};
+        instance->m_ScreenCenter = XMVectorSet(instance->m_ScreenSize.x * 0.5f, instance->m_ScreenSize.y * 0.5f, 0.0f, 1.0f);
+        instance->m_TexelSize    = XMFLOAT2{1.0f / instance->m_ScreenSize.x, 1.0f / instance->m_ScreenSize.y};
+
         instance->m_SpriteBatch = std::make_unique<DirectX::SpriteBatch>(instance->m_RenderSystem->m_Context);
         instance->m_States      = std::make_unique<DirectX::CommonStates>(instance->m_RenderSystem->m_Device);
 
@@ -466,6 +672,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         }
 
         instance->m_WindowHandle = hwnd;
+        instance->m_BreakSplash  = false;
 
         // Create supported resolutions
         instance->SupportedResolutions();
@@ -480,84 +687,110 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->m_FontTypes[E_FONT_TYPE::CourierNew] =
             new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/couriernew.spritefont");
 
-        // Main Menu
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::MainMenu,
-                          E_FONT_TYPE::Angel,
-                          "INANIS",
-                          0.06f,
-                          0.0f,
-                          -0.35f,
-                          true,
-                          false);
-
-        // GamePad is connected
-        if (GamePad::Get()->CheckConnection() == true)
+        // Splash Screen
         {
+                instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                    instance->m_RenderSystem->m_Context,
+                                    E_MENU_CATEGORIES::SplashScreen,
+                                    L"../Assets/2d/Sprite/Full_Sail_Logo.dds",
+                                    0.0f,
+                                    0.0f,
+                                    2.0f,
+                                    2.0f,
+                                    false);
 
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::MainMenu,
-                                  E_FONT_TYPE::Calibri,
-                                  "Press the Back Button to continue. . .",
-                                  0.04f,
-                                  0.0f,
-                                  0.15f,
-                                  true,
-                                  false);
+                instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                    instance->m_RenderSystem->m_Context,
+                                    E_MENU_CATEGORIES::SplashScreen,
+                                    L"../Assets/2d/Sprite/GPGlogo_solid.dds",
+                                    0.0f,
+                                    0.0f,
+                                    2.0f,
+                                    2.0f,
+                                    false);
 
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::MainMenu,
-                                  E_FONT_TYPE::Calibri,
-                                  "Hold Right Trigger to Move",
-                                  0.04f,
-                                  0.0f,
-                                  0.15f,
-                                  false,
-                                  false);
-
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::MainMenu,
-                                  E_FONT_TYPE::Calibri,
-                                  "Hold the B Button to collect Red lights",
-                                  0.04f,
-                                  0.0f,
-                                  0.15f,
-                                  false,
-                                  false);
-
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::MainMenu,
-                                  E_FONT_TYPE::Calibri,
-                                  "Hold the A Button to collect Green lights",
-                                  0.04f,
-                                  0.0f,
-                                  0.15f,
-                                  false,
-                                  false);
-
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::MainMenu,
-                                  E_FONT_TYPE::Calibri,
-                                  "Hold the X Button to collect Blue lights",
-                                  0.04f,
-                                  0.0f,
-                                  0.15f,
-                                  false,
-                                  false);
+                instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                    instance->m_RenderSystem->m_Context,
+                                    E_MENU_CATEGORIES::SplashScreen,
+                                    L"../Assets/2d/Sprite/Deep!deep_Logo.dds",
+                                    0.0f,
+                                    0.0f,
+                                    2.0f,
+                                    2.0f,
+                                    false);
         }
+        // Main Menu
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::Angel,
+                                  "INANIS",
+                                  0.06f * ScaleXRatio,
+                                  0.06f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.25f * PosYRatio,
+                                  false,
+                                  false);
 
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Press Enter To Continue...",
+                                  0.06f * ScaleXRatio,
+                                  0.06f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.1f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                    instance->m_RenderSystem->m_Context,
+                                    E_MENU_CATEGORIES::MainMenu,
+                                    L"../Assets/2d/Sprite/Mouse_Key.dds",
+                                    0.0f * PosXRatio,
+                                    0.1f * PosYRatio,
+                                    0.1f * ScaleXRatio,
+                                    0.1f * ScaleYRatio,
+                                    false);
+
+                instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                    instance->m_RenderSystem->m_Context,
+                                    E_MENU_CATEGORIES::MainMenu,
+                                    L"../Assets/2d/Sprite/A_Key.dds",
+                                    0.0f * PosXRatio,
+                                    0.1f * PosYRatio,
+                                    0.1f * ScaleXRatio,
+                                    0.1f * ScaleYRatio,
+                                    false);
+
+                instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                    instance->m_RenderSystem->m_Context,
+                                    E_MENU_CATEGORIES::MainMenu,
+                                    L"../Assets/2d/Sprite/S_Key.dds",
+                                    0.0f * PosXRatio,
+                                    0.1f * PosYRatio,
+                                    0.1f * ScaleXRatio,
+                                    0.1f * ScaleYRatio,
+                                    false);
+
+                instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                    instance->m_RenderSystem->m_Context,
+                                    E_MENU_CATEGORIES::MainMenu,
+                                    L"../Assets/2d/Sprite/D_Key.dds",
+                                    0.0f * PosXRatio,
+                                    0.1f * PosYRatio,
+                                    0.1f * ScaleXRatio,
+                                    0.1f * ScaleYRatio,
+                                    false);
+        }
         // GamePad is not connected
         if (GamePad::Get()->CheckConnection() == false)
         {
                 instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::MainMenu,
+                                  instance->m_RenderSystem->m_Context,
                                   E_FONT_TYPE::CourierNew,
                                   "Press Enter to continue. . .",
                                   0.04f,
@@ -568,257 +801,316 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::MainMenu,
                                   E_FONT_TYPE::Calibri,
+                                  E_MENU_CATEGORIES::MainMenu,
                                   "Hold Left Click to Move",
                                   0.04f,
                                   0.0f,
-                                  0.15f,
                                   false,
+                                  0.15f,
                                   false);
 
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::MainMenu,
-                                  E_FONT_TYPE::Calibri,
-                                  "Hold A to collect Red lights",
-                                  0.04f,
+
+        }
+                                  false);
+                                  false,
+                                  0.15f,
                                   0.0f,
-                                  0.15f,
-                                  false,
-                                  false);
-
-                instance->AddText(instance->m_RenderSystem->m_Device,
-                                  instance->m_RenderSystem->m_Context,
+                                  0.04f,
+                                  "Hold D to collect Blue lights",
+                                  E_FONT_TYPE::Calibri,
                                   E_MENU_CATEGORIES::MainMenu,
+                                  instance->m_RenderSystem->m_Context,
+                instance->AddText(instance->m_RenderSystem->m_Device,
+
+                                  false);
+                                  false,
+                                  0.15f,
+                                  0.0f,
+                                  0.04f,
                                   E_FONT_TYPE::Calibri,
                                   "Hold S to collect Green lights",
-                                  0.04f,
-                                  0.0f,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  instance->m_RenderSystem->m_Context,
+                instance->AddText(instance->m_RenderSystem->m_Device,
+
+                                  false);
+                                  false,
                                   0.15f,
+                                  0.0f,
+                                  0.04f,
+                                  "Hold A to collect Red lights",
+                                  E_FONT_TYPE::Calibri,
+        // Pause Menu
+        {
+                instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                    instance->m_RenderSystem->m_Context,
+                                    E_MENU_CATEGORIES::PauseMenu,
+                                    L"../Assets/2d/Sprite/Grey Box Test.dds",
+                                    0.0f * PosXRatio,
+                                    0.0f * PosYRatio,
+                                    0.4f * ScaleXRatio,
+                                    0.6f * ScaleYRatio,
+                                    false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::PauseMenu,
+                                  E_FONT_TYPE::Angel,
+                                  "INANIS",
+                                  0.06f * ScaleXRatio,
+                                  0.06f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.25f * PosYRatio,
                                   false,
                                   false);
 
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
-                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_MENU_CATEGORIES::PauseMenu,
                                   E_FONT_TYPE::Calibri,
-                                  "Hold D to collect Blue lights",
-                                  0.04f,
-                                  0.0f,
-                                  0.15f,
+                                  "RESUME",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.13f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::PauseMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "LEVELS",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.06f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::PauseMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "OPTIONS",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.01f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::PauseMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "CONTROLS",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.08f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::PauseMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "EXIT",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.15f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
+        }
+        // Options Menu
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "BACK",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.20f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "WINDOWED",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.07f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "RESOLUTION",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.17f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "APPLY",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.26f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "MASTER VOLUME",
+                                  0.03f * ScaleXRatio,
+                                  0.03f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.13f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "SENSITIVITY",
+                                  0.03f * ScaleXRatio,
+                                  0.03f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.03f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
+        }
+        // Options Submenu
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "OFF",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.11f * PosYRatio,
                                   false,
                                   false);
-        }
 
-        // Pause Menu
-        instance->AddSprite(instance->m_RenderSystem->m_Device,
-                            instance->m_RenderSystem->m_Context,
-                            E_MENU_CATEGORIES::PauseMenu,
-                            L"../Assets/2d/Sprite/Grey Box Test.dds",
-                            0.0f,
-                            0.0f,
-                            0.4f,
-                            0.6f,
-                            false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "ON",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.11f * PosYRatio,
+                                  false,
+                                  false);
+                // Resolutions
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "<",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  -0.12f * PosXRatio,
+                                  0.22f * PosYRatio,
+                                  false,
+                                  true);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::PauseMenu,
-                          E_FONT_TYPE::Angel,
-                          "INANIS",
-                          0.06f,
-                          0.0f,
-                          -0.35f,
-                          false,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::Calibri,
+                                  ">",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  0.12f * PosXRatio,
+                                  0.22f * PosYRatio,
+                                  false,
+                                  true);
+                // Sensitivity
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "<",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  -0.12f * PosXRatio,
+                                  0.02f * PosYRatio,
+                                  false,
+                                  true);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::PauseMenu,
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::Calibri,
+                                  ">",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  0.12f * PosXRatio,
+                                  0.02f * PosYRatio,
+                                  false,
+                                  true);
                           E_FONT_TYPE::CourierNew,
-                          "Resume",
-                          0.05f,
-                          0.0f,
-                          -0.15f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::PauseMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Levels",
-                          0.05f,
-                          0.0f,
-                          -0.05f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
-
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::PauseMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Options",
-                          0.05f,
-                          0.0f,
-                          0.05f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
-
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::PauseMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Controls",
-                          0.05f,
-                          0.0f,
-                          0.15f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
-
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::PauseMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Exit",
-                          0.05f,
-                          0.0f,
-                          0.25f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
-
-        // Options Menu
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::OptionsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Back",
-                          0.05f,
-                          0.0f,
-                          -0.35f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
-
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::OptionsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Windowed",
-                          0.04f,
-                          0.0f,
-                          0.08f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
-
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::OptionsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Resolution",
-                          0.04f,
-                          0.0f,
-                          0.25f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
-
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::OptionsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Apply",
-                          0.05f,
-                          0.0f,
-                          -0.25f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
-
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::OptionsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Master Volume",
-                          0.03f,
-                          0.0f,
-                          -0.1f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
-
-        // Options Submenu
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Off",
-                          0.04f,
-                          0.0f,
-                          0.16f,
-                          false,
-                          false);
-
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::CourierNew,
-                          "On",
-                          0.04f,
-                          0.0f,
-                          0.16f,
-                          false,
-                          false);
-
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::CourierNew,
-                          "<",
-                          0.04f,
-                          -0.12f,
-                          0.35f,
-                          false,
-                          true);
-
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::OptionsSubmenu,
-                          E_FONT_TYPE::CourierNew,
-                          ">",
-                          0.04f,
-                          0.12f,
-                          0.35f,
-                          false,
-                          true);
-
+                // Text for Sensitivity
         instance->AddText(instance->m_RenderSystem->m_Device,
                           instance->m_RenderSystem->m_Context,
                           E_MENU_CATEGORIES::OptionsSubmenu,
@@ -855,131 +1147,151 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   false);
         }
 
-        // Any new options submenu should be put above this
-        for (auto i = 0; i < instance->resDescriptors.size(); i++)
-        {
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::OptionsSubmenu,
-                                  E_FONT_TYPE::CourierNew,
-                                  std::to_string(instance->resDescriptors[i].Width) + "x" +
-                                      std::to_string(instance->resDescriptors[i].Height),
-                                  0.04f,
-                                  0.0f,
-                                  0.35f,
+                                  E_FONT_TYPE::Calibri,
+                                  "Low",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.02f * PosYRatio,
                                   false,
                                   false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "Medium",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.02f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "High",
+                                  0.04f * ScaleXRatio,
+                                  0.04f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.02f * PosYRatio,
+                                  false,
+                                  false);
+
+                for (auto i = 0; i < instance->resDescriptors.size(); i++)
+                {
+                        instance->AddText(instance->m_RenderSystem->m_Device,
+                                          instance->m_RenderSystem->m_Context,
+                                          E_MENU_CATEGORIES::OptionsSubmenu,
+                                          E_FONT_TYPE::Calibri,
+                                          std::to_string(instance->resDescriptors[i].Width) + "x" +
+                                              std::to_string(instance->resDescriptors[i].Height),
+                                          0.04f * ScaleXRatio,
+                                          0.04f * ScaleYRatio,
+                                          0.0f * PosXRatio,
+                                          0.22f * PosYRatio,
+                                          false,
+                                          false);
+                }
         }
-
-        /*
-            //Options Volume Slider
-            instance->m_SliderHandle = 0.0f;
-            instance->AddSprite(instance->m_RenderSystem->m_Device,
-                                instance->m_RenderSystem->m_Context,
-                                E_MENU_CATEGORIES::OptionsMenu,
-                                L"../Assets/2d/Sprite/Slider_BG.dds",
-                                0.0f,
-                                -0.35f,
-                                0.2f,
-                                0.5f,
-                                false);
-                                
-
-
-
-
-
-
-
-
-
-
-
-
-            instance->AddSprite(instance->m_RenderSystem->m_Device,
-                                instance->m_RenderSystem->m_Context,
-                                E_MENU_CATEGORIES::OptionsMenu,
-                                L"../Assets/2d/Sprite/Slider_FG.dds",
-                                0.0f,
-                                -0.35f,
-                                0.2f,
-                                0.5f,
-                                false);
-        */
-
-
         // Level Menu
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::LevelMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Back",
-                          0.05f,
-                          0.0f,
-                          -0.35f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::LevelMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "BACK",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.20f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::LevelMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Tutorial",
-                          0.05f,
-                          0.0f,
-                          -0.1f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::LevelMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "TUTORIAL",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.10f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::LevelMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Level 1",
-                          0.05f,
-                          0.0f,
-                          0.0f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::LevelMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "LEVEL 1",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.03f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::LevelMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Level 2",
-                          0.05f,
-                          0.0f,
-                          0.1f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::LevelMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "LEVEL 2",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.04f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::LevelMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Level 3",
-                          0.05f,
-                          0.0f,
-                          0.2f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
-
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::LevelMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "LEVEL 3",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.11f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
+        }
         // Controls Menu
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "BACK",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.20f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
 
         if (GamePad::Get()->CheckConnection() == true)
         {
@@ -1104,44 +1416,199 @@ void UIManager::Initialize(native_handle_type hwnd)
         }
 
         // Demo
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::Demo,
-                          E_FONT_TYPE::Calibri,
-                          "Thank you for playing our demo!",
-                          0.06f,
-                          0.0f,
-                          0.0f,
-                          false,
-                          false);
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Thank you for playing!",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.25f * PosYRatio,
+                                  false,
+                                  false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::Demo,
-                          E_FONT_TYPE::CourierNew,
-                          "Continue",
-                          0.05f,
-                          -0.15f,
-                          0.1f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "CREDITS",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  -0.2f * PosYRatio,
+                                  false,
+                                  false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::Demo,
-                          E_FONT_TYPE::CourierNew,
-                          "Exit",
-                          0.05f,
-                          0.15f,
-                          0.1f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Jose Villarroel:",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  -0.3f * PosXRatio,
+                                  -0.1f * PosYRatio,
+                                  false,
+                                  false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Graphics Programmer",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.3f * PosXRatio,
+                                  -0.1f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Liam Murray:",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  -0.3f * PosXRatio,
+                                  -0.05f * PosYRatio,
+                                  false,
+                                  false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Engine Programmer",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.3f * PosXRatio,
+                                  -0.05f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Joseph Gill:",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  -0.3f * PosXRatio,
+                                  0.0f * PosYRatio,
+                                  false,
+                                  false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Gameplay Programmer",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.3f * PosXRatio,
+                                  0.0f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Victoria Kiang:",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  -0.3f * PosXRatio,
+                                  0.05f * PosYRatio,
+                                  false,
+                                  false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Math and Collision Engineer",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.3f * PosXRatio,
+                                  0.05f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Nolan Bys:",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  -0.3f * PosXRatio,
+                                  0.1f * PosYRatio,
+                                  false,
+                                  false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "User Interface Programmer",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.3f * PosXRatio,
+                                  0.1f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "John Joseph Beckmeyer:",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  -0.3f * PosXRatio,
+                                  0.15f * PosYRatio,
+                                  false,
+                                  false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "Audio Developer",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.3f * PosXRatio,
+                                  0.15f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "CONTINUE",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  -0.15f * PosXRatio,
+                                  0.3f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::Demo,
+                                  E_FONT_TYPE::Calibri,
+                                  "EXIT",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.15f * PosXRatio,
+                                  0.3f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
+        }
 
 
         // Pause Menu
@@ -1215,7 +1682,34 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = true;
                 }
+                
+        		//Disable other Sensitivities
+                if (instance->CSettings.m_Sensitivity == 0)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = true;
 
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+	                
+                }
+                else if (instance->CSettings.m_Sensitivity == 1)
+                {
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                }
+                else
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
+                }
+
+
+                // Fullscreen on/off Check
                 if (instance->CSettings.m_IsFullscreen == false)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = false; // Off
@@ -1227,29 +1721,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
                 }
 
-                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
-                     i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
-                     i++)
+                for (int i = 9; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance
-                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
-                                [instance->CSettings.m_Resolution +
-                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                 instance->resDescriptors.size()]
-                    .mEnabled = true;
-
-
-                int VolBegin =
-                    instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size() - 11;
-                int VolEnd = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
-                for (int i = VolBegin; i < VolEnd; i++)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
-                }
-
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Volume + 6].mEnabled = true;
+                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 9].mEnabled = true;
         });
 
         // Controls Button
@@ -1328,6 +1804,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 instance->CSettings.m_Resolution   = instance->PSettings.m_Resolution;
                 instance->CSettings.m_Volume       = instance->PSettings.m_Volume;
                 instance->CSettings.m_IsFullscreen = instance->PSettings.m_IsFullscreen;
+                instance->CSettings.m_Sensitivity  = instance->PSettings.m_Sensitivity;
 
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->PSettings.m_Resolution].Width,
@@ -1397,6 +1874,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 instance->PSettings.m_Resolution   = instance->CSettings.m_Resolution;
                 instance->PSettings.m_Volume       = instance->CSettings.m_Volume;
                 instance->PSettings.m_IsFullscreen = instance->CSettings.m_IsFullscreen;
+                instance->PSettings.m_Sensitivity  = instance->CSettings.m_Sensitivity;
 
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Width,
@@ -1417,18 +1895,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->CSettings.m_Resolution--;
                 }
 
-                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
-                     i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
-                     i++)
+                for (int i = 9; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance
-                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
-                                [instance->CSettings.m_Resolution +
-                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                 instance->resDescriptors.size()]
-                    .mEnabled = true;
+                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 9].mEnabled = true;
                 // Change Resolution HERE
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Width,
@@ -1446,62 +1917,89 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->CSettings.m_Resolution++;
                 }
 
-                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
-                     i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
-                     i++)
+                for (int i = 9; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance
-                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
-                                [instance->CSettings.m_Resolution +
-                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                 instance->resDescriptors.size()]
-                    .mEnabled = true;
+                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 9].mEnabled = true;
                 // Change Resolution HERE
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Width,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Height);
         });
 
-        // Left Volume Button
+        // Left Sensitivity Button
         instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                if (instance->CSettings.m_Volume > 0)
+                if (instance->CSettings.m_Sensitivity - 1 <= -1)
                 {
-                        instance->CSettings.m_Volume--;
-                        int VolBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                       instance->resDescriptors.size() - 11;
-                        int VolEnd =
-                            instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
-                        for (int i = VolBegin; i < VolEnd; i++)
-                        {
-                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
-                        }
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Volume + 6].mEnabled =
-                            true;
-                        // Change Volume HERE
-                        AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
+                        instance->CSettings.m_Sensitivity = 2;
                 }
+                else
+                {
+                        instance->CSettings.m_Sensitivity--;
+                }
+
+                // Disable other Sensitivities
+                if (instance->CSettings.m_Sensitivity == 0)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                }
+                else if (instance->CSettings.m_Sensitivity == 1)
+                {
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                }
+                else
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
+                }
+                // Change Sensitivity HERE
         });
 
-        // Right Volume Button
+        // Right Sensitivity Button
         instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                if (instance->CSettings.m_Volume < 10)
+                if (instance->CSettings.m_Sensitivity + 1 >= 3)
                 {
-                        instance->CSettings.m_Volume++;
-                        int VolBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                       instance->resDescriptors.size() - 11;
-                        int VolEnd =
-                            instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
-                        for (int i = VolBegin; i < VolEnd; i++)
-                        {
-                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
-                        }
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Volume + 6].mEnabled =
-                            true;
-                        // Change Volume HERE
-                        AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
+                        instance->CSettings.m_Sensitivity = 0;
                 }
+                else
+                {
+                        instance->CSettings.m_Sensitivity++;
+                }
+
+                // Disable other Sensitivities
+                if (instance->CSettings.m_Sensitivity == 0)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                }
+                else if (instance->CSettings.m_Sensitivity == 1)
+                {
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                }
+                else
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = true;
+
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
+                }
+                // Change Sensitivity HERE
         });
 
 
@@ -1702,112 +2200,19 @@ void UIManager::Update()
         instance->m_ScreenCenter = XMVectorSet(instance->m_ScreenSize.x * 0.5f, instance->m_ScreenSize.y * 0.5f, 0.0f, 1.0f);
         instance->m_TexelSize    = XMFLOAT2{1.0f / instance->m_ScreenSize.x, 1.0f / instance->m_ScreenSize.y};
 
-        float aspectRatio = instance->m_ScreenSize.x / instance->m_ScreenSize.y;
-        if (instance->m_InMenu)
+        static float GlobalTimer = 0.0f;
+
+        if (GlobalTimer < 15.1f && !instance->m_BreakSplash)
         {
-                ClipCursor(nullptr);
+                instance->SplashUpdate(GlobalTimer);
+                GlobalTimer += GEngine::Get()->GetDeltaTime();
         }
         else
         {
-                instance->UIClipCursor();
+                instance->GameplayUpdate();
         }
 
-        // Pause & Unpause
-        if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled == true)
-        {
-                if (InputActions::EnterAction() == KeyState::Down)
-                {
-                        instance->MainTilteUnpause();
-                }
-        }
-        else
-        {
-                if (InputActions::PauseAction() == KeyState::DownFirst)
-                {
-                        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::Demo].size(); i++)
-                        {
-                                instance->m_AllFonts[E_MENU_CATEGORIES::Demo][i].mEnabled = false;
-                        }
-                        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::Demo].size(); i++)
-                        {
-                                instance->m_AllFonts[E_MENU_CATEGORIES::Demo][i].mEnabled = false;
-                        }
-
-                        if (GEngine::Get()->GetGamePaused() == false)
-                        {
-                                instance->Pause();
-                        }
-                        else
-                        {
-                                instance->Unpause();
-                        }
-                }
-        }
-
-        UIMouseEvent e;
-        POINT        cursorPos;
-        GetCursorPos(&cursorPos);
-        if (GamePad::Get()->CheckConnection() == true)
-        {
-                for (int i = 0; i < instance->resDescriptors.size(); i++)
-                {
-                        int XPos = GamePad::Get()->leftStickX * 10.0f;
-                        int YPos = GamePad::Get()->leftStickY * 10.0f;
-
-                        SetCursorPos(cursorPos.x + XPos, cursorPos.y - YPos);
-                        // std::cout << "XPos: " << GamePad::Get()->leftStickX << " | YPos: " << YPos << std::endl;
-                }
-        }
-        GetCursorPos(&cursorPos);
-        e.mouseX = (float)cursorPos.x;
-        e.mouseY = (float)cursorPos.y;
-
-        std::vector<SpriteComponent*> clickedSprites;
-
-        for (auto& it : instance->m_AllSprites)
-                for (auto& sprite : it.second)
-                {
-                        if (sprite.mEnabled)
-                        {
-                                if (InputActions::MouseClickAction() == KeyState::Release)
-                                {
-                                        XMFLOAT2 cursorCoords = {e.mouseX, e.mouseY};
-                                        XMVECTOR point        = UI::ConvertScreenPosToNDC(cursorCoords, instance->m_ScreenSize);
-                                        if (UI::PointInRect(sprite.mRectangle, point))
-                                        {
-                                                // Button Was Pressed
-                                                clickedSprites.push_back(&sprite);
-                                        }
-                                }
-
-                                instance->m_SpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
-                                                               instance->m_States->NonPremultiplied());
-
-                                XMVECTOR position = XMVectorSet(sprite.mScreenOffset.x * instance->m_ScreenSize.x,
-                                                                sprite.mScreenOffset.y * instance->m_ScreenSize.y,
-                                                                0.0f,
-                                                                1.0f) +
-                                                    instance->m_ScreenCenter;
-
-                                XMVECTOR scale = XMVectorSet(sprite.mScaleX * instance->m_ScreenSize.x,
-                                                             aspectRatio * sprite.mScaleY * instance->m_ScreenSize.y,
-                                                             0.0f,
-                                                             1.0f);
-
-                                instance->m_SpriteBatch->Draw(
-                                    sprite.mTexture, position, nullptr, DirectX::Colors::White, 0.0f, sprite.mOrigin, scale);
-
-
-                                instance->m_SpriteBatch->End();
-                        }
-                }
-
-        for (auto& sprite : clickedSprites)
-        {
-                e.sprite = sprite;
-                sprite->OnMouseDown.Invoke(&e);
-        }
-
+        instance->DrawSprites();
         for (auto& it : instance->m_AllFonts)
                 for (auto& font : it.second)
                 {

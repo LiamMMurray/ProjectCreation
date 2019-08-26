@@ -247,6 +247,9 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 
 
+
+
+
             TransformComponent* transformComp = HandleManager->GetComponent<TransformComponent>(transformHandle);
             transformComp->transform.SetScale(0.1f);*/
         }
@@ -331,14 +334,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         GEngine::Get()->GetLevelStateManager()->Init();
         UIManager::instance->StartupResAdjust(handle);
 
-       //auto waveMusic = AudioManager::Get()->LoadMusic("Ambience_andWaves");
-       //// waveMusic->SetVolume(0.8f);
-       //AudioManager::Get()->ActivateMusicAndPause(waveMusic, true);
-	   //
-       //if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() >= E_Level_States::LEVEL_02)
-       //{
-       //        music = AudioManager::Get()->LoadMusic("Ambience_andWaves")
-       //}
+        
 
         while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
         {

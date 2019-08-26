@@ -340,13 +340,15 @@ class RenderSystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
-        void DrawMeshInstanced(ID3D11Buffer* vertexBuffer,
-                               ID3D11Buffer* indexBuffer,
-                               uint32_t      indexCount,
-                               uint32_t      vertexSize,
-                               Material*     material,
-                               uint32_t      instanceCount,
-                               uint32_t      instanceOffset);
+
+		void Present();
+
+        void DrawMeshInstanced(ID3D11Buffer*             vertexBuffer,
+                               ID3D11Buffer*             indexBuffer,
+                               uint32_t                  indexCount,
+                               uint32_t                  vertexSize,
+                               Material*                 material,
+                               uint32_t                  instanceCount);
 
         using native_handle_type = void*;
         native_handle_type m_WindowHandle;
