@@ -357,19 +357,20 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 emitterComp->SetIsActive(false);
                 sm->SetIsActive(false);
                 staticMeshesShowWithTerrain.push_back(statHandle);
-                //trans->transform.scale = XMVectorSet(0.1f, 0.1f, 0.1f, 0.1f);
-                trans->transform.translation = XMVectorSet(20.0, 4.0f, -138.0f, 1.0f);
-                emitterComp->ParticleswithGravity(XMFLOAT3(-8.0f, 5.0f, -7.5f),
-                                                  XMFLOAT3(5.0f, 10.0f, 5.0f),
+                trans->transform.scale       = XMVectorSet(1.5f, 1.5f, 1.5f, 1.0f);
+                trans->transform.translation = XMVectorSet(24.51, 0.0f, -139.36f, 1.0f);
+                trans->alignToTerrain        = false;
+                emitterComp->ParticleswithGravity(XMFLOAT3(-3.0f, 50.0f, -3.0f),
+                                                  XMFLOAT3(3.0f, 60.0f, 3.0f),
                                                   {50.0f, 0.0f, 0.0f, 1.0f},
-                                                  {25.0f, 15.0f, 0.0f, 0.6f},
-                                                  XMFLOAT4(50.0f, 10.0f, 1.0f, 2.0f));
+                                                  {25.0f, 5.0f, 0.0f, 0.6f},
+                                                  XMFLOAT4(50.0f, 0.5f, 1.0f, 2.0f));
 
                 XMStoreFloat3(&emitterComp->EmitterData.emitterPosition, trans->transform.translation);
-
-                emitterComp->active                         = false;
-
-			
+                //emitterComp->EmitterData.flags = ALIGN_TO_VEL;
+                emitterComp->EmitterData.flags |= NO_COLLISION;
+                emitterComp->active                      = false;
+				
         }
 }
 using namespace DirectX;
@@ -627,7 +628,7 @@ void TerrainManager::_update(float deltaTime)
                 auto emitter = compHandle.Get()->GetParent().GetComponent<EmitterComponent>();
                 bool active  = sm->IsActive();
 
-                sm->GetParent().GetComponent<TransformComponent>()->transform.SetScale(terrainConstantBufferCPU.gTerrainAlpha);
+                // sm->GetParent().GetComponent<TransformComponent>()->transform.SetScale(terrainConstantBufferCPU.gTerrainAlpha);
 
                 if (active && terrainConstantBufferCPU.gTerrainAlpha <= 0.0f)
                         sm->SetIsActive(false);
@@ -636,17 +637,17 @@ void TerrainManager::_update(float deltaTime)
                 {
                         sm->SetIsActive(true);
                         emitter->SetIsActive(true);
-                        emitter->active = true;
-                        emitter->spawnRate                      = 100.0f;
+                        emitter->active                         = true;
+                        emitter->spawnRate                      = 100000.0f;
                         emitter->maxCount                       = ParticleData::gMaxParticleCount;
                         emitter->EmitterData.textureIndex       = 3;
-                        emitter->EmitterData.minInitialVelocity = {0.0f, 4.0f, 0.0f};
-                        emitter->EmitterData.maxInitialVelocity = {5.0f, 30.0f, 5.0f};
-                        emitter->EmitterData.acceleration       = {-0.5, -3.8f, -0.5f};
+                        emitter->EmitterData.minInitialVelocity = {-15.0f, 4.0f, -15.0f};
+                        emitter->EmitterData.maxInitialVelocity = {15.0f, 30.0f, 15.0f};
+                        emitter->EmitterData.acceleration       = {0.0, -10.8f, 0.0f};
                         emitter->EmitterData.flags              = 1;
-                        emitter->EmitterData.particleScale      = {0.85f, 1.0f};
+                        emitter->EmitterData.particleScale      = {1.f, 1.5f};
                         emitter->desiredCount                   = ParticleData::gMaxEmitterCount;
-                        emitter->offset                         = XMVectorSet(3.0f, 4.0f, 2.0f, 1.0f);
+
                 }
         }
         // debug_renderer::AddSphere(Shapes::FSphere(test, 0.1f), 32, XMMatrixIdentity());

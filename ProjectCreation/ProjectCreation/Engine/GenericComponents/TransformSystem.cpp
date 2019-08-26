@@ -22,8 +22,8 @@ void TransformSystem::OnUpdate(float deltaTime)
         XMVECTOR newPlayerPos = MathLibrary::WrapPosition(playerPos, min, max);
         XMVECTOR delta        = newPlayerPos - playerPos;
         GEngine::Get()->m_OriginOffset += delta;
-        currController->worldOffset = GEngine::Get()->m_OriginOffset;
-        playerPos                   = newPlayerPos;
+        currController->worldOffset        = GEngine::Get()->m_OriginOffset;
+        playerPos                          = newPlayerPos;
         GEngine::Get()->m_WorldOffsetDelta = delta;
         playerPos                          = newPlayerPos;
         if (controllerSystem->GetCurrentControllerIndex() == 0)
@@ -34,11 +34,14 @@ void TransformSystem::OnUpdate(float deltaTime)
         float deltaLength = MathLibrary::CalulateVectorLength(delta);
         for (auto& transComp : m_HandleManager->GetActiveComponents<TransformComponent>())
         {
-
                 if (transComp.wrapping == true)
                 {
                         if (deltaLength > 0.01f)
                                 transComp.transform.translation += delta;
+
+                        if (transComp.alignToTerrain == false)
+                                continue;
+
                         transComp.transform.translation =
                             XMVectorMax(transComp.transform.translation,
                                         TerrainManager::Get()->AlignPositionToTerrain(transComp.transform.translation));

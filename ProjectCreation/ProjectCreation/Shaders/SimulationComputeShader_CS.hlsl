@@ -67,7 +67,7 @@ float3 VSPositionFromDepth(float2 vTexCoord)
                 //  WrapPosition(ParticleBuffer[id].position.xyz, _EyePosition + Min, _EyePosition + Max);
 
                 // bounce based on texture depth
-                if (ParticleBuffer[id].flags == 0)
+                if ((ParticleBuffer[id].flags & NO_COLLISION))
                 {
                         if (ndc.w > depth)
                         {

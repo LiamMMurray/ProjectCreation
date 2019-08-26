@@ -4,6 +4,8 @@
 #include "../../ECS/Component.h"
 #include "Pools.h"
 #define ALIGN_TO_VEL (1 << 0)
+#define NO_COLLISION (1 << 1)
+
 namespace ParticleData
 {
 
@@ -12,7 +14,7 @@ namespace ParticleData
 
         struct FEmitterGPU
         {
-                DirectX::XMFLOAT4 lifeSpan; // x is life time, y is variance, z,w is fade in ad out
+                DirectX::XMFLOAT4 lifeSpan;  // x is life time, y is variance, z,w is fade in ad out
                 unsigned int      flags = 0; // defult collision, ==1 is no collision on particles
                 DirectX::XMFLOAT3 emitterPosition;
                 DirectX::XMFLOAT3 minOffset;

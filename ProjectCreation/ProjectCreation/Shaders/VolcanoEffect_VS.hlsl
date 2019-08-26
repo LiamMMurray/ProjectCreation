@@ -11,10 +11,10 @@ INPUT_PIXEL main(INPUT_VERTEX input)
 
         INPUT_PIXEL output = (INPUT_PIXEL)0;
 
-        output.Tex = input.Tex;
+        output.Tex = input.Tex * 2.0f;
         output.Tex.y += _Time * 0.04f;
-        float heightSample = diffuseMap.SampleLevel(sampleTypeWrap, output.Tex, 0);
-
+        float heightSample = diffuseMap.SampleLevel(sampleTypeWrap, output.Tex / 2.0f, 0);
+        heightSample       = saturate(pow(heightSample * 2.0f - 1.0f, 2.0f));
 
         output.TangentWS = mul(float4(input.Tangent, 0), World).xyz;
         output.TangentWS = normalize(output.TangentWS);
@@ -27,7 +27,7 @@ INPUT_PIXEL main(INPUT_VERTEX input)
 
 
         float4 Pos         = float4(input.Pos, 1);
-        output.linearDepth = 1.0f - saturate(Pos.y / 95.0f);
+        output.linearDepth = 1.0f - saturate(Pos.y / 115.0f);
         Pos.xyz += heightSample * output.NormalWS * 5.0f;
 
 
