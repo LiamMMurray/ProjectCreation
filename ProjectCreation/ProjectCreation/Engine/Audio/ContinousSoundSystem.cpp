@@ -18,8 +18,7 @@ void SpatialSoundSystem::OnUpdate(float deltaTime)
         TransformComponent* playerTransformComponent =
             currentController->GetControlledEntity().GetComponent<TransformComponent>();
 
-        float mastervol = 1.0f;
-        AudioManager::Get()->GetMasterVolume(mastervol);
+        float mastervol =  AudioManager::Get()->GetMasterVolume();
 		for (auto& soundComp : m_HandleManager->GetActiveComponents<SoundComponent>())
 		{
                 soundComp.m_gSound->SetVolume(soundComp.m_Volume * mastervol);

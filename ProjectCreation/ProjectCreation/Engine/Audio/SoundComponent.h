@@ -1,9 +1,6 @@
 #pragma once
-#include <stdint.h>
 #include "../../ECS/Component.h"
 #include "3DSoundTypes.h"
-
-#include <bitset>
 
 class SoundComponent : public Component<SoundComponent>
 {
