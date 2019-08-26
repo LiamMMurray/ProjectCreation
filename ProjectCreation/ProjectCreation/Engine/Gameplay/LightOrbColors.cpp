@@ -2,22 +2,22 @@
 
 
 // Red Color
-DirectX::PackedVector::XMCOLOR C_RED = DirectX::PackedVector::XMCOLOR{0xFFFF0000};
+DirectX::PackedVector::XMCOLOR C_RED = DirectX::PackedVector::XMCOLOR{0xFFFF0200};
 
 // Red Ring Color
-DirectX::PackedVector::XMCOLOR C_RED_RING = DirectX::PackedVector::XMCOLOR{0xFFFF2222};
+DirectX::PackedVector::XMCOLOR C_RED_RING = C_RED;
 
 // Green Color
 DirectX::PackedVector::XMCOLOR C_GREEN = DirectX::PackedVector::XMCOLOR{0xFF00FF00};
 
 // Green Ring Color
-DirectX::PackedVector::XMCOLOR C_GREEN_RING = DirectX::PackedVector::XMCOLOR{0xFF22FF22};
+DirectX::PackedVector::XMCOLOR C_GREEN_RING = C_GREEN;
 
 // Blue Color
-DirectX::PackedVector::XMCOLOR C_BLUE = DirectX::PackedVector::XMCOLOR{0xFF0000FF};
+DirectX::PackedVector::XMCOLOR C_BLUE = DirectX::PackedVector::XMCOLOR{0xFF003AFF};
 
 // Blue Ring Color
-DirectX::PackedVector::XMCOLOR C_BLUE_RING = DirectX::PackedVector::XMCOLOR{0xFF2222FF};
+DirectX::PackedVector::XMCOLOR C_BLUE_RING = C_BLUE;
 
 // Yellow Color
 DirectX::PackedVector::XMCOLOR C_YELLOW = DirectX::PackedVector::XMCOLOR{0xFFFFFF00};

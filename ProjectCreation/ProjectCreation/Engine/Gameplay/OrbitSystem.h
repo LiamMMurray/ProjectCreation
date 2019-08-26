@@ -2,24 +2,29 @@
 
 #include "../../ECS/HandleManager.h"
 #include "../../ECS/SystemManager.h"
+#include "..//ResourceManager/IResource.h"
 #include "../MathLibrary/MathLibrary.h"
 #include "GoalComponent.h"
-#include "..//ResourceManager/IResource.h"
 
 class TransformComponent;
 class ResourceManager;
+class PlayerController;
 
 class OrbitSystem : public ISystem
 {
     private:
         HandleManager* m_HandleManager;
 
-		ResourceManager* m_ResourceManager;
+        ResourceManager* m_ResourceManager;
 
-        const char* materialNames[3] = {"GlowMatPlanet01", "GlowMatPlanet03", "GlowMatPlanet02"};
-        const char* spawnNames[3]    = {"redPlanetSpawn", "greenPlanetSpawn", "bluePlanetSpawn"};
-        int         m_Stage          = 0;
-        void        CreateGoal(int color, DirectX::XMVECTOR position);
+        PlayerController* m_PlayerController;
+
+        const char* materialNames[4]     = {"GlowMatPlanet01", "GlowMatPlanet02", "GlowMatPlanet03", "GlowMatSun"};
+        const char* ringMaterialNames[3] = {"Ring01Mat", "Ring02Mat", "Ring03Mat"};
+        const char* ringMeshNames[3]     = {"Ring01", "Ring02", "Ring03"};
+        const char* planetMeshNames[3]     = {"Planet00", "Planet01", "Planet02"};
+        int         m_Stage              = 0;
+        EntityHandle CreateGoal(int color, DirectX::XMVECTOR position);
 
         float             orbitOffset = 1300.0f;
         FQuaternion       sunRotation;
@@ -33,12 +38,12 @@ class OrbitSystem : public ISystem
                 bool         hasActiveGoal = false;
         };
 
-        static constexpr float goalDistances[3] = {65.0f, 65.0f, 65.0f};
+        static constexpr float goalDistances[4] = {10.0f, 10.0f, 10.0f, 10.0f};
 
         std::vector<ComponentHandle> sunAlignedTransforms;
 
 
-        void UpdateSunAlignedObjects();
+        void UpdateSunAlignedObjects(float delta);
 
     protected:
         // Inherited via ISystem
@@ -50,13 +55,29 @@ class OrbitSystem : public ISystem
         virtual void OnResume() override;
         virtual void OnSuspend() override;
 
-        int collectEventTimestamps[3] = {-1, -1, -1};
+        bool tutorialPlanets[4] = {false, false, false, false};
 
     public:
-        std::vector<ComponentHandle> sunAlignedTransformsSpawning;
-        unsigned int    goalsCollected   = 0;
-        bool            collectedMask[3] = {};
+        uint8_t m_PendingGoalCounts[4] = {0, 0, 0, 0};
+
+        EntityHandle CreateSun();
+        EntityHandle CreateRing(int color);
+        void InstantCreateOrbitSystem();
+        void InstantRemoveOrbitSystem();
+
+        void InstantInOrbit(int color);
+        void InstantRemoveFromOrbit();
+
+        unsigned int goalsCollected   = 0;
+        bool         collectedMask[3] = {};
+
+		inline void ClearCollectedMask()
+        {
+                collectedMask[0] = false;
+                collectedMask[1] = false;
+                collectedMask[2] = false;
+		}
+
         FActiveGoalInfo activeGoal;
-        void                         DestroyPlanet(GoalComponent* toDestroy);
-        ComponentHandle              sunHandle, ring1Handle, ring2Handle, ring3Handle;
+        void            DestroyPlanet(GoalComponent* toDestroy);
 };

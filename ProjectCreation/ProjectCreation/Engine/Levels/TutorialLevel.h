@@ -1,6 +1,9 @@
 #pragma once
 #include <DirectXMath.h>
+#include "../../ECS/EntityHandle.h"
+#include "../../ECS/HandleManager.h"
 #include "../Controller/ControllerSystem.h"
+#include "../Controller/PlayerMovement.h"
 #include "../GEngine.h"
 #include "../Gameplay/OrbRespawnComponent.h"
 #include "../Gameplay/OrbitSystem.h"
@@ -8,27 +11,39 @@
 #include "../Gameplay/SpeedboostComponent.h"
 #include "../Gameplay/SplineElementComponent.h"
 #include "../GenericComponents/TransformComponent.h"
-#include "../Controller/PlayerMovement.h"
-#include "../../ECS/HandleManager.h"
-#include "../../ECS/EntityHandle.h"
 #include "LevelState.h"
-#include "../Controller/ControllerSystem.h"
 
 class TutorialLevel : public ILevelState
 {
-        SpeedBoostSystem* m_SpeedBoostSystem;
-        HandleManager*    m_HandleManager;
+        SpeedBoostSystem*   m_SpeedBoostSystem;
+        HandleManager*      m_HandleManager;
         TransformComponent* m_PlayerTransform;
         EntityHandle        m_PlayerEntityHandle;
         PlayerController*   m_PlayerController;
         OrbitSystem*        m_OrbitSystem;
+
 
         bool m_WhiteCollected = false;
         bool m_RedCollected   = false;
         bool m_BlueCollected  = false;
         bool m_GreenCollected = false;
 
+		static TutorialLevel* Instance;
+
     public:
+        enum E_TUTORIAL_PHASE
+        {
+                PHASE_1 = 0,
+                PHASE_2,
+                PHASE_3,
+                PHASE_4,
+                PHASE_5,
+                COUNT
+        };
+
+        E_TUTORIAL_PHASE        phases[E_TUTORIAL_PHASE::COUNT] = {PHASE_1, PHASE_2, PHASE_3, PHASE_4, PHASE_5};
+        static E_TUTORIAL_PHASE currPhase;
+        int              currPhaseIndex;
         // Inherited via ILevelState
         void Enter() override;
         void Update(float deltaTime) override;
@@ -37,10 +52,20 @@ class TutorialLevel : public ILevelState
         TutorialLevel();
         virtual ~TutorialLevel() = default;
 
-		int whiteCount, redCount, blueCount, greenCount, levelRequested;
+        int  whiteCount, redCount, blueCount, greenCount, levelRequested;
+        bool finished;
 
-        void SpawnFirstWhiteOrb();
-        void SpawnFirstRedOrb();
-        void SpawnFirstBlueOrb();
-        void SpawnFirstGreenOrb();
+        void RequestNextPhase();
+
+		void UpdatePhase1(float deltaTime);
+		void UpdatePhase2(float deltaTime);
+		void UpdatePhase3(float deltaTime);
+		void UpdatePhase4(float deltaTime);
+		void UpdatePhase5(float deltaTime);
+
+        void                  SpawnFirstWhiteOrb();
+        void                  SpawnFirstRedOrb();
+        void                  SpawnFirstBlueOrb();
+        void                  SpawnFirstGreenOrb();
+        static TutorialLevel* Get();
 };

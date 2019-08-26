@@ -865,7 +865,8 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         mainCamera->_cachedProjection     = m_CachedMainProjectionMatrix;
         mainCamera->_cachedViewProjection = m_CachedMainViewProjectionMatrix;
 
-        m_SkyHandle.Get<TransformComponent>()->transform.translation = mainTransform->transform.translation;
+        m_SkyHandle.Get<TransformComponent>()->transform.translation   = mainTransform->transform.translation;
+        m_CloudHandle.Get<TransformComponent>()->transform.translation = mainTransform->transform.translation;
 
         XMStoreFloat3(&m_ConstantBuffer_SCENE.eyePosition, mainTransform->transform.translation);
         m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(m_CachedMainViewProjectionMatrix);
@@ -1167,7 +1168,12 @@ void RenderSystem::OnInitialize()
         {
                 EntityFactory::CreateStaticMeshEntity("SkyDome01", "SkyMat01", &m_SkyHandle);
                 auto transComp = m_SkyHandle.Get<TransformComponent>();
-                transComp->transform.SetScale(1400.0f);
+                transComp->transform.SetScale(1450.0f);
+        }
+        {
+                EntityFactory::CreateStaticMeshEntity("SkyDome01", "CloudMat01", &m_CloudHandle);
+                auto transComp = m_CloudHandle.Get<TransformComponent>();
+                transComp->transform.SetScale(1000.0f);
         }
 }
 

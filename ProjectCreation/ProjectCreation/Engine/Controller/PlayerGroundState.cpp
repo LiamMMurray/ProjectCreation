@@ -11,6 +11,8 @@
 #include "PlayerControllerStateMachine.h"
 #include "PlayerMovement.h"
 
+#include "..//Gameplay/OrbitSystem.h"
+
 #define _USE_MATH_DEFINES
 
 using namespace DirectX;
@@ -31,14 +33,14 @@ void PlayerGroundState::Enter()
 
 void PlayerGroundState::Update(float deltaTime)
 {
+        OrbitSystem* orbitSystem = GET_SYSTEM(OrbitSystem);
         // Dev Cheat to test Reveal
         if (GCoreInput::GetKeyState(KeyCode::N) == KeyState::DownFirst)
         {
-                count += 1;
-                _playerController->SetCollectedPlanetCount(count);
+                orbitSystem->goalsCollected++;
         }
         // Check if the player has collected the three planets : Changed for play testing
-        if (_playerController->GetCollectedPlanetCount() == 1)
+        if (orbitSystem->goalsCollected == 1)
         {
 
                 // Changed for play testing
@@ -48,7 +50,7 @@ void PlayerGroundState::Update(float deltaTime)
                 GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_02);
         }
 
-        if (_playerController->GetCollectedPlanetCount() == 2)
+        if (orbitSystem->goalsCollected == 2)
         {
 
                 // Changed for play testing
@@ -59,7 +61,7 @@ void PlayerGroundState::Update(float deltaTime)
         }
 
         static bool doOnce = false;
-        if (!doOnce && _playerController->GetCollectedPlanetCount() == 3)
+        if (!doOnce && orbitSystem->goalsCollected == 3)
         {
 
                 // Changed for play testing
@@ -225,10 +227,10 @@ void PlayerGroundState::Update(float deltaTime)
         if (bUseGravity == false)
         {
                 float forwardSpeed = MathLibrary::CalulateVectorLength(currentVelocity);
-                targetFOV          = MathLibrary::lerp<float>(targetFOV, 150.0f, MathLibrary::saturate(forwardSpeed / 3.0f));
+                targetFOV          = MathLibrary::lerp<float>(targetFOV, 200.0f, MathLibrary::saturate(forwardSpeed / 3.0f));
         }
         cameraComponent->m_Settings.m_HorizontalFOV =
-            MathLibrary::lerp<float>(cameraComponent->m_Settings.m_HorizontalFOV, targetFOV, deltaTime * 0.5f);
+            MathLibrary::lerp<float>(cameraComponent->m_Settings.m_HorizontalFOV, targetFOV, deltaTime * 1.5f);
         cameraComponent->dirty = true;
 
         auto sunComp                        = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>();

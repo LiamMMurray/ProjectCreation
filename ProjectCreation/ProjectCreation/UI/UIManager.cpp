@@ -883,7 +883,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                 0.2f,
                                 0.5f,
                                 false);
-                                
+                                
 
 
 
@@ -980,63 +980,128 @@ void UIManager::Initialize(native_handle_type hwnd)
                           pauseButtonHeight);
 
         // Controls Menu
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Back",
-                          0.05f,
-                          0.0f,
-                          -0.3f,
-                          false,
-                          true,
-                          true,
-                          pauseButtonWidth,
-                          pauseButtonHeight);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Collect Red Light: A",
-                          0.03f,
-                          0.0f,
-                          -0.1f,
-                          false,
-                          false);
+        if (GamePad::Get()->CheckConnection() == true)
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Back",
+                                  0.05f,
+                                  0.0f,
+                                  -0.3f,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth,
+                                  pauseButtonHeight);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Collect Green Light: S",
-                          0.03f,
-                          0.0f,
-                          0.0f,
-                          false,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Collect Red Light: B",
+                                  0.03f,
+                                  0.0f,
+                                  -0.1f,
+                                  false,
+                                  false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Collect Blue Light: D",
-                          0.03f,
-                          0.0f,
-                          0.1f,
-                          false,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Collect Green Light: A",
+                                  0.03f,
+                                  0.0f,
+                                  0.0f,
+                                  false,
+                                  false);
 
-        instance->AddText(instance->m_RenderSystem->m_Device,
-                          instance->m_RenderSystem->m_Context,
-                          E_MENU_CATEGORIES::ControlsMenu,
-                          E_FONT_TYPE::CourierNew,
-                          "Movement: Left Mouse ",
-                          0.03f,
-                          0.0f,
-                          0.2f,
-                          false,
-                          false);
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Collect Blue Light: X",
+                                  0.03f,
+                                  0.0f,
+                                  0.1f,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Movement: Right Trigger ",
+                                  0.03f,
+                                  0.0f,
+                                  0.2f,
+                                  false,
+                                  false);
+        }
+
+        else
+        {
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Back",
+                                  0.05f,
+                                  0.0f,
+                                  -0.3f,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth,
+                                  pauseButtonHeight);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Collect Red Light: A",
+                                  0.03f,
+                                  0.0f,
+                                  -0.1f,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Collect Green Light: S",
+                                  0.03f,
+                                  0.0f,
+                                  0.0f,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Collect Blue Light: D",
+                                  0.03f,
+                                  0.0f,
+                                  0.1f,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::ControlsMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Movement: Left Mouse ",
+                                  0.03f,
+                                  0.0f,
+                                  0.2f,
+                                  false,
+                                  false);
+        }
 
         // Demo
         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -1477,23 +1542,23 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(
                             E_LevelStateEvents::TUTORIAL_LEVEL_TO_TUTORIAL_LEVEL);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_01)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_01_TO_TUTORIAL_LEVEL);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_TUTORIAL_LEVEL);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_02)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_TUTORIAL_LEVEL);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_TUTORIAL_LEVEL);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_03)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_TUTORIAL_LEVEL);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_TUTORIAL_LEVEL);
                 }
         });
 
@@ -1505,22 +1570,22 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_01);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_01);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_01)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_01);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_01);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_02)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_01);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_01);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_03)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_01);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_01);
                 }
         });
 
@@ -1532,22 +1597,22 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_02);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_02);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_01)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_02);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_02);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_02)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_02);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_02);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_03)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_02);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_02);
                 }
         });
 
@@ -1559,22 +1624,22 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                 if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_03);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_03);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_01)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_03);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_03);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_02)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_03);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_03);
                 }
 
                 else if (curLevel->GetLevelType() == LEVEL_03)
                 {
-                        GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_03);
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_03);
                 }
         });
 

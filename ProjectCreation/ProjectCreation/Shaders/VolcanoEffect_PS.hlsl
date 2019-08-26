@@ -70,7 +70,7 @@ float4 main(INPUT_PIXEL input) : SV_TARGET
 
         // Directional Light
         {
-               float3 radiance = float3(5.0f, 0.0f, 0.0f);
+               float3 radiance = float3(50.0f, 0.0f, 0.0f);
                 float3 lightDir = float3(0.0f, 1.0f, 0.0f);
                 color += radiance * PBR(surface, -lightDir, viewWS, specColor) * input.linearDepth;
         }

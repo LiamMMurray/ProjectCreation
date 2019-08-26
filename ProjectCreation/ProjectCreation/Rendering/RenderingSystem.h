@@ -249,6 +249,7 @@ class RenderSystem : public ISystem
         friend class TerrainManager;
 
         ComponentHandle m_SkyHandle;
+        ComponentHandle m_CloudHandle;
 
         std::vector<FDraw> m_OpaqueDraws;
         std::vector<FDraw> m_TransluscentDraws;
@@ -289,6 +290,7 @@ class RenderSystem : public ISystem
         ResourceHandle m_CommonVertexShaderHandles[E_VERTEX_SHADERS::COUNT];
         ResourceHandle m_CommonPixelShaderHandles[E_PIXEL_SHADERS::COUNT];
         ResourceHandle m_LineGeometryShader;
+
 
         /** Base pass constant buffers **/
         ID3D11Buffer*    m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::COUNT] = {};

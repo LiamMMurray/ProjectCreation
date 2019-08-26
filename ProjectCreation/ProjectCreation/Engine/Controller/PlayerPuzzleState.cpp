@@ -1,7 +1,7 @@
 #include "PlayerPuzzleState.h"
 #include "..//..//Rendering/Components/CameraComponent.h"
 #include "..//CollisionLibary/CollisionLibary.h"
-#include "..//CoreInput/CoreInput.h"
+#include "..//CoreInput/InputActions.h"
 #include "..//GEngine.h"
 #include "..//Gameplay/GoalComponent.h"
 #include "..//Gameplay/OrbitSystem.h"
@@ -34,16 +34,25 @@ void PlayerPuzzleState::Update(float deltaTime)
         float dot = MathLibrary::VectorDotProduct(input, dragVelocity);
         float accel;
 
-        if (GamePad::Get()->CheckConnection() == true)
+        if (InputActions::CheckAction(goalComp->color) == KeyState::Down)
         {
-                input = deltaTime *
-                        XMVectorSet((float)GamePad::Get()->leftStickX, (float)GamePad::Get()->leftStickY, 0.0f, 0.0f) * 15.0f;
-        }
+                if (GamePad::Get()->CheckConnection() == true)
+                {
+                        input = deltaTime *
+                                XMVectorSet((float)GamePad::Get()->leftStickX, (float)GamePad::Get()->leftStickY, 0.0f, 0.0f) *
+                                15.0f;
+                }
 
-        if (GamePad::Get()->CheckConnection() == false)
-        {
-                input = deltaTime * XMVectorSet((float)GCoreInput::GetMouseX(), (float)-GCoreInput::GetMouseY(), 0.0f, 0.0f);
+                if (GamePad::Get()->CheckConnection() == false)
+                {
+                        input = deltaTime *
+                                XMVectorSet((float)GCoreInput::GetMouseX(), (float)-GCoreInput::GetMouseY(), 0.0f, 0.0f);
+                }
         }
+		else
+		{
+
+		}
 
 
         XMVECTOR offset = XMVectorZero();
@@ -62,8 +71,15 @@ void PlayerPuzzleState::Update(float deltaTime)
         dragVelocity = XMVector3ClampLength(dragVelocity, 0.0f, goalDragMaxSpeed);
 
         offset += XMVector3Rotate(dragVelocity, playerTransformComp->transform.rotation.data);
-        offset = CollisionLibary::ClampToScreen(offset, cameraComponent->_cachedViewProjection);
-        goalTransform->transform.translation += offset;
+        XMVECTOR newPos = goalTransform->transform.translation + offset;
+        bool     inBounds;
+        inBounds = CollisionLibary::PointInNDC(newPos, cameraComponent->_cachedViewProjection);
+
+
+        if (inBounds)
+        {
+                goalTransform->transform.translation = newPos;
+        }
 
         Shapes::FSphere sphereA(goalTransform->transform.translation, goalComp->initialTransform.GetRadius());
         Shapes::FSphere sphereB(goalComp->goalTransform.translation, goalComp->goalTransform.GetRadius());
@@ -82,8 +98,6 @@ void PlayerPuzzleState::Update(float deltaTime)
                 _playerController->RequestCinematicTransition(
                     1, &playerTransformHandle, &targetTransform, E_PLAYERSTATE_EVENT::TO_GROUND, 4.0f, 1.0f);
 
-                m_CollectedPlanetCount++;
-                _playerController->SetCollectedPlanetCount(m_CollectedPlanetCount);
                 goalComp->initialTransform = goalTransform->transform;
                 goalComp->goalState        = E_GOAL_STATE::Done;
                 goalComp->goalState        = E_GOAL_STATE::Done;

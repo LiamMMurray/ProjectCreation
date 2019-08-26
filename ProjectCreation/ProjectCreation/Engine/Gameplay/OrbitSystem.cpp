@@ -2,12 +2,12 @@
 #include <limits>
 #include "../../Rendering/Components/StaticMeshComponent.h"
 #include "..//..//Rendering/Components/DirectionalLightComponent.h"
-#include "..//Controller/PlayerMovement.h"
 #include "..//CoreInput/CoreInput.h"
 #include "..//Entities/EntityFactory.h"
 #include "..//GEngine.h"
 #include "../Controller/ControllerSystem.h"
 #include "../GenericComponents/TransformComponent.h"
+#include "../Levels/TutorialLevel.h"
 #include "../Particle Systems/EmitterComponent.h"
 #include "../ResourceManager/Material.h"
 #include "SpeedBoostSystem.h"
@@ -15,9 +15,9 @@
 
 using namespace DirectX;
 
-void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
+EntityHandle OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
 {
-        color = std::min(2, color);
+        color = min(2, color);
 
         if (activeGoal.hasActiveGoal)
         {
@@ -28,12 +28,13 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
         /*** REFACTORING CODE START ***/
         ComponentHandle transHandle, transHandle2;
 
-        auto entityH1   = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle);
+        auto entityH1   = EntityFactory::CreateStaticMeshEntity(planetMeshNames[color], materialNames[color], &transHandle);
         auto goalHandle = entityH1.AddComponent<GoalComponent>();
         auto goalComp   = goalHandle.Get<GoalComponent>();
         auto transComp  = transHandle.Get<TransformComponent>();
 
-        auto entityH2 = EntityFactory::CreateStaticMeshEntity("Sphere01", materialNames[color], &transHandle2, nullptr, false);
+        auto entityH2 =
+            EntityFactory::CreateStaticMeshEntity(planetMeshNames[color], materialNames[color], &transHandle2, nullptr, false);
         auto transComp2           = transHandle2.Get<TransformComponent>();
         goalComp->color           = color;
         goalComp->collisionHandle = transHandle2;
@@ -52,6 +53,18 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
 
         goalComp->goalTransform.translation = orbitCenter + offset1 * 150.f * (color + 1.0f);
         transComp2->transform               = goalComp->goalTransform;
+
+        XMFLOAT3 euler[3] = {XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(90.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 90.0f, 0.0f)};
+        for (int i = 0; i < 3; ++i)
+        {
+                ComponentHandle torusTransHandle;
+                EntityFactory::CreateStaticMeshEntity("GoalTorus00", materialNames[color], &torusTransHandle);
+                goalComp->goalRings.push_back(torusTransHandle);
+                auto trans                   = torusTransHandle.Get<TransformComponent>();
+                trans->transform.translation = position;
+                trans->transform.rotation    = FQuaternion::FromEulerAngles(euler[i]);
+                trans->transform.scale       = transComp->transform.scale;
+        }
 
         activeGoal.hasActiveGoal    = true;
         activeGoal.activeGoalGround = entityH1;
@@ -73,71 +86,55 @@ void OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
         emitterComponent->spawnRate                 = 0.0f;
         emitterComponent->EmitterData.textureIndex  = 3;
         /*** REFACTORING CODE END ***/
+
+        return entityH1;
 }
 
-void OrbitSystem::UpdateSunAlignedObjects()
+
+void OrbitSystem::UpdateSunAlignedObjects(float delta)
 {
-        float deltaTime = 0.02f;
-
-        size_t sizeSpawning = sunAlignedTransformsSpawning.size();
-
-        if (sizeSpawning > 0)
-        {
-                for (size_t i = sizeSpawning - 1; i >= 0; --i)
-                {
-                        TransformComponent* tc = sunAlignedTransformsSpawning[i].Get<TransformComponent>();
-
-                        float currentRadius = tc->transform.GetRadius();
-                        if (fabsf(currentRadius - 150.0f) < 0.1f)
-                        {
-                                tc->transform.SetScale(150.0f);
-                                sunAlignedTransformsSpawning.erase(sunAlignedTransformsSpawning.begin() + i);
-                                break;
-                        }
-                        else
-                        {
-                                tc->transform.SetScale(MathLibrary::MoveTowards(currentRadius, 150.0f, deltaTime * 20.0f));
-                                break;
-                        }
-                }
-        }
         for (auto& h : sunAlignedTransforms)
         {
                 TransformComponent* tc    = h.Get<TransformComponent>();
                 tc->transform.translation = orbitCenter;
                 tc->transform.rotation    = sunRotation;
+
+                float currentRadius = tc->transform.GetRadius();
+                if (fabsf(currentRadius - 150.0f) < 0.1f)
+                {
+                        tc->transform.SetScale(150.0f);
+                }
+                else
+                {
+                        tc->transform.SetScale(MathLibrary::MoveTowards(currentRadius, 150.0f, delta * 20.0f));
+                }
         }
 }
 
 void OrbitSystem::OnPreUpdate(float deltaTime)
 {
-        PlayerController* playerController = (PlayerController*)SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                                 ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
 
         ComponentHandle playerTransformHandle =
-            playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
+            m_PlayerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
         TransformComponent* playerTransform = playerTransformHandle.Get<TransformComponent>();
 
         sunRotation = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>()->m_LightRotation;
 
         orbitCenter = playerTransform->transform.translation - sunRotation.GetForward() * orbitOffset;
 
-        UpdateSunAlignedObjects();
+        UpdateSunAlignedObjects(deltaTime);
 }
 
 void OrbitSystem::OnUpdate(float deltaTime)
 {
-        PlayerController* playerController = (PlayerController*)SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                                 ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
 
         ComponentHandle playerTransformHandle =
-            playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
+            m_PlayerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
         TransformComponent* playerTransform = playerTransformHandle.Get<TransformComponent>();
 
         double totalTime = GEngine::Get()->GetTotalTime();
 
         TransformComponent* closestGoalTransform = nullptr;
-
 
         for (auto& goalComp : m_HandleManager->GetActiveComponents<GoalComponent>())
         {
@@ -153,16 +150,30 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 float y    = cos(time);
 
                 XMVECTOR offset1 = XMVectorSet(x, y, 0, 0.0f);
-                offset1          = XMVector3Rotate(offset1, sunRotation.data);
+
+
+                offset1 = XMVector3Rotate(offset1, sunRotation.data);
 
                 goalComp.goalTransform.translation = orbitCenter + offset1 * 150.f * (goalComp.color + 1.0f);
                 transCompPuzzle->transform         = goalComp.goalTransform;
+
+                XMVECTOR rotationAxis[3] = {VectorConstants::Up, VectorConstants::Forward, VectorConstants::Right};
+                int      ringIndex       = 0;
+                for (auto& ringHandle : goalComp.goalRings)
+                {
+                        auto trans                   = ringHandle.Get<TransformComponent>();
+                        trans->transform.translation = transComp->transform.translation;
+                        trans->transform.rotation    = trans->transform.rotation *
+                                                    FQuaternion::RotateAxisAngle(rotationAxis[ringIndex], deltaTime * 45.0f);
+                        trans->transform.scale = transComp->transform.scale;
+                        ++ringIndex;
+                }
 
                 if (goalComp.goalState == E_GOAL_STATE::Spawning)
                 {
                         float scale       = transComp->transform.GetRadius();
                         float targetScale = goalComp.initialTransform.GetRadius();
-                        float newScale    = MathLibrary::MoveTowards(scale, targetScale, deltaTime * 0.25f);
+                        float newScale    = MathLibrary::MoveTowards(scale, targetScale, deltaTime * 1.0f);
                         transComp->transform.SetScale(newScale);
 
                         if (scale >= targetScale)
@@ -189,14 +200,10 @@ void OrbitSystem::OnUpdate(float deltaTime)
 
                 if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 3.5f)
                 {
-                        // goalComp.targetAlpha = 1.0f;
-                        // playerController->SetGoalComponent(goalComp.GetHandle());
                         goalComp.goalState  = E_GOAL_STATE::InitialTransition;
                         transComp->wrapping = false;
-                        playerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
-                        playerController->SetCollectedPlanetCount(1 + playerController->GetCollectedPlanetCount());
-                        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[goalComp.color] = true;
-                        playerController->m_TimeOnSpline                                               = 0.0f;
+                        m_PlayerController->RequestPuzzleMode(goalHandle, orbitCenter, true, 4.0f);
+                        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[activeGoal.activeColor] = true;
                 }
 
                 if (goalComp.goalState == E_GOAL_STATE::Done)
@@ -206,38 +213,49 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         float dist  = MathLibrary::CalulateDistance(goalComp.initialTransform.translation,
                                                                    goalComp.goalTransform.translation);
                         float speed = MathLibrary::lerp(
-                            goalComp.transitionInitialSpeed, goalComp.transitionFinalSpeed, std::min(1.0f, goalComp.currAlpha));
+                            goalComp.transitionInitialSpeed, goalComp.transitionFinalSpeed, min(1.0f, goalComp.currAlpha));
                         goalComp.currAlpha =
                             MathLibrary::MoveTowards(goalComp.currAlpha, goalComp.targetAlpha, speed * deltaTime * 1.0f / dist);
 
-                        transComp->transform = FTransform::Lerp(
-                            goalComp.initialTransform, goalComp.goalTransform, std::min(1.0f, goalComp.currAlpha));
+                        transComp->transform =
+                            FTransform::Lerp(goalComp.initialTransform, goalComp.goalTransform, min(1.0f, goalComp.currAlpha));
                 }
         }
 
-        goalsCollected       = std::min<unsigned int>(goalsCollected, 3);
-        XMVECTOR nextGoalPos = playerTransform->transform.translation +
-                               goalDistances[goalsCollected] * playerTransform->transform.rotation.GetForward2D();
-        nextGoalPos = XMVectorSetY(nextGoalPos, 0.0f);
+
+        goalsCollected = std::min<unsigned int>(goalsCollected, 3);
+
+        XMVECTOR nextGoalPos = GET_SYSTEM(SpeedBoostSystem)->m_CurrentPathEnd;
 
         ControllerSystem* controllerSystem = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-        if (playerController->m_TimeOnSpline > (goalDistances[goalsCollected] / 4.5f))
+
+        if ((GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() == E_Level_States::TUTORIAL_LEVEL))
         {
+                for (int i = 0; i < 4; ++i)
+                {
+                        if (m_PendingGoalCounts[i] > 0)
+                        {
+                                TutorialLevel::Get()->RequestNextPhase();
+                                m_PendingGoalCounts[i]--;
+                        }
+                }
+        }
+
+        else
+        {
+
                 for (int i = 0; i < 3; ++i)
                 {
-                        if (controllerSystem->GetCollectOrbEventID(i) != collectEventTimestamps[i])
+                        if (m_PendingGoalCounts[i] > 0)
                         {
-                                collectEventTimestamps[i] = controllerSystem->GetCollectOrbEventID(i);
                                 if (collectedMask[i] == false)
                                 {
                                         if (activeGoal.hasActiveGoal == false || activeGoal.activeColor != i)
                                         { // play sfx when spawned
-                                                auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
-                                                spawnSound->SetVolume(0.8f);
                                                 CreateGoal(i, nextGoalPos);
-                                                spawnSound->Play();
                                         }
                                 }
+                                m_PendingGoalCounts[i]--;
                         }
                 }
         }
@@ -251,37 +269,28 @@ void OrbitSystem::OnInitialize()
         m_HandleManager   = GEngine::Get()->GetHandleManager();
         m_ResourceManager = GEngine::Get()->GetResourceManager();
 
-        PlayerController* playerController = (PlayerController*)SYSTEM_MANAGER->GetSystem<ControllerSystem>()
-                                                 ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
+        m_PlayerController = (PlayerController*)SYSTEM_MANAGER->GetSystem<ControllerSystem>()
+                                 ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER];
 
-        ComponentHandle playerTransformHandle =
-            playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
-        TransformComponent* playerTransform = playerTransformHandle.Get<TransformComponent>();
-
-        sunRotation = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>()->m_LightRotation;
-
-        orbitCenter = playerTransform->transform.translation - sunRotation.GetForward() * orbitOffset;
-
-        ComponentHandle ring1MeshHandle, ring2MeshHandle, ring3MeshHandle;
+        auto basePlanetMat = m_ResourceManager->LoadMaterial("GlowMatPlanet00");
+        for (int i = 0; i < 3; ++i)
+        {
+                auto handle = m_ResourceManager->CopyResource<Material>(basePlanetMat, materialNames[i]);
+                auto mat    = m_ResourceManager->GetResource<Material>(handle);
+                XMStoreFloat3(&mat->m_SurfaceProperties.emissiveColor,
+                              4.5f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::RING_COLORS[i]));
+        }
 
         std::string ring1MaterialName = "Ring01Mat", ring2MaterialName = "Ring02Mat", ring3MaterialName = "Ring03Mat";
-
-
-        EntityFactory::CreateStaticMeshEntity("Sphere01", "GlowMatSun", &sunHandle, nullptr, false);
-        EntityFactory::CreateStaticMeshEntity("Ring01", "GlowMatRing", &ring1Handle, &ring1MeshHandle, false);
-        EntityFactory::CreateStaticMeshEntity("Ring02", "GlowMatRing", &ring2Handle, &ring2MeshHandle, false);
-        EntityFactory::CreateStaticMeshEntity("Ring03", "GlowMatRing", &ring3Handle, &ring3MeshHandle, false);
 
         auto baseRingMaterial = m_ResourceManager->LoadMaterial("GlowMatRing");
 
         // Red Ring Material
         {
-                auto ring1MaterialHandle = ring1MeshHandle.Get<StaticMeshComponent>()->m_MaterialHandle;
+                auto ring1MaterialHandle =
+                    m_ResourceManager->CopyResource<Material>(baseRingMaterial, ring1MaterialName.c_str());
 
-                ring1MaterialHandle = m_ResourceManager->CopyResource<Material>(baseRingMaterial, ring1MaterialName.c_str());
-
-                auto ring1Material =
-                    m_ResourceManager->GetResource<Material>(ring1MeshHandle.Get<StaticMeshComponent>()->m_MaterialHandle);
+                auto ring1Material = m_ResourceManager->GetResource<Material>(ring1MaterialHandle);
 
                 XMStoreFloat3(&ring1Material->m_SurfaceProperties.emissiveColor,
                               1.5f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::RING_COLORS[0]));
@@ -289,11 +298,10 @@ void OrbitSystem::OnInitialize()
 
         // Green Ring Material
         {
-                ring2MeshHandle.Get<StaticMeshComponent>()->m_MaterialHandle =
+                auto ring2MaterialHandle =
                     m_ResourceManager->CopyResource<Material>(baseRingMaterial, ring2MaterialName.c_str());
 
-                auto ring2Material =
-                    m_ResourceManager->GetResource<Material>(ring2MeshHandle.Get<StaticMeshComponent>()->m_MaterialHandle);
+                auto ring2Material = m_ResourceManager->GetResource<Material>(ring2MaterialHandle);
 
                 XMStoreFloat3(&ring2Material->m_SurfaceProperties.emissiveColor,
                               1.5f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::RING_COLORS[1]));
@@ -301,53 +309,14 @@ void OrbitSystem::OnInitialize()
 
         // Blue Ring Material
         {
-                ring3MeshHandle.Get<StaticMeshComponent>()->m_MaterialHandle =
+                auto ring3MaterialHandle =
                     m_ResourceManager->CopyResource<Material>(baseRingMaterial, ring3MaterialName.c_str());
 
-                auto ring3Material =
-                    m_ResourceManager->GetResource<Material>(ring3MeshHandle.Get<StaticMeshComponent>()->m_MaterialHandle);
+                auto ring3Material = m_ResourceManager->GetResource<Material>(ring3MaterialHandle);
 
                 XMStoreFloat3(&ring3Material->m_SurfaceProperties.emissiveColor,
                               1.5f * DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::RING_COLORS[2]));
         }
-
-        auto sunTransform   = sunHandle.Get<TransformComponent>();
-        auto ring1Transform = ring1Handle.Get<TransformComponent>();
-        auto ring2Transform = ring2Handle.Get<TransformComponent>();
-        auto ring3Transform = ring3Handle.Get<TransformComponent>();
-
-
-        sunAlignedTransforms.push_back(sunHandle);
-        sunAlignedTransforms.push_back(ring1Handle);
-        sunAlignedTransforms.push_back(ring2Handle);
-        sunAlignedTransforms.push_back(ring3Handle);
-
-        UpdateSunAlignedObjects();
-
-        sunTransform->transform.SetScale(0.0f);
-        ring1Transform->transform.SetScale(0.0f); // radius of 1
-        ring2Transform->transform.SetScale(0.0f); // radius of 2
-        ring3Transform->transform.SetScale(0.0f); // radius of 3
-
-        //<Joseph's Temp Material Change>
-
-        // Red Light
-        auto planetMat01Handle = GEngine::Get()->GetResourceManager()->LoadMaterial("GlowMatPlanet01");
-        auto planetMat01       = GEngine::Get()->GetResourceManager()->GetResource<Material>(planetMat01Handle);
-        planetMat01->m_SurfaceProperties.diffuseColor  = {0.9f, 0.7f, 0.7f};
-        planetMat01->m_SurfaceProperties.emissiveColor = {1.5f, 0.1f, 0.1f};
-
-        // Blue Light
-        auto planetMat02Handle = GEngine::Get()->GetResourceManager()->LoadMaterial("GlowMatPlanet02");
-        auto planetMat02       = GEngine::Get()->GetResourceManager()->GetResource<Material>(planetMat02Handle);
-        planetMat02->m_SurfaceProperties.diffuseColor  = {0.7f, 0.7f, 0.9f};
-        planetMat02->m_SurfaceProperties.emissiveColor = {0.01f, 0.1f, 1.5f};
-
-        // Green Light
-        auto planetMat03Handle = GEngine::Get()->GetResourceManager()->LoadMaterial("GlowMatPlanet03");
-        auto planetMat03       = GEngine::Get()->GetResourceManager()->GetResource<Material>(planetMat03Handle);
-        planetMat03->m_SurfaceProperties.diffuseColor  = {0.7f, 0.9f, 0.7f};
-        planetMat03->m_SurfaceProperties.emissiveColor = {0.1f, 1.5f, 0.1f};
 }
 
 void OrbitSystem::OnShutdown()
@@ -359,9 +328,96 @@ void OrbitSystem::OnResume()
 void OrbitSystem::OnSuspend()
 {}
 
+EntityHandle OrbitSystem::CreateSun()
+{
+        ComponentHandle transHandle;
+        auto            eh = EntityFactory::CreateStaticMeshEntity("Sphere01", "GlowMatSun", &transHandle, nullptr, false);
+        auto            sunTransform = transHandle.Get<TransformComponent>();
+        sunTransform->transform.SetScale(0.0f);
+        sunAlignedTransforms.push_back(transHandle);
+
+        return eh;
+}
+
+EntityHandle OrbitSystem::CreateRing(int color)
+{
+        ComponentHandle transHandle;
+        auto            eh =
+            EntityFactory::CreateStaticMeshEntity(ringMeshNames[color], ringMaterialNames[color], &transHandle, nullptr, false);
+        auto transformComp = transHandle.Get<TransformComponent>();
+        transformComp->transform.SetScale(0.0f);
+        sunAlignedTransforms.push_back(transHandle);
+
+        return eh;
+}
+
+void OrbitSystem::InstantCreateOrbitSystem()
+{
+        goalsCollected = 0;
+
+        InstantRemoveOrbitSystem();
+
+        ComponentHandle playerTransformHandle =
+            m_PlayerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
+        TransformComponent* playerTransform = playerTransformHandle.Get<TransformComponent>();
+
+        sunRotation = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>()->m_LightRotation;
+
+        orbitCenter = playerTransform->transform.translation - sunRotation.GetForward() * orbitOffset;
+
+        CreateSun().GetComponent<TransformComponent>()->transform.SetScale(150.0f);
+
+        for (int i = 0; i < 3; ++i)
+        {
+                CreateRing(i).GetComponent<TransformComponent>()->transform.SetScale(150.0f);
+        }
+
+        UpdateSunAlignedObjects(GEngine::Get()->GetDeltaTime());
+}
+
+void OrbitSystem::InstantRemoveOrbitSystem()
+{
+        InstantRemoveFromOrbit();
+
+        for (int i = 0; i < sunAlignedTransforms.size(); ++i)
+        {
+                sunAlignedTransforms.at(i).Get<TransformComponent>()->GetParent().Free();
+        }
+
+        sunAlignedTransforms.clear();
+}
+
+void OrbitSystem::InstantInOrbit(int color)
+{
+        auto eh                                     = CreateGoal(color, XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
+        eh.GetComponent<GoalComponent>()->goalState = E_GOAL_STATE::Done;
+        activeGoal.hasActiveGoal                    = false;
+        goalsCollected++;
+        SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[color] = true;
+        /*** REFACTORING CODE END ***/
+}
+
+void OrbitSystem::InstantRemoveFromOrbit()
+{
+        goalsCollected = 0;
+
+        for (auto& iter : m_HandleManager->GetComponents<GoalComponent>())
+        {
+                SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[iter.color] = false;
+                DestroyPlanet(&iter);
+        }
+}
+
 void OrbitSystem::DestroyPlanet(GoalComponent* toDestroy)
 {
         toDestroy->collisionHandle.Get<TransformComponent>()->GetParent().Free();
+
+        for (auto& ringHandle : toDestroy->goalRings)
+        {
+                auto trans = ringHandle.Get<TransformComponent>();
+                trans->GetParent().Free();
+        }
         toDestroy->GetParent().Free();
+
         activeGoal.hasActiveGoal = false;
 }

@@ -1,26 +1,45 @@
 #include "Level_01.h"
-#include "../Gameplay/OrbitSystem.h"
-#include "../Controller/ControllerSystem.h"
-
 #include <DirectXMath.h>
+#include "../Controller/ControllerSystem.h"
+#include "../Gameplay/OrbitSystem.h"
+#include "LevelStateMachine.h"
 
 using namespace DirectX;
 
 void Level_01::Enter()
 {
+        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+        if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
+        {
+                controllerSys->ResetPlayer();
+
+                m_OrbitSystem->InstantCreateOrbitSystem();
+
+                m_SpeedBoostSystem->m_ColorsCollected[0] = false;
+                m_SpeedBoostSystem->m_ColorsCollected[1] = false;
+                m_SpeedBoostSystem->m_ColorsCollected[2] = false;
+                m_SpeedBoostSystem->m_ColorsCollected[3] = true;
+
+                m_OrbitSystem->ClearCollectedMask();
+
+				                GEngine::Get()->SetPuzzleState(0.0f);
+        }
+
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);
-        GEngine::Get()->SetPlayerRadius(0.0f);
+        GEngine::Get()->SetPlayerRadius(0);
+
+        m_SpeedBoostSystem->SetTargetTerrain(0.0f);
         GEngine::Get()->m_TerrainAlpha = 0.0f;
-        m_SpeedBoostSystem->splineWidth = 1.0f;
-        m_SpeedBoostSystem->splineHeight = 0.25f;
-        m_SpeedBoostSystem->changeColor = false;
-        m_SpeedBoostSystem->inTutorial = false;
+
+        GEngine::Get()->ForceSetInstanceReveal(0.0f);
+
+        m_SpeedBoostSystem->splineWidth  = 3.0f;
+        m_SpeedBoostSystem->splineHeight = 0.35f;
         m_SpeedBoostSystem->SetTargetTerrain(0.0f);
 
-		m_SpeedBoostSystem->ResetLevel();
+        m_SpeedBoostSystem->ResetLevel();
 
-		ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-        controllerSys->ResetLightOrbCounters();
+        controllerSys->ResetOrbCount();
 }
 
 void Level_01::Update(float deltaTime)
@@ -31,6 +50,7 @@ void Level_01::Exit()
 
 Level_01::Level_01()
 {
+        m_OrbitSystem      = GEngine::Get()->GetSystemManager()->GetSystem<OrbitSystem>();
         m_LevelType        = E_Level_States::LEVEL_01;
         m_SpeedBoostSystem = GEngine::Get()->GetSystemManager()->GetSystem<SpeedBoostSystem>();
 }

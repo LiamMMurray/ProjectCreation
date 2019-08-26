@@ -7,6 +7,7 @@
 #include "../../ECS/SystemManager.h"
 #include "..//ResourceManager/IResource.h"
 
+#include "..//Controller/PlayerMovement.h"
 #include "../Controller/GamePad.h"
 #include "LightOrbColors.h"
 #include "SpeedboostComponent.h"
@@ -38,6 +39,7 @@ class SpeedBoostSystem : public ISystem
         std::string speedboostMaterialNames[E_LIGHT_ORBS::COUNT] = {"SpeedboostR", "SpeedboostG", "SpeedboostB", "SpeedboostW"};
         std::string speedboostMeshNames[E_LIGHT_ORBS::COUNT]     = {"RedOrb00", "GreenOrb00", "BlueOrb00", "WhiteOrb00"};
 
+        // GW::AUDIO::GMusic* m_Spline_Ambience;
 
         // void RequestDestroySpeedboost(SpeedboostComponent* speedComp);
         void RequestDestroySplineOrb(SpeedboostSplineComponent* speedComp);
@@ -73,7 +75,8 @@ class SpeedBoostSystem : public ISystem
         float m_BoostShrinkSpeed      = m_BoostRadius;
         float m_targetTerrain         = 0.0f;
 
-        float maxPathLength[4] = {120.0f, 120.0f, 120.0f, 100.0f};
+        float maxTutorialPathLength[4] = {25.0f, 25.0f, 25.0f, 25.0f};
+        float maxPathLength[4]         = {30.0f, 60.0f, 90.0f, 100.0f};
 
         static constexpr float m_SplineLengthPerOrb       = 2.5f;
         static constexpr float m_SplineLatchRadius        = 0.2f;
@@ -82,12 +85,11 @@ class SpeedBoostSystem : public ISystem
         static constexpr float m_MinSpawnDistance         = 5.0f;
         static constexpr float m_SpawnAngle               = DirectX::XMConvertToRadians(110.0f);
         static constexpr float m_DespawnDistanceOffset    = 5.0f;
-        static constexpr float m_BoostRadius              = 0.1f;
+        static constexpr float m_BoostRadius              = 0.15f;
         static constexpr float m_PullSearchRadius         = 1.0f;
         static constexpr float m_SplineAttractionForceMin = 0.0f;
         static constexpr float m_SplineAttractionForceMax = 1.5f;
         static constexpr float m_SplineHeightOffset       = 0.06f;
-
 
         // TESTING
         int colorCount = 0;
@@ -102,25 +104,26 @@ class SpeedBoostSystem : public ISystem
         virtual void OnResume() override;
         virtual void OnSuspend() override;
 
-        int collectEventTimestamps[3] = {-1, -1, -1};
+
+        uint8_t m_PendingPathCounts[4] = {0, 0, 0, 0};
 
     public:
+        DirectX::XMVECTOR m_CurrentPathEnd;
+
+        void RequestPath(int color);
+
         float splineHeight = 0.25f;
         float splineWidth  = 40.0f;
-        bool  changeColor  = false;
-
-        bool inPath;
-        bool inTutorial;
 
         std::unordered_map<int, SplineCluster> m_SplineClusterSpawners;
 
-        bool m_ColorsCollected[4] = {false, false, false, false};
+        bool        m_ColorsCollected[4] = {false, false, false, false};
+        const char* spawnNames[3]        = {"redPlanetSpawn", "greenPlanetSpawn", "bluePlanetSpawn"};
 
         EntityHandle SpawnSpeedOrb();
         EntityHandle SpawnSplineOrb(SplineCluster& cluster, int clusterID, bool tail = false, bool head = false);
-        EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
 
-        bool pathExists = false;
+        EntityHandle SpawnLightOrb(const DirectX::XMVECTOR& pos, int color);
 
         inline void SetTargetTerrain(float val)
         {

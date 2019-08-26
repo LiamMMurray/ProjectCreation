@@ -9,6 +9,9 @@
 #include "DebugCameraController.h"
 #include "PlayerMovement.h"
 
+#include "..//Gameplay/OrbitSystem.h"
+#include "..//Gameplay/SpeedboostSystem.h"
+
 #include "../../Rendering/DebugRender/debug_renderer.h"
 #include "../../Rendering/RenderingSystem.h"
 
@@ -20,6 +23,32 @@
 #include "../CoreInput/InputActions.h"
 
 using namespace std;
+
+void ControllerSystem::ResetPlayer()
+{
+        m_Controllers[E_CONTROLLERS::PLAYER]->Reset();
+}
+
+void ControllerSystem::CreatePlayer()
+{
+        EntityHandle eHandle = m_HandleManager->CreateEntity();
+
+        ComponentHandle tHandle = eHandle.AddComponent<TransformComponent>();
+        ComponentHandle cHandle = eHandle.AddComponent<CameraComponent>();
+
+        eHandle.AddComponent<TransformComponent>();
+        eHandle.AddComponent<CameraComponent>();
+
+        auto tComp                   = eHandle.GetComponent<TransformComponent>();
+        tComp->wrapping              = false;
+        
+
+        CameraComponent* cameraComp            = cHandle.Get<CameraComponent>();
+        cameraComp->m_Settings.m_HorizontalFOV = 100.0f;
+
+        GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->SetMainCameraComponent(cHandle);
+        m_Controllers[E_CONTROLLERS::PLAYER]->Init(eHandle);
+}
 
 DirectX::XMFLOAT3 ControllerSystem::GetCurrentColorSelection() const
 {
@@ -33,13 +62,6 @@ float ControllerSystem::GetCurrentColorAlpha() const
         return currentColorAlpha;
 }
 
-void ControllerSystem::ResetLightOrbCounters()
-{
-        for (int i = 0; i < E_LIGHT_ORBS::COUNT; ++i)
-        {
-                m_OrbCounts[i] = 0;
-        }
-}
 
 void ControllerSystem::DisplayConsoleMenu()
 {
@@ -67,31 +89,36 @@ void ControllerSystem::DisplayConsoleMenu()
         cout << endl;
 }
 
-int ControllerSystem::GetOrbCount(int color)
+int ControllerSystem::GetOrbCount()
 {
-        return m_OrbCounts[color];
+        return m_OrbCount;
 }
 
 void ControllerSystem::IncreaseOrbCount(int color)
 {
+        int levelType = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType();
+
+        if (color == E_LIGHT_ORBS::WHITE_LIGHTS && levelType != E_Level_States::TUTORIAL_LEVEL)
+                return;
+
         if (m_PrevOrbColor != color)
         {
-                ResetOrbCount(m_PrevOrbColor);
+                ResetOrbCount();
         }
+        m_OrbCount++;
 
-        m_OrbCounts[color]++;
-
-        if (m_OrbCounts[color] % 3 == 0 && m_OrbCounts[color] > 0)
+        if (m_OrbCount >= 3)
         {
-                CollectOrbEventIDs[color]++;
+                ResetOrbCount();
+                GET_SYSTEM(SpeedBoostSystem)->RequestPath(color);
         }
 
         m_PrevOrbColor = color;
 }
 
-void ControllerSystem::ResetOrbCount(int color)
+void ControllerSystem::ResetOrbCount()
 {
-        m_OrbCounts[color] = 0;
+        m_OrbCount = 0;
 }
 
 void ControllerSystem::OnPreUpdate(float deltaTime)
@@ -99,24 +126,24 @@ void ControllerSystem::OnPreUpdate(float deltaTime)
 
 void ControllerSystem::OnUpdate(float deltaTime)
 {
-
-
         if (GCoreInput::GetKeyState(KeyCode::One) == KeyState::DownFirst)
         {
                 IncreaseOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
-                std::cout << "Red Count: " << GetOrbCount(E_LIGHT_ORBS::RED_LIGHTS) << std::endl;
         }
 
         if (GCoreInput::GetKeyState(KeyCode::Two) == KeyState::DownFirst)
         {
                 IncreaseOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS);
-                std::cout << "Blue Count: " << GetOrbCount(E_LIGHT_ORBS::BLUE_LIGHTS) << std::endl;
         }
 
         if (GCoreInput::GetKeyState(KeyCode::Three) == KeyState::DownFirst)
         {
                 IncreaseOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS);
-                std::cout << "Green Count: " << GetOrbCount(E_LIGHT_ORBS::GREEN_LIGHTS) << std::endl;
+        }
+
+        if (GCoreInput::GetKeyState(KeyCode::Zero) == KeyState::DownFirst)
+        {
+                IncreaseOrbCount(E_LIGHT_ORBS::WHITE_LIGHTS);
         }
 
         if (IsVibrating == true)
@@ -207,25 +234,7 @@ void ControllerSystem::OnInitialize()
 
         // Player entity setup
         {
-                EntityHandle eHandle = m_HandleManager->CreateEntity();
-
-                ComponentHandle tHandle = eHandle.AddComponent<TransformComponent>();
-                ComponentHandle cHandle = eHandle.AddComponent<CameraComponent>();
-
-                eHandle.AddComponent<TransformComponent>();
-                eHandle.AddComponent<CameraComponent>();
-
-                auto tComp                   = eHandle.GetComponent<TransformComponent>();
-                tComp->wrapping              = false;
-                tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-                tComp->transform.rotation =
-                    DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(0.0f), 0.0f, 0.0f);
-
-                CameraComponent* cameraComp            = cHandle.Get<CameraComponent>();
-                cameraComp->m_Settings.m_HorizontalFOV = 100.0f;
-
-                GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->SetMainCameraComponent(cHandle);
-                m_Controllers[E_CONTROLLERS::PLAYER]->Init(eHandle);
+                CreatePlayer();
         }
 
         {

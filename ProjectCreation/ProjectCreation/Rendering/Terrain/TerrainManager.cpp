@@ -357,7 +357,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 emitterComp->SetIsActive(false);
                 sm->SetIsActive(false);
                 staticMeshesShowWithTerrain.push_back(statHandle);
-                trans->transform.scale = XMVectorSet(0.1f, 0.1f, 0.1f, 0.1f);
+                //trans->transform.scale = XMVectorSet(0.1f, 0.1f, 0.1f, 0.1f);
                 trans->transform.translation = XMVectorSet(20.0, 4.0f, -138.0f, 1.0f);
                 emitterComp->ParticleswithGravity(XMFLOAT3(-8.0f, 5.0f, -7.5f),
                                                   XMFLOAT3(5.0f, 10.0f, 5.0f),
@@ -441,7 +441,7 @@ void TerrainManager::_update(float deltaTime)
                               .GetComponent<CameraComponent>();
 
         XMVECTOR correctedTerrainPos = playerPos;
-        float    cellSize            = terrainConstantBufferCPU.gWorldCellSpace * scale * 8.0f;
+        float    cellSize            = terrainConstantBufferCPU.gWorldCellSpace * scale * 16.0f * 1.5f;
         XMVECTOR cellVector          = XMVectorSet(cellSize, 1.0f, cellSize, 1.0f);
         XMVECTOR modCell             = XMVectorMod(correctedTerrainPos, cellVector);
         modCell                      = XMVectorSetW(modCell, 0.0f);

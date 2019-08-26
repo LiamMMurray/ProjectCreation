@@ -121,6 +121,19 @@ class GEngine
         {
                 m_WantsGameExit = true;
         }
+
+        inline void ForceSetInstanceReveal(float val)
+        {
+                m_TargetInstanceReveal = 0.0f;
+                m_InstanceReveal       = 0.0f;
+        }
+
+        inline void SetPuzzleState(float val)
+        {
+                m_TargetPuzzleState  = val;
+                m_CurrentPuzzleState = val;
+        }
+
         float       m_InstanceReveal       = 0.0f;
         float       m_TargetInstanceReveal = 0.0f;
         float       m_TargetPuzzleState    = 0.0f;

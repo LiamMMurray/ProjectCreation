@@ -1,15 +1,15 @@
 #include "PlayerMovement.h"
 #include "../../ECS/Entity.h"
+#include "..//Gameplay/GoalComponent.h"
+#include "..//Gameplay/OrbitSystem.h"
+#include "../CollisionLibary/CollisionLibary.h"
+#include "../CollisionLibary/CollisionResult.h"
 #include "../CoreInput/CoreInput.h"
 #include "../GEngine.h"
+#include "../GenericComponents/TransformComponent.h"
 #include "../MathLibrary/MathLibrary.h"
 #include "../MathLibrary/Quaternion.h"
 #include "ControllerSystem.h"
-
-#include "..//Gameplay/GoalComponent.h"
-#include "../CollisionLibary/CollisionLibary.h"
-#include "../CollisionLibary/CollisionResult.h"
-#include "../GenericComponents/TransformComponent.h"
 
 #include "PlayerCinematicState.h"
 #include "PlayerGroundState.h"
@@ -125,6 +125,17 @@ void PlayerController::DebugPrintSpeedBoostColor(int color)
         }
 }
 
+void PlayerController::IncreaseCollectedSplineOrbCount(int color)
+{
+        m_CollectedSplineOrbCount++;
+
+        if (m_CollectedSplineOrbCount >= m_TotalSplineOrbCount * 0.7f)
+        {
+                m_CollectedSplineOrbCount = 0;
+                GET_SYSTEM(OrbitSystem)->m_PendingGoalCounts[color]++;
+        }
+}
+
 void PlayerController::Shutdown()
 {
         m_StateMachine.Shutdown();
@@ -133,14 +144,22 @@ void PlayerController::Shutdown()
 void PlayerController::Init(EntityHandle h)
 {
         IController::Init(h);
+        auto tComp = h.GetComponent<TransformComponent>();
+
+        tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+        tComp->transform.rotation    = DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(0.0f), 0.0f, 0.0f);
+
         m_CurrentVelocity           = DirectX::XMVectorZero();
         m_CurrentInput              = DirectX::XMVectorZero();
         ComponentHandle     tHandle = m_ControlledEntityHandle.GetComponentHandle<TransformComponent>();
-        TransformComponent* tComp   = tHandle.Get<TransformComponent>();
 
         m_EulerAngles = tComp->transform.rotation.ToEulerAngles();
 
+        // Collecting spline orb values
+        m_TotalSplineOrbCount     = 0;
+        m_CollectedSplineOrbCount = 0;
 
+		m_StateMachine.Shutdown();
         // Create any states and set their respective variables here
         m_CinematicState = m_StateMachine.CreateState<PlayerCinematicState>();
         m_GroundState    = m_StateMachine.CreateState<PlayerGroundState>();
@@ -158,9 +177,9 @@ void PlayerController::Init(EntityHandle h)
         FTransform target = tComp->transform;
         target.rotation   = XMQuaternionIdentity();
 
-        RequestCinematicTransition(1, &tHandle, &target, E_PLAYERSTATE_EVENT::TO_GROUND, 1.0f);
 
         // After you create the states, initialize the state machine. First created state is starting state
+        RequestCinematicTransition(1, &tHandle, &target, E_PLAYERSTATE_EVENT::TO_GROUND, 1.0f);
         m_StateMachine.Init(this);
 
 
@@ -172,6 +191,11 @@ void PlayerController::Init(EntityHandle h)
                         m_SpeedBoostSoundPool[color][i] = AudioManager::Get()->CreateSFX(m_SpeedboostSoundNames[color]);
                 }
         }
+}
+
+void PlayerController::Reset()
+{
+        Init(m_ControlledEntityHandle);
 }
 
 bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
@@ -196,8 +220,8 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 m_SpeedBoostPoolCounter[color]++;
                 m_SpeedBoostPoolCounter[color] %= MAX_SPEEDBOOST_SOUNDS;
 
-				SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating = true;
-				SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrength = 0.5f;
+                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating    = true;
+                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrength = 0.5f;
 
                 return true;
         }
