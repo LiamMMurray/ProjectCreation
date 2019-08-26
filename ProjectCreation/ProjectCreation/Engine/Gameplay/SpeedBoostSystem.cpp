@@ -151,7 +151,7 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
         point.pos   = correctedCurr;
         point.color = cluster.color;
         cluster.cachedPoints.push_back(point);
-        auto entityH = SpawnLightOrb(correctedCurr, cluster.color);
+        auto entityH = SpawnLightOrb(correctedCurr, cluster.color + 4);
         auto splineH = entityH.AddComponent<SpeedboostSplineComponent>();
 
         cluster.splineComponentList.push_back((splineH));
@@ -206,10 +206,18 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
 
 EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int color)
 {
+        std::string name = speedboostMeshNames[3];
+        if (color >= 4)
+                name = speedboostMeshNames[color % 4];
+
+        color = color % 4;
+
         ComponentHandle orbHandle;
         ComponentHandle transHandle;
-        auto            entityHandle = EntityFactory::CreateStaticMeshEntity(
-            speedboostMeshNames[color].c_str(), speedboostMaterialNames[color].c_str(), &orbHandle);
+
+
+        auto entityHandle =
+            EntityFactory::CreateStaticMeshEntity(name.c_str(), speedboostMaterialNames[color].c_str(), &orbHandle);
         orbHandle = m_HandleManager->AddComponent<OrbComponent>(entityHandle);
 
         OrbComponent*       orbComp       = orbHandle.Get<OrbComponent>();
