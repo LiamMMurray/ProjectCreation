@@ -8,7 +8,7 @@ namespace ParticleData
 {
 
         static constexpr unsigned int gMaxParticleCount = 2 << 18;
-        static constexpr unsigned int gMaxEmitterCount  = 2 << 10;
+        static constexpr unsigned int gMaxEmitterCount  = 2 << 11;
 
         struct FEmitterGPU
         {
