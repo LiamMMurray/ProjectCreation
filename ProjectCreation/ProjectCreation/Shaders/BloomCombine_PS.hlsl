@@ -50,28 +50,27 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
         float3 bloom         = BloomTexture.Sample(sampleTypeClamp, texCoord).rgb * _brightness;
         // return vignetteIntensity;
 
-        float3 bw               = 0.21 * color.r + 0.71 * color.g + 0.07 * color.b;
-        float  desaturationMask = 0.17f;
-        color                   = lerp(color, bw, desaturationMask);
+        float bw               = 0.21 * color.r + 0.71 * color.g + 0.07 * color.b;
+        float desaturationMask = 0.17f;
+        color                  = lerp(color, bw, desaturationMask);
         float  fogMask  = saturate((linearDepth - 10.0f) / 300.0f) * 0.8f * (1.0f - saturate((linearDepth - 400.0f) / 100.0f));
-        float3 fogColor = float3(0.6f, 0.7f, 1.0f);
-        //color           = lerp(color, fogColor, fogMask);
+        float3 fogColor = float3(0.4f, 0.6f, 0.8f);
 
 
         float3 dither = InterleavedGradientNoise(pos.xy + _time);
-
         color += bloom;
         color += 0.004f * dither / 255;
         color = color / (color + 1.f);
         // color *= 1.5f;
         color = pow(color, 1.f / 2.2f);
 
-		float ao = AO.Sample(sampleTypeClamp, texCoord).r;
-        //return ao;
+        float ao = AO.Sample(sampleTypeClamp, texCoord).r;
+        // return ao;
         color *= ao;
 
-        color = lerp(color, colorVignette, vignetteIntensity);
 
+        color = lerp(color, fogColor, min(fogMask, 0.6f));
+        color = lerp(color, colorVignette, vignetteIntensity);
         color += dither / 255;
 
         return float4(color, 1.f);

@@ -42,6 +42,9 @@ struct HullConstantDataOut
         float3 pos = Bilerp(pws, domain);
         pos.y      = HeightMap.SampleLevel(sampleTypeWrap, dOut.Tex, 0).r * 2625.f * (gTerrainAlpha)-1260.0f * (gTerrainAlpha);
 
+		//pos.y += 5.0f*sin(pos.x/20.0f);
+		//pos.y += 5.0f*cos(pos.z/20.0f);
+
         dOut.PosWS       = mul(float4(pos, 1.0f), World).xyz;
         dOut.Pos         = mul(float4(dOut.PosWS, 1.0f), ViewProjection);
         dOut.linearDepth = dOut.Pos.w;
