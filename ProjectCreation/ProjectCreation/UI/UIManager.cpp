@@ -267,6 +267,15 @@ void UIManager::GameplayUpdate()
                 }
         }
 
+        // do controller stuff
+        if (GamePad::Get()->CheckConnection() == true) {}
+
+		// do keyboard/mouse stuff
+        else
+        {
+			
+		}
+
         // Left Click
         if (instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled == true)
         {
@@ -757,6 +766,37 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     instance->m_RenderSystem->m_Context,
                                     E_MENU_CATEGORIES::MainMenu,
                                     L"../Assets/2d/Sprite/D_Key.dds",
+                                    0.0f * PosXRatio,
+                                    0.1f * PosYRatio,
+                                    0.1f * ScaleXRatio,
+                                    0.1f * ScaleYRatio,
+                                    false);
+
+                // Controller Icons
+                instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                    instance->m_RenderSystem->m_Context,
+                                    E_MENU_CATEGORIES::MainMenu,
+                                    L"../Assets/2d/Sprite/B_Button.dds",
+                                    0.0f * PosXRatio,
+                                    0.1f * PosYRatio,
+                                    0.1f * ScaleXRatio,
+                                    0.1f * ScaleYRatio,
+                                    false);
+
+                instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                    instance->m_RenderSystem->m_Context,
+                                    E_MENU_CATEGORIES::MainMenu,
+                                    L"../Assets/2d/Sprite/A_Button.dds",
+                                    0.0f * PosXRatio,
+                                    0.1f * PosYRatio,
+                                    0.1f * ScaleXRatio,
+                                    0.1f * ScaleYRatio,
+                                    false);
+
+                instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                    instance->m_RenderSystem->m_Context,
+                                    E_MENU_CATEGORIES::MainMenu,
+                                    L"../Assets/2d/Sprite/X_Button.dds",
                                     0.0f * PosXRatio,
                                     0.1f * PosYRatio,
                                     0.1f * ScaleXRatio,
@@ -1767,6 +1807,10 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
                 }
                 // Change Sensitivity HERE
+
+                ControllerSystem* controllerSys      = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+                PlayerController* m_PlayerController = static_cast<PlayerController*>(controllerSys->GetCurrentController());
+                m_PlayerController->SetSensitivity(instance->CSettings.m_Sensitivity);
         });
 
         // Right Sensitivity Button
@@ -1804,6 +1848,10 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
                 }
                 // Change Sensitivity HERE
+
+                ControllerSystem* controllerSys      = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+                PlayerController* m_PlayerController = static_cast<PlayerController*>(controllerSys->GetCurrentController());
+                m_PlayerController->SetSensitivity(instance->CSettings.m_Sensitivity);
         });
 
 

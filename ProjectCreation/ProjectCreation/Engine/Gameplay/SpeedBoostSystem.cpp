@@ -799,10 +799,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                                 if (inPath)
                                 {
-                                        if (GamePad::Get()->CheckConnection() == true)
-                                        {
-                                                playerController->SetAngularSpeedMod(100.0f);
-                                        }
 
                                         if (latchedSplineIndex != latchedSplineComp->index)
                                         {
@@ -922,16 +918,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                                 else
                                 {
-                                        // Player has fallen off the spline
-                                        if (GamePad::Get()->CheckConnection() == true)
-                                        {
-                                                playerController->SetAngularSpeedMod(100.0f);
-                                        }
-
-                                        else
-                                        {
-                                                playerController->SetAngularSpeedMod(5.0f);
-                                        }
                                         RequestUnlatchFromSpline(playerController, deltaTime);
                                         m_EnableRandomSpawns = true;
                                 }

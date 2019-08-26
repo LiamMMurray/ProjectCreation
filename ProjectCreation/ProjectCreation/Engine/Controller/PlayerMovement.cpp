@@ -149,6 +149,8 @@ void PlayerController::Init(EntityHandle h)
         ComponentHandle     tHandle = m_ControlledEntityHandle.GetComponentHandle<TransformComponent>();
         TransformComponent* tComp   = tHandle.Get<TransformComponent>();
 
+		SetSensitivity(1);
+
         m_EulerAngles = tComp->transform.rotation.ToEulerAngles();
 
         // Collecting spline orb values

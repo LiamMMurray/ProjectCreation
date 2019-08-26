@@ -93,17 +93,35 @@ void PlayerGroundState::Update(float deltaTime)
 
         float pitchDelta = eulerAngles.x;
         float yawDelta   = eulerAngles.y;
+        // Controller Is Connected
+        if (GamePad::Get()->CheckConnection() == true)
+        {
+                eulerAngles.x += -GamePad::Get()->leftStickY * (angularSpeed * 0.75f);
+                pitchDelta = eulerAngles.x - pitchDelta;
 
-        eulerAngles.x += -GamePad::Get()->leftStickY * angularSpeed;
-        pitchDelta = eulerAngles.x - pitchDelta;
+                eulerAngles.y += GamePad::Get()->leftStickX * angularSpeed;
+                yawDelta = eulerAngles.y - yawDelta;
 
-        eulerAngles.y += GamePad::Get()->leftStickX * angularSpeed;
-        yawDelta = eulerAngles.y - yawDelta;
+                eulerAngles.z += GamePad::Get()->leftStickX * angularSpeed;
 
-        eulerAngles.z += GamePad::Get()->leftStickX * angularSpeed;
+                eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
+        }
 
-        eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
+        // Controller Isn't Connected
+        else
+        {
+                // float pitchDelta = eulerAngles.x;
+                eulerAngles.x += GCoreInput::GetMouseY() * (angularSpeed * 0.75f);
+                pitchDelta = eulerAngles.x - pitchDelta;
 
+                // float yawDelta = eulerAngles.y;
+                eulerAngles.y += GCoreInput::GetMouseX() * angularSpeed;
+                yawDelta = eulerAngles.y - yawDelta;
+
+                eulerAngles.z += GCoreInput::GetMouseX() * angularSpeed;
+
+                eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
+        }
         // Convert to degrees due to precision errors using small radian values
         float rollDegrees         = XMConvertToDegrees(eulerAngles.z);
         rollDegrees               = MathLibrary::clamp(rollDegrees, -rollLimit, rollLimit);
@@ -112,7 +130,9 @@ void PlayerGroundState::Update(float deltaTime)
         _cachedTransform.rotation = FQuaternion::FromEulerAngles(eulerAngles);
 
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, yawDelta));
+        //currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, yawDelta));
 
+        //currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, pitchDelta));
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, pitchDelta));
 
         // Get the Speed from the gathered input
