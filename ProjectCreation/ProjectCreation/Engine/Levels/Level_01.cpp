@@ -8,6 +8,7 @@ using namespace DirectX;
 
 void Level_01::Enter()
 {
+        m_OrbitSystem->ClearTimedFunctions();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
                 m_OrbitSystem->InstantCreateOrbitSystem();

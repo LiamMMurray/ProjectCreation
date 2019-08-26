@@ -96,7 +96,7 @@ void PlayerGroundState::Update(float deltaTime)
         // Controller Is Connected
         if (GamePad::Get()->CheckConnection() == true)
         {
-                eulerAngles.x += -GamePad::Get()->leftStickY * (angularSpeed * 0.75f);
+                eulerAngles.x += -GamePad::Get()->leftStickY * angularSpeed;
                 pitchDelta = eulerAngles.x - pitchDelta;
 
                 eulerAngles.y += GamePad::Get()->leftStickX * angularSpeed;
@@ -105,6 +105,8 @@ void PlayerGroundState::Update(float deltaTime)
                 eulerAngles.z += GamePad::Get()->leftStickX * angularSpeed;
 
                 eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
+
+				//std::cout << eulerAngles.x << std::endl;
         }
 
         // Controller Isn't Connected

@@ -12,6 +12,7 @@ TutorialLevel::E_TUTORIAL_PHASE TutorialLevel::currPhase = E_TUTORIAL_PHASE::PHA
 
 void TutorialLevel::Enter()
 {
+        m_OrbitSystem->ClearTimedFunctions();
         m_OrbitSystem->InstantRemoveOrbitSystem();
         // Update(GEngine::Get()->GetDeltaTime());
         Instance       = this;

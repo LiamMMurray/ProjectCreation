@@ -6,6 +6,7 @@
 
 void Level_03::Enter()
 {
+        m_OrbitSystem->ClearTimedFunctions();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
                 m_OrbitSystem->InstantCreateOrbitSystem();
@@ -54,7 +55,7 @@ void Level_03::Update(float deltaTime)
 
 void Level_03::Exit()
 {
-        delete Waves;
+        //delete Waves;
 }
 
 Level_03::Level_03()

@@ -99,8 +99,8 @@ void ControllerSystem::OnPreUpdate(float deltaTime)
 {}
 
 void ControllerSystem::OnUpdate(float deltaTime)
-{
-        if (GCoreInput::GetKeyState(KeyCode::One) == KeyState::DownFirst)
+{		
+		if (GCoreInput::GetKeyState(KeyCode::One) == KeyState::DownFirst)
         {
                 IncreaseOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
         }
