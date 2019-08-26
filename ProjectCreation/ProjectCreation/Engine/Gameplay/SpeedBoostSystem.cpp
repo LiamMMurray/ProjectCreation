@@ -83,10 +83,10 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
                 XMStoreFloat3(&velMax, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f));
                 XMStoreFloat3(&orbPos, pos);
                 emitterComponent->ParticleswithGravity(
-                    XMFLOAT3(), XMFLOAT3(), orbColor, orbColor, XMFLOAT4(2.0f, 1.0f, 0.5f, 0.5f));
+                    XMFLOAT3(), XMFLOAT3(0.5f, 0.0f, 0.5f), orbColor, orbColor, XMFLOAT4(2.0f, 1.0f, 0.5f, 0.5f));
 
                 emitterComponent->EmitterData.minInitialVelocity = {-0.1f, -0.0f, -0.1f};
-                emitterComponent->EmitterData.maxInitialVelocity = {0.3f, 1.0f, 0.3f};
+                emitterComponent->EmitterData.maxInitialVelocity = {0.3f, 1.75f, 0.3f};
                 emitterComponent->EmitterData.acceleration       = {0.0f, 1.05f, 0.0f};
                 emitterComponent->EmitterData.emitterPosition    = orbPos;
                 emitterComponent->rotate                         = true;
@@ -146,11 +146,10 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
                 desiredColor                                = cluster.color;
         }
 
-
         XMVECTOR    correctedCurr = curr + GEngine::Get()->m_OriginOffset - cluster.originalWorldOffset;
         SplinePoint point;
         point.pos   = correctedCurr;
-        point.color = desiredColor;
+        point.color = cluster.color;
         cluster.cachedPoints.push_back(point);
         auto entityH = SpawnLightOrb(correctedCurr, cluster.color);
         auto splineH = entityH.AddComponent<SpeedboostSplineComponent>();
@@ -209,8 +208,8 @@ EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int c
 {
         ComponentHandle orbHandle;
         ComponentHandle transHandle;
-        auto            entityHandle =
-            EntityFactory::CreateStaticMeshEntity("Sphere01", speedboostMaterialNames[color].c_str(), &orbHandle);
+        auto            entityHandle = EntityFactory::CreateStaticMeshEntity(
+            speedboostMeshNames[color].c_str(), speedboostMaterialNames[color].c_str(), &orbHandle);
         orbHandle = m_HandleManager->AddComponent<OrbComponent>(entityHandle);
 
         OrbComponent*       orbComp       = orbHandle.Get<OrbComponent>();
@@ -620,11 +619,13 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                     emitterComp->EmitterData.acceleration.y       = 2.5f;
                                     emitterComp->EmitterData.maxInitialVelocity.y = 2.5f;
                                     emitterComp->EmitterData.particleScale.y      = 0.1f;
+                                    emitterComp->EmitterData.maxOffset            = {0.25, 0.0f, 0.25f};
                                     break;
                             case 3:
                                     emitterComp->EmitterData.acceleration.y       = 3.5f;
                                     emitterComp->EmitterData.maxInitialVelocity.y = 3.5f;
                                     emitterComp->EmitterData.particleScale.y      = 0.15;
+                                    emitterComp->EmitterData.maxOffset            = {0.0f, 0.0f, 0.0f};
                                     break;
                     }
             }); // SpeedBoostPickupAndDespawnJob

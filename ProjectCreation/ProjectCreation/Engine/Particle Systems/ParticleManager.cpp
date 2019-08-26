@@ -15,7 +15,7 @@
 #include "../ResourceManager/ResourceManager.h"
 #include "../ResourceManager/Texture2D.h"
 #include "../ResourceManager/VertexShader.h"
-#include "EmitterComponent.h"
+
 
 #include "..//GenericComponents/TransformComponent.h"
 #include "ParticleBufferSetup.h"
@@ -42,7 +42,10 @@ void ParticleManager::update(float deltaTime)
         m_RenderSystem->m_Context->OMSetRenderTargets(0, nullptr, nullptr);
         int emitterIndex = 0;
         // Build update list
-
+		for (auto& emitterComp : m_Emitters)
+		{
+              
+		}
         for (auto& emitterComponent : GEngine::Get()->GetHandleManager()->GetActiveComponents<EmitterComponent>())
         {
                 if (emitterComponent.active == true)
@@ -378,9 +381,9 @@ void ParticleManager::ParticleBufferShutdown(ParticleBuffer* buffer)
         SAFE_RELEASE(buffer->m_StructuredView);
 }
 
-void ParticleManager::AddEmitter(ParticleData::FEmitterGPU& emitter)
+void ParticleManager::AddEmitter(EmitterComponent* emitter)
 {
-        m_Emitters.push_back(&emitter);
+        m_Emitters.push_back(emitter);
 }
 
 void ParticleManager::SetParticleInfo(ParticleData::FParticleGPU* particleInfo)

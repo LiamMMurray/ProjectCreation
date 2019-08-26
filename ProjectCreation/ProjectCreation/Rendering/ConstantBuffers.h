@@ -7,6 +7,8 @@ struct alignas(16) CTransformBuffer
         DirectX::XMMATRIX ViewProjection;
         DirectX::XMMATRIX World;
         DirectX::XMMATRIX Projection;
+        DirectX::XMMATRIX Billboard;
+        DirectX::XMMATRIX View;
 };
 
 struct alignas(16) CSceneInfoBuffer

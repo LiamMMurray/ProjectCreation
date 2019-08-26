@@ -67,13 +67,17 @@ float3 VSPositionFromDepth(float2 vTexCoord)
                 //  WrapPosition(ParticleBuffer[id].position.xyz, _EyePosition + Min, _EyePosition + Max);
 
                 // bounce based on texture depth
-                if (ndc.w > depth)
+                if (ParticleBuffer[id].flags == 0)
                 {
-                        // ParticleBuffer[id].velocity     = reflect(ParticleBuffer[id].velocity, normalVS);
-                        ParticleBuffer[id].velocity -= ParticleBuffer[id].acceleration * _DeltaTime;
-                        ParticleBuffer[id].velocity -=
-                            dot(ParticleBuffer[id].velocity, normalWS) * normalWS * 1.5 /* 1.0 + bouciness */;
+                        if (ndc.w > depth)
+                        {
+                                // ParticleBuffer[id].velocity     = reflect(ParticleBuffer[id].velocity, normalVS);
+                                ParticleBuffer[id].velocity -= ParticleBuffer[id].acceleration * _DeltaTime;
+                                ParticleBuffer[id].velocity -=
+                                    dot(ParticleBuffer[id].velocity, normalWS) * normalWS * 1.5 /* 1.0 + bouciness */;
+                        }
                 }
+
                 ParticleBuffer[id].position.xyz += ParticleBuffer[id].velocity * _DeltaTime;
 
                 ParticleBuffer[id].position.xyz += _WorldOffsetDelta;

@@ -93,7 +93,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
 
         if (HasDiffuseTexture(_textureFlags))
         {
-                float4 diffuse = 1.3f * diffuseMap.Sample(sampleTypeWrap, pIn.Tex);
+                float4 diffuse = 0.27f * diffuseMap.Sample(sampleTypeWrap, pIn.Tex);
 
                 if (IsMasked(_textureFlags))
                 {

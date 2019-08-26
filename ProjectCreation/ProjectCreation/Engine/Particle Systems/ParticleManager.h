@@ -5,6 +5,7 @@
 #include "ParticleBufferSetup.h"
 #include "ParticleData.h"
 #include "Pools.h"
+#include "EmitterComponent.h"
 class RenderSystem;
 class ComponentManager;
 class ParticleManager
@@ -29,7 +30,7 @@ class ParticleManager
         ID3D11InputLayout*                      m_VertexInputLayout;
         ParticleData::FParticleGPU*             m_ParticleInfo;
         ParticleData::FEmitterGPU               m_EmittersCPU[ParticleData::gMaxEmitterCount];
-        std::vector<ParticleData::FEmitterGPU*> m_Emitters;
+        std::vector<EmitterComponent*>          m_Emitters;
         int                                     m_PreviousEmitterCount = 0;
         void                                    UpdateResources(ID3D11Resource* resource);
         void                                    update(float deltaTime);
@@ -44,7 +45,7 @@ class ParticleManager
         void ParticleBufferShutdown(ParticleBuffer* buffer);
 
     public:
-        void                           AddEmitter(ParticleData::FEmitterGPU& emitter);
+        void                           AddEmitter(EmitterComponent* emitter);
         void                           SetParticleInfo(ParticleData::FParticleGPU* particleInfo);
         static void                    Initialize();
         static void                    Update(float deltaTime);
