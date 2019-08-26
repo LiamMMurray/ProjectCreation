@@ -15,6 +15,7 @@ void StateMachine::Shutdown()
 
         m_States.clear();
         m_TransitionTable.clear();
+        m_Current = nullptr;
 }
 
 void StateMachine::Transition(int event)

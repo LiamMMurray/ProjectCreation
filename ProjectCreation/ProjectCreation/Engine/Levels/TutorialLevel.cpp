@@ -15,6 +15,7 @@ void TutorialLevel::Enter()
         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad) {
                 controllerSys->ResetPlayer();
+                GEngine::Get()->SetPuzzleState(0.0f);
 		}
 
         m_OrbitSystem->InstantRemoveOrbitSystem();

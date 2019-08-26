@@ -391,7 +391,7 @@ void OrbitSystem::InstantInOrbit(int color)
 {
         auto eh                                     = CreateGoal(color, XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
         eh.GetComponent<GoalComponent>()->goalState = E_GOAL_STATE::Done;
-
+        activeGoal.hasActiveGoal                    = false;
         goalsCollected++;
         SYSTEM_MANAGER->GetSystem<SpeedBoostSystem>()->m_ColorsCollected[color] = true;
         /*** REFACTORING CODE END ***/

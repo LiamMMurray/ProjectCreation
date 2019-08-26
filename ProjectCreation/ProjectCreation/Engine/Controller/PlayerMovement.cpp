@@ -177,9 +177,9 @@ void PlayerController::Init(EntityHandle h)
         FTransform target = tComp->transform;
         target.rotation   = XMQuaternionIdentity();
 
-        RequestCinematicTransition(1, &tHandle, &target, E_PLAYERSTATE_EVENT::TO_GROUND, 1.0f);
 
         // After you create the states, initialize the state machine. First created state is starting state
+        RequestCinematicTransition(1, &tHandle, &target, E_PLAYERSTATE_EVENT::TO_GROUND, 1.0f);
         m_StateMachine.Init(this);
 
 

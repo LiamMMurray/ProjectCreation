@@ -59,5 +59,5 @@ class CollisionLibary
                                                             const Shapes::FSphere&   b,
                                                             const DirectX::XMMATRIX& ViewProjection);
 
-        static DirectX::XMVECTOR ClampToScreen(const DirectX::XMVECTOR& vec, const DirectX::XMMATRIX& ViewProjection);
+        static bool PointInNDC(const DirectX::XMVECTOR& vec, const DirectX::XMMATRIX& ViewProjection);
 };

@@ -21,11 +21,13 @@ void Level_03::Enter()
                 m_OrbitSystem->ClearCollectedMask();
                 m_OrbitSystem->collectedMask[E_LIGHT_ORBS::RED_LIGHTS]   = true;
                 m_OrbitSystem->collectedMask[E_LIGHT_ORBS::GREEN_LIGHTS] = true;
-                m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::RED_LIGHTS);
                 m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::GREEN_LIGHTS);
+                m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::RED_LIGHTS);
                 GEngine::Get()->SetPlayerRadius(1500.0f);
 
                 GEngine::Get()->m_TerrainAlpha = 1.0f;
+
+                GEngine::Get()->SetPuzzleState(0.0f);
         }
 
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);

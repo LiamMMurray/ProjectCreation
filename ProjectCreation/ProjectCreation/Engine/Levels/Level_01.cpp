@@ -21,6 +21,8 @@ void Level_01::Enter()
                 m_SpeedBoostSystem->m_ColorsCollected[3] = true;
 
                 m_OrbitSystem->ClearCollectedMask();
+
+				                GEngine::Get()->SetPuzzleState(0.0f);
         }
 
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);
