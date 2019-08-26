@@ -70,12 +70,12 @@ float4 main(INPUT_PIXEL input) : SV_TARGET
 
         // Directional Light
         {
-               /* float3 radiance = float3(5.0f, 0.0f, 0.0f);
+               float3 radiance = float3(5.0f, 0.0f, 0.0f);
                 float3 lightDir = float3(0.0f, 1.0f, 0.0f);
-                color += radiance * PBR(surface, -lightDir, viewWS, specColor);*/
+                color += radiance * PBR(surface, -lightDir, viewWS, specColor) * input.linearDepth;
         }
         // point light
-        {
+        /*{
                 float  ptRange    = 6.0f;
                 float3 ptColor    = {5.0f,0.0f,0.0f};
                 float3 PtLightPos = float3(0.0f, 0.0f, 0.0f);
@@ -101,7 +101,7 @@ float4 main(INPUT_PIXEL input) : SV_TARGET
                 }
 
 				color += ptColor * PBR(surface, -dir, viewWS, specColor);
-        }
+        }*/
 
         output += float4(color, 1.0f);
         return output;

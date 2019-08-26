@@ -25,9 +25,9 @@ INPUT_PIXEL main(INPUT_VERTEX input)
         output.NormalWS = mul(float4(input.Normal, 0), World).xyz;
         output.NormalWS = normalize(output.NormalWS);
 
-        output.linearDepth = output.Pos.w;
 
-        float4 Pos = float4(input.Pos, 1);
+        float4 Pos         = float4(input.Pos, 1);
+        output.linearDepth = 1.0f - saturate(Pos.y / 95.0f);
         Pos.xyz += heightSample * output.NormalWS * 5.0f;
 
 
