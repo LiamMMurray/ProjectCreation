@@ -6,8 +6,11 @@
 
 void Level_03::Enter()
 {
+        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
+                controllerSys->ResetPlayer();
+
                 m_OrbitSystem->InstantCreateOrbitSystem();
 
                 m_SpeedBoostSystem->m_ColorsCollected[0] = true;
@@ -38,7 +41,6 @@ void Level_03::Enter()
         m_SpeedBoostSystem->splineWidth  = 18.0f;
         m_SpeedBoostSystem->splineHeight = 1.5f;
 
-        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         controllerSys->ResetOrbCount();
 
         AudioManager::Get()->ActivateMusicAndPause(Waves, true);

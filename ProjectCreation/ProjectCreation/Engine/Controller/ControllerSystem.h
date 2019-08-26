@@ -27,6 +27,8 @@ class ControllerSystem : public ISystem
 
     public:
         // bool m_toggleDebugCamera = false;
+        void ResetPlayer();
+		void CreatePlayer();
 
         DirectX::XMFLOAT3 GetCurrentColorSelection() const;
         float             GetCurrentColorAlpha() const;

@@ -8,8 +8,11 @@ using namespace DirectX;
 
 void Level_01::Enter()
 {
+        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
+                controllerSys->ResetPlayer();
+
                 m_OrbitSystem->InstantCreateOrbitSystem();
 
                 m_SpeedBoostSystem->m_ColorsCollected[0] = false;
@@ -34,7 +37,6 @@ void Level_01::Enter()
 
         m_SpeedBoostSystem->ResetLevel();
 
-        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         controllerSys->ResetOrbCount();
 }
 

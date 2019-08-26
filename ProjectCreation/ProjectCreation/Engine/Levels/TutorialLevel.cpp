@@ -12,6 +12,11 @@ TutorialLevel::E_TUTORIAL_PHASE TutorialLevel::currPhase = E_TUTORIAL_PHASE::PHA
 
 void TutorialLevel::Enter()
 {
+        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+        if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad) {
+                controllerSys->ResetPlayer();
+		}
+
         m_OrbitSystem->InstantRemoveOrbitSystem();
         // Update(GEngine::Get()->GetDeltaTime());
         Instance       = this;
@@ -36,7 +41,6 @@ void TutorialLevel::Enter()
         m_WhiteCollected = m_RedCollected = m_GreenCollected = m_BlueCollected = false;
         whiteCount = redCount = greenCount = blueCount = levelRequested = 0;
 
-        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         controllerSys->ResetOrbCount();
         GEngine::Get()->ForceSetInstanceReveal(0.0f);
 

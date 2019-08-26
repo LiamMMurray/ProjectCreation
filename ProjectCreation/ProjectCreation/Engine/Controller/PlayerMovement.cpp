@@ -144,10 +144,14 @@ void PlayerController::Shutdown()
 void PlayerController::Init(EntityHandle h)
 {
         IController::Init(h);
+        auto tComp = h.GetComponent<TransformComponent>();
+
+        tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+        tComp->transform.rotation    = DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(0.0f), 0.0f, 0.0f);
+
         m_CurrentVelocity           = DirectX::XMVectorZero();
         m_CurrentInput              = DirectX::XMVectorZero();
         ComponentHandle     tHandle = m_ControlledEntityHandle.GetComponentHandle<TransformComponent>();
-        TransformComponent* tComp   = tHandle.Get<TransformComponent>();
 
         m_EulerAngles = tComp->transform.rotation.ToEulerAngles();
 
@@ -155,6 +159,7 @@ void PlayerController::Init(EntityHandle h)
         m_TotalSplineOrbCount     = 0;
         m_CollectedSplineOrbCount = 0;
 
+		m_StateMachine.Shutdown();
         // Create any states and set their respective variables here
         m_CinematicState = m_StateMachine.CreateState<PlayerCinematicState>();
         m_GroundState    = m_StateMachine.CreateState<PlayerGroundState>();
@@ -186,6 +191,11 @@ void PlayerController::Init(EntityHandle h)
                         m_SpeedBoostSoundPool[color][i] = AudioManager::Get()->CreateSFX(m_SpeedboostSoundNames[color]);
                 }
         }
+}
+
+void PlayerController::Reset()
+{
+        Init(m_ControlledEntityHandle);
 }
 
 bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
