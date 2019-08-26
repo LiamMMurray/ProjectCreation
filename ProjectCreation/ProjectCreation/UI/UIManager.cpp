@@ -246,6 +246,7 @@ void UIManager::GameplayUpdate()
                 {
                         // Left Click Image
                         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = false;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled = false;
 
                         for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::Demo].size(); i++)
                         {
@@ -267,21 +268,13 @@ void UIManager::GameplayUpdate()
                 }
         }
 
-        // do controller stuff
-        if (GamePad::Get()->CheckConnection() == true) {}
-
-		// do keyboard/mouse stuff
-        else
-        {
-			
-		}
-
         // Left Click
         if (instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled == true)
         {
                 if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
                 {
                         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = false;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled = false;
                 }
         }
 
@@ -398,25 +391,56 @@ void UIManager::Splash_End()
 // UI Transitions
 void UIManager::WhiteOrbCollected()
 {
+        // If the controller is connected, it will turn on the Controller UI element
+        // Otherwise it will turn on the keyboard UI element
+        // It will always disable both UI elements in case the controller is unplugged
+
         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled = true;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled = false;
+
+        if (GamePad::Get()->CheckConnection() == true)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].mEnabled = true;
+        }
+        else
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled = true;
+        }
 }
 
 void UIManager::RedOrbCollected()
 {
         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled = true;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].mEnabled = true;
+        if (GamePad::Get()->CheckConnection() == true)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].mEnabled = true;
+        }
+        else
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled = true;
+        }
 }
 
 void UIManager::GreenOrbCollected()
 {
         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].mEnabled = true;
+        if (GamePad::Get()->CheckConnection() == true)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].mEnabled = true;
+        }
+        else
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
+        }
 }
 
 void UIManager::BlueOrbCollected()
 {
+        // Only needs to turn off the elements. There are none to turn on
         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].mEnabled = true;
 }
 
 
@@ -430,7 +454,14 @@ void UIManager::MainTilteUnpause()
         }
 
         // Left Click Image
-        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = true;
+        if (GamePad::Get()->CheckConnection() == true)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].mEnabled = true;
+        }
+        else
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = true;
+        }
 }
 
 void UIManager::Pause()
@@ -773,6 +804,16 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     false);
 
                 // Controller Icons
+                instance->AddSprite(instance->m_RenderSystem->m_Device,
+                                    instance->m_RenderSystem->m_Context,
+                                    E_MENU_CATEGORIES::MainMenu,
+                                    L"../Assets/2d/Sprite/Mouse_Key.dds",
+                                    0.0f * PosXRatio,
+                                    0.1f * PosYRatio,
+                                    0.1f * ScaleXRatio,
+                                    0.1f * ScaleYRatio,
+                                    false);
+
                 instance->AddSprite(instance->m_RenderSystem->m_Device,
                                     instance->m_RenderSystem->m_Context,
                                     E_MENU_CATEGORIES::MainMenu,
