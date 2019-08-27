@@ -8,6 +8,7 @@
 #include "IPoolElement.h"
 #include "Pools.h"
 
+#include <limits>
 namespace std
 {
         template <>
@@ -121,7 +122,7 @@ inline size_t HandleManager::GetComponentCount()
         NMemory::type_index pool_index = T::SGetTypeIndex();
         if (m_ComponentRandomAccessPools.m_mem_starts.size() <= pool_index)
                 return 0ULL;
-       return static_cast<size_t>(m_ComponentRandomAccessPools.m_element_counts[pool_index]);
+        return static_cast<size_t>(m_ComponentRandomAccessPools.m_element_counts[pool_index]);
 }
 
 template <typename T>
@@ -195,6 +196,8 @@ inline ComponentHandle EntityHandle::GetComponentHandle()
                 if (e.pool_index == _type_index)
                         return e;
         }
+        assert("component did not exist");
+        return ComponentHandle(static_cast<NMemory::type_index>(-1), static_cast<NMemory::index>(-1));
 }
 
 template <typename T>
