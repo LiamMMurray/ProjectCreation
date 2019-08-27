@@ -16,6 +16,7 @@
 #include "PlayerPuzzleState.h"
 #include "PlayerStateEvents.h"
 
+#include"..//Audio/ContinousSoundSystem.h"
 #include "../../Rendering/DebugRender/debug_renderer.h"
 // v Testing only delete when done v
 #include <iostream>
@@ -186,13 +187,7 @@ void PlayerController::Init(EntityHandle h)
 
 
         // Init sound pool
-        for (unsigned int color = 0; color < E_LIGHT_ORBS::COUNT; ++color)
-        {
-                for (unsigned int i = 0; i < MAX_SPEEDBOOST_SOUNDS; ++i)
-                {
-                        m_SpeedBoostSoundPool[color][i] = AudioManager::Get()->CreateSFX(m_SpeedboostSoundNames[color]);
-                }
-        }
+
 }
 
 void PlayerController::Reset()
