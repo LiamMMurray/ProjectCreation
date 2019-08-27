@@ -82,7 +82,7 @@ uint16_t InputActions::EnterAction()
         if (GamePad::Get()->CheckConnection() == true) // has controller
         {
                 returnType = (KeyState)GCoreInput::GetControllerState(ControllerCode::BUTTON_BACK);
-                if (returnType == KeyState::DownFirst)
+                if (returnType != KeyState::Unpressed)
                 {
                         int temp = 0;
                 }

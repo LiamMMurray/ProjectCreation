@@ -149,9 +149,11 @@ void PlayerController::Init(EntityHandle h)
         tComp->transform.translation = DirectX::XMVectorSet(0.0f, 3.0f, 0.0f, 1.0f);
         tComp->transform.rotation    = DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(0.0f), 0.0f, 0.0f);
 
-        m_CurrentVelocity           = DirectX::XMVectorZero();
-        m_CurrentInput              = DirectX::XMVectorZero();
-        ComponentHandle     tHandle = m_ControlledEntityHandle.GetComponentHandle<TransformComponent>();
+        m_CurrentVelocity       = DirectX::XMVectorZero();
+        m_CurrentInput          = DirectX::XMVectorZero();
+        ComponentHandle tHandle = m_ControlledEntityHandle.GetComponentHandle<TransformComponent>();
+
+        SetSensitivity(1);
 
         m_EulerAngles = tComp->transform.rotation.ToEulerAngles();
 
@@ -159,7 +161,7 @@ void PlayerController::Init(EntityHandle h)
         m_TotalSplineOrbCount     = 0;
         m_CollectedSplineOrbCount = 0;
 
-		m_StateMachine.Shutdown();
+        m_StateMachine.Shutdown();
         // Create any states and set their respective variables here
         m_CinematicState = m_StateMachine.CreateState<PlayerCinematicState>();
         m_GroundState    = m_StateMachine.CreateState<PlayerGroundState>();
@@ -201,13 +203,39 @@ void PlayerController::Reset()
 bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
 {
         // Audio that will play on boost
-        if ((int)m_ColorInputKeyCodes[color] < 0 || InputActions::CheckAction(color) == KeyState::Down ||
-            InputActions::CheckAction(color) == DownFirst)
+
+
+        if ((int)m_ColorInputKeyCodes[color] < 0 || InputActions::CheckAction(color) == KeyState::Down)
         {
                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(color);
-                bool isPlaying;
+
+                // Settings for the orb sounds (Referencing SpeedBoostSystem.cpp lines 814-846
+                int index = SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount() % 3;
+
+                if (color == 3) {}
+                else
+                {
+                        SoundComponent3D::FSettings settings;
+                        settings.m_SoundType = SOUND_COLOR_TYPE(color, E_SOUND_TYPE::ORB_COLLECT_0);
+
+                        int totalVariations = E_SOUND_TYPE::variations[E_SOUND_TYPE::ORB_COLLECT_0];
+                        int variation       = index % (totalVariations);
+
+                        if (variation >= E_SOUND_TYPE::variations[E_SOUND_TYPE::ORB_COLLECT_0])
+                        {
+                                variation = totalVariations - variation;
+                        }
+
+                        settings.m_SoundVaration = variation;
+                        settings.flags.set(SoundComponent3D::E_FLAGS::DestroyOnEnd, true);
+                        settings.m_Volume = 1.0f;
+
+                        AudioManager::Get()->PlaySoundAtLocation(boostPos, settings);
+                }
+
+                // bool isPlaying;
                 // m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->isSoundPlaying(isPlaying);
-                m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->Play();
+                // m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->Play();
                 // DebugPrintSpeedBoostColor(color);
                 currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
                 XMVECTOR currentInput = XMVector3Rotate(m_CurrentInput, _cachedControlledTransform.rotation.data);

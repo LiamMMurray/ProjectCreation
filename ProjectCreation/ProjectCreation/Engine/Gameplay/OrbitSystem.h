@@ -1,5 +1,8 @@
 #pragma once
 
+#include <functional>
+#include <vector>
+
 #include "../../ECS/HandleManager.h"
 #include "../../ECS/SystemManager.h"
 #include "..//ResourceManager/IResource.h"
@@ -29,7 +32,6 @@ class OrbitSystem : public ISystem
         float             orbitOffset = 1300.0f;
         FQuaternion       sunRotation;
         DirectX::XMVECTOR orbitCenter;
-
         struct FActiveGoalInfo
         {
                 EntityHandle activeGoalGround;
@@ -37,6 +39,12 @@ class OrbitSystem : public ISystem
                 int          activeColor;
                 bool         hasActiveGoal = false;
         };
+        struct TimedFunction
+        {
+                std::function<void()> m_function;
+                float                 m_delay;
+        };
+        std::vector<TimedFunction> m_timedFunctions;
 
         static constexpr float goalDistances[4] = {10.0f, 10.0f, 10.0f, 10.0f};
 
@@ -71,11 +79,16 @@ class OrbitSystem : public ISystem
         unsigned int goalsCollected   = 0;
         bool         collectedMask[3] = {};
 
-		inline void ClearCollectedMask()
+        inline void ClearCollectedMask()
         {
                 collectedMask[0] = false;
                 collectedMask[1] = false;
                 collectedMask[2] = false;
+        }
+
+		inline void ClearTimedFunctions()
+        {
+                m_timedFunctions.clear();
 		}
 
         FActiveGoalInfo activeGoal;

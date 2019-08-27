@@ -73,6 +73,7 @@
     <ClInclude Include="Engine\Levels\Level_01.h" />
     <ClInclude Include="Engine\Levels\Level_02.h" />
     <ClInclude Include="Engine\Levels\Level_03.h" />
+    <ClInclude Include="Engine\Levels\Level_04.h" />
     <ClInclude Include="Engine\Levels\TutorialLevel.h" />
     <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
     <ClInclude Include="Engine\Particle Systems\EmitterComponent.h" />
@@ -513,6 +514,7 @@
     <ClCompile Include="Engine\Levels\Level_01.cpp" />
     <ClCompile Include="Engine\Levels\Level_02.cpp" />
     <ClCompile Include="Engine\Levels\Level_03.cpp" />
+    <ClCompile Include="Engine\Levels\Level_04.cpp" />
     <ClCompile Include="Engine\Levels\TutorialLevel.cpp" />
     <ClCompile Include="Engine\Particle Systems\EmitterComponent.cpp" />
     <ClCompile Include="Engine\Particle Systems\ParticleData.cpp" />

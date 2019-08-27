@@ -64,22 +64,33 @@ class PlayerController : public IController
     public:
         int m_TotalSplineOrbCount;
 
-        void        IncreaseCollectedSplineOrbCount(int color);
+        float m_MouseSensitivity[3]      = {2.5f, 5.0f, 7.5f};
+        float m_ControllerSensitivity[3] = {50.0f, 75.0f, 100.0f};
+
+        void IncreaseCollectedSplineOrbCount(int color);
+
         inline void ResetCollectedSplineOrbCount()
         {
                 m_CollectedSplineOrbCount = 0;
         }
 
-        float angularSpeedMod = 5.0f;
+        float m_Sensitivity = 0;
 
-        inline void SetAngularSpeedMod(float var)
+        inline void SetSensitivity(int var)
         {
-                angularSpeedMod = var;
+                if (GamePad::Get()->CheckConnection() == true)
+                {
+                        m_Sensitivity = m_ControllerSensitivity[var];
+                }
+                else
+                {
+                        m_Sensitivity = m_MouseSensitivity[var];
+                }
         }
 
-        inline float GetAngularSpeedMod()
+        inline float GetSensitivity()
         {
-                return angularSpeedMod;
+                return m_Sensitivity;
         }
 
         inline void SetNextForward(const DirectX::XMVECTOR& _val)
@@ -99,7 +110,7 @@ class PlayerController : public IController
 
         const char* m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"Basic_Light_PickUp_Red",
                                                                    "Basic_Light_PickUp_Green",
-                                                                   "Basic_Light_PickUp_Blue",
+                                                                   "BLUE_ORB_COLLECT_0_0",
                                                                    "Basic_Light_PickUp_White"};
 
         GW::AUDIO::GSound* m_SpeedBoostSoundPool[E_LIGHT_ORBS::COUNT][MAX_SPEEDBOOST_SOUNDS];

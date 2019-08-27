@@ -21,11 +21,12 @@ struct E_SOUND_TYPE
                 SPLINE_COLLECT_0,
                 SPLINE_COLLECT_1,
                 SPLINE_COLLECT_2,
+                ORB_COLLECT_0,
                 TYPE_COUNT,
         };
 
         // static constexpr unsigned int variations[E_SOUND_TYPE::TYPE_COUNT] = {1, 1, 5, 1, 1, 1};
-        static constexpr unsigned int variations[E_SOUND_TYPE::TYPE_COUNT] = {5, 5, 5};
+        static constexpr unsigned int variations[E_SOUND_TYPE::TYPE_COUNT] = {5, 5, 5, 3};
         /* static constexpr char         Literal[E_SOUND_TYPE::TYPE_COUNT][20] = {"ORB_COLLECT",
                                                                         "ORB_AMBIENT",
                                                                         "SPLINE_COLLECT_0",
@@ -36,7 +37,8 @@ struct E_SOUND_TYPE
                                                                         "GOAL_AMBIENT"};*/
         static constexpr char Literal[E_SOUND_TYPE::TYPE_COUNT][20] = {"SPLINE_COLLECT_0",
                                                                        "SPLINE_COLLECT_1",
-                                                                       "SPLINE_COLLECT_2"};
+                                                                       "SPLINE_COLLECT_2",
+                                                                       "ORB_COLLECT_0"};
 };
 
 struct E_SOUND_POOL_SIZES
@@ -46,6 +48,7 @@ struct E_SOUND_POOL_SIZES
                 SPLINE_COLLECT_0 = 5,
                 SPLINE_COLLECT_1 = 5,
                 SPLINE_COLLECT_2 = 5,
+                ORB_COLLECT_0    = 3
         };
 
         /*enum
@@ -62,7 +65,10 @@ struct E_SOUND_POOL_SIZES
         /* static constexpr unsigned int arr[E_SOUND_TYPE::TYPE_COUNT] =
              {ORB_COLLECT, ORB_AMBIENT, SPLINE_COLLECT, SPLINE_AMBIENT, GOAL_COLLECT, GOAL_AMBIENT};*/
 
-        static constexpr unsigned int arr[E_SOUND_TYPE::TYPE_COUNT] = {SPLINE_COLLECT_0, SPLINE_COLLECT_1, SPLINE_COLLECT_2};
+        static constexpr unsigned int arr[E_SOUND_TYPE::TYPE_COUNT] = {SPLINE_COLLECT_0,
+                                                                       SPLINE_COLLECT_1,
+                                                                       SPLINE_COLLECT_2,
+                                                                       ORB_COLLECT_0};
 };
 
 

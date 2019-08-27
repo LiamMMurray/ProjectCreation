@@ -222,7 +222,6 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 }
         }
 
-
         goalsCollected = std::min<unsigned int>(goalsCollected, 3);
 
         XMVECTOR nextGoalPos = GET_SYSTEM(SpeedBoostSystem)->m_CurrentPathEnd;
@@ -235,7 +234,11 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 {
                         if (m_PendingGoalCounts[i] > 0)
                         {
-                                TutorialLevel::Get()->RequestNextPhase();
+                                TimedFunction timedFunction;
+                                timedFunction.m_delay    = 2.0f;
+                                timedFunction.m_function = []() { TutorialLevel::Get()->RequestNextPhase(); };
+                                m_timedFunctions.push_back(timedFunction);
+
                                 m_PendingGoalCounts[i]--;
                         }
                 }
@@ -258,6 +261,16 @@ void OrbitSystem::OnUpdate(float deltaTime)
                                 m_PendingGoalCounts[i]--;
                         }
                 }
+        }
+
+        for (auto i = 0; i < m_timedFunctions.size(); i++)
+        {
+                m_timedFunctions[i].m_delay -= deltaTime;
+				if (m_timedFunctions[i].m_delay <= 0) {
+                        m_timedFunctions[i].m_function();
+                        m_timedFunctions.erase(m_timedFunctions.begin() + i);
+                        --i;
+				}
         }
 }
 

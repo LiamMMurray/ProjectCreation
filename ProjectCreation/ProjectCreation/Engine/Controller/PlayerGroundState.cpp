@@ -63,14 +63,10 @@ void PlayerGroundState::Update(float deltaTime)
         static bool doOnce = false;
         if (!doOnce && orbitSystem->goalsCollected == 3)
         {
-
-                // Changed for play testing
-                // _playerController->RequestNextLevel();
-
-                // Reveal Ocean once first planet placed
-                UIManager::instance->DemoEnd();
-                GEngine::Get()->m_TargetInstanceReveal = 1.0f;
-                doOnce                                 = true;
+                GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_04);
+                //UIManager::instance->DemoEnd();
+                //GEngine::Get()->m_TargetInstanceReveal = 1.0f;
+                //doOnce                                 = true;
         }
 
         XMVECTOR currentVelocity = _playerController->GetCurrentVelocity();
@@ -84,9 +80,9 @@ void PlayerGroundState::Update(float deltaTime)
 
         XMFLOAT3 eulerAngles = _playerController->GetEulerAngles();
 
-        float angularSpeedMod = _playerController->GetAngularSpeedMod();
+        float Sensitivity = _playerController->GetSensitivity();
 
-        float           angularSpeed = XMConvertToRadians(angularSpeedMod) * deltaTime;
+        float           angularSpeed = XMConvertToRadians(Sensitivity) * deltaTime;
         constexpr float pitchLimit   = XMConvertToRadians(90.0f);
         constexpr float rollLimit    = 20.0f;
 
@@ -96,8 +92,6 @@ void PlayerGroundState::Update(float deltaTime)
         // Controller Is Connected
         if (GamePad::Get()->CheckConnection() == true)
         {
-                _playerController->SetAngularSpeedMod(100.0f);
-                angularSpeed = XMConvertToRadians(angularSpeedMod) * deltaTime;
                 eulerAngles.x += -GamePad::Get()->leftStickY * angularSpeed;
                 pitchDelta = eulerAngles.x - pitchDelta;
 
@@ -107,13 +101,15 @@ void PlayerGroundState::Update(float deltaTime)
                 eulerAngles.z += GamePad::Get()->leftStickX * angularSpeed;
 
                 eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
+
+				//std::cout << eulerAngles.x << std::endl;
         }
 
         // Controller Isn't Connected
         else
         {
                 // float pitchDelta = eulerAngles.x;
-                eulerAngles.x += GCoreInput::GetMouseY() * angularSpeed;
+                eulerAngles.x += GCoreInput::GetMouseY() * (angularSpeed * 0.75f);
                 pitchDelta = eulerAngles.x - pitchDelta;
 
                 // float yawDelta = eulerAngles.y;

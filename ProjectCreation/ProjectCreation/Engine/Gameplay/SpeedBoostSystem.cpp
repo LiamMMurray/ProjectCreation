@@ -133,12 +133,12 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
                 int div = 1;
                 if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() == E_Level_States::LEVEL_02)
                 {
-                        div = cluster.current / 15;
+                        div = cluster.current / 20;
                 }
                 else if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() ==
                          E_Level_States::LEVEL_03)
                 {
-                        div = cluster.current / 10;
+                        div = cluster.current / 15;
                 }
                 int color                                   = (cluster.targetColor + div) % 3;
                 cluster.color                               = color;
@@ -808,10 +808,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                                 if (inPath)
                                 {
-                                        if (GamePad::Get()->CheckConnection() == true)
-                                        {
-                                                playerController->SetAngularSpeedMod(100.0f);
-                                        }
 
                                         if (latchedSplineIndex != latchedSplineComp->index)
                                         {
@@ -840,14 +836,15 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                         variation = totalVariations - variation;
                                                 }
 
-
                                                 settings.m_SoundVaration = variation;
                                                 settings.flags.set(SoundComponent3D::E_FLAGS::DestroyOnEnd, true);
                                                 settings.m_Volume = 1.0f;
+
                                                 if (latchedSplineComp->color != E_LIGHT_ORBS::WHITE_LIGHTS)
                                                 {
                                                         AudioManager::Get()->PlaySoundAtLocation(currPos, settings);
                                                 }
+
                                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating    = true;
                                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrength = 0.25f;
                                                 playerController->IncreaseCollectedSplineOrbCount(
@@ -931,16 +928,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                                 else
                                 {
-                                        // Player has fallen off the spline
-                                        if (GamePad::Get()->CheckConnection() == true)
-                                        {
-                                                playerController->SetAngularSpeedMod(100.0f);
-                                        }
-
-                                        else
-                                        {
-                                                playerController->SetAngularSpeedMod(5.0f);
-                                        }
                                         RequestUnlatchFromSpline(playerController, deltaTime);
                                         m_EnableRandomSpawns = true;
                                 }

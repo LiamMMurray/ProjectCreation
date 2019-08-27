@@ -7,6 +7,7 @@
 void Level_03::Enter()
 {
         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+        m_OrbitSystem->ClearTimedFunctions();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
                 controllerSys->ResetPlayer();
@@ -49,6 +50,9 @@ void Level_03::Enter()
         Waves->ResumeStream();
 
         m_SpeedBoostSystem->SetTargetTerrain(1.0f);
+
+        m_LevelType = E_Level_States::LEVEL_03;
+	
 }
 
 void Level_03::Update(float deltaTime)
@@ -57,7 +61,9 @@ void Level_03::Update(float deltaTime)
 }
 
 void Level_03::Exit()
-{}
+{
+        //delete Waves;
+}
 
 Level_03::Level_03()
 {

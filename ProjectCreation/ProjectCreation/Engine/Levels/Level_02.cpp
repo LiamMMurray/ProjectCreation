@@ -8,6 +8,7 @@
 void Level_02::Enter()
 {
         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+        m_OrbitSystem->ClearTimedFunctions();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
                 controllerSys->ResetPlayer();
@@ -22,6 +23,7 @@ void Level_02::Enter()
                 m_OrbitSystem->ClearCollectedMask();
                 m_OrbitSystem->collectedMask[E_LIGHT_ORBS::RED_LIGHTS] = true;
                 m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::RED_LIGHTS);
+
                 GEngine::Get()->SetPlayerRadius(1500.0f);
 
                 GEngine::Get()->SetPuzzleState(0.0f);
@@ -52,7 +54,9 @@ void Level_02::Update(float deltaTime)
 {}
 
 void Level_02::Exit()
-{}
+{
+        //delete Waves;
+}
 
 Level_02::Level_02()
 {

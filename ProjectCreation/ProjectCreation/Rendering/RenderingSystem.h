@@ -343,6 +343,8 @@ class RenderSystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
+        void Present();
+
         void DrawMeshInstanced(ID3D11Buffer* vertexBuffer,
                                ID3D11Buffer* indexBuffer,
                                uint32_t      indexCount,

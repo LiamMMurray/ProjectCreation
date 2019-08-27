@@ -19,13 +19,14 @@ struct E_MENU_CATEGORIES
 {
         enum
         {
+                SplashScreen,
                 MainMenu,
                 PauseMenu,
                 OptionsMenu,
                 OptionsSubmenu,
                 LevelMenu,
                 ControlsMenu,
-				Demo,
+                Demo,
                 COUNT
         };
 };
@@ -44,14 +45,16 @@ struct E_FONT_TYPE
 struct PrevSettings
 {
         bool m_IsFullscreen = false;
-        int  m_Resolution = 8; // 0-8 Representing the resDescriptors resolutions
-        int  m_Volume       = 10; // 0-11 Representing the volume from 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100
+        int  m_Resolution   = 8; // 0-8 Representing the resDescriptors resolutions
+        int  m_Volume       = 100;
+        int  m_Sensitivity  = 1;
 };
 struct CurrSettings
 {
         bool m_IsFullscreen = false;
         int  m_Resolution   = 8; // 0-8 Representing the resDescriptors resolutions
-        int  m_Volume = 10; //0-10 Representing the volume from 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100
+        int  m_Volume       = 100;
+        int  m_Sensitivity  = 1;
 };
 
 class UIManager
@@ -80,7 +83,8 @@ class UIManager
                      int                  category,
                      int                  fontType,
                      std::string          TextDisplay,
-                     float                scale,
+                     float                scaleX,
+                     float                scaleY,
                      float                PositionX,
                      float                PositionY,
                      bool                 enabled,
@@ -104,7 +108,13 @@ class UIManager
         void SupportedResolutions(); // Creates the supported resolutions for the game
         void DemoEnd();
 
-		void WhiteOrbCollected();
+        void Splash_Start();
+        void Splash_FullSail();
+        void Splash_GPGames();
+        void Splash_Team();
+        void Splash_End();
+
+        void WhiteOrbCollected();
         void RedOrbCollected();
         void GreenOrbCollected();
         void BlueOrbCollected();
@@ -115,10 +125,19 @@ class UIManager
 
         static UIManager* instance;
 
+        RenderSystem* m_RenderSystem;
+
+        void DrawSprites();
+        void Present();
+
     private:
+        void GameplayUpdate();
+        void SplashUpdate(float globalTimer);
+
         bool         m_FirstFull      = true; // Turns false when the game is put to fullscreen on launch
         bool         m_InMenu         = false;
         bool         m_AdjustedScreen = false;
+        bool         m_BreakSplash    = false;
         PrevSettings PSettings;
         CurrSettings CSettings;
         float        m_SliderHandle;
@@ -127,7 +146,6 @@ class UIManager
         DirectX::XMFLOAT2 m_ScreenSize;
         DirectX::XMVECTOR m_ScreenCenter;
 
-        RenderSystem*                                         m_RenderSystem;
         HWND                                                  m_window;
         std::unique_ptr<DirectX::SpriteBatch>                 m_SpriteBatch;
         std::unique_ptr<DirectX::CommonStates>                m_States;
@@ -138,5 +156,5 @@ class UIManager
         std::unordered_map<int, std::vector<SpriteComponent>> m_AllSprites;
         std::unordered_map<int, std::vector<FontComponent>>   m_AllFonts;
 
-       DirectX::SpriteFont*     m_FontTypes[E_FONT_TYPE::COUNT];
+        DirectX::SpriteFont* m_FontTypes[E_FONT_TYPE::COUNT];
 };

@@ -19,7 +19,8 @@ struct E_ACTIONS
         {
                 Red,
                 Green,
-                Blue
+                Blue,
+				White
         };
 };
 

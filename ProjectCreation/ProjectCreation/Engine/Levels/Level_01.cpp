@@ -9,6 +9,7 @@ using namespace DirectX;
 void Level_01::Enter()
 {
         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+        m_OrbitSystem->ClearTimedFunctions();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
                 controllerSys->ResetPlayer();

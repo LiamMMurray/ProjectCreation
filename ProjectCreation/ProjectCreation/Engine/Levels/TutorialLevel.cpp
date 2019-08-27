@@ -18,6 +18,7 @@ void TutorialLevel::Enter()
                 GEngine::Get()->SetPuzzleState(0.0f);
 		}
 
+        m_OrbitSystem->ClearTimedFunctions();
         m_OrbitSystem->InstantRemoveOrbitSystem();
         // Update(GEngine::Get()->GetDeltaTime());
         Instance       = this;
