@@ -146,7 +146,7 @@ void PlayerController::Init(EntityHandle h)
         IController::Init(h);
         auto tComp = h.GetComponent<TransformComponent>();
 
-        tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+        tComp->transform.translation = DirectX::XMVectorSet(0.0f, 3.0f, 0.0f, 1.0f);
         tComp->transform.rotation    = DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(0.0f), 0.0f, 0.0f);
 
         m_CurrentVelocity           = DirectX::XMVectorZero();

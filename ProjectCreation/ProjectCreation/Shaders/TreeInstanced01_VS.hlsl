@@ -46,7 +46,7 @@ INPUT_PIXEL main(INPUT_VERTEX vIn)
 
         output.PosWS = mul(Pos, instanceWorld).xyz;
 
-        output.Pos   = mul(float4(output.PosWS, 1.0f), ViewProjection);
+        output.Pos = mul(float4(output.PosWS, 1.0f), ViewProjection);
 
         output.Tex   = vIn.Tex;
         output.Color = vIn.Color;

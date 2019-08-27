@@ -127,7 +127,7 @@ DomainOutput CalcGerstnerWaveOffset(float3 v)
         pos        = mul(float4(pos, 1.0f), World).xyz;
         pos.y      = 0.0f;
 
-        pos  = DoSpeedWave(pos, 2.1f);
+        pos  = DoSpeedWave(pos, 1.5f);
         dOut = CalcGerstnerWaveOffset(pos);
         // dOut.Tex  = Bilerp(texs, domain);
         dOut.Tex2 = dOut.Tex * gTexScale;
