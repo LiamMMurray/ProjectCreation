@@ -43,9 +43,9 @@ class AudioManager
         void               SetMasterVolume(float val);
         void               ActivateMusicAndPause(GW::AUDIO::GMusic*, bool looping = false);
 
-        inline void GetMasterVolume(float val)
+        inline float GetMasterVolume()
         {
-                m_MasterVolume;
+                return m_MasterVolume;
         }
 
         void _shutdown();

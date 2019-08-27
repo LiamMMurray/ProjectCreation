@@ -5,6 +5,7 @@
 #include "../Controller/ControllerSystem.h"
 #include "../GEngine.h"
 #include "3DSoundComponent.h"
+#include "SoundComponent.h"
 #include "AudioManager.h"
 
 void SpatialSoundSystem::OnPreUpdate(float deltaTime)
@@ -16,6 +17,12 @@ void SpatialSoundSystem::OnUpdate(float deltaTime)
         IController*        currentController = controllerSystem->GetCurrentController();
         TransformComponent* playerTransformComponent =
             currentController->GetControlledEntity().GetComponent<TransformComponent>();
+
+        float mastervol =  AudioManager::Get()->GetMasterVolume();
+		for (auto& soundComp : m_HandleManager->GetActiveComponents<SoundComponent>())
+		{
+                soundComp.m_gSound->SetVolume(soundComp.m_Volume * mastervol);
+		}
 
         for (auto& soundComp : m_HandleManager->GetActiveComponents<SoundComponent3D>())
         {
