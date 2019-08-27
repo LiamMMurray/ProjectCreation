@@ -360,11 +360,11 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 trans->transform.scale       = XMVectorSet(1.5f, 1.5f, 1.5f, 1.0f);
                 trans->transform.translation = XMVectorSet(24.51, 0.0f, -139.36f, 1.0f);
                 trans->alignToTerrain        = false;
-                emitterComp->ParticleswithGravity(XMFLOAT3(-3.0f, 50.0f, -3.0f),
-                                                  XMFLOAT3(3.0f, 60.0f, 3.0f),
+                emitterComp->ParticleswithGravity(XMFLOAT3(-0.0f, 60.0f, -0.0f),
+                                                  XMFLOAT3(0.0f, 70.35f, 0.0f),
                                                   {50.0f, 0.0f, 0.0f, 1.0f},
-                                                  {25.0f, 5.0f, 0.0f, 0.6f},
-                                                  XMFLOAT4(50.0f, 0.5f, 1.0f, 2.0f));
+                                                  {35.0f, 5.0f, 0.0f, 0.6f},
+                                                  XMFLOAT4(10.0f, 6.5f, 0.1f, 0.1f));
 
                 XMStoreFloat3(&emitterComp->EmitterData.emitterPosition, trans->transform.translation);
                 // emitterComp->EmitterData.flags = ALIGN_TO_VEL;
