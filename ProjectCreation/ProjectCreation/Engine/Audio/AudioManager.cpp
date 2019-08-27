@@ -41,6 +41,7 @@ GMusic *AudioManager::LoadMusic(const char *name)
         if (it == m_LoadedMusic.end())
         {
                 GW::GReturn returnCode = m_SoundEngine->CreateMusicStream(str.c_str(), &output);
+                output->SetVolume(m_MasterVolume);
                 m_LoadedMusic.insert(std::make_pair(name, output));
         }
         else
@@ -54,8 +55,13 @@ GMusic *AudioManager::LoadMusic(const char *name)
 void AudioManager::SetMasterVolume(float val)
 {
         assert(m_SoundEngine);
-        m_SoundEngine->SetMasterVolume(val);
+        // m_SoundEngine->SetMasterVolume(val);
         m_MasterVolume = val;
+        for (auto &music : m_LoadedMusic)
+        {
+                music.second->SetVolume(val);
+        }
+        GET_SYSTEM(SpatialSoundSystem)->SetMasterVolume(val);
 }
 
 void AudioManager::ActivateMusicAndPause(GW::AUDIO::GMusic *m, bool looping)

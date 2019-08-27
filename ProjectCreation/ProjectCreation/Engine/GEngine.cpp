@@ -52,8 +52,8 @@ void GEngine::Shutdown()
         delete instance->m_SystemManager;
         delete instance->m_ResourceManager;
         delete instance->m_LevelStateManager;
-
         GEngine::Get()->m_MainThreadProfilingContext.Dump();
+        delete instance;
 }
 
 GEngine* GEngine::Get()

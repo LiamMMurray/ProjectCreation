@@ -28,6 +28,7 @@ struct SoundComponent3D : public Component<SoundComponent3D>
                 float           m_Volume        = 1.0f;
                 std::bitset<32> flags           = 0;
         };
+
         FSettings          m_Settings;
         int16_t            m_SoundPoolIndex = -1;
         GW::AUDIO::GSound* m_gwSound        = nullptr;
