@@ -86,7 +86,7 @@ void TextureAddress(inout float2 UVcord[4], uint index, uint rowcol) // row and 
 
                 for (int i = 0; i < 4; ++i)
                 {
-                        verts[i].posWS = buffer[InstanceID].position;
+                        verts[i].posWS = buffer[InstanceID].position.xyz;
                         // verts[i].pos   = float4(0.0f, 0.0f, 0.0f, 1.0f);
                         verts[i].color = currentColor;
                 }

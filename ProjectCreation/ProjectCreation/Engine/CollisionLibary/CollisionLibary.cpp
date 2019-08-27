@@ -77,7 +77,6 @@ void CollisionLibary::CreateFrustum(Shapes::Frustum& frustum, DirectX::XMMATRIX 
 FOverlapResult CollisionLibary::OverlapSphereToSphere(FSphere& a, FSphere& b, float offset)
 {
         FOverlapResult output;
-        FContactPoint  contactPoint;
         float          distance    = MathLibrary::CalulateDistance(a.center, b.center) + offset;
         float          totalRadius = a.radius + b.radius;
         if (distance <= totalRadius)
@@ -97,7 +96,6 @@ FOverlapResult CollisionLibary::OverlapSphereToSphere(FSphere& a, FSphere& b, fl
 FAdvancedCollisionResult CollisionLibary::SweepSphereToSphere(FSphere& startA, FSphere& endA, FSphere& checkB, float offset)
 {
         FAdvancedCollisionResult output;
-        FContactPoint            contactPoint;
         FCapsule                 capsule;
 
         capsule.startPoint = startA.center;

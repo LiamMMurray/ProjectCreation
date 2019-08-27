@@ -50,7 +50,7 @@ float3 VSPositionFromDepth(float2 vTexCoord)
         float3 posVS1    = VSPositionFromDepth(ndc.xy + float2(invScreen.x, 0.0f));
         float3 posVS2    = VSPositionFromDepth(ndc.xy + float2(0.0f, invScreen.y));
         float3 normalVS  = normalize(cross(posVS1 - posVS, posVS2 - posVS));
-        float3 normalWS  = mul(normalVS, _invView);
+        float3 normalWS  = mul(normalVS, _invView).xyz;
 
         float depth = posVS.z;
 
