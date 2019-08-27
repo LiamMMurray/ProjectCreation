@@ -50,6 +50,9 @@ void Level_03::Enter()
         Waves->ResumeStream();
 
         m_SpeedBoostSystem->SetTargetTerrain(1.0f);
+
+        m_LevelType = E_Level_States::LEVEL_03;
+	
 }
 
 void Level_03::Update(float deltaTime)

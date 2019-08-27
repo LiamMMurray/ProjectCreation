@@ -3,6 +3,7 @@
 #include "Level_01.h"
 #include "Level_02.h"
 #include "Level_03.h"
+#include "Level_04.h"
 #include "TutorialLevel.h"
 
 void LevelStateManager::Init()
@@ -13,34 +14,44 @@ void LevelStateManager::Init()
         levelStates[1] = m_LevelStateMachine.CreateState<Level_01>();
         levelStates[2] = m_LevelStateMachine.CreateState<Level_02>();
         levelStates[3] = m_LevelStateMachine.CreateState<Level_03>();
+        levelStates[4] = m_LevelStateMachine.CreateState<Level_04>();
 
         m_LevelStateMachine.SetCurrentState(static_cast<IState*>(levelStates[0]));
 
-        // Game flow level transitions
-        m_LevelStateMachine.AddTransition(levelStates[0], levelStates[0], E_LevelStateEvents::TUTORIAL_LEVEL_TO_TUTORIAL_LEVEL);
-        m_LevelStateMachine.AddTransition(levelStates[1], levelStates[1], E_LevelStateEvents::LEVEL_01_TO_LEVEL_01);
-        m_LevelStateMachine.AddTransition(levelStates[2], levelStates[2], E_LevelStateEvents::LEVEL_02_TO_LEVEL_02);
-        m_LevelStateMachine.AddTransition(levelStates[3], levelStates[3], E_LevelStateEvents::LEVEL_03_TO_LEVEL_03);
-
         // Button tutorial level transitions
+        m_LevelStateMachine.AddTransition(levelStates[0], levelStates[0], E_LevelStateEvents::TUTORIAL_LEVEL_TO_TUTORIAL_LEVEL);
         m_LevelStateMachine.AddTransition(levelStates[0], levelStates[1], E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_01);
         m_LevelStateMachine.AddTransition(levelStates[0], levelStates[2], E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_02);
         m_LevelStateMachine.AddTransition(levelStates[0], levelStates[3], E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_03);
+        m_LevelStateMachine.AddTransition(levelStates[0], levelStates[4], E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_04);
 
         // Button level 1 transitions
         m_LevelStateMachine.AddTransition(levelStates[1], levelStates[0], E_LevelStateEvents::LEVEL_01_TO_TUTORIAL_LEVEL);
+        m_LevelStateMachine.AddTransition(levelStates[1], levelStates[1], E_LevelStateEvents::LEVEL_01_TO_LEVEL_01);
         m_LevelStateMachine.AddTransition(levelStates[1], levelStates[2], E_LevelStateEvents::LEVEL_01_TO_LEVEL_02);
         m_LevelStateMachine.AddTransition(levelStates[1], levelStates[3], E_LevelStateEvents::LEVEL_01_TO_LEVEL_03);
+        m_LevelStateMachine.AddTransition(levelStates[1], levelStates[4], E_LevelStateEvents::LEVEL_01_TO_LEVEL_04);
 
         // Button level 2 transitions
         m_LevelStateMachine.AddTransition(levelStates[2], levelStates[0], E_LevelStateEvents::LEVEL_02_TO_TUTORIAL_LEVEL);
         m_LevelStateMachine.AddTransition(levelStates[2], levelStates[1], E_LevelStateEvents::LEVEL_02_TO_LEVEL_01);
+        m_LevelStateMachine.AddTransition(levelStates[2], levelStates[2], E_LevelStateEvents::LEVEL_02_TO_LEVEL_02);
         m_LevelStateMachine.AddTransition(levelStates[2], levelStates[3], E_LevelStateEvents::LEVEL_02_TO_LEVEL_03);
+        m_LevelStateMachine.AddTransition(levelStates[2], levelStates[4], E_LevelStateEvents::LEVEL_02_TO_LEVEL_04);
 
         // Button level 3 transitions
         m_LevelStateMachine.AddTransition(levelStates[3], levelStates[0], E_LevelStateEvents::LEVEL_03_TO_TUTORIAL_LEVEL);
         m_LevelStateMachine.AddTransition(levelStates[3], levelStates[1], E_LevelStateEvents::LEVEL_03_TO_LEVEL_01);
         m_LevelStateMachine.AddTransition(levelStates[3], levelStates[2], E_LevelStateEvents::LEVEL_03_TO_LEVEL_02);
+        m_LevelStateMachine.AddTransition(levelStates[3], levelStates[3], E_LevelStateEvents::LEVEL_03_TO_LEVEL_03);
+        m_LevelStateMachine.AddTransition(levelStates[3], levelStates[4], E_LevelStateEvents::LEVEL_03_TO_LEVEL_04);
+
+        // Button level 4 transitions
+        m_LevelStateMachine.AddTransition(levelStates[4], levelStates[0], E_LevelStateEvents::LEVEL_04_TO_TUTORIAL_LEVEL);
+        m_LevelStateMachine.AddTransition(levelStates[4], levelStates[1], E_LevelStateEvents::LEVEL_04_TO_LEVEL_01);
+        m_LevelStateMachine.AddTransition(levelStates[4], levelStates[2], E_LevelStateEvents::LEVEL_04_TO_LEVEL_02);
+        m_LevelStateMachine.AddTransition(levelStates[4], levelStates[3], E_LevelStateEvents::LEVEL_04_TO_LEVEL_03);
+        m_LevelStateMachine.AddTransition(levelStates[4], levelStates[4], E_LevelStateEvents::LEVEL_04_TO_LEVEL_04);
 
         // RequestState(0);
 }

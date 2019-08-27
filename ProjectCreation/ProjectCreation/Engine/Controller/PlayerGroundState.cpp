@@ -63,14 +63,10 @@ void PlayerGroundState::Update(float deltaTime)
         static bool doOnce = false;
         if (!doOnce && orbitSystem->goalsCollected == 3)
         {
-
-                // Changed for play testing
-                // _playerController->RequestNextLevel();
-
-                // Reveal Ocean once first planet placed
-                UIManager::instance->DemoEnd();
-                GEngine::Get()->m_TargetInstanceReveal = 1.0f;
-                doOnce                                 = true;
+                GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_04);
+                //UIManager::instance->DemoEnd();
+                //GEngine::Get()->m_TargetInstanceReveal = 1.0f;
+                //doOnce                                 = true;
         }
 
         XMVECTOR currentVelocity = _playerController->GetCurrentVelocity();
