@@ -169,7 +169,7 @@ inline namespace JobScheduler
                 {}
                 void Push(JobInternal* job) volatile
                 {
-                        long b           = m_bottom;
+                        int64_t b        = m_bottom;
                         m_jobs[b & MASK] = job;
 
                         // ensure the job is written before b+1 is published to other threads.
@@ -180,10 +180,10 @@ inline namespace JobScheduler
                 }
                 JobInternal* Pop(void) volatile
                 {
-                        long b = m_bottom - 1;
+                        int64_t b = m_bottom - 1;
                         InterlockedExchange64(&m_bottom, b);
 
-                        long t = m_top;
+                        int64_t t = m_top;
                         if (t <= b)
                         {
                                 // non-empty queue
@@ -213,13 +213,13 @@ inline namespace JobScheduler
                 }
                 JobInternal* Steal(void) volatile
                 {
-                        long t = m_top;
+                        int64_t t = m_top;
 
                         // ensure that top is always read before bottom.
                         // loads will not be reordered with other loads on x86, so a compiler barrier is enough.
                         std::atomic_thread_fence(std::memory_order_seq_cst);
 
-                        long b = m_bottom;
+                        int64_t b = m_bottom;
                         if (t < b)
                         {
                                 // non-empty queue
@@ -255,7 +255,7 @@ inline namespace JobSchedulerInternal
 {
         inline auto& GetWorkerThreadQueue()
         {
-                return g_job_queues[(unsigned)TlsGetValue(g_tls_access_value)];
+                return g_job_queues[reinterpret_cast<unsigned long long>(TlsGetValue(g_tls_access_value))];
         }
         inline void Run(JobInternal* job)
         {
@@ -341,7 +341,7 @@ inline namespace JobSchedulerInternal
                         // std::atomic_thread_fence(std::memory_order_seq_cst);
                 }
         }
-        inline void WorkerThreadMain(unsigned index)
+        inline void WorkerThreadMain(uint64_t index)
         {
                 TlsSetValue(g_tls_access_value, (LPVOID)index);
                 while (g_worker_thread_active)
@@ -360,14 +360,19 @@ inline namespace JobScheduler
         {
                 g_thread_local_job_allocator_static.Initialize();
                 g_thread_local_job_allocator_temp.Initialize();
-                unsigned thread_index = 0;
-                g_job_queues          = (volatile JobQueue<MAX_JOBS_PER_FRAME>*)_aligned_malloc(
-                    sizeof(JobQueue<MAX_JOBS_PER_FRAME>) * g_num_threads, alignof(JobQueue<MAX_JOBS_PER_FRAME>));
-                for (; thread_index < g_num_threads; thread_index++)
-                        g_job_queues[thread_index].Initialize();
-                // g_job_queues.push_back(std::move(JobQueue<MAX_JOBS_PER_FRAME>()));
+                unsigned long long thread_index      = 0;
+                auto     g_job_queues_size = sizeof(JobQueue<MAX_JOBS_PER_FRAME>) * g_num_threads;
+                g_job_queues               = (volatile JobQueue<MAX_JOBS_PER_FRAME>*)_aligned_malloc(g_job_queues_size,
+                                                                                       alignof(JobQueue<MAX_JOBS_PER_FRAME>));
+                assert(g_job_queues);
+                for (volatile JobQueue<MAX_JOBS_PER_FRAME>* itr = g_job_queues; itr != &g_job_queues[g_num_threads]; ++itr)
+                {
+                        itr->Initialize();
+                        thread_index++;
+                }
+
                 thread_index = 0;
-                TlsSetValue(g_tls_access_value, (LPVOID)thread_index);
+                TlsSetValue(g_tls_access_value, reinterpret_cast<LPVOID>(thread_index));
                 thread_index++;
                 for (; thread_index < g_num_threads; thread_index++)
                         g_worker_threads.push_back(std::thread(WorkerThreadMain, thread_index));
@@ -379,7 +384,7 @@ inline namespace JobScheduler
                 g_worker_thread_active = false;
                 for (auto& itr : g_worker_threads)
                         itr.join();
-                //for (auto& itr : g_worker_threads)
+                // for (auto& itr : g_worker_threads)
                 //        itr.~thread();
                 for (unsigned i = 0; i < g_num_threads; i++)
                         g_job_queues[i].Shutdown();
@@ -605,7 +610,7 @@ inline namespace JobSchedulerAbstractionsInternal
                         auto  rg_PoolIndex                  = Component::SGetTypeIndex();
                         auto& rg_ComponentRandomAccessPools = GEngine::Get()->GetHandleManager()->m_ComponentRandomAccessPools;
                         if (rg_ComponentRandomAccessPools.m_mem_starts.size() <= rg_PoolIndex)
-								return;
+                                return;
                         auto rg_ComponentCount = rg_ComponentRandomAccessPools.m_element_counts[rg_PoolIndex];
                         children = CreateParallelForSubJobs(std::forward<Lambda>(lambda), 0, rg_ComponentCount, chunkSize);
                 }
@@ -719,7 +724,7 @@ inline namespace JobSchedulerAbstractionsInternal
                 }
                 void ResetJobs()
                 {
-                        root->unfinished_jobs = children.size() + 1;
+                        root->unfinished_jobs = static_cast<long>(children.size()) + 1;
                         root->parent          = 0;
                         for (const auto& itr : children)
                         {
