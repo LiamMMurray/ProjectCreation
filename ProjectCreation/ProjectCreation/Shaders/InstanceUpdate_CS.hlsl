@@ -56,7 +56,7 @@ bool AABBToFrustum(float3 center, float3 extents)
         pos.y /= 8000.0f / gScale;
 
 
-		pos = DoSpeedWave(pos, 1.7f);
+		//pos = DoSpeedWave(pos, 1.7f);
         InstanceTransforms[id].mtx._42 = pos.y;
 
 
