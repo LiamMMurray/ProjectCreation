@@ -110,7 +110,7 @@ class PlayerController : public IController
 
         const char* m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"Basic_Light_PickUp_Red",
                                                                    "Basic_Light_PickUp_Green",
-                                                                   "Basic_Light_PickUp_Blue",
+                                                                   "BLUE_ORB_COLLECT_0_0",
                                                                    "Basic_Light_PickUp_White"};
 
         GW::AUDIO::GSound* m_SpeedBoostSoundPool[E_LIGHT_ORBS::COUNT][MAX_SPEEDBOOST_SOUNDS];

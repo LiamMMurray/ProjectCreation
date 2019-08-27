@@ -16,7 +16,7 @@ class SpatialSoundSystem : public ISystem
     private:
         HandleManager* m_HandleManager;
 
-        std::vector<Pools::dynamic_pool_t<SoundPoolElement>> m_SoundPools[E_SOUND_TYPE::TYPE_COUNT * 3];
+        std::vector<Pools::dynamic_pool_t<SoundPoolElement>> m_SoundPools[E_SOUND_TYPE::TYPE_COUNT * 4];
 
     protected:
         // Inherited via ISystem
@@ -29,6 +29,7 @@ class SpatialSoundSystem : public ISystem
         virtual void OnSuspend() override;
 
     public:
-        EntityHandle PlaySoundAtLocation(const DirectX::XMVECTOR& pos, SoundComponent3D::FSettings& settings);
+
+		EntityHandle PlaySoundAtLocation(const DirectX::XMVECTOR& pos, SoundComponent3D::FSettings& settings);
         void         FreeSound(int type, int variation, int16_t index);
 };

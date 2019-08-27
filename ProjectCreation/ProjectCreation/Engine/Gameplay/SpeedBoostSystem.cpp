@@ -836,14 +836,15 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                         variation = totalVariations - variation;
                                                 }
 
-
                                                 settings.m_SoundVaration = variation;
                                                 settings.flags.set(SoundComponent3D::E_FLAGS::DestroyOnEnd, true);
                                                 settings.m_Volume = 1.0f;
+
                                                 if (latchedSplineComp->color != E_LIGHT_ORBS::WHITE_LIGHTS)
                                                 {
                                                         AudioManager::Get()->PlaySoundAtLocation(currPos, settings);
                                                 }
+
                                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating    = true;
                                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrength = 0.25f;
                                                 playerController->IncreaseCollectedSplineOrbCount(
