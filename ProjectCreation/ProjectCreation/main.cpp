@@ -335,7 +335,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         UIManager::instance->StartupResAdjust(handle);
 
         
-
+		GEngine::Get()->Signal();
         while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
         {
                 GCoreInput::UpdateInput();

@@ -31,7 +31,6 @@ struct E_MENU_CATEGORIES
         };
 };
 
-//inline float SplashTimers[3]{0, 0, 0};
 
 struct E_FONT_TYPE
 {
@@ -61,8 +60,15 @@ struct CurrSettings
 
 class UIManager
 {
+        struct TimedFunction
+        {
+                void (*func)();
+                float delay;
+        };
+
         using native_handle_type = void*;
         native_handle_type m_WindowHandle;
+        std::vector<TimedFunction> timed_functions;
 
     public:
         static void Initialize(native_handle_type hwnd);

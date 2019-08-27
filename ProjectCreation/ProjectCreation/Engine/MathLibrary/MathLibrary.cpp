@@ -375,6 +375,16 @@ DirectX::XMVECTOR MathLibrary::MoveTowards(const DirectX::XMVECTOR& a, const Dir
         return output;
 }
 
+DirectX::XMVECTOR MathLibrary::MoveVectorColorTowards(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b, const float speed)
+{
+        XMVECTOR output;
+        XMVECTOR delta = b - a;
+        float    dist  = XMVectorGetX(XMVector4Length(delta));
+        XMVECTOR dir   = XMVector4Normalize(delta);
+        output         = a + dir * std::min(speed, dist);
+        return output;
+}
+
 
 // Smoothing functions from the "Fast and Funky 1D Nonlinear Transformations" GDC
 // Powers 2 - 4 are faster than the Nth power

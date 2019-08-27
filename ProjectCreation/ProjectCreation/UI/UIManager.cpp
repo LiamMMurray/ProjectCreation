@@ -16,7 +16,6 @@ class TutorialLevel;
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #define NOMINMAX
-
 UIManager* UIManager::instance;
 using namespace DirectX;
 // Adds Sprites to the vector of Sprites
@@ -205,13 +204,14 @@ void UIManager::DrawSprites(float deltaTime)
                                                                 0.0f) +
                                                     instance->m_ScreenCenter;
 
-                                XMVECTOR scale     = XMVectorSet(sprite.mScaleX * instance->m_ScreenSize.x / 2.0f,
+                                XMVECTOR scale = XMVectorSet(sprite.mScaleX * instance->m_ScreenSize.x / 2.0f,
                                                              sprite.mScaleY * instance->m_ScreenSize.y / 2.0f,
                                                              0.0f,
                                                              1.0f);
 
-                               
-                                sprite.currColor = MathLibrary::MoveTowards(sprite.currColor, sprite.desiredColor, deltaTime * .1f);
+
+                                sprite.currColor = MathLibrary::MoveVectorColorTowards(
+                                    sprite.currColor, sprite.desiredColor, deltaTime * 1.0f);
 
 
                                 instance->m_SpriteBatch->Draw(
@@ -329,26 +329,26 @@ void UIManager::GameplayUpdate(float deltaTime)
 // Splash Screen
 void UIManager::Splash_FullSail()
 {
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = true;
-
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled  = true;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].currColor = {1, 1, 1, .0f};
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled  = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled  = false;
 }
 
 void UIManager::Splash_GPGames()
 {
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = true;
-
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled  = true;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].currColor = {1, 1, 1, .0f};
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled  = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled  = false;
 }
 
 void UIManager::Splash_Team()
 {
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = true;
-
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled  = true;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].currColor = {1, 1, 1, .0f};
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled  = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled  = false;
 }
 
 void UIManager::SplashUpdate(float globalTimer, float deltaTime)
@@ -357,29 +357,32 @@ void UIManager::SplashUpdate(float globalTimer, float deltaTime)
         {
                 instance->m_BreakSplash = true;
                 UIManager::instance->Splash_End();
+                timed_functions.clear();
         }
-        else
-        {
-                if (globalTimer < 5.0f)
-                {
-                        // Full Sail Logo
-                        UIManager::instance->Splash_FullSail();
-                }
-                else if (globalTimer >= 5.0f && globalTimer < 10.0f)
-                {
-                        // GP Games Logo
-                        UIManager::instance->Splash_GPGames();
-                }
-                else if (globalTimer >= 10.0f && globalTimer < 15.0f)
-                {
-                        // Deep!deep Logo
-                        UIManager::instance->Splash_Team();
-                }
-                else
-                {
-                        UIManager::instance->Splash_End();
-                }
-        }
+        // else
+        //{
+        //        if (globalTimer < 5.0f)
+        //        {
+        //                static auto dbg_test = 0;
+        //                dbg_test++;
+        //                // Full Sail Logo
+        //                UIManager::instance->Splash_FullSail();
+        //        }
+        //        else if (globalTimer >= 5.0f && globalTimer < 10.0f)
+        //        {
+        //                // GP Games Logo
+        //                UIManager::instance->Splash_GPGames();
+        //        }
+        //        else if (globalTimer >= 10.0f && globalTimer < 15.0f)
+        //        {
+        //                // Deep!deep Logo
+        //                UIManager::instance->Splash_Team();
+        //        }
+        //        if (globalTimer >= 15.0f)
+        //        {
+        //                UIManager::instance->Splash_End();
+        //        }
+        //}
 }
 
 void UIManager::Splash_End()
@@ -1504,8 +1507,64 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   pauseButtonWidth * ScaleXRatio,
                                   pauseButtonHeight * ScaleYRatio);
         }
+        //{
+        //        if (globalTimer < 5.0f)
+        //        {
+        //                static auto dbg_test = 0;
+        //                dbg_test++;
+        //                // Full Sail Logo
+        //                UIManager::instance->Splash_FullSail();
+        //        }
+        //        else if (globalTimer >= 5.0f && globalTimer < 10.0f)
+        //        {
+        //                // GP Games Logo
+        //                UIManager::instance->Splash_GPGames();
+        //        }
+        //        else if (globalTimer >= 10.0f && globalTimer < 15.0f)
+        //        {
+        //                // Deep!deep Logo
+        //                UIManager::instance->Splash_Team();
+        //        }
+        //        if (globalTimer >= 15.0f)
+        //        {
+        //                UIManager::instance->Splash_End();
+        //        }
+        //}
+        TimedFunction fadeInSplashScreen0;
+        fadeInSplashScreen0.delay = 0;
+        fadeInSplashScreen0.func  = []() { UIManager::instance->Splash_FullSail(); };
+        TimedFunction fadeOutSplashScreen0;
+        fadeOutSplashScreen0.delay = 3.5;
+        fadeOutSplashScreen0.func  = []() {
+                UIManager::instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].desiredColor = {1, 1, 1, 0};
+        };
+        TimedFunction fadeInSplashScreen1;
+        fadeInSplashScreen1.delay = 5;
+        fadeInSplashScreen1.func  = []() { UIManager::instance->Splash_GPGames(); };
+        TimedFunction fadeOutSplashScreen1;
+        fadeOutSplashScreen1.delay = 8.5;
+        fadeOutSplashScreen1.func  = []() {
+                UIManager::instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].desiredColor = {1, 1, 1, 0};
+        };
+        TimedFunction fadeInSplashScreen2;
+        fadeInSplashScreen2.delay = 10;
+        fadeInSplashScreen2.func  = []() { UIManager::instance->Splash_Team(); };
+        TimedFunction fadeOutSplashScreen2;
+        fadeOutSplashScreen2.delay = 13.5;
+        fadeOutSplashScreen2.func  = []() {
+                UIManager::instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].desiredColor = {1, 1, 1, 0};
+        };
+        TimedFunction splashEndDelayd;
+        splashEndDelayd.delay = 15;
+        splashEndDelayd.func  = []() { UIManager::instance->Splash_End(); };
 
-
+        instance->timed_functions.push_back(fadeInSplashScreen0);
+        instance->timed_functions.push_back(fadeInSplashScreen1);
+        instance->timed_functions.push_back(fadeInSplashScreen2);
+        instance->timed_functions.push_back(splashEndDelayd);
+        instance->timed_functions.push_back(fadeOutSplashScreen0);
+        instance->timed_functions.push_back(fadeOutSplashScreen1);
+        instance->timed_functions.push_back(fadeOutSplashScreen2);
         // Pause Menu
 
         // Resume Button
@@ -2138,6 +2197,17 @@ void UIManager::Update(float deltaTime)
                         }
                 }
         GEngine::Get()->m_MainThreadProfilingContext.End();
+
+        for (int i = 0; i < instance->timed_functions.size(); i++)
+        {
+                instance->timed_functions[i].delay -= deltaTime;
+                if (instance->timed_functions[i].delay <= 0)
+                {
+                        instance->timed_functions[i].func();
+                        instance->timed_functions.erase(instance->timed_functions.begin() + i);
+                        i--;
+                }
+        }
 }
 
 void UIManager::Shutdown()
