@@ -20,15 +20,15 @@ class TutorialLevel;
 UIManager* UIManager::instance;
 using namespace DirectX;
 // Adds Sprites to the vector of Sprites
-void UIManager::AddSprite(ID3D11Device*        device,
-                          ID3D11DeviceContext* deviceContext,
-                          int                  category,
-                          const wchar_t*       FileName,
-                          float                PositionX,
-                          float                PositionY,
-                          float                scaleX,
-                          float                scaleY,
-                          bool                 enabled)
+int UIManager::AddSprite(ID3D11Device*        device,
+                         ID3D11DeviceContext* deviceContext,
+                         int                  category,
+                         const wchar_t*       FileName,
+                         float                PositionX,
+                         float                PositionY,
+                         float                scaleX,
+                         float                scaleY,
+                         bool                 enabled)
 {
 
         SpriteComponent cSprite;
@@ -73,6 +73,10 @@ void UIManager::AddSprite(ID3D11Device*        device,
         // Reset everything that needs to be
         Texture.Reset();
         resource.Reset();
+
+        return m_AllSprites[category].size() - 1;
+
+        // m_AllSprites[category][index].desiredAlpha = 1.0f;
 }
 
 // Adds text to the vector of text
@@ -185,7 +189,7 @@ void UIManager::UIClipCursor()
         ClipCursor(&rect);
 }
 
-void UIManager::DrawSprites()
+void UIManager::DrawSprites(float deltaTime)
 {
         for (auto& it : instance->m_AllSprites)
                 for (auto& sprite : it.second)
@@ -201,13 +205,17 @@ void UIManager::DrawSprites()
                                                                 0.0f) +
                                                     instance->m_ScreenCenter;
 
-                                XMVECTOR scale = XMVectorSet(sprite.mScaleX * instance->m_ScreenSize.x / 2.0f,
+                                XMVECTOR scale     = XMVectorSet(sprite.mScaleX * instance->m_ScreenSize.x / 2.0f,
                                                              sprite.mScaleY * instance->m_ScreenSize.y / 2.0f,
                                                              0.0f,
                                                              1.0f);
 
+                               
+                                sprite.currColor = MathLibrary::MoveTowards(sprite.currColor, sprite.desiredColor, deltaTime * .1f);
+
+
                                 instance->m_SpriteBatch->Draw(
-                                    sprite.mTexture, position, nullptr, DirectX::Colors::White, 0.0f, sprite.mOrigin, scale);
+                                    sprite.mTexture, position, nullptr, sprite.currColor, 0.0f, sprite.mOrigin, scale);
 
 
                                 instance->m_SpriteBatch->End();
@@ -220,7 +228,7 @@ void UIManager::Present()
         m_RenderSystem->Present();
 }
 
-void UIManager::GameplayUpdate()
+void UIManager::GameplayUpdate(float deltaTime)
 {
         float aspectRatio = instance->m_ScreenSize.x / instance->m_ScreenSize.y;
         if (instance->m_InMenu)
@@ -292,7 +300,7 @@ void UIManager::GameplayUpdate()
         XMFLOAT2 cursorCoords = {(float)cursorPoint.x, (float)cursorPoint.y};
         XMVECTOR point        = UI::ConvertScreenPosToNDC(cursorCoords, instance->m_ScreenSize, xmRect);
 
-        instance->DrawSprites();
+        instance->DrawSprites(deltaTime);
 
         for (auto& it : instance->m_AllSprites)
                 for (auto& sprite : it.second)
@@ -343,10 +351,8 @@ void UIManager::Splash_Team()
         instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = false;
 }
 
-void UIManager::SplashUpdate(float globalTimer)
+void UIManager::SplashUpdate(float globalTimer, float deltaTime)
 {
-        float deltatime = GEngine::Get()->GetDeltaTime();
-
         if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
         {
                 instance->m_BreakSplash = true;
@@ -2076,7 +2082,7 @@ void UIManager::Initialize(native_handle_type hwnd)
             [](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
 }
 
-void UIManager::Update()
+void UIManager::Update(float deltaTime)
 {
         GEngine::Get()->m_MainThreadProfilingContext.Begin("UIManager", "UIManager");
         using namespace DirectX;
@@ -2090,20 +2096,22 @@ void UIManager::Update()
 
         if (GlobalTimer < 15.1f && !instance->m_BreakSplash)
         {
-                instance->SplashUpdate(GlobalTimer);
+                instance->SplashUpdate(GlobalTimer, deltaTime);
                 GlobalTimer += GEngine::Get()->GetDeltaTime();
         }
         else
         {
-                instance->GameplayUpdate();
+                instance->GameplayUpdate(deltaTime);
         }
 
-        instance->DrawSprites();
+        instance->DrawSprites(deltaTime);
         for (auto& it : instance->m_AllFonts)
                 for (auto& font : it.second)
                 {
                         if (font.mEnabled)
                         {
+
+
                                 instance->m_SpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
                                                                instance->m_States->NonPremultiplied());
 

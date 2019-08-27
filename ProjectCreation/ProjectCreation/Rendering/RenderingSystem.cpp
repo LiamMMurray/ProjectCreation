@@ -1121,7 +1121,7 @@ void RenderSystem::OnUpdate(float deltaTime)
         debug_renderer::clear_lines();
 
         // UI Manager Update
-        UIManager::Update();
+        UIManager::Update(deltaTime);
 
         Present();
 }

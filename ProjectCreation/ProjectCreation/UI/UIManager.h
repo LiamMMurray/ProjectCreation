@@ -31,6 +31,8 @@ struct E_MENU_CATEGORIES
         };
 };
 
+//inline float SplashTimers[3]{0, 0, 0};
+
 struct E_FONT_TYPE
 {
         enum
@@ -64,19 +66,19 @@ class UIManager
 
     public:
         static void Initialize(native_handle_type hwnd);
-        static void Update();
+        static void Update(float deltaTime);
         static void Shutdown();
 
         // Pause Menu
-        void AddSprite(ID3D11Device*        device,
-                       ID3D11DeviceContext* deviceContext,
-                       int                  category,
-                       const wchar_t*       FileName,
-                       float                PositionX,
-                       float                PositionY,
-                       float                scaleX,
-                       float                scaleY,
-                       bool                 enabled);
+        int AddSprite(ID3D11Device*        device,
+                      ID3D11DeviceContext* deviceContext,
+                      int                  category,
+                      const wchar_t*       FileName,
+                      float                PositionX,
+                      float                PositionY,
+                      float                scaleX,
+                      float                scaleY,
+                      bool                 enabled);
 
         void AddText(ID3D11Device*        device,
                      ID3D11DeviceContext* deviceContext,
@@ -120,19 +122,19 @@ class UIManager
         void BlueOrbCollected();
 
 
-        void        UIClipCursor();
+        void UIClipCursor();
 
 
         static UIManager* instance;
 
         RenderSystem* m_RenderSystem;
 
-        void DrawSprites();
+        void DrawSprites(float deltaTime);
         void Present();
 
     private:
-        void GameplayUpdate();
-        void SplashUpdate(float globalTimer);
+        void GameplayUpdate(float deltaTime);
+        void SplashUpdate(float globalTimer, float deltaTime);
 
         bool         m_FirstFull      = true; // Turns false when the game is put to fullscreen on launch
         bool         m_InMenu         = false;
