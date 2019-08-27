@@ -97,5 +97,4 @@ void EngineHelpers::ShutdownEngineSystemManagers()
         // ControllerSystem::Shutdown();
         AudioManager::Shutdown();
         GEngine::Shutdown();
-        delete GEngine::Get();
 }

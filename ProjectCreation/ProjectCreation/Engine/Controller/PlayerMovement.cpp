@@ -17,6 +17,7 @@
 #include "PlayerStateEvents.h"
 
 #include "../../Rendering/DebugRender/debug_renderer.h"
+#include "..//Audio/ContinousSoundSystem.h"
 // v Testing only delete when done v
 #include <iostream>
 #include "../CoreInput/InputActions.h"
@@ -186,13 +187,6 @@ void PlayerController::Init(EntityHandle h)
 
 
         // Init sound pool
-        for (unsigned int color = 0; color < E_LIGHT_ORBS::COUNT; ++color)
-        {
-                for (unsigned int i = 0; i < MAX_SPEEDBOOST_SOUNDS; ++i)
-                {
-                        m_SpeedBoostSoundPool[color][i] = AudioManager::Get()->CreateSFX(m_SpeedboostSoundNames[color]);
-                }
-        }
 }
 
 void PlayerController::Reset()
@@ -207,12 +201,15 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
 
         if ((int)m_ColorInputKeyCodes[color] < 0 || InputActions::CheckAction(color) == KeyState::Down)
         {
-                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(color);
 
                 // Settings for the orb sounds (Referencing SpeedBoostSystem.cpp lines 814-846
-                int index = SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount() % 3;
+                int index = SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount();
+                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(color);
 
-                if (color == 3) {}
+                if (color == 3)
+                {
+                        AudioManager::Get()->PlaySoundWithVolume(1.0f, m_SpeedboostSoundNames[index].c_str());
+                }
                 else
                 {
                         SoundComponent3D::FSettings settings;

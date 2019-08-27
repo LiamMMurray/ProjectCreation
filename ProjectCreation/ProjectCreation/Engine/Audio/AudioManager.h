@@ -36,6 +36,8 @@ class AudioManager
         static AudioManager*                                instance;
 
     public:
+        EntityHandle PlaySoundWithVolume(float volume, const char* name);
+
         EntityHandle PlaySoundAtLocation(const DirectX::XMVECTOR& pos, SoundComponent3D::FSettings& settings);
 
         GW::AUDIO::GSound* CreateSFX(const char*);
@@ -43,9 +45,9 @@ class AudioManager
         void               SetMasterVolume(float val);
         void               ActivateMusicAndPause(GW::AUDIO::GMusic*, bool looping = false);
 
-        inline void GetMasterVolume(float val)
+        inline float GetMasterVolume()
         {
-                m_MasterVolume;
+                return m_MasterVolume;
         }
 
         void _shutdown();

@@ -14,6 +14,8 @@
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
 
+#include"Engine/Audio/ContinousSoundSystem.h"
+
 #include "UI/UIManager.h"
 
 #include "Engine/CollisionLibary/CollisionLibary.h"
@@ -140,7 +142,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 )
 {
         ENABLE_LEAK_DETECTION();
-        //_CrtSetBreakAlloc(241);
+        //_CrtSetBreakAlloc(238);
         _WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
         return 0;
@@ -219,8 +221,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         // Sound tests
 
         // Joseph found a sfx track for speed boosts and is replacing the old music with it for testing <06/19/19>
-        auto boop = AudioManager::Get()->CreateSFX("whiteSpeedBoost");
-        boop->SetVolume(0.1f);
+
 
         // Joseph found an underwater abience music track and is replacing the old music with it for testing <06/19/19>
         // auto music = AudioManager::Get()->LoadMusic("extreme");
@@ -386,19 +387,6 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                         }
                 }
 
-                if (GCoreInput::GetKeyState(KeyCode::P) == KeyState::DownFirst)
-                {
-                        boop->Play();
-                }
-                if (GCoreInput::GetKeyState(KeyCode::O) == KeyState::DownFirst)
-                {
-                        bool musicIsPlaying;
-                        music->isStreamPlaying(musicIsPlaying);
-                        if (!musicIsPlaying)
-                                music->ResumeStream();
-                        else
-                                music->PauseStream();
-                }
 
                 debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
                 GEngine::Get()->GetSystemManager()->Update(deltaTime);

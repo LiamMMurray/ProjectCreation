@@ -379,8 +379,8 @@ inline namespace JobScheduler
                 g_worker_thread_active = false;
                 for (auto& itr : g_worker_threads)
                         itr.join();
-                for (auto& itr : g_worker_threads)
-                        itr.~thread();
+                //for (auto& itr : g_worker_threads)
+                //        itr.~thread();
                 for (unsigned i = 0; i < g_num_threads; i++)
                         g_job_queues[i].Shutdown();
                 _aligned_free(const_cast<JobQueue<MAX_JOBS_PER_FRAME>*>(g_job_queues));

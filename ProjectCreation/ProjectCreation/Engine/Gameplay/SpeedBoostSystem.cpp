@@ -34,6 +34,7 @@
 #include "../Particle Systems/EmitterComponent.h"
 
 #include "../JobScheduler.h"
+#include"..//Audio/ContinousSoundSystem.h"
 using namespace DirectX;
 
 std::random_device                    r;
@@ -355,9 +356,10 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                                 CreateRandomPath(start, end, i, width, waveCount, height);
                                 if (i < 3)
                                 {
-                                        auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
-                                        spawnSound->SetVolume(0.8f);
-                                        spawnSound->Play();
+                                        //auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
+                                        auto spawnSound = GET_SYSTEM(SpatialSoundSystem)->PlaySoundWithVolume(0.8f,spawnNames[i]);
+                                        /*spawnSound->SetVolume(0.8f);
+                                        spawnSound->Play();*/
                                 }
 
                                 m_PendingPathCounts[i]--;
@@ -409,9 +411,10 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                                 end   = XMVectorSetY(end, 0.0f);
 
                                 CreateRandomPath(start, end, i, width, waveCount, height);
-                                auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
-                                spawnSound->SetVolume(0.8f);
-                                spawnSound->Play();
+                                //auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
+                                auto spawnSound = GET_SYSTEM(SpatialSoundSystem)->PlaySoundWithVolume(0.8f, spawnNames[i]);
+                               /* spawnSound->SetVolume(0.8f);
+                                spawnSound->Play();*/
 
                                 m_PendingPathCounts[i]--;
                         }
