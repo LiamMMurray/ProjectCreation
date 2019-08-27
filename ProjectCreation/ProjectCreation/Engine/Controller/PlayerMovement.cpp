@@ -16,8 +16,8 @@
 #include "PlayerPuzzleState.h"
 #include "PlayerStateEvents.h"
 
-#include"..//Audio/ContinousSoundSystem.h"
 #include "../../Rendering/DebugRender/debug_renderer.h"
+#include "..//Audio/ContinousSoundSystem.h"
 // v Testing only delete when done v
 #include <iostream>
 #include "../CoreInput/InputActions.h"
@@ -187,7 +187,6 @@ void PlayerController::Init(EntityHandle h)
 
 
         // Init sound pool
-
 }
 
 void PlayerController::Reset()
@@ -205,12 +204,12 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(color);
 
                 // Settings for the orb sounds (Referencing SpeedBoostSystem.cpp lines 814-846
-                int index = SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount() % 3;
+                int index = (SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount() - 1) % 3;
 
-                if (color == 3) {
-                        AudioManager::Get()->PlaySoundAtLocation(boostPos, settings);
-
-				}
+                if (color == 3)
+                {
+                        AudioManager::Get()->PlaySoundWithVolume(1.0f, m_SpeedboostSoundNames[color].c_str());
+                }
                 else
                 {
                         SoundComponent3D::FSettings settings;

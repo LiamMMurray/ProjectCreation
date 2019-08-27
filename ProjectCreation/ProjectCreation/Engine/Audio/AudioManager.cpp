@@ -11,6 +11,11 @@ using namespace GW::AUDIO;
 
 AudioManager *AudioManager::instance;
 
+EntityHandle AudioManager::PlaySoundWithVolume(float volume, const char *name)
+{
+        return GET_SYSTEM(SpatialSoundSystem)->PlaySoundWithVolume(volume, name);
+}
+
 
 EntityHandle AudioManager::PlaySoundAtLocation(const DirectX::XMVECTOR &pos, SoundComponent3D::FSettings &settings)
 {
