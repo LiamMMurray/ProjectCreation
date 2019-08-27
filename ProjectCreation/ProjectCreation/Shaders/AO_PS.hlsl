@@ -43,7 +43,7 @@ float main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
 {
         float  depthSample = ScreenDepth.Sample(sampleTypeClamp, texCoord).r;
         float3 viewPos     = VSPositionFromDepth(texCoord);
-        float3 worldPos    = mul(viewPos, _invView).xyz;
+        float3 worldPos    = mul(float4(viewPos, 1.0f), _invView).xyz;
         float  linearDepth = viewPos.z;
         // return worldPos.xyzz / 100.0f;
 
@@ -57,7 +57,7 @@ float main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
         float3 posVS1   = VSPositionFromDepth(texCoord + float2(_inverseScreenDimensions.x, 0.0f));
         float3 posVS2   = VSPositionFromDepth(texCoord + float2(0.0f, _inverseScreenDimensions.y));
         float3 normalVS = normalize(cross(posVS1 - posVS, posVS2 - posVS));
-        float3 normalWS = mul(normalVS, _invView).xyz;
+        float3 normalWS = mul(float4(normalVS,1.0f), _invView).xyz;
         float  rad      = ao_sample_rad / posVS.z;
 
         float2 randomVec = GetRandomNormalFromTexture(texCoord, screenSize);

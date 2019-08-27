@@ -87,14 +87,14 @@ void SpatialSoundSystem::OnInitialize()
 
 
                         m_SoundPools[SOUND_COLOR_TYPE(color, type)].resize(E_SOUND_TYPE::variations[type]);
-                        for (int variation = 0; variation < E_SOUND_TYPE::variations[type]; ++variation)
+                        for (unsigned int variation = 0; variation < E_SOUND_TYPE::variations[type]; ++variation)
                         {
                                 std::stringstream baseVariationStream;
                                 baseVariationStream << baseTypeStream.str() << "_" << variation;
 
                                 m_SoundPools[SOUND_COLOR_TYPE(color, type)][variation].Init(E_SOUND_POOL_SIZES::arr[type]);
 
-                                for (int poolIndex = 0; poolIndex < E_SOUND_POOL_SIZES::arr[type]; ++poolIndex)
+                                for (unsigned int poolIndex = 0; poolIndex < E_SOUND_POOL_SIZES::arr[type]; ++poolIndex)
                                 {
                                         m_SoundPools[SOUND_COLOR_TYPE(color, type)][variation][poolIndex].gwSound =
                                             AudioManager::Get()->CreateSFX(baseVariationStream.str().c_str());

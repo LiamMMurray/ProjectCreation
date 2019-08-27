@@ -160,7 +160,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
 
         if (IsUnlit(_textureFlags))
         {
-                return (color + surface.diffuseColor, alpha);
+                return float4(color + surface.diffuseColor, alpha);
         }
 
         // Non metals use a constant for this value

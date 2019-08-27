@@ -37,7 +37,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         float2 windDir = float2(1.0f, 1.0f);
 
         // return noiseBlend;
-        float2 depthMask = diffuseMap.SampleLevel(sampleTypeWrap, rotateUV(pIn.Tex, -0.004f * _Time), 0).r;
+        float depthMask = diffuseMap.SampleLevel(sampleTypeWrap, rotateUV(pIn.Tex, -0.004f * _Time), 0).r;
         // return flow;
         // return sphere;
 

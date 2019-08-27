@@ -1,4 +1,3 @@
-#pragma once
 
 #define IS_FLAT (1 << 0)
 #define IS_STEEP (1 << 1)

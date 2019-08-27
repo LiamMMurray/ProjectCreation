@@ -34,7 +34,7 @@ INPUT_PIXEL main(INPUT_VERTEX vIn)
 
 
         float2 windDir     = float2(1.0f, 0.0f);
-        float  hWave       = sin(_Time * 1.4f + dot(objPos, windDir));
+        float  hWave       = sin(_Time * 1.4f + dot(objPos, float3(windDir,0.0f)));
         hWave              = remap(hWave, -1.0f, 1.0f, -0.2f, 1.0f);
         float vWave        = remap(sin(_Time * 2.5f + Pos.y / 0.5f), -1.0f, 1.0f, 0.8f, 1.0f);
         float heightFactor = saturate(Pos.y / 2.0f);
