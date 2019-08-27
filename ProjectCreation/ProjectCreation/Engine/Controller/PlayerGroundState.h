@@ -16,6 +16,10 @@ class PlayerGroundState : public IPlayerControllerState
                 m_SpeedboostTimer = m_SpeedboostDuration;
         }
 
+		void ScreenShake(float& shakeTime, float magnitude, float& pitchDelta, float& rollDelta);
+
+		bool ShouldShake = false;
+
         bool  bUseGravity                 = false;
         float m_SpeedboostTimer           = 0.0f;
         float m_SpeedboostDuration        = 3.0f;
