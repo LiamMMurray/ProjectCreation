@@ -32,6 +32,7 @@ static const float4 colors[4] = {float4(4.0f, 0.04f, 0.0f, 1.0f),
         float3 rtB = 0.02f * up;
 
         float4 color = colors[input[0].ColorID];
+        
 
         quad[0].Pos   = input[0].Pos;
         quad[0].Color = color;
@@ -67,12 +68,14 @@ static const float4 colors[4] = {float4(4.0f, 0.04f, 0.0f, 1.0f),
         quad[6].Color = color;
         quad[6].Tex   = float2(0.0f, 1.0f);
         quad[6].Pos.xyz -= rtB;
+        quad[6].Pos.xyz -= rtB;
 
         quad[7].Pos   = input[1].Pos;
         quad[7].Color = color;
         quad[7].Tex   = float2(1.0f, 1.0f);
         quad[7].Pos.xyz += rtB;
 
+		[unroll]
         for (uint k = 0; k < 8; ++k)
         {
                 quad[k].PosWS = quad[k].Pos.xyz;
