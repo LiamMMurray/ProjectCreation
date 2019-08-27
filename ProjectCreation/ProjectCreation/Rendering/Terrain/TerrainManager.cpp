@@ -623,7 +623,10 @@ void TerrainManager::_update(float deltaTime)
 
         for (auto& compHandle : staticMeshesShowWithTerrain)
         {
-                auto sm      = compHandle.Get<StaticMeshComponent>();
+                auto sm = compHandle.Get<StaticMeshComponent>();
+
+                // sm->SetIsActive(false);
+                // continue;
                 auto emitter = compHandle.Get()->GetParent().GetComponent<EmitterComponent>();
                 auto trans   = compHandle.Get()->GetParent().GetComponent<TransformComponent>();
 
@@ -632,7 +635,7 @@ void TerrainManager::_update(float deltaTime)
                 {
                         fw = VectorConstants::Forward;
                 }
-                fw = XMVectorSetY(fw, 0.0f);
+                fw                        = XMVectorSetY(fw, 0.0f);
                 fw                        = XMVector3Normalize(fw);
                 trans->transform.rotation = FQuaternion::LookAt(fw);
 
@@ -640,10 +643,10 @@ void TerrainManager::_update(float deltaTime)
 
                 // sm->GetParent().GetComponent<TransformComponent>()->transform.SetScale(terrainConstantBufferCPU.gTerrainAlpha);
 
-                if (active && terrainConstantBufferCPU.gTerrainAlpha <= 0.0f)
+                if (active && GEngine::Get()->m_InstanceReveal <= 0.0f)
                         sm->SetIsActive(false);
 
-                if (!active && terrainConstantBufferCPU.gTerrainAlpha > 0.0f)
+                if (!active && GEngine::Get()->m_InstanceReveal > 0.0f)
                 {
                         sm->SetIsActive(true);
                         emitter->SetIsActive(true);

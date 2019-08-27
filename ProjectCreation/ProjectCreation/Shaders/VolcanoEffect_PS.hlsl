@@ -76,7 +76,7 @@ float4 main(INPUT_PIXEL input) : SV_TARGET
 
         diffuseSample = 1.0f * diffuseMap.Sample(sampleTypeWrap, input.Tex);
 
-        clip(diffuseSample.a < 0.1f ? -1 : 1); // masked
+        clip((diffuseSample.a) < 0.1f ? -1 : 1); // masked
 
         // return lerp(2.0f, 0.15f, fakeShadow);
         surface.diffuseColor *= diffuseSample.xyz;

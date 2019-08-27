@@ -26,7 +26,8 @@ INPUT_PIXEL main(INPUT_VERTEX input)
         output.NormalWS = normalize(output.NormalWS);
 
 
-        float4 Pos         = float4(input.Pos, 1);
+        float4 Pos = float4(input.Pos, 1);
+        Pos.xyz *= _InstanceReveal;
         output.linearDepth = 1.0f - saturate(Pos.y / 115.0f);
         Pos.xyz += heightSample * output.NormalWS * 5.0f;
 
