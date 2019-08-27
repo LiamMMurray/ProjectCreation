@@ -49,10 +49,8 @@ void PlayerPuzzleState::Update(float deltaTime)
                                 XMVectorSet((float)GCoreInput::GetMouseX(), (float)-GCoreInput::GetMouseY(), 0.0f, 0.0f);
                 }
         }
-		else
-		{
-
-		}
+        else
+        {}
 
 
         XMVECTOR offset = XMVectorZero();
@@ -73,12 +71,17 @@ void PlayerPuzzleState::Update(float deltaTime)
         offset += XMVector3Rotate(dragVelocity, playerTransformComp->transform.rotation.data);
         XMVECTOR newPos = goalTransform->transform.translation + offset;
         bool     inBounds;
-        inBounds = CollisionLibary::PointInNDC(newPos, cameraComponent->_cachedViewProjection);
+        XMVECTOR clampedPos;
+        inBounds = CollisionLibary::PointInNDC(newPos, cameraComponent->_cachedViewProjection, clampedPos);
 
 
         if (inBounds)
         {
                 goalTransform->transform.translation = newPos;
+        }
+        else
+        {
+                goalTransform->transform.translation = clampedPos;
         }
 
         Shapes::FSphere sphereA(goalTransform->transform.translation, goalComp->initialTransform.GetRadius());

@@ -3,7 +3,7 @@
 #include "Samplers.hlsl"
 #include "Terrain_Includes.hlsl"
 #include "Wrap.hlsl"
-
+#include "DoSpeedWave.hlsli"
 Texture2D MaskMap : register(t10);
 
 
@@ -56,6 +56,7 @@ bool AABBToFrustum(float3 center, float3 extents)
         pos.y /= 8000.0f / gScale;
 
 
+		pos = DoSpeedWave(pos, 1.7f);
         InstanceTransforms[id].mtx._42 = pos.y;
 
 
