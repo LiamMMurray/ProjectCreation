@@ -61,6 +61,7 @@ void AudioManager::SetMasterVolume(float val)
 {
         assert(m_SoundEngine);
         // m_SoundEngine->SetMasterVolume(val);
+        val *= 0.1f;
         m_MasterVolume = val;
         for (auto &music : m_LoadedMusic)
         {

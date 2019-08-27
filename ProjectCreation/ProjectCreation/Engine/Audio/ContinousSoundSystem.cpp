@@ -41,6 +41,13 @@ void SpatialSoundSystem::OnUpdate(float deltaTime)
                 bool isPlaying;
                 m_SoundPools[type][variation][index].gwSound->isSoundPlaying(isPlaying);
 
+                float distance = MathLibrary::CalulateDistance(playerTransformComponent->transform.translation,
+                                                               transformComponent->transform.translation);
+
+                float alpha =
+                    1.0f - MathLibrary::saturate((distance - soundComp.m_Settings.m_Radius) / soundComp.m_Settings.m_Falloff);
+
+                m_SoundPools[type][variation][index].gwSound->SetVolume(alpha * soundComp.m_Settings.m_Volume * m_masterVolume);
                 if (isPlaying == false)
                 {
                         if (soundComp.m_Settings.flags.test(SoundComponent3D::E_FLAGS::Looping) == true)
@@ -54,16 +61,8 @@ void SpatialSoundSystem::OnUpdate(float deltaTime)
                                 if (soundComp.m_Settings.flags.test(SoundComponent3D::E_FLAGS::DestroyOnEnd) == true)
                                         parent.Free();
                         }
-                };
-
-                float distance = MathLibrary::CalulateDistance(playerTransformComponent->transform.translation,
-                                                               transformComponent->transform.translation);
-
-                float alpha =
-                    1.0f - MathLibrary::saturate((distance - soundComp.m_Settings.m_Radius) / soundComp.m_Settings.m_Falloff);
-
-                m_SoundPools[type][variation][index].gwSound->SetVolume(alpha * soundComp.m_Settings.m_Volume * m_masterVolume);
-        }
+                }
+        };
 }
 void SpatialSoundSystem::OnPostUpdate(float deltaTime)
 {}
@@ -140,6 +139,7 @@ EntityHandle SpatialSoundSystem::PlaySoundAtLocation(const DirectX::XMVECTOR& po
         {
                 soundComponent->m_gwSound =
                     m_SoundPools[settings.m_SoundType][settings.m_SoundVaration][soundComponent->m_SoundPoolIndex].gwSound;
+                soundComponent->m_gwSound->SetVolume(m_masterVolume);
                 soundComponent->m_gwSound->Play();
         }
         else
