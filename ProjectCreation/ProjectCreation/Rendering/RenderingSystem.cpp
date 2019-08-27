@@ -611,7 +611,7 @@ void RenderSystem::DrawLines()
 
         for (auto& it : speedboostSystem->m_SplineClusterSpawners)
         {
-                int vertexCount = it.second.cachedPoints.size() - 1;
+                int vertexCount = (int)(it.second.cachedPoints.size() - 1);
 
                 int separator  = it.second.deleteIndex;
                 int separation = it.second.deleteSeparation;
@@ -898,8 +898,8 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         XMVECTOR playerVel =
             static_cast<PlayerController*>(GET_SYSTEM(ControllerSystem)->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER])
                 ->GetCurrentVelocity();
-        
-		currVel = MathLibrary::MoveTowards(currVel, playerVel, 1.5f*deltaTime);
+
+        currVel = MathLibrary::MoveTowards(currVel, playerVel, 1.5f * deltaTime);
         XMStoreFloat3(&m_ConstantBuffer_SCENE._PlayedVelocity, currVel);
 
         /** Prepare draw calls **/
@@ -1324,8 +1324,8 @@ void RenderSystem::SetFullscreen(bool val)
         {
                 DXGI_MODE_DESC desc{};
                 desc.Format  = DXGI_FORMAT_B8G8R8A8_UNORM;
-                desc.Height  = m_BackBufferHeight;
-                desc.Width   = m_BackBufferHeight;
+                desc.Height  = (UINT)m_BackBufferHeight;
+                desc.Width   = (UINT)m_BackBufferHeight;
                 desc.Scaling = DXGI_MODE_SCALING_STRETCHED;
 
                 IDXGIOutput* target = nullptr;

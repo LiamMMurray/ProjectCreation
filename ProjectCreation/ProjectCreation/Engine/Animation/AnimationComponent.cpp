@@ -18,7 +18,7 @@ void AnimationComponent::SetWeights(int count, float* weights)
         }
 }
 
-void AnimationComponent::AddAnims(int count, float* weights, ResourceHandle* animHandles)
+void AnimationComponent::AddAnims(size_t count, float* weights, ResourceHandle* animHandles)
 {
         m_Clips.insert(m_Clips.begin(), animHandles, animHandles + count);
         m_Weights.insert(m_Weights.begin(), weights, weights + count);

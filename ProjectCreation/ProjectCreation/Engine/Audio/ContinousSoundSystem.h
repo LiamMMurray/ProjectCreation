@@ -11,7 +11,7 @@
 #include "3DSoundComponent.h"
 #include "SoundComponent.h"
 
-class HandleManager;
+struct HandleManager;
 class SpatialSoundSystem : public ISystem
 {
     private:

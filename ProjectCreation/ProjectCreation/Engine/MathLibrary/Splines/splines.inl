@@ -1,8 +1,8 @@
 #include "splines.hpp"
 
+#include <minwindef.h>
 #include <algorithm>
 #include <cassert>
-#include <minwindef.h>
 
 template <typename Point_t, typename Real_t>
 Spline<Point_t, Real_t>::Spline(int k, spline::Node_e node_type) :
@@ -100,7 +100,7 @@ void Spline<Point_t, Real_t>::set_nodal_vector()
 template <typename Point_t, typename Real_t>
 void Spline<Point_t, Real_t>::set_node_to_uniform()
 {
-        const int n = _point.size() - 1;
+        const int n = (int)(_point.size() - 1);
         _node.resize(_k + n + 1);
 
         Real_t step = (Real_t)1 / (Real_t)(n - _k + 2);

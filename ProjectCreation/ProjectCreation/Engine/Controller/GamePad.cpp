@@ -39,7 +39,7 @@ GamePad::GamePad()
 
 void GamePad::IsVibrating(float strength)
 {
-        instance->m_GamePadRumble.wLeftMotorSpeed = MAX_RUMBLE * strength;
+        instance->m_GamePadRumble.wLeftMotorSpeed = WORD(MAX_RUMBLE * strength);
         XInputSetState(instance->cId, &instance->m_GamePadRumble);
         //std::cout << "Rumble Strength: " << instance->m_GamePadRumble.wLeftMotorSpeed << std::endl;
 }
