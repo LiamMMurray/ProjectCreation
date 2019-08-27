@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <iostream>
 #include "..//Engine/Entities/EntityFactory.h"
+#include "../Engine/Controller/ControllerSystem.h"
+#include "../Engine/Controller/PlayerMovement.h"
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
 #include "../Engine/MathLibrary/MathLibrary.h"
@@ -716,7 +718,7 @@ void RenderSystem::DrawMesh(ID3D11Buffer*      vertexBuffer,
 
         m_ConstantBuffer_MVP.World = XMMatrixTranspose(*mtx);
 
-        DirectX::XMMATRIX billboard              = m_CachedBillboardMatrix * (*mtx);
+        DirectX::XMMATRIX billboard    = m_CachedBillboardMatrix * (*mtx);
         m_ConstantBuffer_MVP.Billboard = XMMatrixTranspose(billboard);
 
         UpdateConstantBuffer(
@@ -886,6 +888,13 @@ void RenderSystem::OnPreUpdate(float deltaTime)
 
         m_ConstantBuffer_SCENE._InstanceReveal = GEngine::Get()->m_InstanceReveal;
         m_ConstantBuffer_SCENE.puzzleState     = GEngine::Get()->m_CurrentPuzzleState;
+
+        XMVECTOR playerVel =
+            static_cast<PlayerController*>(GET_SYSTEM(ControllerSystem)->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER])
+                ->GetCurrentVelocity();
+        
+		currVel = MathLibrary::MoveTowards(currVel, playerVel, 1.5f*deltaTime);
+        XMStoreFloat3(&m_ConstantBuffer_SCENE._PlayedVelocity, currVel);
 
         /** Prepare draw calls **/
         m_TransluscentDraws.clear();

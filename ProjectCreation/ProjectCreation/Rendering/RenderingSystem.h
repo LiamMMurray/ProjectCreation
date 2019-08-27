@@ -298,6 +298,8 @@ class RenderSystem : public ISystem
         CSceneInfoBuffer m_ConstantBuffer_SCENE;
         CAnimationBuffer m_ConstantBuffer_ANIM;
 
+
+        DirectX::XMVECTOR currVel = DirectX::XMVectorZero();
         /** Post Process Constant Buffers **/
         ID3D11Buffer*      m_PostProcessConstantBuffers[E_CONSTANT_BUFFER_POST_PROCESS::COUNT] = {};
         CScreenSpaceBuffer m_ContstantBuffer_SCREENSPACE;

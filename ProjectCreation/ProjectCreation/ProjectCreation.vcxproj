@@ -595,6 +595,7 @@
     <None Include="Engine\MathLibrary\Splines\splines.inl" />
     <None Include="packages.config" />
     <None Include="Shaders\Bezier.hlsli" />
+    <None Include="Shaders\DoSpeedWave.hlsli" />
     <None Include="Shaders\Quaternion.hlsli" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

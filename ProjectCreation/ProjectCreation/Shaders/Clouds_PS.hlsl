@@ -45,15 +45,15 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         float skySpeed        = 0.004f * _Time;
         float distortionSpeed = 0.0135f * _Time;
         // Sample normal map.
-        float noiseA = diffuseMap.Sample(sampleTypeWrap, pIn.Tex * 10.0f + distortionSpeed).g;
-        float noiseB = diffuseMap.Sample(sampleTypeWrap, pIn.Tex * 24.0f - distortionSpeed / 4.0f).g;
-        float noiseC = diffuseMap.Sample(sampleTypeWrap, pIn.Tex * 40.0f + distortionSpeed / 8.0f).g;
+        float noiseA = diffuseMap.Sample(sampleTypeWrap, pIn.Tex * 5.0f + distortionSpeed).g;
+        float noiseB = diffuseMap.Sample(sampleTypeWrap, pIn.Tex * 10.0f - distortionSpeed / 4.0f).g;
+        float noiseC = diffuseMap.Sample(sampleTypeWrap, pIn.Tex * 28.0f + distortionSpeed / 8.0f).g;
         float noiseD = diffuseMap.Sample(sampleTypeWrap, pIn.Tex * 2.0f + distortionSpeed * 2.0f).g;
         float noise  = noiseA * noiseB * noiseC;
         // return noise;
-        float skyA = diffuseMap.SampleLevel(sampleTypeWrap, rotateUV(pIn.Tex, skySpeed + noiseA * 0.03f) + 0.015f * noise, 0).b;
+        float skyA = diffuseMap.SampleLevel(sampleTypeWrap, rotateUV(pIn.Tex, skySpeed + noise * 0.05f) + 0.005f * noiseC, 0).b;
         float skyB =
-            diffuseMap.SampleLevel(sampleTypeWrap, rotateUV(pIn.Tex, skySpeed + noiseA * 0.03f + 1.0f) + 0.015f * noise, 0).b;
+            diffuseMap.SampleLevel(sampleTypeWrap, rotateUV(pIn.Tex, skySpeed + noise * 0.05f + 1.0f) + 0.005f * noiseC, 0).b;
 
         float timeBlendA = (sin(_Time + noiseD * 0.1f) * 0.5f + 0.5f);
         float timeBlendB = 1.0f - timeBlendA;
