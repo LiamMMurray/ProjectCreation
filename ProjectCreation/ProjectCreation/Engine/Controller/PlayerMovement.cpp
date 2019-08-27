@@ -212,7 +212,10 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 // Settings for the orb sounds (Referencing SpeedBoostSystem.cpp lines 814-846
                 int index = SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount() % 3;
 
-                if (color == 3) {}
+                if (color == 3) {
+                        AudioManager::Get()->PlaySoundAtLocation(boostPos, settings);
+
+				}
                 else
                 {
                         SoundComponent3D::FSettings settings;
