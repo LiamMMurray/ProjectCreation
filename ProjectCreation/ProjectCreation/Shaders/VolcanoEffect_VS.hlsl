@@ -13,7 +13,7 @@ INPUT_PIXEL main(INPUT_VERTEX input)
 
         output.Tex = input.Tex * float2(1.4f, 1.3f);
         output.Tex.y += _Time * 0.04f;
-        float heightSample = diffuseMap.SampleLevel(sampleTypeWrap, output.Tex / 2.0f, 0);
+        float heightSample = (float)diffuseMap.SampleLevel(sampleTypeWrap, output.Tex / 2.0f, 0);
         heightSample       = saturate(pow(heightSample * 2.0f - 1.0f, 2.0f));
 
         output.TangentWS = mul(float4(input.Tangent, 0), World).xyz;

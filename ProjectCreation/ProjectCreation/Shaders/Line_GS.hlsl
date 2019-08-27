@@ -24,7 +24,7 @@ static const float4 colors[4] = {float4(4.0f, 0.04f, 0.0f, 1.0f),
         INPUT_PIXEL quad[8];
 
 
-        float3 fw = normalize(input[0].Pos - input[1].Pos);
+        float3 fw = normalize(input[0].Pos - input[1].Pos).xyz;
         float3 up = float3(0.0f, 1.0f, 0.0f);
         float3 rt = cross(fw, up);
 
@@ -75,7 +75,7 @@ static const float4 colors[4] = {float4(4.0f, 0.04f, 0.0f, 1.0f),
 
         for (uint k = 0; k < 8; ++k)
         {
-                quad[k].PosWS = quad[k].Pos;
+                quad[k].PosWS = quad[k].Pos.xyz;
                 quad[k].Pos   = mul(quad[k].Pos, ViewProjection);
         }
 

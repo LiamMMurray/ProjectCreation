@@ -186,7 +186,7 @@ void OrbitSystem::OnUpdate(float deltaTime)
                     MathLibrary::CalulateDistanceSq(playerTransform->transform.translation, transComp->transform.translation);
 
                 auto emitterComponent = goalParent.GetComponent<EmitterComponent>();
-                if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 100.0f)
+                if (goalComp.goalState == E_GOAL_STATE::Idle && distanceSq < 135.0f)
                 {
 
                         emitterComponent->spawnRate = 50.0f;

@@ -12,8 +12,8 @@ namespace NMemory
                 // mem_start gets modified to be new mem start
                 void AppendPools(ForwardAccessPools& pools, const pool_descs& _pool_descs, byte*& dynamic_mem)
                 {
-                        index pool_count      = pools.m_element_capacities.size();
-                        index pool_desc_count = _pool_descs.size();
+                        index pool_count      = (uint32_t)pools.m_element_capacities.size();
+                        index pool_desc_count = (uint32_t)_pool_descs.size();
                         index new_pool_count  = pool_count + pool_desc_count;
 
                         // reserve memory in vectors
@@ -38,7 +38,7 @@ namespace NMemory
                 void AppendPools(RandomAccessPools& pools, const pool_descs& _pool_descs, byte*& dynamic_mem)
                 {
                         type_index pool_count      = static_cast<type_index>(pools.m_element_capacities.size());
-                        type_index pool_desc_count = _pool_descs.size();
+                        type_index pool_desc_count = (uint32_t)_pool_descs.size();
                         type_index new_pool_count  = pool_count + pool_desc_count;
 
                         /// resize all element vectors
@@ -77,7 +77,7 @@ namespace NMemory
                                 byte*&             dynamic_mem,
                                 type_index         pool_index)
                 {
-                        type_index pool_count = pools.m_element_capacities.size();
+                        type_index pool_count = (uint32_t)pools.m_element_capacities.size();
 
                         if (pool_count <= pool_index)
                         {
@@ -132,7 +132,7 @@ namespace NMemory
 
                 void ClearPools(RandomAccessPools& pools)
                 {
-                        type_index pool_count = pools.m_mem_starts.size();
+                        type_index pool_count = (uint32_t)pools.m_mem_starts.size();
                         for (type_index i = 0; i < pool_count; i++)
                         {
                                 type_index pool_index        = i;

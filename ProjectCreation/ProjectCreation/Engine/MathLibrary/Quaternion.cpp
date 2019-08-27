@@ -112,7 +112,7 @@ DirectX::XMFLOAT3 FQuaternion::ToEulerAngles()
         const float singularityTest = quat.x * quat.y + quat.z * quat.w;
 
         float yawY = 2.0f * (quat.w * quat.y + quat.x * quat.z);
-        float yawX = (float)(1.0f - 2.0f * (sqz + sqy));
+        float yawX = float(1.0f - 2.0f * (sqz + sqy));
 
 
         if (singularityTest < -singularityThreshold)

@@ -45,7 +45,7 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
         float3 skyColor          = lerp(deepWaterColor, shallowWaterColor, skyColorMask * 0.6f);
 
         float3 L = _DirectionalLightDirection;
-        float  N = normalize(_EyePosition - pIn.PosWS);
+        float  N = normalize(_EyePosition - pIn.PosWS).r;
         float3 V = viewWS;
         float3 H = normalize(L + V);
 

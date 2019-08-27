@@ -458,7 +458,7 @@ void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
         FGoodSpline spline(m_Paths[MathLibrary::GetRandomIntInRange(0, PathCount - 1)]);
         float       lengthMultiplier = std::max(1.0f, waveCount * sqrtf(width * width + heightvar * heightvar) / 100.0f);
         float       length           = spline.GetLength() * MathLibrary::CalulateDistance(start, end) * lengthMultiplier;
-        int         segments         = length / m_SplineLengthPerOrb;
+        int         segments         = int(length / m_SplineLengthPerOrb);
         auto        it               = m_SplineClusterSpawners.emplace(std::make_pair(m_ClusterCounter, SplineCluster(spline)));
 
         XMVECTOR   dir      = end - start;
@@ -801,11 +801,11 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 {
                                         if (i == correctColor)
                                         {
-                                                inPath &= (bool)(InputActions::CheckAction(i) == KeyState::Down);
+                                                inPath &= (InputActions::CheckAction(i) == KeyState::Down);
                                         }
                                         else
                                         {
-                                                inPath &= (bool)(~(InputActions::CheckAction(i) == KeyState::Down));
+                                                inPath &= (InputActions::CheckAction(i) != KeyState::Down);
                                         }
                                 }
 

@@ -13,8 +13,8 @@ DirectX::XMVECTOR UI::ConvertScreenPosToNDC(DirectX::XMFLOAT2 in, const DirectX:
         float centerX = 0.5f * (rect.y + rect.w);
         float centerY = 0.5f * (rect.x + rect.z);
 
-        float width  = (rect.w - rect.y);
-        float height = (rect.z - rect.x);
+        float width  = float(rect.w - rect.y);
+        float height = float(rect.z - rect.x);
 
         in.x -= centerX;
         in.y -= centerY;

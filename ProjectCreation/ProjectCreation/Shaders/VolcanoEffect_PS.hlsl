@@ -39,7 +39,7 @@ float4 main(INPUT_PIXEL input) : SV_TARGET
         float3     specColor   = 0.04f;
         float4     defultColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
         float      time        = _Time;
-        float4     output      = (0.0f, 0.0f, 0.0f, 0.0f);
+        float4     output      = float4(0.0f, 0.0f, 0.0f, 0.0f);
         surface.diffuseColor   = 1.0f;
         surface.metallic       = 0.0f;
         surface.emissiveColor  = 0.0f;

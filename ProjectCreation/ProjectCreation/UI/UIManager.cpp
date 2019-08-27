@@ -311,8 +311,8 @@ void UIManager::GameplayUpdate()
 		{
                 for (int i = 0; i < instance->resDescriptors.size(); i++)
                 {
-                        int XPos = GamePad::Get()->leftStickX * 10.0f;
-                        int YPos = GamePad::Get()->leftStickY * 10.0f;
+                        int XPos = int(GamePad::Get()->leftStickX * 10.0f);
+                        int YPos = int(GamePad::Get()->leftStickY * 10.0f);
 
                         SetCursorPos(cursorPoint.x + XPos, cursorPoint.y - YPos);
                 }
@@ -638,7 +638,7 @@ void UIManager::SupportedResolutions()
         std::unordered_set<std::pair<UINT, UINT>, hash_pair> checkedResolutions;
 
         size_t size = instance->resDescriptors.size();
-        for (int i = size - 1; i >= 0; i--)
+        for (int i = (int)size - 1; i >= 0; i--)
         {
                 std::pair<UINT, UINT> newRes =
                     std::make_pair(instance->resDescriptors[i].Width, instance->resDescriptors[i].Height);
@@ -1807,7 +1807,7 @@ void UIManager::Initialize(native_handle_type hwnd)
         instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 if (instance->CSettings.m_Resolution - 1 <= -1)
                 {
-                        instance->CSettings.m_Resolution = instance->resDescriptors.size() - 1;
+                        instance->CSettings.m_Resolution =  int(instance->resDescriptors.size() - 1);
                 }
                 else
                 {
