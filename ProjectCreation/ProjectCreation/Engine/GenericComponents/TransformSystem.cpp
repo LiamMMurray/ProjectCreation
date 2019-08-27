@@ -40,7 +40,11 @@ void TransformSystem::OnUpdate(float deltaTime)
                                 transComp.transform.translation += delta;
 
                         if (transComp.alignToTerrain == false)
+                        {
+                                transComp.transform.translation = MathLibrary::WrapPosition(
+                                    transComp.transform.translation, playerPos + min, playerPos + max);
                                 continue;
+                        }
 
                         transComp.transform.translation =
                             XMVectorMax(transComp.transform.translation,

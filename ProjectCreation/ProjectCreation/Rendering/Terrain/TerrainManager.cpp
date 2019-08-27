@@ -367,10 +367,9 @@ void TerrainManager::_initialize(RenderSystem* rs)
                                                   XMFLOAT4(50.0f, 0.5f, 1.0f, 2.0f));
 
                 XMStoreFloat3(&emitterComp->EmitterData.emitterPosition, trans->transform.translation);
-                //emitterComp->EmitterData.flags = ALIGN_TO_VEL;
+                // emitterComp->EmitterData.flags = ALIGN_TO_VEL;
                 emitterComp->EmitterData.flags |= NO_COLLISION;
-                emitterComp->active                      = false;
-				
+                emitterComp->active = false;
         }
 }
 using namespace DirectX;
@@ -626,7 +625,17 @@ void TerrainManager::_update(float deltaTime)
         {
                 auto sm      = compHandle.Get<StaticMeshComponent>();
                 auto emitter = compHandle.Get()->GetParent().GetComponent<EmitterComponent>();
-                bool active  = sm->IsActive();
+                auto trans   = compHandle.Get()->GetParent().GetComponent<TransformComponent>();
+
+                XMVECTOR fw = (playerPos - trans->transform.translation);
+                if (MathLibrary::CalulateVectorLength(fw) < 0.01f)
+                {
+                        fw = VectorConstants::Forward;
+                }
+                fw                        = XMVector3Normalize(fw);
+                trans->transform.rotation = FQuaternion::LookAt(fw);
+
+                bool active = sm->IsActive();
 
                 // sm->GetParent().GetComponent<TransformComponent>()->transform.SetScale(terrainConstantBufferCPU.gTerrainAlpha);
 
@@ -647,7 +656,6 @@ void TerrainManager::_update(float deltaTime)
                         emitter->EmitterData.flags              = 1;
                         emitter->EmitterData.particleScale      = {1.f, 1.5f};
                         emitter->desiredCount                   = ParticleData::gMaxEmitterCount;
-
                 }
         }
         // debug_renderer::AddSphere(Shapes::FSphere(test, 0.1f), 32, XMMatrixIdentity());
