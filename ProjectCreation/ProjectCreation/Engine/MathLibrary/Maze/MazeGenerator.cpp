@@ -45,14 +45,14 @@ std::vector<DirectX::XMVECTOR> MazeGenerator::GeneratePath(unsigned int rows,
         size_t    size   = simplified.size();
         MazePoint s      = simplified[0];
         MazePoint e      = simplified[size - 1];
-        float     length = sqrtf((s.x - e.x) * (s.x - e.x) + (s.y - e.y) * (s.y - e.y));
+        float     length = sqrtf((float)((s.x - e.x) * (s.x - e.x) + (s.y - e.y) * (s.y - e.y)));
 
         std::vector<DirectX::XMVECTOR> output;
         output.resize(size);
 
         for (size_t i = 0; i < size; ++i)
         {
-                output[i] = XMVectorSet(simplified[i].x - s.x, 0.0f, simplified[i].y, 1.0f);
+                output[i] = XMVectorSet((float)(simplified[i].x - s.x), 0.0f, (float)simplified[i].y, 1.0f);
                 output[i] /= length;
                 output[i] = XMVectorSetW(output[i], 1.0f);
         }
@@ -94,8 +94,8 @@ std::vector<MazeGenerator::MazePoint> MazeGenerator::GenerateMaze(unsigned int r
         std::stack<MazeGenerator::MazePoint> path;
 
 
-        bool** visited = DBG_NEW bool*[rows];
-        for (int i = 0; i < rows; ++i)
+        bool** visited = DBG_NEW bool * [rows];
+        for (unsigned int i = 0; i < rows; ++i)
                 visited[i] = DBG_NEW bool[cols]{};
 
 
@@ -127,7 +127,7 @@ std::vector<MazeGenerator::MazePoint> MazeGenerator::GenerateMaze(unsigned int r
                 --size;
         }
 
-        for (int i = 0; i < rows; ++i)
+        for (unsigned int i = 0; i < rows; ++i)
                 delete[] visited[i];
         delete[] visited;
 

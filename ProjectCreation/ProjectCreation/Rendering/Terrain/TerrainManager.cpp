@@ -129,7 +129,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
 
 
         {
-                intermediateMipDimensions = texwidth / pow(2, intermediateMipLevel);
+                intermediateMipDimensions = (unsigned int)(texwidth / pow(2, intermediateMipLevel));
 
                 D3D11_TEXTURE2D_DESC texd{};
                 texd.ArraySize          = 1;
@@ -358,7 +358,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 sm->SetIsActive(false);
                 staticMeshesShowWithTerrain.push_back(statHandle);
                 trans->transform.scale       = XMVectorSet(1.5f, 1.5f, 1.5f, 1.0f);
-                trans->transform.translation = XMVectorSet(24.51, 0.0f, -139.36f, 1.0f);
+                trans->transform.translation = XMVectorSet(24.51f, 0.0f, -139.36f, 1.0f);
                 trans->alignToTerrain        = false;
                 emitterComp->ParticleswithGravity(XMFLOAT3(-0.0f, 60.0f, -0.0f),
                                                   XMFLOAT3(0.0f, 70.35f, 0.0f),

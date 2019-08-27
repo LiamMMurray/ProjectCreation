@@ -78,7 +78,7 @@ void PlayerController::GatherInput()
                 {
                         if (GamePad::Get()->CheckConnection() == true)
                         {
-                                tempDir.z += (1.5 * GamePad::Get()->rightTrigger);
+                                tempDir.z += (1.5f * GamePad::Get()->rightTrigger);
                         }
 
                         if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
@@ -215,8 +215,8 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                         SoundComponent3D::FSettings settings;
                         settings.m_SoundType = SOUND_COLOR_TYPE(color, E_SOUND_TYPE::ORB_COLLECT_0);
 
-                        int totalVariations = E_SOUND_TYPE::variations[E_SOUND_TYPE::ORB_COLLECT_0];
-                        int variation       = index % (totalVariations);
+                        unsigned int totalVariations = E_SOUND_TYPE::variations[E_SOUND_TYPE::ORB_COLLECT_0];
+                        unsigned int variation       = index % (totalVariations);
 
                         if (variation >= E_SOUND_TYPE::variations[E_SOUND_TYPE::ORB_COLLECT_0])
                         {
