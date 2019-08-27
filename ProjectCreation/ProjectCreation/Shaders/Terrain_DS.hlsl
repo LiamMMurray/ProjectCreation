@@ -46,7 +46,7 @@ struct HullConstantDataOut
 		//pos.y += 5.0f*cos(pos.z/20.0f);
 
         dOut.PosWS       = mul(float4(pos, 1.0f), World).xyz;
-        dOut.PosWS       = DoSpeedWave(dOut.PosWS, 1.7f);
+        //dOut.PosWS       = DoSpeedWave(dOut.PosWS, 1.0f);
         dOut.Pos         = mul(float4(dOut.PosWS, 1.0f), ViewProjection);
         dOut.linearDepth = dOut.Pos.w;
 

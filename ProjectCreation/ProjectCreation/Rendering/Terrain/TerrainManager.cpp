@@ -632,6 +632,7 @@ void TerrainManager::_update(float deltaTime)
                 {
                         fw = VectorConstants::Forward;
                 }
+                fw = XMVectorSetY(fw, 0.0f);
                 fw                        = XMVector3Normalize(fw);
                 trans->transform.rotation = FQuaternion::LookAt(fw);
 

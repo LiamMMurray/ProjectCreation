@@ -244,7 +244,7 @@ void ControllerSystem::OnInitialize()
                 ComponentHandle cHandle = eHandle.AddComponent<CameraComponent>();
 
                 auto tComp                             = eHandle.GetComponent<TransformComponent>();
-                tComp->transform.translation           = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+                tComp->transform.translation           = DirectX::XMVectorSet(0.0f, 3.0f, 0.0f, 1.0f);
                 tComp->wrapping                        = false;
                 auto cameraComp                        = cHandle.Get<CameraComponent>();
                 cameraComp->m_Settings.m_HorizontalFOV = 90.0f;
