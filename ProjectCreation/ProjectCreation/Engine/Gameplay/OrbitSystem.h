@@ -22,12 +22,12 @@ class OrbitSystem : public ISystem
 
         PlayerController* m_PlayerController;
 
-        const char* materialNames[4]     = {"GlowMatPlanet01", "GlowMatPlanet03", "GlowMatPlanet02", "GlowMatSun"};
+        const char* materialNames[4]     = {"GlowMatPlanet01", "GlowMatPlanet02", "GlowMatPlanet03", "GlowMatSun"};
         const char* ringMaterialNames[3] = {"Ring01Mat", "Ring02Mat", "Ring03Mat"};
         const char* ringMeshNames[3]     = {"Ring01", "Ring02", "Ring03"};
+        const char* planetMeshNames[3]     = {"Planet00", "Planet01", "Planet02"};
         int         m_Stage              = 0;
-        void        CreateGoal(int color, DirectX::XMVECTOR position);
-        void        CreateTutorialGoal(int color, DirectX::XMVECTOR position);
+        EntityHandle CreateGoal(int color, DirectX::XMVECTOR position);
 
         float             orbitOffset = 1300.0f;
         FQuaternion       sunRotation;
@@ -68,8 +68,8 @@ class OrbitSystem : public ISystem
     public:
         uint8_t m_PendingGoalCounts[4] = {0, 0, 0, 0};
 
-        void CreateSun();
-        void CreateRing(int color);
+        EntityHandle CreateSun();
+        EntityHandle CreateRing(int color);
         void InstantCreateOrbitSystem();
         void InstantRemoveOrbitSystem();
 

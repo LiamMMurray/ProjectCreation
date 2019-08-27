@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <iostream>
 #include "..//Engine/Entities/EntityFactory.h"
+#include "../Engine/Controller/ControllerSystem.h"
+#include "../Engine/Controller/PlayerMovement.h"
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
 #include "../Engine/MathLibrary/MathLibrary.h"
@@ -712,8 +714,12 @@ void RenderSystem::DrawMesh(ID3D11Buffer*      vertexBuffer,
         m_ResourceManager->GetSRVsFromMaterial(material, srvs);
 
         m_Context->PSSetShaderResources(0, E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, srvs);
+        m_Context->VSSetShaderResources(0, E_BASE_PASS_PIXEL_SRV::PER_MAT_COUNT, srvs);
 
         m_ConstantBuffer_MVP.World = XMMatrixTranspose(*mtx);
+
+        DirectX::XMMATRIX billboard    = m_CachedBillboardMatrix * (*mtx);
+        m_ConstantBuffer_MVP.Billboard = XMMatrixTranspose(billboard);
 
         UpdateConstantBuffer(
             m_BasePassConstantBuffers[E_CONSTANT_BUFFER_BASE_PASS::MVP], &m_ConstantBuffer_MVP, sizeof(m_ConstantBuffer_MVP));
@@ -863,7 +869,7 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         m_CachedMainViewMatrix           = view;
         m_CachedMainViewProjectionMatrix = view * m_CachedMainProjectionMatrix;
 
-        mainCamera->_cachedView           = view;
+        mainCamera->_cachedView           = m_CachedMainViewMatrix;
         mainCamera->_cachedProjection     = m_CachedMainProjectionMatrix;
         mainCamera->_cachedViewProjection = m_CachedMainViewProjectionMatrix;
 
@@ -873,6 +879,14 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         XMStoreFloat3(&m_ConstantBuffer_SCENE.eyePosition, mainTransform->transform.translation);
         m_ConstantBuffer_MVP.ViewProjection = XMMatrixTranspose(m_CachedMainViewProjectionMatrix);
         m_ConstantBuffer_MVP.Projection     = XMMatrixTranspose(m_CachedMainProjectionMatrix);
+        XMMATRIX billBoard;
+
+        billBoard               = m_CachedMainInvViewMatrix;
+        billBoard.r[3]          = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+        m_CachedBillboardMatrix = billBoard;
+        // XMMATRIX billboardView         = billBoard * m_ConstantBuffer_MVP.World;
+        // XMMATRIX billBoardViewProj     = billboardView * m_CachedMainProjectionMatrix;
+        m_ConstantBuffer_MVP.View = XMMatrixTranspose(m_CachedMainViewMatrix);
         // get scale
         m_ConstantBuffer_SCENE.scale            = TerrainManager::Get()->GetScale();
         m_ConstantBuffer_SCENE.screenDimensions = XMFLOAT2(m_BackBufferWidth, m_BackBufferHeight);
@@ -880,6 +894,13 @@ void RenderSystem::OnPreUpdate(float deltaTime)
 
         m_ConstantBuffer_SCENE._InstanceReveal = GEngine::Get()->m_InstanceReveal;
         m_ConstantBuffer_SCENE.puzzleState     = GEngine::Get()->m_CurrentPuzzleState;
+
+        XMVECTOR playerVel =
+            static_cast<PlayerController*>(GET_SYSTEM(ControllerSystem)->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER])
+                ->GetCurrentVelocity();
+        
+		currVel = MathLibrary::MoveTowards(currVel, playerVel, 1.5f*deltaTime);
+        XMStoreFloat3(&m_ConstantBuffer_SCENE._PlayedVelocity, currVel);
 
         /** Prepare draw calls **/
         m_TransluscentDraws.clear();

@@ -117,6 +117,7 @@ class PlayerController : public IController
         unsigned int       m_SpeedBoostPoolCounter[E_LIGHT_ORBS::COUNT] = {};
 
         virtual void Init(EntityHandle h) override;
+        virtual void Reset() override;
         bool         SpeedBoost(DirectX::XMVECTOR boostPos, int color);
 
 

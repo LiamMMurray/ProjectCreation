@@ -37,6 +37,7 @@ class SpeedBoostSystem : public ISystem
 
         ResourceHandle speedboostMaterials[E_LIGHT_ORBS::COUNT]  = {};
         std::string speedboostMaterialNames[E_LIGHT_ORBS::COUNT] = {"SpeedboostR", "SpeedboostG", "SpeedboostB", "SpeedboostW"};
+        std::string speedboostMeshNames[E_LIGHT_ORBS::COUNT]     = {"RedOrb00", "GreenOrb00", "BlueOrb00", "Sphere01"};
 
         // GW::AUDIO::GMusic* m_Spline_Ambience;
 

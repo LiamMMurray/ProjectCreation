@@ -49,6 +49,8 @@ class TerrainManager
 
         static TerrainManager* instance;
 
+        std::vector<ComponentHandle> staticMeshesShowWithTerrain;
+
         void _initialize(RenderSystem* rs);
         void _update(float deltaTime);
         void _shutdown();

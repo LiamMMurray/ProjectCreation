@@ -7,9 +7,12 @@
 
 void Level_02::Enter()
 {
+        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         m_OrbitSystem->ClearTimedFunctions();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
+                controllerSys->ResetPlayer();
+
                 m_OrbitSystem->InstantCreateOrbitSystem();
 
                 m_SpeedBoostSystem->m_ColorsCollected[0] = true;
@@ -18,10 +21,11 @@ void Level_02::Enter()
                 m_SpeedBoostSystem->m_ColorsCollected[3] = true;
 
                 m_OrbitSystem->ClearCollectedMask();
-				m_OrbitSystem->collectedMask[E_LIGHT_ORBS::RED_LIGHTS] = true;
+                m_OrbitSystem->collectedMask[E_LIGHT_ORBS::RED_LIGHTS] = true;
                 m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::RED_LIGHTS);
                 GEngine::Get()->SetPlayerRadius(1500.0f);
 
+                GEngine::Get()->SetPuzzleState(0.0f);
         }
 
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);
@@ -37,7 +41,6 @@ void Level_02::Enter()
         m_SpeedBoostSystem->SetTargetTerrain(0.0f);
         GEngine::Get()->m_TerrainAlpha = 0.0f;
 
-        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         controllerSys->ResetOrbCount();
 
         AudioManager::Get()->ActivateMusicAndPause(Waves, true);

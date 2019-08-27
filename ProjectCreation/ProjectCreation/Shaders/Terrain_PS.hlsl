@@ -74,7 +74,8 @@ float4 main(DomainOutput pIn) : SV_TARGET
         surface.diffuseColor = lerp(diffuseA, diffuseB, blendAlpha);
 
         float  bw          = saturate(20.0f * dot(surface.diffuseColor, float3(0.21, 0.71, 0.07)));
-        float3 colorSample = 0.8f * TerrainColor.Sample(sampleTypeWrap, pIn.Tex).rgb;
+        float4 colorSample = TerrainColor.Sample(sampleTypeWrap, pIn.Tex).rgba;
+        colorSample.rgb *= 0.8f;
 
         float fibers = Mask1.Sample(sampleTypeWrap, pIn.Tex2).g;
         float noise  = Mask1.Sample(sampleTypeWrap, pIn.Tex2 * 0.2f).r;
@@ -82,14 +83,20 @@ float4 main(DomainOutput pIn) : SV_TARGET
         float modulatedInstanceBlend = _InstanceReveal + noise * 0.5f * _InstanceReveal;
         maskInstanceBlend            = saturate(floor(fibers + 2.0f * modulatedInstanceBlend));
         float alphaInstace           = _InstanceReveal;
-        surface.diffuseColor         = lerp(surface.diffuseColor, bw * colorSample, maskInstanceBlend);
 
         surface.metallic = 0.0f;
 
-        surface.ambient       = 1.0f;
-        surface.emissiveColor = 0.0f;
+        surface.ambient  = 1.0f;
+        float3 emissiveA = float3(1.5f, 0.0f, 0.0f);
+        float3 emissiveB = float3(1.5f, 0.2f, 0.0f);
 
+        float  outerLavaAlpha = saturate(pow(colorSample.a, 4.0f));
+        float3 emissive       = lerp(emissiveA, emissiveB, outerLavaAlpha);
+        surface.emissiveColor = lerp(0.0f, emissive, maskInstanceBlend * outerLavaAlpha);
 
+        float3 blendedColor  = bw * colorSample.rgb;
+        blendedColor         = lerp(blendedColor, float3(0.1f, 0.02f, 0.0f), colorSample.a);
+        surface.diffuseColor = lerp(surface.diffuseColor, blendedColor, maskInstanceBlend);
         {
                 normalSample   = lerp(normalA, normalB, blendAlpha) * 2.0f - 1.0f;
                 normalSample.z = sqrt(1 - normalSample.x * normalSample.x - normalSample.y * normalSample.y);
@@ -116,7 +123,6 @@ float4 main(DomainOutput pIn) : SV_TARGET
         float3 specColor = 0.04f;
         // Lerp between diffuse color and constant based on metallic. Ideally metallic should be either 1 or 0
         specColor = lerp(specColor, surface.diffuseColor, surface.metallic);
-
 
         // Directional Light
         {

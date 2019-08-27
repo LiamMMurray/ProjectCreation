@@ -3,8 +3,9 @@ static const unsigned int gMaxParticleCount      = 2 << 18;
 static const unsigned int gMaxParticlePerEmitter = gMaxParticleCount / gMaxEmitterCount;
 
 #define ALIGN_TO_VEL (1 << 0)
+#define NO_COLLISION (1 << 1)
 
-// 0000 0000 0000 0000 0000 0000 0000 0001
+// 0000 0000 0000 0000 0000 0000 0000 0011
 
 struct FParticleGPU
 {

@@ -30,7 +30,7 @@ class IController
         }
 
         virtual void OnUpdate(float deltaTime);
-
+        virtual void         Reset();
         virtual void Init(EntityHandle handle);
         virtual void Shutdown();
         inline void  SetControlledEntity(EntityHandle handle)

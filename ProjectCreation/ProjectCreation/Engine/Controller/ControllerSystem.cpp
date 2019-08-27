@@ -24,6 +24,32 @@
 
 using namespace std;
 
+void ControllerSystem::ResetPlayer()
+{
+        m_Controllers[E_CONTROLLERS::PLAYER]->Reset();
+}
+
+void ControllerSystem::CreatePlayer()
+{
+        EntityHandle eHandle = m_HandleManager->CreateEntity();
+
+        ComponentHandle tHandle = eHandle.AddComponent<TransformComponent>();
+        ComponentHandle cHandle = eHandle.AddComponent<CameraComponent>();
+
+        eHandle.AddComponent<TransformComponent>();
+        eHandle.AddComponent<CameraComponent>();
+
+        auto tComp                   = eHandle.GetComponent<TransformComponent>();
+        tComp->wrapping              = false;
+        
+
+        CameraComponent* cameraComp            = cHandle.Get<CameraComponent>();
+        cameraComp->m_Settings.m_HorizontalFOV = 100.0f;
+
+        GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->SetMainCameraComponent(cHandle);
+        m_Controllers[E_CONTROLLERS::PLAYER]->Init(eHandle);
+}
+
 DirectX::XMFLOAT3 ControllerSystem::GetCurrentColorSelection() const
 {
         DirectX::XMFLOAT3 output;
@@ -208,25 +234,7 @@ void ControllerSystem::OnInitialize()
 
         // Player entity setup
         {
-                EntityHandle eHandle = m_HandleManager->CreateEntity();
-
-                ComponentHandle tHandle = eHandle.AddComponent<TransformComponent>();
-                ComponentHandle cHandle = eHandle.AddComponent<CameraComponent>();
-
-                eHandle.AddComponent<TransformComponent>();
-                eHandle.AddComponent<CameraComponent>();
-
-                auto tComp                   = eHandle.GetComponent<TransformComponent>();
-                tComp->wrapping              = false;
-                tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-                tComp->transform.rotation =
-                    DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(0.0f), 0.0f, 0.0f);
-
-                CameraComponent* cameraComp            = cHandle.Get<CameraComponent>();
-                cameraComp->m_Settings.m_HorizontalFOV = 100.0f;
-
-                GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->SetMainCameraComponent(cHandle);
-                m_Controllers[E_CONTROLLERS::PLAYER]->Init(eHandle);
+                CreatePlayer();
         }
 
         {
