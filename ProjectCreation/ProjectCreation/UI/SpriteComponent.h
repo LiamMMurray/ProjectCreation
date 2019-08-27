@@ -38,6 +38,9 @@ class SpriteComponent : public Component<SpriteComponent>
         float                        mScaleX;
         float                        mScaleY;
 
+		DirectX::XMVECTOR currColor = {1,1,1,1};
+		DirectX::XMVECTOR desiredColor = {1,1,1,1};
+
         ID3D11ShaderResourceView* mTexture;
         UI::UIRect                mRectangle;
 

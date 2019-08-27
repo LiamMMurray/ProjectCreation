@@ -17,19 +17,18 @@ class TutorialLevel;
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #define NOMINMAX
-
 UIManager* UIManager::instance;
 using namespace DirectX;
 // Adds Sprites to the vector of Sprites
-void UIManager::AddSprite(ID3D11Device*        device,
-                          ID3D11DeviceContext* deviceContext,
-                          int                  category,
-                          const wchar_t*       FileName,
-                          float                PositionX,
-                          float                PositionY,
-                          float                scaleX,
-                          float                scaleY,
-                          bool                 enabled)
+int UIManager::AddSprite(ID3D11Device*        device,
+                         ID3D11DeviceContext* deviceContext,
+                         int                  category,
+                         const wchar_t*       FileName,
+                         float                PositionX,
+                         float                PositionY,
+                         float                scaleX,
+                         float                scaleY,
+                         bool                 enabled)
 {
 
         SpriteComponent cSprite;
@@ -74,6 +73,10 @@ void UIManager::AddSprite(ID3D11Device*        device,
         // Reset everything that needs to be
         Texture.Reset();
         resource.Reset();
+
+        return m_AllSprites[category].size() - 1;
+
+        // m_AllSprites[category][index].desiredAlpha = 1.0f;
 }
 
 // Adds text to the vector of text
@@ -186,7 +189,7 @@ void UIManager::UIClipCursor()
         ClipCursor(&rect);
 }
 
-void UIManager::DrawSprites()
+void UIManager::DrawSprites(float deltaTime)
 {
         for (auto& it : instance->m_AllSprites)
                 for (auto& sprite : it.second)
@@ -207,8 +210,13 @@ void UIManager::DrawSprites()
                                                              0.0f,
                                                              1.0f);
 
+
+                                sprite.currColor = MathLibrary::MoveVectorColorTowards(
+                                    sprite.currColor, sprite.desiredColor, deltaTime * 1.0f);
+
+
                                 instance->m_SpriteBatch->Draw(
-                                    sprite.mTexture, position, nullptr, DirectX::Colors::White, 0.0f, sprite.mOrigin, scale);
+                                    sprite.mTexture, position, nullptr, sprite.currColor, 0.0f, sprite.mOrigin, scale);
 
 
                                 instance->m_SpriteBatch->End();
@@ -221,7 +229,7 @@ void UIManager::Present()
         m_RenderSystem->Present();
 }
 
-void UIManager::GameplayUpdate()
+void UIManager::GameplayUpdate(float deltaTime)
 {
         float aspectRatio = instance->m_ScreenSize.x / instance->m_ScreenSize.y;
         if (instance->m_InMenu)
@@ -326,7 +334,7 @@ void UIManager::GameplayUpdate()
         XMFLOAT2                      cursorCoords = {(float)cursorPoint.x, (float)cursorPoint.y};
         XMVECTOR                      point        = UI::ConvertScreenPosToNDC(cursorCoords, instance->m_ScreenSize, xmRect);
 
-        instance->DrawSprites();
+        instance->DrawSprites(deltaTime);
 
         for (auto& it : instance->m_AllSprites)
                 for (auto& sprite : it.second)
@@ -355,59 +363,60 @@ void UIManager::GameplayUpdate()
 // Splash Screen
 void UIManager::Splash_FullSail()
 {
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = true;
-
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled  = true;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].currColor = {1, 1, 1, .0f};
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled  = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled  = false;
 }
 
 void UIManager::Splash_GPGames()
 {
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = true;
-
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled  = true;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].currColor = {1, 1, 1, .0f};
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled  = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled  = false;
 }
 
 void UIManager::Splash_Team()
 {
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled = true;
-
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled  = true;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].currColor = {1, 1, 1, .0f};
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled  = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled  = false;
 }
 
-void UIManager::SplashUpdate(float globalTimer)
+void UIManager::SplashUpdate(float globalTimer, float deltaTime)
 {
-        float deltatime = GEngine::Get()->GetDeltaTime();
-
         if (GCoreInput::GetKeyState(KeyCode::Esc) == KeyState::DownFirst)
         {
                 instance->m_BreakSplash = true;
                 UIManager::instance->Splash_End();
+                timed_functions.clear();
         }
-        else
-        {
-                if (globalTimer < 5.0f)
-                {
-                        // Full Sail Logo
-                        UIManager::instance->Splash_FullSail();
-                }
-                else if (globalTimer >= 5.0f && globalTimer < 10.0f)
-                {
-                        // GP Games Logo
-                        UIManager::instance->Splash_GPGames();
-                }
-                else if (globalTimer >= 10.0f && globalTimer < 15.0f)
-                {
-                        // Deep!deep Logo
-                        UIManager::instance->Splash_Team();
-                }
-                else
-                {
-                        UIManager::instance->Splash_End();
-                }
-        }
+        // else
+        //{
+        //        if (globalTimer < 5.0f)
+        //        {
+        //                static auto dbg_test = 0;
+        //                dbg_test++;
+        //                // Full Sail Logo
+        //                UIManager::instance->Splash_FullSail();
+        //        }
+        //        else if (globalTimer >= 5.0f && globalTimer < 10.0f)
+        //        {
+        //                // GP Games Logo
+        //                UIManager::instance->Splash_GPGames();
+        //        }
+        //        else if (globalTimer >= 10.0f && globalTimer < 15.0f)
+        //        {
+        //                // Deep!deep Logo
+        //                UIManager::instance->Splash_Team();
+        //        }
+        //        if (globalTimer >= 15.0f)
+        //        {
+        //                UIManager::instance->Splash_End();
+        //        }
+        //}
 }
 
 void UIManager::Splash_End()
@@ -790,8 +799,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::MainMenu,
                                   E_FONT_TYPE::CourierNew,
                                   "Press Enter To Continue...",
-                                  0.06f * ScaleXRatio,
-                                  0.06f * ScaleYRatio,
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.1f * PosYRatio,
                                   false,
@@ -907,8 +916,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::PauseMenu,
                                   E_FONT_TYPE::Calibri,
                                   "RESUME",
-                                  0.05f * ScaleXRatio,
-                                  0.05f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   -0.13f * PosYRatio,
                                   false,
@@ -922,8 +931,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::PauseMenu,
                                   E_FONT_TYPE::Calibri,
                                   "LEVELS",
-                                  0.05f * ScaleXRatio,
-                                  0.05f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   -0.06f * PosYRatio,
                                   false,
@@ -937,8 +946,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::PauseMenu,
                                   E_FONT_TYPE::Calibri,
                                   "OPTIONS",
-                                  0.05f * ScaleXRatio,
-                                  0.05f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.01f * PosYRatio,
                                   false,
@@ -952,8 +961,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::PauseMenu,
                                   E_FONT_TYPE::Calibri,
                                   "CONTROLS",
-                                  0.05f * ScaleXRatio,
-                                  0.05f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.08f * PosYRatio,
                                   false,
@@ -967,8 +976,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::PauseMenu,
                                   E_FONT_TYPE::Calibri,
                                   "EXIT",
-                                  0.05f * ScaleXRatio,
-                                  0.05f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.15f * PosYRatio,
                                   false,
@@ -984,8 +993,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::OptionsMenu,
                                   E_FONT_TYPE::Calibri,
                                   "BACK",
-                                  0.05f * ScaleXRatio,
-                                  0.05f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   -0.20f * PosYRatio,
                                   false,
@@ -999,8 +1008,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::OptionsMenu,
                                   E_FONT_TYPE::Calibri,
                                   "WINDOWED",
-                                  0.04f * ScaleXRatio,
-                                  0.04f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.07f * PosYRatio,
                                   false,
@@ -1014,8 +1023,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::OptionsMenu,
                                   E_FONT_TYPE::Calibri,
                                   "RESOLUTION",
-                                  0.04f * ScaleXRatio,
-                                  0.04f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.17f * PosYRatio,
                                   false,
@@ -1029,8 +1038,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::OptionsMenu,
                                   E_FONT_TYPE::Calibri,
                                   "APPLY",
-                                  0.05f * ScaleXRatio,
-                                  0.05f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   -0.26f * PosYRatio,
                                   false,
@@ -1044,8 +1053,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::OptionsMenu,
                                   E_FONT_TYPE::Calibri,
                                   "MASTER VOLUME",
-                                  0.03f * ScaleXRatio,
-                                  0.03f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   -0.13f * PosYRatio,
                                   false,
@@ -1059,8 +1068,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::OptionsMenu,
                                   E_FONT_TYPE::Calibri,
                                   "SENSITIVITY",
-                                  0.03f * ScaleXRatio,
-                                  0.03f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   -0.03f * PosYRatio,
                                   false,
@@ -1076,8 +1085,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::OptionsSubmenu,
                                   E_FONT_TYPE::Calibri,
                                   "OFF",
-                                  0.04f * ScaleXRatio,
-                                  0.04f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.11f * PosYRatio,
                                   false,
@@ -1088,8 +1097,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::OptionsSubmenu,
                                   E_FONT_TYPE::Calibri,
                                   "ON",
-                                  0.04f * ScaleXRatio,
-                                  0.04f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.11f * PosYRatio,
                                   false,
@@ -1100,8 +1109,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::OptionsSubmenu,
                                   E_FONT_TYPE::Calibri,
                                   "<",
-                                  0.04f * ScaleXRatio,
-                                  0.04f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   -0.12f * PosXRatio,
                                   0.22f * PosYRatio,
                                   false,
@@ -1112,8 +1121,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::OptionsSubmenu,
                                   E_FONT_TYPE::Calibri,
                                   ">",
-                                  0.04f * ScaleXRatio,
-                                  0.04f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.12f * PosXRatio,
                                   0.22f * PosYRatio,
                                   false,
@@ -1124,8 +1133,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::OptionsSubmenu,
                                   E_FONT_TYPE::Calibri,
                                   "<",
-                                  0.04f * ScaleXRatio,
-                                  0.04f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   -0.12f * PosXRatio,
                                   0.02f * PosYRatio,
                                   false,
@@ -1136,10 +1145,35 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::OptionsSubmenu,
                                   E_FONT_TYPE::Calibri,
                                   ">",
-                                  0.04f * ScaleXRatio,
-                                  0.04f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.12f * PosXRatio,
                                   0.02f * PosYRatio,
+                                  false,
+                                  true);
+
+				//Volume 
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "<",
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
+                                  -0.12f * PosXRatio,
+                                  -0.08f * PosYRatio,
+                                  false,
+                                  true);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::OptionsSubmenu,
+                                  E_FONT_TYPE::Calibri,
+                                  ">",
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
+                                  0.12f * PosXRatio,
+                                  -0.08f * PosYRatio,
                                   false,
                                   true);
 
@@ -1149,8 +1183,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::OptionsSubmenu,
                                   E_FONT_TYPE::Calibri,
                                   "Low",
-                                  0.04f * ScaleXRatio,
-                                  0.04f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.02f * PosYRatio,
                                   false,
@@ -1161,8 +1195,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::OptionsSubmenu,
                                   E_FONT_TYPE::Calibri,
                                   "Medium",
-                                  0.04f * ScaleXRatio,
-                                  0.04f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.02f * PosYRatio,
                                   false,
@@ -1173,13 +1207,31 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::OptionsSubmenu,
                                   E_FONT_TYPE::Calibri,
                                   "High",
-                                  0.04f * ScaleXRatio,
-                                  0.04f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.02f * PosYRatio,
                                   false,
                                   false);
 
+                // Volumes
+                for (auto i = 0; i <= 100; i += 10)
+                {
+                        instance->AddText(instance->m_RenderSystem->m_Device,
+                                          instance->m_RenderSystem->m_Context,
+                                          E_MENU_CATEGORIES::OptionsSubmenu,
+                                          E_FONT_TYPE::Calibri,
+                                          std::to_string(i),
+                                          0.035f * ScaleXRatio,
+                                          0.035f * ScaleYRatio,
+                                          0.0f * PosXRatio,
+                                          -0.08f * PosYRatio,
+                                          false,
+                                          false);
+                }
+        		
+
+                // Any new options submenu should be put above this
                 for (auto i = 0; i < instance->resDescriptors.size(); i++)
                 {
                         instance->AddText(instance->m_RenderSystem->m_Device,
@@ -1188,8 +1240,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                           E_FONT_TYPE::Calibri,
                                           std::to_string(instance->resDescriptors[i].Width) + "x" +
                                               std::to_string(instance->resDescriptors[i].Height),
-                                          0.04f * ScaleXRatio,
-                                          0.04f * ScaleYRatio,
+                                          0.035f * ScaleXRatio,
+                                          0.035f * ScaleYRatio,
                                           0.0f * PosXRatio,
                                           0.22f * PosYRatio,
                                           false,
@@ -1203,8 +1255,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::LevelMenu,
                                   E_FONT_TYPE::Calibri,
                                   "BACK",
-                                  0.05f * ScaleXRatio,
-                                  0.05f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   -0.20f * PosYRatio,
                                   false,
@@ -1218,8 +1270,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::LevelMenu,
                                   E_FONT_TYPE::Calibri,
                                   "TUTORIAL",
-                                  0.05f * ScaleXRatio,
-                                  0.05f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   -0.10f * PosYRatio,
                                   false,
@@ -1233,8 +1285,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::LevelMenu,
                                   E_FONT_TYPE::Calibri,
                                   "LEVEL 1",
-                                  0.05f * ScaleXRatio,
-                                  0.05f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   -0.03f * PosYRatio,
                                   false,
@@ -1248,8 +1300,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::LevelMenu,
                                   E_FONT_TYPE::Calibri,
                                   "LEVEL 2",
-                                  0.05f * ScaleXRatio,
-                                  0.05f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.04f * PosYRatio,
                                   false,
@@ -1263,8 +1315,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::LevelMenu,
                                   E_FONT_TYPE::Calibri,
                                   "LEVEL 3",
-                                  0.05f * ScaleXRatio,
-                                  0.05f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.11f * PosYRatio,
                                   false,
@@ -1280,8 +1332,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::ControlsMenu,
                                   E_FONT_TYPE::Calibri,
                                   "BACK",
-                                  0.05f * ScaleXRatio,
-                                  0.05f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   -0.20f * PosYRatio,
                                   false,
@@ -1295,8 +1347,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::ControlsMenu,
                                   E_FONT_TYPE::Calibri,
                                   "COLLECT RED LIGHT: A",
-                                  0.03f * ScaleXRatio,
-                                  0.03f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   -0.1f * PosYRatio,
                                   false,
@@ -1307,8 +1359,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::ControlsMenu,
                                   E_FONT_TYPE::Calibri,
                                   "COLLECT GREEN LIGHT: S",
-                                  0.03f * ScaleXRatio,
-                                  0.03f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.0f * PosYRatio,
                                   false,
@@ -1319,8 +1371,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::ControlsMenu,
                                   E_FONT_TYPE::Calibri,
                                   "COLLECT BLUE LIGHT: D",
-                                  0.03f * ScaleXRatio,
-                                  0.03f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.1f * PosYRatio,
                                   false,
@@ -1331,8 +1383,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::ControlsMenu,
                                   E_FONT_TYPE::Calibri,
                                   "MOVEMENT: Left Mouse ",
-                                  0.03f * ScaleXRatio,
-                                  0.03f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.0f * PosXRatio,
                                   0.2f * PosYRatio,
                                   false,
@@ -1507,8 +1559,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::Demo,
                                   E_FONT_TYPE::Calibri,
                                   "CONTINUE",
-                                  0.05f * ScaleXRatio,
-                                  0.05f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   -0.15f * PosXRatio,
                                   0.3f * PosYRatio,
                                   false,
@@ -1522,8 +1574,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::Demo,
                                   E_FONT_TYPE::Calibri,
                                   "EXIT",
-                                  0.05f * ScaleXRatio,
-                                  0.05f * ScaleYRatio,
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
                                   0.15f * PosXRatio,
                                   0.3f * PosYRatio,
                                   false,
@@ -1532,8 +1584,64 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   pauseButtonWidth * ScaleXRatio,
                                   pauseButtonHeight * ScaleYRatio);
         }
+        //{
+        //        if (globalTimer < 5.0f)
+        //        {
+        //                static auto dbg_test = 0;
+        //                dbg_test++;
+        //                // Full Sail Logo
+        //                UIManager::instance->Splash_FullSail();
+        //        }
+        //        else if (globalTimer >= 5.0f && globalTimer < 10.0f)
+        //        {
+        //                // GP Games Logo
+        //                UIManager::instance->Splash_GPGames();
+        //        }
+        //        else if (globalTimer >= 10.0f && globalTimer < 15.0f)
+        //        {
+        //                // Deep!deep Logo
+        //                UIManager::instance->Splash_Team();
+        //        }
+        //        if (globalTimer >= 15.0f)
+        //        {
+        //                UIManager::instance->Splash_End();
+        //        }
+        //}
+        TimedFunction fadeInSplashScreen0;
+        fadeInSplashScreen0.delay = 0;
+        fadeInSplashScreen0.func  = []() { UIManager::instance->Splash_FullSail(); };
+        TimedFunction fadeOutSplashScreen0;
+        fadeOutSplashScreen0.delay = 3.5;
+        fadeOutSplashScreen0.func  = []() {
+                UIManager::instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].desiredColor = {1, 1, 1, 0};
+        };
+        TimedFunction fadeInSplashScreen1;
+        fadeInSplashScreen1.delay = 5;
+        fadeInSplashScreen1.func  = []() { UIManager::instance->Splash_GPGames(); };
+        TimedFunction fadeOutSplashScreen1;
+        fadeOutSplashScreen1.delay = 8.5;
+        fadeOutSplashScreen1.func  = []() {
+                UIManager::instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].desiredColor = {1, 1, 1, 0};
+        };
+        TimedFunction fadeInSplashScreen2;
+        fadeInSplashScreen2.delay = 10;
+        fadeInSplashScreen2.func  = []() { UIManager::instance->Splash_Team(); };
+        TimedFunction fadeOutSplashScreen2;
+        fadeOutSplashScreen2.delay = 13.5;
+        fadeOutSplashScreen2.func  = []() {
+                UIManager::instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].desiredColor = {1, 1, 1, 0};
+        };
+        TimedFunction splashEndDelayd;
+        splashEndDelayd.delay = 15;
+        splashEndDelayd.func  = []() { UIManager::instance->Splash_End(); };
 
-
+        instance->timed_functions.push_back(fadeInSplashScreen0);
+        instance->timed_functions.push_back(fadeInSplashScreen1);
+        instance->timed_functions.push_back(fadeInSplashScreen2);
+        instance->timed_functions.push_back(splashEndDelayd);
+        instance->timed_functions.push_back(fadeOutSplashScreen0);
+        instance->timed_functions.push_back(fadeOutSplashScreen1);
+        instance->timed_functions.push_back(fadeOutSplashScreen2);
         // Pause Menu
 
         // Resume Button
@@ -1609,27 +1717,26 @@ void UIManager::Initialize(native_handle_type hwnd)
                 // Disable other Sensitivities
                 if (instance->CSettings.m_Sensitivity == 0)
                 {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = true;
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][10].mEnabled = false;
                 }
                 else if (instance->CSettings.m_Sensitivity == 1)
                 {
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled = true;
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][10].mEnabled = false;
                 }
                 else
                 {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][10].mEnabled = true;
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled = false;
                 }
-
 
                 // Fullscreen on/off Check
                 if (instance->CSettings.m_IsFullscreen == false)
@@ -1643,11 +1750,33 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
                 }
 
-                for (int i = 9; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+				int ResBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                int ResEnd   = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
+                for (int i = ResBegin; i < ResEnd; i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 9].mEnabled = true;
+                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                                [instance->CSettings.m_Resolution +
+                                     instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                     instance->resDescriptors.size()]
+                    .mEnabled = true;
+
+
+                int VolBegin =
+                    instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size() - 11;
+                int VolEnd = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+
+                for (int i = VolBegin; i < VolEnd; i++)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                }
+                instance
+                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                                [instance->CSettings.m_Volume * 0.1f - 11 + 
+								 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                 instance->resDescriptors.size()]
+                    .mEnabled = true;
         });
 
         // Controls Button
@@ -1801,6 +1930,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Height);
 
                 instance->m_RenderSystem->SetFullscreen(instance->CSettings.m_IsFullscreen);
+                AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
         });
 
         // Left Resolution Button
@@ -1814,11 +1944,18 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->CSettings.m_Resolution--;
                 }
 
-                for (int i = 9; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                     i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
+                     i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 9].mEnabled = true;
+                instance
+                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                                [instance->CSettings.m_Resolution +
+                                     instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                     instance->resDescriptors.size()]
+                    .mEnabled = true;
                 // Change Resolution HERE
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Width,
@@ -1836,11 +1973,18 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->CSettings.m_Resolution++;
                 }
 
-                for (int i = 9; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size(); i++)
+                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                     i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
+                     i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][instance->CSettings.m_Resolution + 9].mEnabled = true;
+                instance
+                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                                [instance->CSettings.m_Resolution +
+                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                 instance->resDescriptors.size()]
+                    .mEnabled = true;
                 // Change Resolution HERE
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Width,
@@ -1861,25 +2005,25 @@ void UIManager::Initialize(native_handle_type hwnd)
                 // Disable other Sensitivities
                 if (instance->CSettings.m_Sensitivity == 0)
                 {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = true;
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][10].mEnabled = false;
                 }
                 else if (instance->CSettings.m_Sensitivity == 1)
                 {
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled = true;
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][10].mEnabled = false;
                 }
                 else
                 {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][10].mEnabled = true;
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled = false;
                 }
                 // Change Sensitivity HERE
 
@@ -1902,31 +2046,78 @@ void UIManager::Initialize(native_handle_type hwnd)
                 // Disable other Sensitivities
                 if (instance->CSettings.m_Sensitivity == 0)
                 {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = true;
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][10].mEnabled = false;
                 }
                 else if (instance->CSettings.m_Sensitivity == 1)
                 {
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled = true;
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][10].mEnabled = false;
                 }
                 else
                 {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = true;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][10].mEnabled = true;
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][6].mEnabled = false;
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][7].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled = false;
                 }
                 // Change Sensitivity HERE
 
                 ControllerSystem* controllerSys      = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
                 PlayerController* m_PlayerController = static_cast<PlayerController*>(controllerSys->GetCurrentController());
                 m_PlayerController->SetSensitivity(instance->CSettings.m_Sensitivity);
+        });
+
+        // Left Volume Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][4].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                if (instance->CSettings.m_Volume * 0.1f > 0)
+                {
+                        instance->CSettings.m_Volume -= 10;
+                        int VolBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                       instance->resDescriptors.size() - 11;
+                        int VolEnd =
+                            instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                        for (int i = VolBegin; i < VolEnd; i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                        }
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                                        [instance->CSettings.m_Volume * 0.1f - 11 +
+                                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                         instance->resDescriptors.size()]
+                            .mEnabled = true;
+                        // Change Volume HERE
+                        AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
+                }
+        });
+
+        // Right Volume Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][5].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                if (instance->CSettings.m_Volume * 0.1f < 10)
+                {
+                        instance->CSettings.m_Volume += 10;
+
+                        int VolBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                       instance->resDescriptors.size() - 11;
+                        int VolEnd =
+                            instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                        for (int i = VolBegin; i < VolEnd; i++)
+                        {
+                                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+                        }
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                                        [instance->CSettings.m_Volume * 0.1f - 11 +
+                                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                         instance->resDescriptors.size()]
+                            .mEnabled = true;
+                        // Change Volume HERE
+                        AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
+                }
         });
 
 
@@ -2110,7 +2301,7 @@ void UIManager::Initialize(native_handle_type hwnd)
             [](UIMouseEvent* e) { GEngine::Get()->RequestGameExit(); });
 }
 
-void UIManager::Update()
+void UIManager::Update(float deltaTime)
 {
         GamePad::Get()->Refresh();
         GEngine::Get()->m_MainThreadProfilingContext.Begin("UIManager", "UIManager");
@@ -2125,20 +2316,22 @@ void UIManager::Update()
 
         if (GlobalTimer < 15.1f && !instance->m_BreakSplash)
         {
-                instance->SplashUpdate(GlobalTimer);
+                instance->SplashUpdate(GlobalTimer, deltaTime);
                 GlobalTimer += GEngine::Get()->GetDeltaTime();
         }
         else
         {
-                instance->GameplayUpdate();
+                instance->GameplayUpdate(deltaTime);
         }
 
-        instance->DrawSprites();
+        instance->DrawSprites(deltaTime);
         for (auto& it : instance->m_AllFonts)
                 for (auto& font : it.second)
                 {
                         if (font.mEnabled)
                         {
+
+
                                 instance->m_SpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
                                                                instance->m_States->NonPremultiplied());
 
@@ -2165,6 +2358,17 @@ void UIManager::Update()
                         }
                 }
         GEngine::Get()->m_MainThreadProfilingContext.End();
+
+        for (int i = 0; i < instance->timed_functions.size(); i++)
+        {
+                instance->timed_functions[i].delay -= deltaTime;
+                if (instance->timed_functions[i].delay <= 0)
+                {
+                        instance->timed_functions[i].func();
+                        instance->timed_functions.erase(instance->timed_functions.begin() + i);
+                        i--;
+                }
+        }
 }
 
 void UIManager::Shutdown()

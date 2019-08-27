@@ -131,6 +131,7 @@ class MathLibrary
 
         static float             MoveTowards(const float a, const float b, const float speed);
         static DirectX::XMVECTOR MoveTowards(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b, const float speed);
+        static DirectX::XMVECTOR MoveVectorColorTowards(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b, const float speed);
 
         static double SmoothStart2(double x);
         static double SmoothStop2(double x);
