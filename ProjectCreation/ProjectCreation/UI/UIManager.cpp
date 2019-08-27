@@ -1336,6 +1336,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 instance->m_RenderSystem->SetFullscreen(instance->PSettings.m_IsFullscreen);
 
                 AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
+
         });
 
         // Window Mode

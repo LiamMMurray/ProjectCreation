@@ -9,6 +9,7 @@
 #include "../../ECS/ISystem.h"
 #include "..//Particle Systems/Pools.h"
 #include "3DSoundComponent.h"
+#include "SoundComponent.h"
 
 class HandleManager;
 class SpatialSoundSystem : public ISystem
@@ -17,6 +18,8 @@ class SpatialSoundSystem : public ISystem
         HandleManager* m_HandleManager;
 
         std::vector<Pools::dynamic_pool_t<SoundPoolElement>> m_SoundPools[E_SOUND_TYPE::TYPE_COUNT * 3];
+
+        float m_masterVolume = 1.0f;
 
     protected:
         // Inherited via ISystem
@@ -30,5 +33,7 @@ class SpatialSoundSystem : public ISystem
 
     public:
         EntityHandle PlaySoundAtLocation(const DirectX::XMVECTOR& pos, SoundComponent3D::FSettings& settings);
+        EntityHandle PlaySoundWithVolume(float volume, const char* soundName);
         void         FreeSound(int type, int variation, int16_t index);
+        void         SetMasterVolume(float volume);
 };

@@ -5,8 +5,8 @@
 #include "../Controller/ControllerSystem.h"
 #include "../GEngine.h"
 #include "3DSoundComponent.h"
-#include "SoundComponent.h"
 #include "AudioManager.h"
+#include "SoundComponent.h"
 
 void SpatialSoundSystem::OnPreUpdate(float deltaTime)
 {}
@@ -18,11 +18,16 @@ void SpatialSoundSystem::OnUpdate(float deltaTime)
         TransformComponent* playerTransformComponent =
             currentController->GetControlledEntity().GetComponent<TransformComponent>();
 
-        float mastervol =  AudioManager::Get()->GetMasterVolume();
-		for (auto& soundComp : m_HandleManager->GetActiveComponents<SoundComponent>())
-		{
-                soundComp.m_gSound->SetVolume(soundComp.m_Volume * mastervol);
-		}
+        for (auto& soundComp : m_HandleManager->GetActiveComponents<SoundComponent>())
+        {
+                bool isPlaying;
+                soundComp.m_gSound->isSoundPlaying(isPlaying);
+
+                if (isPlaying == false)
+                {
+                        soundComp.GetParent().Free();
+                };
+        }
 
         for (auto& soundComp : m_HandleManager->GetActiveComponents<SoundComponent3D>())
         {
@@ -57,7 +62,7 @@ void SpatialSoundSystem::OnUpdate(float deltaTime)
                 float alpha =
                     1.0f - MathLibrary::saturate((distance - soundComp.m_Settings.m_Radius) / soundComp.m_Settings.m_Falloff);
 
-                m_SoundPools[type][variation][index].gwSound->SetVolume(alpha * soundComp.m_Settings.m_Volume);
+                m_SoundPools[type][variation][index].gwSound->SetVolume(alpha * soundComp.m_Settings.m_Volume * m_masterVolume);
         }
 }
 void SpatialSoundSystem::OnPostUpdate(float deltaTime)
@@ -145,8 +150,32 @@ EntityHandle SpatialSoundSystem::PlaySoundAtLocation(const DirectX::XMVECTOR& po
         return entity;
 }
 
+EntityHandle SpatialSoundSystem::PlaySoundWithVolume(float volume, const char* soundName)
+{
+        EntityHandle entity = m_HandleManager->CreateEntity();
+
+        ComponentHandle soundCompHandle = entity.AddComponent<SoundComponent>();
+        SoundComponent* soundComponent  = soundCompHandle.Get<SoundComponent>();
+        soundComponent->m_Volume        = volume * m_masterVolume;
+        soundComponent->m_gSound        = AudioManager::Get()->CreateSFX(soundName);
+
+        soundComponent->m_gSound->SetVolume(soundComponent->m_Volume);
+        soundComponent->m_gSound->Play();
+
+        return entity;
+}
+
 void SpatialSoundSystem::FreeSound(int type, int variation, int16_t index)
 {
         m_SoundPools[type][variation][index].gwSound->StopSound();
         m_SoundPools[type][variation].Free(index);
+}
+
+void SpatialSoundSystem::SetMasterVolume(float volume)
+{
+        m_masterVolume = volume;
+        for (auto& soundComp : m_HandleManager->GetActiveComponents<SoundComponent>())
+        {
+                soundComp.m_gSound->SetVolume(soundComp.m_Volume * m_masterVolume);
+        }
 }
