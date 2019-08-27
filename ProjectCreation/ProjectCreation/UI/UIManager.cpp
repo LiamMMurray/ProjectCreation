@@ -409,11 +409,13 @@ void UIManager::WhiteOrbCollected()
 
         if (GamePad::Get()->CheckConnection() == true)
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].mEnabled = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].mEnabled      = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].currColor = {1, 1, 1, .0f};
         }
         else
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled  = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].currColor = {1, 1, 1, .0f};
         }
 }
 
@@ -423,11 +425,13 @@ void UIManager::RedOrbCollected()
         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].mEnabled = false;
         if (GamePad::Get()->CheckConnection() == true)
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].mEnabled = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].mEnabled  = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].currColor = {1, 1, 1, .0f};
         }
         else
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled  = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].currColor = {1, 1, 1, .0f};
         }
 }
 
@@ -438,10 +442,12 @@ void UIManager::GreenOrbCollected()
         if (GamePad::Get()->CheckConnection() == true)
         {
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].mEnabled = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].currColor = {1, 1, 1, .0f};
         }
         else
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].mEnabled  = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].currColor = {1, 1, 1, .0f};
         }
 }
 
@@ -465,11 +471,13 @@ void UIManager::MainTilteUnpause()
         // Left Click Image
         if (GamePad::Get()->CheckConnection() == true)
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].mEnabled = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled  = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].currColor = {1, 1, 1, .0f};
         }
         else
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled  = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].currColor = {1, 1, 1, .0f};
         }
 }
 
