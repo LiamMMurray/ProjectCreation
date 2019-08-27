@@ -36,6 +36,8 @@ class AudioManager
         static AudioManager*                                instance;
 
     public:
+        EntityHandle PlaySoundWithVolume(float volume, const char* name);
+
         EntityHandle PlaySoundAtLocation(const DirectX::XMVECTOR& pos, SoundComponent3D::FSettings& settings);
 
         GW::AUDIO::GSound* CreateSFX(const char*);

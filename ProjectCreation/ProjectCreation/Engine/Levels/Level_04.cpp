@@ -14,15 +14,11 @@ void Level_04::Enter()
 
                 m_OrbitSystem->InstantCreateOrbitSystem();
 
-                m_SpeedBoostSystem->m_ColorsCollected[0] = true;
-                m_SpeedBoostSystem->m_ColorsCollected[1] = true;
-                m_SpeedBoostSystem->m_ColorsCollected[2] = true;
-                m_SpeedBoostSystem->m_ColorsCollected[3] = true;
 
                 m_OrbitSystem->ClearCollectedMask();
                 m_OrbitSystem->collectedMask[E_LIGHT_ORBS::RED_LIGHTS]   = true;
                 m_OrbitSystem->collectedMask[E_LIGHT_ORBS::GREEN_LIGHTS] = true;
-                m_OrbitSystem->collectedMask[E_LIGHT_ORBS::BLUE_LIGHTS] = true;
+                m_OrbitSystem->collectedMask[E_LIGHT_ORBS::BLUE_LIGHTS]  = true;
 
                 m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::RED_LIGHTS);
                 m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::GREEN_LIGHTS);
@@ -37,7 +33,11 @@ void Level_04::Enter()
                 GEngine::Get()->SetPuzzleState(0.0f);
         }
 
-        GEngine::Get()->m_TargetInstanceReveal = 1.0f;
+        m_SpeedBoostSystem->m_ColorsCollected[0] = false;
+        m_SpeedBoostSystem->m_ColorsCollected[1] = false;
+        m_SpeedBoostSystem->m_ColorsCollected[2] = false;
+        m_SpeedBoostSystem->m_ColorsCollected[3] = true;
+        GEngine::Get()->m_TargetInstanceReveal   = 1.0f;
 
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);
         if (GEngine::Get()->GetCurrentPlayerRadius() == 0.0f)

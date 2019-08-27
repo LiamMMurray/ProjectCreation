@@ -33,8 +33,8 @@
 #include "../CoreInput/InputActions.h"
 #include "../Particle Systems/EmitterComponent.h"
 
+#include "..//Audio/ContinousSoundSystem.h"
 #include "../JobScheduler.h"
-#include"..//Audio/ContinousSoundSystem.h"
 using namespace DirectX;
 
 std::random_device                    r;
@@ -76,7 +76,6 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
 
                 ComponentHandle   emitterComponentHandle = entityH.AddComponent<EmitterComponent>();
                 EmitterComponent* emitterComponent       = emitterComponentHandle.Get<EmitterComponent>();
-                XMFLOAT3          velMin;
                 XMFLOAT3          velMax;
                 XMFLOAT4          orbColor;
                 XMFLOAT3          orbPos;
@@ -356,8 +355,9 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                                 CreateRandomPath(start, end, i, width, waveCount, height);
                                 if (i < 3)
                                 {
-                                        //auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
-                                        auto spawnSound = GET_SYSTEM(SpatialSoundSystem)->PlaySoundWithVolume(0.8f,spawnNames[i]);
+                                        // auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
+                                        auto spawnSound =
+                                            GET_SYSTEM(SpatialSoundSystem)->PlaySoundWithVolume(0.8f, spawnNames[i]);
                                         /*spawnSound->SetVolume(0.8f);
                                         spawnSound->Play();*/
                                 }
@@ -411,10 +411,10 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                                 end   = XMVectorSetY(end, 0.0f);
 
                                 CreateRandomPath(start, end, i, width, waveCount, height);
-                                //auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
+                                // auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
                                 auto spawnSound = GET_SYSTEM(SpatialSoundSystem)->PlaySoundWithVolume(0.8f, spawnNames[i]);
-                               /* spawnSound->SetVolume(0.8f);
-                                spawnSound->Play();*/
+                                /* spawnSound->SetVolume(0.8f);
+                                 spawnSound->Play();*/
 
                                 m_PendingPathCounts[i]--;
                         }
@@ -469,7 +469,7 @@ void SpeedBoostSystem::CreateRandomPath(const DirectX::XMVECTOR& start,
         transform.rotation                   = FQuaternion::LookAt(XMVector3Normalize(dir));
         transform.scale                      = scale;
         it.first->second.transform           = transform.CreateMatrix();
-        it.first->second.segments            = length / m_SplineLengthPerOrb;
+        it.first->second.segments            = int(length / m_SplineLengthPerOrb);
         it.first->second.spiralCount         = waveCount;
         it.first->second.maxHeight           = heightvar;
         it.first->second.color               = color;
@@ -635,7 +635,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                             case 3:
                                     emitterComp->EmitterData.acceleration.y       = 3.5f;
                                     emitterComp->EmitterData.maxInitialVelocity.y = 3.5f;
-                                    emitterComp->EmitterData.particleScale.y      = 0.15;
+                                    emitterComp->EmitterData.particleScale.y      = 0.15f;
                                     emitterComp->EmitterData.maxOffset            = {0.0f, 0.0f, 0.0f};
                                     break;
                     }
@@ -801,11 +801,11 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 {
                                         if (i == correctColor)
                                         {
-                                                inPath &= (InputActions::CheckAction(i) == KeyState::Down);
+                                                inPath &= (bool)(InputActions::CheckAction(i) == KeyState::Down);
                                         }
                                         else
                                         {
-                                                inPath &= ~(InputActions::CheckAction(i) == KeyState::Down);
+                                                inPath &= (bool)(~(InputActions::CheckAction(i) == KeyState::Down));
                                         }
                                 }
 
@@ -830,9 +830,9 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                     SOUND_COLOR_TYPE(correctColor, E_SOUND_TYPE::SPLINE_COLLECT_0 + pitch);
 
 
-                                                int totalVariations =
+                                                unsigned int totalVariations =
                                                     E_SOUND_TYPE::variations[E_SOUND_TYPE::SPLINE_COLLECT_0] * 2 - 2;
-                                                int variation = adjustedIndex % (totalVariations);
+                                                unsigned int variation = adjustedIndex % (totalVariations);
 
                                                 if (variation >= E_SOUND_TYPE::variations[E_SOUND_TYPE::SPLINE_COLLECT_0])
                                                 {

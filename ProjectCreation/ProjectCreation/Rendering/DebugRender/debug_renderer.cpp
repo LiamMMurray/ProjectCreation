@@ -16,7 +16,7 @@ namespace
 
         // CPU-side buffer of debug-line verts
         // Copied to the GPU and reset every frame.
-        size_t                                   line_vert_count = 0;
+        size_t       line_vert_count = 0;
         FDebugVertex line_verts[MAX_LINE_VERTS];
 } // namespace
 
@@ -78,7 +78,7 @@ namespace debug_renderer
                               DirectX::XMFLOAT4           color,
                               float                       axisLength)
         {
-                int n = skel.jointTransforms.size();
+                int n = (int)skel.jointTransforms.size();
 
                 for (int i = 0; i < n; i++)
                 {

@@ -19,10 +19,10 @@ DirectX::XMVECTOR FQuaternion::GetForward() const
 
 DirectX::XMVECTOR FQuaternion::GetForward2D() const
 {
-		XMVECTOR fw = GetForward();
+        XMVECTOR fw       = GetForward();
         float    distance = MathLibrary::CalulateDistance(fw, VectorConstants::Up);
 
-		if (distance < 0.001f)
+        if (distance < 0.001f)
                 return -GetUp();
 
         return XMVector3Normalize(XMVectorSetY(fw, 0.0f));
@@ -131,7 +131,7 @@ DirectX::XMFLOAT3 FQuaternion::ToEulerAngles()
         {
                 output.x = asinf(2.0f * (singularityTest));
                 output.y = atan2f(yawY, yawX);
-                output.z = float(atan2f(-2.0f * (quat.w * quat.x + quat.z * quat.y), (1.f - 2.f * (sqx + sqz))));
+                output.z = atan2f(-2.0f * (quat.w * quat.x + quat.z * quat.y), float(1.f - 2.f * (sqx + sqz)));
         }
 
         return output;

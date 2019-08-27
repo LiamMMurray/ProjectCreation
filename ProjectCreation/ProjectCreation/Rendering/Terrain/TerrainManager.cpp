@@ -129,7 +129,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
 
 
         {
-                intermediateMipDimensions = texwidth / pow(2, intermediateMipLevel);
+                intermediateMipDimensions = (unsigned int)(texwidth / pow(2, intermediateMipLevel));
 
                 D3D11_TEXTURE2D_DESC texd{};
                 texd.ArraySize          = 1;
@@ -358,7 +358,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 sm->SetIsActive(false);
                 staticMeshesShowWithTerrain.push_back(statHandle);
                 trans->transform.scale       = XMVectorSet(1.5f, 1.5f, 1.5f, 1.0f);
-                trans->transform.translation = XMVectorSet(24.51, 0.0f, -139.36f, 1.0f);
+                trans->transform.translation = XMVectorSet(24.51f, 0.0f, -139.36f, 1.0f);
                 trans->alignToTerrain        = false;
                 emitterComp->ParticleswithGravity(XMFLOAT3(-0.0f, 60.0f, -0.0f),
                                                   XMFLOAT3(0.0f, 70.35f, 0.0f),
@@ -623,7 +623,10 @@ void TerrainManager::_update(float deltaTime)
 
         for (auto& compHandle : staticMeshesShowWithTerrain)
         {
-                auto sm      = compHandle.Get<StaticMeshComponent>();
+                auto sm = compHandle.Get<StaticMeshComponent>();
+
+                // sm->SetIsActive(false);
+                // continue;
                 auto emitter = compHandle.Get()->GetParent().GetComponent<EmitterComponent>();
                 auto trans   = compHandle.Get()->GetParent().GetComponent<TransformComponent>();
 
@@ -632,7 +635,7 @@ void TerrainManager::_update(float deltaTime)
                 {
                         fw = VectorConstants::Forward;
                 }
-                fw = XMVectorSetY(fw, 0.0f);
+                fw                        = XMVectorSetY(fw, 0.0f);
                 fw                        = XMVector3Normalize(fw);
                 trans->transform.rotation = FQuaternion::LookAt(fw);
 
@@ -640,10 +643,10 @@ void TerrainManager::_update(float deltaTime)
 
                 // sm->GetParent().GetComponent<TransformComponent>()->transform.SetScale(terrainConstantBufferCPU.gTerrainAlpha);
 
-                if (active && terrainConstantBufferCPU.gTerrainAlpha <= 0.0f)
+                if (active && GEngine::Get()->m_InstanceReveal <= 0.0f)
                         sm->SetIsActive(false);
 
-                if (!active && terrainConstantBufferCPU.gTerrainAlpha > 0.0f)
+                if (!active && GEngine::Get()->m_InstanceReveal > 0.0f)
                 {
                         sm->SetIsActive(true);
                         emitter->SetIsActive(true);

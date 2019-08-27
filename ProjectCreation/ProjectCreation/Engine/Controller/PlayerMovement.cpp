@@ -16,8 +16,8 @@
 #include "PlayerPuzzleState.h"
 #include "PlayerStateEvents.h"
 
-#include"..//Audio/ContinousSoundSystem.h"
 #include "../../Rendering/DebugRender/debug_renderer.h"
+#include "..//Audio/ContinousSoundSystem.h"
 // v Testing only delete when done v
 #include <iostream>
 #include "../CoreInput/InputActions.h"
@@ -78,7 +78,7 @@ void PlayerController::GatherInput()
                 {
                         if (GamePad::Get()->CheckConnection() == true)
                         {
-                                tempDir.z += (1.5 * GamePad::Get()->rightTrigger);
+                                tempDir.z += (1.5f * GamePad::Get()->rightTrigger);
                         }
 
                         if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
@@ -187,7 +187,6 @@ void PlayerController::Init(EntityHandle h)
 
 
         // Init sound pool
-
 }
 
 void PlayerController::Reset()
@@ -202,19 +201,22 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
 
         if ((int)m_ColorInputKeyCodes[color] < 0 || InputActions::CheckAction(color) == KeyState::Down)
         {
-                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(color);
 
                 // Settings for the orb sounds (Referencing SpeedBoostSystem.cpp lines 814-846
-                int index = SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount() % 3;
+                int index = SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount();
+                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(color);
 
-                if (color == 3) {}
+                if (color == 3)
+                {
+                        AudioManager::Get()->PlaySoundWithVolume(1.0f, m_SpeedboostSoundNames[index].c_str());
+                }
                 else
                 {
                         SoundComponent3D::FSettings settings;
                         settings.m_SoundType = SOUND_COLOR_TYPE(color, E_SOUND_TYPE::ORB_COLLECT_0);
 
-                        int totalVariations = E_SOUND_TYPE::variations[E_SOUND_TYPE::ORB_COLLECT_0];
-                        int variation       = index % (totalVariations);
+                        unsigned int totalVariations = E_SOUND_TYPE::variations[E_SOUND_TYPE::ORB_COLLECT_0];
+                        unsigned int variation       = index % (totalVariations);
 
                         if (variation >= E_SOUND_TYPE::variations[E_SOUND_TYPE::ORB_COLLECT_0])
                         {

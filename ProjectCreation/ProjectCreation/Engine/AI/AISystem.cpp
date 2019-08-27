@@ -27,10 +27,9 @@ XMVECTOR AISystem::CalculateCohesion(AIComponent* boid)
                 {
                         temp *= distance / m_FlockRadius;
                 }
-				return temp * m_CohesionStrength;
+                return temp * m_CohesionStrength;
         }
         return XMVectorZero();
-
 }
 
 XMVECTOR AISystem::CalculateSeperation(AIComponent* boid)
@@ -75,7 +74,7 @@ void AISystem::CalculateAverage()
                 boidCount++;
                 m_AverageForward += aiComp.m_Velocity;
         }
-        m_AverageForward /= boidCount;
+        m_AverageForward /= (float)boidCount;
 
         m_AveragePosition = m_PlayerEntity.GetComponent<TransformComponent>()->transform.translation;
         /*
@@ -106,42 +105,43 @@ void AISystem::OnInitialize()
 
         m_FlockRadius = 1.0f;
         m_PlayerRadius = 3.0f;
-		*/
+        */
 }
 
 void AISystem::OnPreUpdate(float deltaTime)
 {}
 
 void AISystem::OnUpdate(float deltaTime)
-{ 
-	/*
-        CalculateAverage();
+{
+        /*
+            CalculateAverage();
 
-        for (auto& aiComp : m_HandleManager->GetActiveComponents<AIComponent>())
-        {
-                XMVECTOR accel = CalculateAlignment(&aiComp);
-                accel += CalculateCohesion(&aiComp);
-                accel += CalculateSeperation(&aiComp);
+            for (auto& aiComp : m_HandleManager->GetActiveComponents<AIComponent>())
+            {
+                    XMVECTOR accel = CalculateAlignment(&aiComp);
+                    accel += CalculateCohesion(&aiComp);
+                    accel += CalculateSeperation(&aiComp);
 
-                accel *= aiComp.m_MaxSpeed * deltaTime;
-                aiComp.m_Velocity += accel;
+                    accel *= aiComp.m_MaxSpeed * deltaTime;
+                    aiComp.m_Velocity += accel;
 
-                if (MathLibrary::VectorDotProduct(aiComp.m_Velocity, aiComp.m_Velocity) >
-                    aiComp.m_MaxSpeed * aiComp.m_MaxSpeed) // Magnitude
-                {
-                        XMVector3Normalize(aiComp.m_Velocity);
-                        aiComp.m_MaxSpeed *= aiComp.m_MaxSpeed;
-                }
+                    if (MathLibrary::VectorDotProduct(aiComp.m_Velocity, aiComp.m_Velocity) >
+                        aiComp.m_MaxSpeed * aiComp.m_MaxSpeed) // Magnitude
+                    {
+                            XMVector3Normalize(aiComp.m_Velocity);
+                            aiComp.m_MaxSpeed *= aiComp.m_MaxSpeed;
+                    }
 
-                if (MathLibrary::CalulateVectorLength(aiComp.m_Velocity * aiComp.m_Velocity) >
-                    aiComp.m_MaxSpeed * aiComp.m_MaxSpeed)
-                {
-                        aiComp.m_Velocity = XMVector3Normalize(aiComp.m_Velocity);
-                        aiComp.m_Velocity *= aiComp.m_MaxSpeed;
-                }
-                aiComp.GetParent().GetComponent<TransformComponent>()->transform.translation += aiComp.m_Velocity * deltaTime;
-        }
-*/
+                    if (MathLibrary::CalulateVectorLength(aiComp.m_Velocity * aiComp.m_Velocity) >
+                        aiComp.m_MaxSpeed * aiComp.m_MaxSpeed)
+                    {
+                            aiComp.m_Velocity = XMVector3Normalize(aiComp.m_Velocity);
+                            aiComp.m_Velocity *= aiComp.m_MaxSpeed;
+                    }
+                    aiComp.GetParent().GetComponent<TransformComponent>()->transform.translation += aiComp.m_Velocity *
+           deltaTime;
+            }
+    */
 }
 
 void AISystem::OnPostUpdate(float deltaTime)

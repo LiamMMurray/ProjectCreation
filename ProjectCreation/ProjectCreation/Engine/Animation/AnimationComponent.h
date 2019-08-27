@@ -14,5 +14,5 @@ class AnimationComponent : public Component<AnimationComponent>
 
     public:
         void SetWeights(int count, float* weights);
-        void AddAnims(int count, float* weights, ResourceHandle* animHandles);
+        void AddAnims(size_t count, float* weights, ResourceHandle* animHandles);
 };
