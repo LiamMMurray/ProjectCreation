@@ -85,8 +85,14 @@ float4 main(INPUT_PIXEL input) : SV_TARGET
         color = surface.diffuseColor * lerp(0.05f, 0.00f, fakeShadow);
         // Directional Light
         {
-                float3 radiance = float3(50.0f, 0.0f, 0.0f);
+                float3 radiance = float3(0.0f, 0.0f, 0.0f);
+                float3 red      = float3(50.0f, 0.0f, 0.0f);
+                float3 yellow   = float3(500.0f, 100.0f, 0.0f);
+                float3 blend    = lerp(red, yellow, 1.0f - saturate((input.PosWS.y - 32.0f) / 30.0f));
+
+                radiance        = blend;
                 float3 lightDir = float3(0.0f, 1.0f, 0.0f);
+
                 color += radiance * PBR(surface, -lightDir, viewWS, specColor) * input.linearDepth;
         }
         // point light

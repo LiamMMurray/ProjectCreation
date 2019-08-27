@@ -74,7 +74,7 @@ int UIManager::AddSprite(ID3D11Device*        device,
         Texture.Reset();
         resource.Reset();
 
-        return m_AllSprites[category].size() - 1;
+        return (int)(m_AllSprites[category].size() - 1);
 
         // m_AllSprites[category][index].desiredAlpha = 1.0f;
 }
@@ -315,8 +315,13 @@ void UIManager::GameplayUpdate(float deltaTime)
         POINT cursorPoint;
         GetCursorPos(&cursorPoint);
 
-        if (GamePad::Get()->CheckConnection() == true) 
-		{
+        // if (instance->CSettings.m_IsFullscreen == true)
+        //{
+        //        ScreenToClient((HWND)instance->m_WindowHandle, &cursorPoint);
+        //}
+
+        if (GamePad::Get()->CheckConnection() == true)
+        {
                 for (int i = 0; i < instance->resDescriptors.size(); i++)
                 {
                         int XPos = int(GamePad::Get()->leftStickX * 10.0f);
@@ -324,7 +329,7 @@ void UIManager::GameplayUpdate(float deltaTime)
 
                         SetCursorPos(cursorPoint.x + XPos, cursorPoint.y - YPos);
                 }
-		}
+        }
 
         GetCursorPos(&cursorPoint);
         e.mouseX = (float)cursorPoint.x;
@@ -613,7 +618,8 @@ void UIManager::StartupResAdjust(HWND window)
 
                 // Resizes the window
                 SupportedResolutions();
-                DXGI_MODE_DESC desc = instance->resDescriptors.back();
+                DXGI_MODE_DESC desc              = instance->resDescriptors.back();
+                instance->CSettings.m_Resolution = (int)(instance->resDescriptors.size() - 1);
                 AdjustResolution(window, desc.Width, desc.Height);
         }
 }
@@ -1152,7 +1158,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   false,
                                   true);
 
-				//Volume 
+                // Volume
                 instance->AddText(instance->m_RenderSystem->m_Device,
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::OptionsSubmenu,
@@ -1229,7 +1235,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                           false,
                                           false);
                 }
-        		
+
 
                 // Any new options submenu should be put above this
                 for (auto i = 0; i < instance->resDescriptors.size(); i++)
@@ -1719,7 +1725,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = true;
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled  = false;
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][10].mEnabled = false;
                 }
                 else if (instance->CSettings.m_Sensitivity == 1)
@@ -1727,7 +1733,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled = true;
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled  = false;
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][10].mEnabled = false;
                 }
                 else
@@ -1750,22 +1756,25 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
                 }
 
-				int ResBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
-                int ResEnd   = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
+                int ResBegin =
+                    (int)(instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size());
+                int ResEnd = (int)(instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size());
                 for (int i = ResBegin; i < ResEnd; i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                 }
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                instance
+                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
                                 [instance->CSettings.m_Resolution +
-                                     instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                     instance->resDescriptors.size()]
+                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                 instance->resDescriptors.size()]
                     .mEnabled = true;
 
 
-                int VolBegin =
-                    instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size() - 11;
-                int VolEnd = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                int VolBegin = (int)(instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                     instance->resDescriptors.size() - 11);
+                int VolEnd =
+                    (int)(instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size());
 
                 for (int i = VolBegin; i < VolEnd; i++)
                 {
@@ -1773,8 +1782,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                 }
                 instance
                     ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
-                                [instance->CSettings.m_Volume * 0.1f - 11 + 
-								 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                [(unsigned int)(instance->CSettings.m_Volume * 0.1f - 11) +
+                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
                                  instance->resDescriptors.size()]
                     .mEnabled = true;
         });
@@ -1930,21 +1939,22 @@ void UIManager::Initialize(native_handle_type hwnd)
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Height);
 
                 instance->m_RenderSystem->SetFullscreen(instance->CSettings.m_IsFullscreen);
-                AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
+                AudioManager::Get()->SetMasterVolume(0.1f * instance->CSettings.m_Volume);
         });
 
         // Left Resolution Button
         instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][0].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
                 if (instance->CSettings.m_Resolution - 1 <= -1)
                 {
-                        instance->CSettings.m_Resolution =  int(instance->resDescriptors.size() - 1);
+                        instance->CSettings.m_Resolution = int(instance->resDescriptors.size() - 1);
                 }
                 else
                 {
                         instance->CSettings.m_Resolution--;
                 }
 
-                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                for (int i = (int)(instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                   instance->resDescriptors.size());
                      i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
                      i++)
                 {
@@ -1953,8 +1963,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                 instance
                     ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
                                 [instance->CSettings.m_Resolution +
-                                     instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                     instance->resDescriptors.size()]
+                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                 instance->resDescriptors.size()]
                     .mEnabled = true;
                 // Change Resolution HERE
                 instance->AdjustResolution(instance->m_window,
@@ -1973,7 +1983,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->CSettings.m_Resolution++;
                 }
 
-                for (int i = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                for (int i = (int)(instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                   instance->resDescriptors.size());
                      i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
                      i++)
                 {
@@ -2007,7 +2018,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = true;
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled  = false;
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][10].mEnabled = false;
                 }
                 else if (instance->CSettings.m_Sensitivity == 1)
@@ -2015,7 +2026,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled = true;
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled  = false;
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][10].mEnabled = false;
                 }
                 else
@@ -2048,7 +2059,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = true;
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled  = false;
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][10].mEnabled = false;
                 }
                 else if (instance->CSettings.m_Sensitivity == 1)
@@ -2056,7 +2067,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][9].mEnabled = true;
 
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled = false;
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][8].mEnabled  = false;
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][10].mEnabled = false;
                 }
                 else
@@ -2078,21 +2089,22 @@ void UIManager::Initialize(native_handle_type hwnd)
                 if (instance->CSettings.m_Volume * 0.1f > 0)
                 {
                         instance->CSettings.m_Volume -= 10;
-                        int VolBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                       instance->resDescriptors.size() - 11;
-                        int VolEnd =
-                            instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                        int VolBegin = (int)(instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                             instance->resDescriptors.size() - 11);
+                        int VolEnd   = (int)(instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                           instance->resDescriptors.size());
                         for (int i = VolBegin; i < VolEnd; i++)
                         {
                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                         }
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
-                                        [instance->CSettings.m_Volume * 0.1f - 11 +
+                        instance
+                            ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                                        [(unsigned int)(instance->CSettings.m_Volume * 0.1f - 11) +
                                          instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
                                          instance->resDescriptors.size()]
                             .mEnabled = true;
                         // Change Volume HERE
-                        AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
+                        AudioManager::Get()->SetMasterVolume(0.1f * instance->CSettings.m_Volume);
                 }
         });
 
@@ -2102,21 +2114,22 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         instance->CSettings.m_Volume += 10;
 
-                        int VolBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                       instance->resDescriptors.size() - 11;
-                        int VolEnd =
-                            instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
+                        int VolBegin = (int)(instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                             instance->resDescriptors.size() - 11);
+                        int VolEnd   = (int)(instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                                           instance->resDescriptors.size());
                         for (int i = VolBegin; i < VolEnd; i++)
                         {
                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
                         }
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
-                                        [instance->CSettings.m_Volume * 0.1f - 11 +
+                        instance
+                            ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                                        [(unsigned int)(instance->CSettings.m_Volume * 0.1f - 11) +
                                          instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
                                          instance->resDescriptors.size()]
                             .mEnabled = true;
                         // Change Volume HERE
-                        AudioManager::Get()->SetMasterVolume(0.1 * instance->CSettings.m_Volume);
+                        AudioManager::Get()->SetMasterVolume(0.1f * instance->CSettings.m_Volume);
                 }
         });
 
