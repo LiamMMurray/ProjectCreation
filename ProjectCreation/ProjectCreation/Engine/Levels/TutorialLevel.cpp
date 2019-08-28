@@ -78,6 +78,7 @@ void TutorialLevel::Exit()
 
 TutorialLevel::TutorialLevel()
 {
+
         m_OrbitSystem      = GEngine::Get()->GetSystemManager()->GetSystem<OrbitSystem>();
         m_LevelType        = E_Level_States::TUTORIAL_LEVEL;
         m_SpeedBoostSystem = GEngine::Get()->GetSystemManager()->GetSystem<SpeedBoostSystem>();
