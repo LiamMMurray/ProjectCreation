@@ -12,6 +12,7 @@ TutorialLevel::E_TUTORIAL_PHASE TutorialLevel::currPhase = E_TUTORIAL_PHASE::PHA
 
 void TutorialLevel::Enter()
 {
+        m_SpeedBoostSystem->SetRandomSpawnEnabled(false);
         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
@@ -77,6 +78,7 @@ void TutorialLevel::Exit()
 
 TutorialLevel::TutorialLevel()
 {
+
         m_OrbitSystem      = GEngine::Get()->GetSystemManager()->GetSystem<OrbitSystem>();
         m_LevelType        = E_Level_States::TUTORIAL_LEVEL;
         m_SpeedBoostSystem = GEngine::Get()->GetSystemManager()->GetSystem<SpeedBoostSystem>();
