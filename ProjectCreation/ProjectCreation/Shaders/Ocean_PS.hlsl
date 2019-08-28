@@ -78,11 +78,11 @@ float4 main(DomainOutput pIn) : SV_TARGET
 
         float  shoreMaskA = normalMapA.Sample(sampleTypeWrap, pIn.Tex2 * 0.7f + 0.02f * _Time).r;
         float  shoreMaskB = normalMapA.Sample(sampleTypeWrap, pIn.Tex2 * 0.9f - 0.04f * _Time).g;
-        float  shoreMask  = 1.0f - saturate(pow(1.0f - shoreMaskA * shoreMaskB, 24.0f) * 1000.0f);
+        float  shoreMask  = 1.0f - saturate(pow(abs(1.0f - shoreMaskA * shoreMaskB), 24.0f) * 1000.0f);
         float2 terrainTex = pIn.PosWS.xz / (float2(gScale, gScale)) - 0.5f;
 
 
-        float terrainAlpha    = pow(gTerrainAlpha, 1.2f);
+        float terrainAlpha    = pow(abs(gTerrainAlpha), 1.2f);
         float heightmapSample = terrainAlpha * Heightmap.Sample(sampleTypeWrap, terrainTex).r * 2625.0f -
                                 terrainAlpha * 1260.0f + 1.0f * terrainAlpha;
         heightmapSample -= pIn.offset * 10.0f;
@@ -111,9 +111,9 @@ float4 main(DomainOutput pIn) : SV_TARGET
         foamAlpha *= pIn.offset / 2.0f - 0.2f;
         // return foamAlpha;
         float shoreMaskC = normalMapA.Sample(sampleTypeWrap, pIn.Tex2 * 0.15f - float2(0.0f, 1.0f) * 0.01f * _Time).g;
-        shoreMaskC       = saturate(pow(shoreMaskC, 18.0f) * 2000.0f);
+        shoreMaskC       = saturate(pow(abs(shoreMaskC), 18.0f) * 2000.0f);
         // return shoreMaskC;
-        float wavesMask = 1.0f - saturate(pow(1.0f - shoreMaskA * shoreMaskB, lerp(8.0f, 45.0f, foamAlpha)) * 3000.0f);
+        float wavesMask = 1.0f - saturate(pow(abs(1.0f - shoreMaskA * shoreMaskB), lerp(8.0f, 45.0f, foamAlpha)) * 3000.0f);
         wavesMask *= shoreMaskC;
         // viewWS = normalize(lerp(viewWS, reflect(_DirectionalLightDirection, surface.normal), 0.8f));
         // return normalB.xyzz;
@@ -156,8 +156,9 @@ float4 main(DomainOutput pIn) : SV_TARGET
         // return fresnel;
         // return fresnelLow;
         float transluscencyExtra = saturate(pow(lerp(fresnelHigh, fresnelLow, 0.7f), 2.0f) * 0.08f);
-        float transluscency = saturate(pow(lerp(transluscentHigh, transluscentLow, 0.4f), 20.0f) * 0.4f + transluscencyExtra);
-        float fresnel       = 0.04f * saturate(pow(fresnelLow + fresnelHigh * 0.1f, 25.0f));
+        float transluscency =
+            saturate(pow(abs(lerp(transluscentHigh, transluscentLow, 0.4f)), 20.0f) * 0.4f + transluscencyExtra);
+        float fresnel = 0.04f * saturate(pow(fresnelLow + fresnelHigh * 0.1f, 25.0f));
         // return fresnel;
         // return transluscency;
         float specular = pow(max(dot(H, N), 0.0), 250.0) * 0.2f;
@@ -186,7 +187,7 @@ float4 main(DomainOutput pIn) : SV_TARGET
                 // color += lerp(shallowWaterColor, deepWaterColor, fresnelTerm) + specular * radiance;
         }
         // return NormalWS.xyz;
-        //return float4(color, 1.0f);
+        // return float4(color, 1.0f);
 
         float maskA     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 45.0f + _Time * 0.01f * float2(1.0f, 0.0f)).z;
         float maskB     = Mask1.Sample(sampleTypeWrap, pIn.PosWS.xz / 40.0f + _Time * 0.01f * float2(-1.0f, 0.0f)).z;
@@ -198,9 +199,9 @@ float4 main(DomainOutput pIn) : SV_TARGET
 
         float modulatedDistance = dist / .1f + InterleavedGradientNoise(pIn.Pos.xy + _Time);
 
-        float mask         = saturate(dist / 0.1f - _playerRadius*2.0f);
-        float bandA        = saturate(dist / 0.1f - _playerRadius*2.0f + 0.5f);
-        float bandB        = saturate(dist / 0.1f - _playerRadius*2.0f - 0.5f);
+        float mask         = saturate(dist / 0.1f - _playerRadius * 2.0f);
+        float bandA        = saturate(dist / 0.1f - _playerRadius * 2.0f + 0.5f);
+        float bandB        = saturate(dist / 0.1f - _playerRadius * 2.0f - 0.5f);
         float bandCombined = saturate(5.0f * (bandA - bandB));
         color *= (1 - mask);
 
