@@ -185,7 +185,9 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
                 float2 integration = IBLIntegration.Sample(sampleTypeNearest, float2(NdotV, 1.f - surface.roughness)).rg;
                 color += IBL(surface, viewWS, specColor, diffuse, specular, integration);
         }
-        return float4(color, 1.0f);
 
-        
+        float dist = distance(pIn.PosWS, _EyePosition);
+        clip(dist > _playerRadius ? -1 : 1);
+
+        return float4(color, 1.0f);
 }
