@@ -41,8 +41,8 @@ class InputActions
         static constexpr uint16_t GamepadInputs[] = {(uint16_t)ControllerCode::BUTTON_B,
                                                      (uint16_t)ControllerCode::BUTTON_A,
                                                      (uint16_t)ControllerCode::BUTTON_X};
-		
-        //static constexpr uint16_t GamepadInputs[] = {(uint16_t)ControllerCode::DPAD_LEFT,
+
+        // static constexpr uint16_t GamepadInputs[] = {(uint16_t)ControllerCode::DPAD_LEFT,
         //                                             (uint16_t)ControllerCode::DPAD_DOWN,
         //                                             (uint16_t)ControllerCode::DPAD_RIGHT};
 

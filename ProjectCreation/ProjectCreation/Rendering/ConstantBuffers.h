@@ -7,6 +7,8 @@ struct alignas(16) CTransformBuffer
         DirectX::XMMATRIX ViewProjection;
         DirectX::XMMATRIX World;
         DirectX::XMMATRIX Projection;
+        DirectX::XMMATRIX Billboard;
+        DirectX::XMMATRIX View;
 };
 
 struct alignas(16) CSceneInfoBuffer
@@ -24,6 +26,8 @@ struct alignas(16) CSceneInfoBuffer
         float             _InstanceReveal;
         DirectX::XMFLOAT3 worldOffsetDelta;
         float             puzzleState;
+        DirectX::XMFLOAT3 _PlayedVelocity;
+        float             padding;
 };
 
 struct alignas(16) CAnimationBuffer

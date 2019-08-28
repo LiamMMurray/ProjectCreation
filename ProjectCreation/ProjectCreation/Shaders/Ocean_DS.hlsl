@@ -2,7 +2,7 @@
 #include "Interpolation.hlsl"
 #include "Samplers.hlsl"
 #include "Terrain_Includes.hlsl"
-
+#include "DoSpeedWave.hlsli"
 struct Wave
 {
         float2 dir;
@@ -126,15 +126,17 @@ DomainOutput CalcGerstnerWaveOffset(float3 v)
         float3 pos = Bilerp(pws, domain);
         pos        = mul(float4(pos, 1.0f), World).xyz;
         pos.y      = 0.0f;
-        // Gerstner Wave
 
-
+        pos  = DoSpeedWave(pos, 1.5f);
         dOut = CalcGerstnerWaveOffset(pos);
         // dOut.Tex  = Bilerp(texs, domain);
         dOut.Tex2 = dOut.Tex * gTexScale;
 
         dOut.PosWS += gOriginOffset;
-        dOut.Pos         = mul(float4(dOut.PosWS, 1.0f), ViewProjection);
+
+        dOut.Pos = mul(float4(dOut.PosWS, 1.0f), ViewProjection);
+
+
         dOut.linearDepth = dOut.Pos.w;
 
         return dOut;

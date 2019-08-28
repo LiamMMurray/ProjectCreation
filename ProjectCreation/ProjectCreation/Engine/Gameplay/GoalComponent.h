@@ -19,7 +19,8 @@ class GoalComponent : public Component<GoalComponent>
         FTransform initialTransform;
         FTransform goalTransform;
 
-        ComponentHandle collisionHandle;
+        ComponentHandle              collisionHandle;
+        std::vector<ComponentHandle> goalRings;
 
         float        currAlpha              = 0.0f;
         float        targetAlpha            = 0.0f;

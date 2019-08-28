@@ -9,4 +9,5 @@ class TransformComponent : public Component<TransformComponent>
 
         bool wrapping        = true;
         bool wrappingPartial = false;
+        bool alignToTerrain  = true;
 };

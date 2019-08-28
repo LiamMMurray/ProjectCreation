@@ -9,6 +9,8 @@ enum E_Level_States
         LEVEL_01,
         LEVEL_02,
         LEVEL_03,
+        LEVEL_04,
+        CREDITS_LEVEL,
         COUNT
 };
 

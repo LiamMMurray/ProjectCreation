@@ -19,9 +19,9 @@ VertexOut main(VertexIn vIn)
 {
         VertexOut vOut;
 
-        vOut.PosL = vIn.PosL;
+        vOut.PosL = vIn.PosL*1.5f;
 
-        float3 posWS = mul(float4(vIn.PosL, 1.0f), World).xyz;
+        float3 posWS = mul(float4(vOut.PosL, 1.0f), World).xyz;
         vOut.PosW    = posWS;
 
         float scale = gScale;

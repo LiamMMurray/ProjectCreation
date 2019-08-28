@@ -412,21 +412,27 @@ Collision::FOverlapResult CollisionLibary::ScreenSpaceOverlap(const Shapes::FSph
         return output;
 }
 
-DirectX::XMVECTOR CollisionLibary::ClampToScreen(const DirectX::XMVECTOR& vec, const DirectX::XMMATRIX& ViewProjection)
+bool CollisionLibary::PointInNDC(const DirectX::XMVECTOR& vec, const DirectX::XMMATRIX& ViewProjection, XMVECTOR& clampedPos)
 {
         XMVECTOR screenPos = XMVector4Transform(vec, ViewProjection);
 
-		XMMATRIX invViewProjection = XMMatrixInverse(nullptr, ViewProjection);
+        XMMATRIX invViewProjection = XMMatrixInverse(nullptr, ViewProjection);
 
-        float z = XMVectorGetZ(screenPos);
-        float w = XMVectorGetW(screenPos);
+        float    w          = XMVectorGetW(screenPos);
+        float    z          = XMVectorGetZ(screenPos);
+        float    reciprocal = 1.0f / w;
+        XMVECTOR ndc        = screenPos * XMVectorSet(reciprocal, reciprocal, reciprocal, reciprocal);
 
-        XMVECTOR minScreen = XMVectorSet(-1.0f, -1.0f, z, w);
-        XMVECTOR maxScreen = XMVectorSet(1.0f, 1.0f, z, w);
+        float x = XMVectorGetX(ndc);
+        float y = XMVectorGetY(ndc);
 
-		XMVECTOR clampedScreenPos = XMVectorClamp(screenPos, minScreen, maxScreen);
+        XMVECTOR minScreen = XMVectorSet(-0.8f, -0.8f, -1.0f, 1.0f);
+        XMVECTOR maxScreen = XMVectorSet(0.8f, 0.8f, 1.0f, 1.0f);
 
-        XMVECTOR output = XMVector4Transform(clampedScreenPos, invViewProjection);
+        XMVECTOR clampedNDC       = XMVectorClamp(ndc, minScreen, maxScreen);
+        XMVECTOR clampedClipSpace = clampedNDC * XMVectorSet(w, w, w, w);
 
-        return output;
+        clampedPos = XMVector4Transform(clampedClipSpace, invViewProjection);
+
+        return x <= 0.8f && x >= -0.8f && y <= 0.8f && y >= -0.8f;
 }

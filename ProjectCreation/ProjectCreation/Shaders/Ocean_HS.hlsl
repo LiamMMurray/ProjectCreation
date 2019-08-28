@@ -151,7 +151,7 @@ HullConstantDataOut CalcHSPatchConstants(InputPatch<VertexOut, NUM_CONTROL_POINT
         vMax.y = maxY;
 
         float3 boxCenter  = 0.5f * (vMin + vMax);
-        float3 boxExtents = 0.5f * (vMax - vMin);
+        float3 boxExtents = 0.7f * (vMax - vMin);
         if (AABBToFrustum(boxCenter, boxExtents))
         {
                 hCDOut.EdgeTessFactor[0] = 0.0f;

@@ -63,14 +63,10 @@ void PlayerGroundState::Update(float deltaTime)
         static bool doOnce = false;
         if (!doOnce && orbitSystem->goalsCollected == 3)
         {
-
-                // Changed for play testing
-                // _playerController->RequestNextLevel();
-
-                // Reveal Ocean once first planet placed
-                UIManager::instance->DemoEnd();
-                GEngine::Get()->m_TargetInstanceReveal = 1.0f;
-                doOnce                                 = true;
+                GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_04);
+                // UIManager::instance->DemoEnd();
+                // GEngine::Get()->m_TargetInstanceReveal = 1.0f;
+                // doOnce                                 = true;
         }
 
         XMVECTOR currentVelocity = _playerController->GetCurrentVelocity();
@@ -96,7 +92,7 @@ void PlayerGroundState::Update(float deltaTime)
         // Controller Is Connected
         if (GamePad::Get()->CheckConnection() == true)
         {
-                eulerAngles.x += -GamePad::Get()->leftStickY * (angularSpeed * 0.75f);
+                eulerAngles.x += -GamePad::Get()->leftStickY * angularSpeed;
                 pitchDelta = eulerAngles.x - pitchDelta;
 
                 eulerAngles.y += GamePad::Get()->leftStickX * angularSpeed;
@@ -105,6 +101,8 @@ void PlayerGroundState::Update(float deltaTime)
                 eulerAngles.z += GamePad::Get()->leftStickX * angularSpeed;
 
                 eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
+
+                // std::cout << eulerAngles.x << std::endl;
         }
 
         // Controller Isn't Connected
@@ -123,16 +121,26 @@ void PlayerGroundState::Update(float deltaTime)
                 eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
         }
         // Convert to degrees due to precision errors using small radian values
-        float rollDegrees         = XMConvertToDegrees(eulerAngles.z);
-        rollDegrees               = MathLibrary::clamp(rollDegrees, -rollLimit, rollLimit);
-        rollDegrees               = MathLibrary::lerp(rollDegrees, 0.0f, MathLibrary::clamp(deltaTime * rollLimit, 0.0f, 1.0f));
-        eulerAngles.z             = XMConvertToRadians(rollDegrees);
+        float rollDegrees = XMConvertToDegrees(eulerAngles.z);
+        rollDegrees       = MathLibrary::clamp(rollDegrees, -rollLimit, rollLimit);
+        rollDegrees       = MathLibrary::lerp(rollDegrees, 0.0f, MathLibrary::clamp(deltaTime * rollLimit, 0.0f, 1.0f));
+
+        eulerAngles.z = XMConvertToRadians(rollDegrees);
+        static float shakeTime = 5.0f;
+
+        if (GCoreInput::GetKeyState(KeyCode::K) == KeyState::DownFirst)
+        {
+                ShouldShake = true;
+        }
+
+		ScreenShake(shakeTime, 0.7f, eulerAngles.x, eulerAngles.z);
+
         _cachedTransform.rotation = FQuaternion::FromEulerAngles(eulerAngles);
 
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, yawDelta));
-        //currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, yawDelta));
+        // currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, yawDelta));
 
-        //currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, pitchDelta));
+        // currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, pitchDelta));
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, pitchDelta));
 
         // Get the Speed from the gathered input
@@ -248,4 +256,27 @@ void PlayerGroundState::Update(float deltaTime)
 void PlayerGroundState::Exit()
 {
         _playerController->SetCurrentVelocity(XMVectorZero());
+}
+
+void PlayerGroundState::ScreenShake(float& shakeTime, float magnitude, float&pitchDelta, float& rollDelta)
+{
+        if (ShouldShake == true)
+        {
+                if (shakeTime <= 0.0f)
+                {
+                        ShouldShake = false;
+                        shakeTime   = 5.0f;
+                        return;
+                }
+
+                float rollShake = (MathLibrary::RandomFloatInRange(-2.0f, 2.0f) * std::min(shakeTime, magnitude));
+                float pitchShake = (MathLibrary::RandomFloatInRange(-1.0f, 1.0f) * std::min(shakeTime, magnitude));
+                shakeTime -= (GEngine::Get()->GetDeltaTime() * 1.5f);
+
+                //rollDelta += XMConvertToRadians(rollShake);
+
+				rollDelta = MathLibrary::LerpAngle(rollDelta, rollShake, GEngine::Get()->GetDeltaTime());
+				pitchDelta = MathLibrary::LerpAngle(pitchDelta, pitchShake, GEngine::Get()->GetDeltaTime());
+        }
+        return;
 }

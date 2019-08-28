@@ -1,4 +1,5 @@
 #include "Utility/StaticSentinelDumpMemoryLeaks.h"
+#include "Utility/StaticSentinelDumpMemoryLeaks.h"
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #define NOMINMAX
@@ -12,6 +13,8 @@
 
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
+
+#include"Engine/Audio/ContinousSoundSystem.h"
 
 #include "UI/UIManager.h"
 
@@ -29,6 +32,7 @@
 #include "Rendering/Components/SkeletalMeshComponent.h"
 #include "Rendering/Components/StaticMeshComponent.h"
 #include "Engine/Particle Systems/EmitterComponent.h"
+#include"Engine/Particle Systems/ParticleData.h"
 #include "Engine/Animation/AnimationSystem.h"
 #include "Engine/ResourceManager/SkeletalMesh.h"
 /////testing -vic
@@ -138,7 +142,7 @@ int WINAPI WinMain(HINSTANCE hInstance,     // ptr to current instance of app
 )
 {
         ENABLE_LEAK_DETECTION();
-        //_CrtSetBreakAlloc(241);
+        //_CrtSetBreakAlloc(238);
         _WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
         return 0;
@@ -217,8 +221,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         // Sound tests
 
         // Joseph found a sfx track for speed boosts and is replacing the old music with it for testing <06/19/19>
-        auto boop = AudioManager::Get()->CreateSFX("whiteSpeedBoost");
-        boop->SetVolume(0.1f);
+
 
         // Joseph found an underwater abience music track and is replacing the old music with it for testing <06/19/19>
         // auto music = AudioManager::Get()->LoadMusic("extreme");
@@ -275,19 +278,21 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 // emitter set up
                 XMFLOAT3 position;
                 XMStoreFloat3(&position, dirLightEntityHandle.GetComponent<TransformComponent>()->transform.translation);
-                emitterComponent->FloatParticle(XMFLOAT3(-20.0f, -5.0f, -20.0f),
-                                                XMFLOAT3(20.0f, 20.0f, 20.0f),
+                emitterComponent->FloatParticle(XMFLOAT3(-30.0f, -5.0f, -30.0f),
+                                                XMFLOAT3(30.0f, 10.0f, 30.0f),
                                                 XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-                                                XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-                                                XMFLOAT4(15.0f, 3.0f, 1.0f, 1.0f));
+                                                XMFLOAT4(1.0f, 1.0f, 1.0f, 0.65f),
+                                                XMFLOAT4(8.0f, 3.0f, 1.0f, 1.0f));
                 emitterComponent->EmitterData.emitterPosition    = position;
                 emitterComponent->rotate                         = false;
-                emitterComponent->maxCount                       = 5000;
-                emitterComponent->spawnRate                      = 1000.0f;
+                emitterComponent->maxCount                       = ParticleData::gMaxParticleCount;
+                emitterComponent->spawnRate                      = 10000.0f;
                 emitterComponent->EmitterData.textureIndex       = 3;
                 emitterComponent->EmitterData.minInitialVelocity = {-1.05f, -0.4f, -1.05f};
                 emitterComponent->EmitterData.maxInitialVelocity = {1.05f, 0.05f, 1.05f};
                 emitterComponent->EmitterData.particleScale      = {0.2f, 0.2f};
+                emitterComponent->desiredCount                   = ParticleData::gMaxEmitterCount;
+
 
 
                 auto dirComp = dirLightEntityHandle.GetComponent<DirectionalLightComponent>();
@@ -382,19 +387,6 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                         }
                 }
 
-                if (GCoreInput::GetKeyState(KeyCode::P) == KeyState::DownFirst)
-                {
-                        boop->Play();
-                }
-                if (GCoreInput::GetKeyState(KeyCode::O) == KeyState::DownFirst)
-                {
-                        bool musicIsPlaying;
-                        music->isStreamPlaying(musicIsPlaying);
-                        if (!musicIsPlaying)
-                                music->ResumeStream();
-                        else
-                                music->PauseStream();
-                }
 
                 debug_renderer::AddGrid(XMVectorZero(), 10.0f, 10, ColorConstants::White);
                 GEngine::Get()->GetSystemManager()->Update(deltaTime);

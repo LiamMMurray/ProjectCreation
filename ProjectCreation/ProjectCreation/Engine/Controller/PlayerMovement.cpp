@@ -17,6 +17,7 @@
 #include "PlayerStateEvents.h"
 
 #include "../../Rendering/DebugRender/debug_renderer.h"
+#include "..//Audio/ContinousSoundSystem.h"
 // v Testing only delete when done v
 #include <iostream>
 #include "../CoreInput/InputActions.h"
@@ -144,12 +145,16 @@ void PlayerController::Shutdown()
 void PlayerController::Init(EntityHandle h)
 {
         IController::Init(h);
-        m_CurrentVelocity           = DirectX::XMVectorZero();
-        m_CurrentInput              = DirectX::XMVectorZero();
-        ComponentHandle     tHandle = m_ControlledEntityHandle.GetComponentHandle<TransformComponent>();
-        TransformComponent* tComp   = tHandle.Get<TransformComponent>();
+        auto tComp = h.GetComponent<TransformComponent>();
 
-		SetSensitivity(1);
+        tComp->transform.translation = DirectX::XMVectorSet(0.0f, 3.0f, 0.0f, 1.0f);
+        tComp->transform.rotation    = DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(0.0f), 0.0f, 0.0f);
+
+        m_CurrentVelocity       = DirectX::XMVectorZero();
+        m_CurrentInput          = DirectX::XMVectorZero();
+        ComponentHandle tHandle = m_ControlledEntityHandle.GetComponentHandle<TransformComponent>();
+
+        SetSensitivity(1);
 
         m_EulerAngles = tComp->transform.rotation.ToEulerAngles();
 
@@ -157,6 +162,7 @@ void PlayerController::Init(EntityHandle h)
         m_TotalSplineOrbCount     = 0;
         m_CollectedSplineOrbCount = 0;
 
+        m_StateMachine.Shutdown();
         // Create any states and set their respective variables here
         m_CinematicState = m_StateMachine.CreateState<PlayerCinematicState>();
         m_GroundState    = m_StateMachine.CreateState<PlayerGroundState>();
@@ -174,32 +180,59 @@ void PlayerController::Init(EntityHandle h)
         FTransform target = tComp->transform;
         target.rotation   = XMQuaternionIdentity();
 
-        RequestCinematicTransition(1, &tHandle, &target, E_PLAYERSTATE_EVENT::TO_GROUND, 1.0f);
 
         // After you create the states, initialize the state machine. First created state is starting state
+        RequestCinematicTransition(1, &tHandle, &target, E_PLAYERSTATE_EVENT::TO_GROUND, 1.0f);
         m_StateMachine.Init(this);
 
 
         // Init sound pool
-        for (unsigned int color = 0; color < E_LIGHT_ORBS::COUNT; ++color)
-        {
-                for (unsigned int i = 0; i < MAX_SPEEDBOOST_SOUNDS; ++i)
-                {
-                        m_SpeedBoostSoundPool[color][i] = AudioManager::Get()->CreateSFX(m_SpeedboostSoundNames[color]);
-                }
-        }
+}
+
+void PlayerController::Reset()
+{
+        Init(m_ControlledEntityHandle);
 }
 
 bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
 {
         // Audio that will play on boost
-        if ((int)m_ColorInputKeyCodes[color] < 0 || InputActions::CheckAction(color) == KeyState::Down ||
-            InputActions::CheckAction(color) == DownFirst)
+
+
+        if ((int)m_ColorInputKeyCodes[color] < 0 || InputActions::CheckAction(color) == KeyState::Down)
         {
+
+                // Settings for the orb sounds (Referencing SpeedBoostSystem.cpp lines 814-846
+                int index = SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount();
                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(color);
-                bool isPlaying;
+
+                if (color == 3)
+                {
+                        AudioManager::Get()->PlaySoundWithVolume(1.0f, m_SpeedboostSoundNames[index].c_str());
+                }
+                else
+                {
+                        SoundComponent3D::FSettings settings;
+                        settings.m_SoundType = SOUND_COLOR_TYPE(color, E_SOUND_TYPE::ORB_COLLECT_0);
+
+                        int totalVariations = E_SOUND_TYPE::variations[E_SOUND_TYPE::ORB_COLLECT_0];
+                        int variation       = index % (totalVariations);
+
+                        if (variation >= E_SOUND_TYPE::variations[E_SOUND_TYPE::ORB_COLLECT_0])
+                        {
+                                variation = totalVariations - variation;
+                        }
+
+                        settings.m_SoundVaration = variation;
+                        settings.flags.set(SoundComponent3D::E_FLAGS::DestroyOnEnd, true);
+                        settings.m_Volume = 1.0f;
+
+                        AudioManager::Get()->PlaySoundAtLocation(boostPos, settings);
+                }
+
+                // bool isPlaying;
                 // m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->isSoundPlaying(isPlaying);
-                m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->Play();
+                // m_SpeedBoostSoundPool[color][m_SpeedBoostPoolCounter[color]]->Play();
                 // DebugPrintSpeedBoostColor(color);
                 currentMaxSpeed       = std::min(currentMaxSpeed + 0.5f, maxMaxSpeed);
                 XMVECTOR currentInput = XMVector3Rotate(m_CurrentInput, _cachedControlledTransform.rotation.data);

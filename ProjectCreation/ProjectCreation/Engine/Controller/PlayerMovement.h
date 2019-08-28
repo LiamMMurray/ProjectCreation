@@ -108,15 +108,13 @@ class PlayerController : public IController
         KeyCode m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT]            = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
         DWORD   m_ColorInputGameControllerCodes[E_LIGHT_ORBS::COUNT] = {XINPUT_GAMEPAD_B, XINPUT_GAMEPAD_A, XINPUT_GAMEPAD_X};
 
-        const char* m_SpeedboostSoundNames[E_LIGHT_ORBS::COUNT] = {"Basic_Light_PickUp_Red",
-                                                                   "Basic_Light_PickUp_Green",
-                                                                   "Basic_Light_PickUp_Blue",
-                                                                   "Basic_Light_PickUp_White"};
+        const std::string m_SpeedboostSoundNames[3] = {"WHITE_ORB_COLLECT_0_0", "WHITE_ORB_COLLECT_0_1", "WHITE_ORB_COLLECT_0_2"};
 
         GW::AUDIO::GSound* m_SpeedBoostSoundPool[E_LIGHT_ORBS::COUNT][MAX_SPEEDBOOST_SOUNDS];
         unsigned int       m_SpeedBoostPoolCounter[E_LIGHT_ORBS::COUNT] = {};
 
         virtual void Init(EntityHandle h) override;
+        virtual void Reset() override;
         bool         SpeedBoost(DirectX::XMVECTOR boostPos, int color);
 
 

@@ -34,6 +34,7 @@
 #include "../Particle Systems/EmitterComponent.h"
 
 #include "../JobScheduler.h"
+#include"..//Audio/ContinousSoundSystem.h"
 using namespace DirectX;
 
 std::random_device                    r;
@@ -83,16 +84,16 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
                 XMStoreFloat3(&velMax, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f));
                 XMStoreFloat3(&orbPos, pos);
                 emitterComponent->ParticleswithGravity(
-                    XMFLOAT3(), XMFLOAT3(), orbColor, orbColor, XMFLOAT4(2.0f, 1.0f, 0.5f, 0.5f));
+                    XMFLOAT3(), XMFLOAT3(0.5f, 0.0f, 0.5f), orbColor, orbColor, XMFLOAT4(2.0f, 1.0f, 0.5f, 0.5f));
 
                 emitterComponent->EmitterData.minInitialVelocity = {-0.1f, -0.0f, -0.1f};
-                emitterComponent->EmitterData.maxInitialVelocity = {0.3f, 1.0f, 0.3f};
+                emitterComponent->EmitterData.maxInitialVelocity = {0.3f, 1.75f, 0.3f};
                 emitterComponent->EmitterData.acceleration       = {0.0f, 1.05f, 0.0f};
                 emitterComponent->EmitterData.emitterPosition    = orbPos;
                 emitterComponent->rotate                         = true;
                 emitterComponent->rotationAxis                   = VectorConstants::Up;
                 emitterComponent->EmitterData.index              = 2;
-                emitterComponent->EmitterData.particleScale      = XMFLOAT2(0.0f, 0.05f);
+                emitterComponent->EmitterData.particleScale      = XMFLOAT2(0.0f, 0.1f);
                 emitterComponent->maxCount                       = 0;
                 emitterComponent->spawnRate                      = 0.0f; // 15.0f
                 emitterComponent->active                         = false;
@@ -133,12 +134,12 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
                 int div = 1;
                 if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() == E_Level_States::LEVEL_02)
                 {
-                        div = cluster.current / 15;
+                        div = cluster.current / 20;
                 }
                 else if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() ==
                          E_Level_States::LEVEL_03)
                 {
-                        div = cluster.current / 10;
+                        div = cluster.current / 15;
                 }
                 int color                                   = (cluster.targetColor + div) % 3;
                 cluster.color                               = color;
@@ -146,13 +147,12 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
                 desiredColor                                = cluster.color;
         }
 
-
         XMVECTOR    correctedCurr = curr + GEngine::Get()->m_OriginOffset - cluster.originalWorldOffset;
         SplinePoint point;
         point.pos   = correctedCurr;
-        point.color = desiredColor;
+        point.color = cluster.color;
         cluster.cachedPoints.push_back(point);
-        auto entityH = SpawnLightOrb(correctedCurr, cluster.color);
+        auto entityH = SpawnLightOrb(correctedCurr, cluster.color + 4);
         auto splineH = entityH.AddComponent<SpeedboostSplineComponent>();
 
         cluster.splineComponentList.push_back((splineH));
@@ -207,10 +207,18 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
 
 EntityHandle SpeedBoostSystem::SpawnLightOrb(const DirectX::XMVECTOR& pos, int color)
 {
+        std::string name = speedboostMeshNames[3];
+        if (color >= 4)
+                name = speedboostMeshNames[color % 4];
+
+        color = color % 4;
+
         ComponentHandle orbHandle;
         ComponentHandle transHandle;
-        auto            entityHandle =
-            EntityFactory::CreateStaticMeshEntity("Sphere01", speedboostMaterialNames[color].c_str(), &orbHandle);
+
+
+        auto entityHandle =
+            EntityFactory::CreateStaticMeshEntity(name.c_str(), speedboostMaterialNames[color].c_str(), &orbHandle);
         orbHandle = m_HandleManager->AddComponent<OrbComponent>(entityHandle);
 
         OrbComponent*       orbComp       = orbHandle.Get<OrbComponent>();
@@ -348,9 +356,10 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                                 CreateRandomPath(start, end, i, width, waveCount, height);
                                 if (i < 3)
                                 {
-                                        auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
-                                        spawnSound->SetVolume(0.8f);
-                                        spawnSound->Play();
+                                        //auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
+                                        auto spawnSound = GET_SYSTEM(SpatialSoundSystem)->PlaySoundWithVolume(0.8f,spawnNames[i]);
+                                        /*spawnSound->SetVolume(0.8f);
+                                        spawnSound->Play();*/
                                 }
 
                                 m_PendingPathCounts[i]--;
@@ -402,9 +411,10 @@ void SpeedBoostSystem::UpdateSpeedboostEvents()
                                 end   = XMVectorSetY(end, 0.0f);
 
                                 CreateRandomPath(start, end, i, width, waveCount, height);
-                                auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
-                                spawnSound->SetVolume(0.8f);
-                                spawnSound->Play();
+                                //auto spawnSound = AudioManager::Get()->CreateSFX(spawnNames[i]);
+                                auto spawnSound = GET_SYSTEM(SpatialSoundSystem)->PlaySoundWithVolume(0.8f, spawnNames[i]);
+                               /* spawnSound->SetVolume(0.8f);
+                                spawnSound->Play();*/
 
                                 m_PendingPathCounts[i]--;
                         }
@@ -619,12 +629,14 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                             case 2:
                                     emitterComp->EmitterData.acceleration.y       = 2.5f;
                                     emitterComp->EmitterData.maxInitialVelocity.y = 2.5f;
-                                    emitterComp->EmitterData.particleScale.y      = 0.1f;
+                                    emitterComp->EmitterData.particleScale.y      = 0.2f;
+                                    emitterComp->EmitterData.maxOffset            = {0.25, 0.0f, 0.25f};
                                     break;
                             case 3:
                                     emitterComp->EmitterData.acceleration.y       = 3.5f;
                                     emitterComp->EmitterData.maxInitialVelocity.y = 3.5f;
-                                    emitterComp->EmitterData.particleScale.y      = 0.15;
+                                    emitterComp->EmitterData.particleScale.y      = 0.3;
+                                    emitterComp->EmitterData.maxOffset            = {0.0f, 0.0f, 0.0f};
                                     break;
                     }
             }); // SpeedBoostPickupAndDespawnJob
@@ -827,14 +839,15 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                         variation = totalVariations - variation;
                                                 }
 
-
                                                 settings.m_SoundVaration = variation;
                                                 settings.flags.set(SoundComponent3D::E_FLAGS::DestroyOnEnd, true);
                                                 settings.m_Volume = 1.0f;
+
                                                 if (latchedSplineComp->color != E_LIGHT_ORBS::WHITE_LIGHTS)
                                                 {
                                                         AudioManager::Get()->PlaySoundAtLocation(currPos, settings);
                                                 }
+
                                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating    = true;
                                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrength = 0.25f;
                                                 playerController->IncreaseCollectedSplineOrbCount(

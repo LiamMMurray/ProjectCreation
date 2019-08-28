@@ -6,8 +6,12 @@
 
 void Level_03::Enter()
 {
+        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+        m_OrbitSystem->ClearTimedFunctions();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
+                controllerSys->ResetPlayer();
+
                 m_OrbitSystem->InstantCreateOrbitSystem();
 
                 m_SpeedBoostSystem->m_ColorsCollected[0] = true;
@@ -18,11 +22,13 @@ void Level_03::Enter()
                 m_OrbitSystem->ClearCollectedMask();
                 m_OrbitSystem->collectedMask[E_LIGHT_ORBS::RED_LIGHTS]   = true;
                 m_OrbitSystem->collectedMask[E_LIGHT_ORBS::GREEN_LIGHTS] = true;
-                m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::RED_LIGHTS);
                 m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::GREEN_LIGHTS);
+                m_OrbitSystem->InstantInOrbit(E_LIGHT_ORBS::RED_LIGHTS);
                 GEngine::Get()->SetPlayerRadius(1500.0f);
 
                 GEngine::Get()->m_TerrainAlpha = 1.0f;
+
+                GEngine::Get()->SetPuzzleState(0.0f);
         }
 
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);
@@ -38,13 +44,15 @@ void Level_03::Enter()
         m_SpeedBoostSystem->splineWidth  = 18.0f;
         m_SpeedBoostSystem->splineHeight = 1.5f;
 
-        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         controllerSys->ResetOrbCount();
 
         AudioManager::Get()->ActivateMusicAndPause(Waves, true);
         Waves->ResumeStream();
 
         m_SpeedBoostSystem->SetTargetTerrain(1.0f);
+
+        m_LevelType = E_Level_States::LEVEL_03;
+	
 }
 
 void Level_03::Update(float deltaTime)
@@ -54,7 +62,7 @@ void Level_03::Update(float deltaTime)
 
 void Level_03::Exit()
 {
-        delete Waves;
+        //delete Waves;
 }
 
 Level_03::Level_03()

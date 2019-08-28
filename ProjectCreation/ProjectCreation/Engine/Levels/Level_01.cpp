@@ -8,8 +8,12 @@ using namespace DirectX;
 
 void Level_01::Enter()
 {
+        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
+        m_OrbitSystem->ClearTimedFunctions();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
+                controllerSys->ResetPlayer();
+
                 m_OrbitSystem->InstantCreateOrbitSystem();
 
                 m_SpeedBoostSystem->m_ColorsCollected[0] = false;
@@ -18,6 +22,8 @@ void Level_01::Enter()
                 m_SpeedBoostSystem->m_ColorsCollected[3] = true;
 
                 m_OrbitSystem->ClearCollectedMask();
+
+				                GEngine::Get()->SetPuzzleState(0.0f);
         }
 
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);
@@ -34,7 +40,6 @@ void Level_01::Enter()
 
         m_SpeedBoostSystem->ResetLevel();
 
-        ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
         controllerSys->ResetOrbCount();
 }
 

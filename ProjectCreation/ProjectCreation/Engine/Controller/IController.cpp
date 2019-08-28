@@ -10,6 +10,9 @@ void IController::OnUpdate(float deltaTime)
         ApplyInput();
 }
 
+void IController::Reset()
+{}
+
 void IController::Init(EntityHandle handle)
 {
         SetControlledEntity(handle);

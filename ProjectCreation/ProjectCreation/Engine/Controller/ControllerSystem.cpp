@@ -24,6 +24,32 @@
 
 using namespace std;
 
+void ControllerSystem::ResetPlayer()
+{
+        m_Controllers[E_CONTROLLERS::PLAYER]->Reset();
+}
+
+void ControllerSystem::CreatePlayer()
+{
+        EntityHandle eHandle = m_HandleManager->CreateEntity();
+
+        ComponentHandle tHandle = eHandle.AddComponent<TransformComponent>();
+        ComponentHandle cHandle = eHandle.AddComponent<CameraComponent>();
+
+        eHandle.AddComponent<TransformComponent>();
+        eHandle.AddComponent<CameraComponent>();
+
+        auto tComp      = eHandle.GetComponent<TransformComponent>();
+        tComp->wrapping = false;
+
+
+        CameraComponent* cameraComp            = cHandle.Get<CameraComponent>();
+        cameraComp->m_Settings.m_HorizontalFOV = 100.0f;
+
+        GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->SetMainCameraComponent(cHandle);
+        m_Controllers[E_CONTROLLERS::PLAYER]->Init(eHandle);
+}
+
 DirectX::XMFLOAT3 ControllerSystem::GetCurrentColorSelection() const
 {
         DirectX::XMFLOAT3 output;
@@ -171,13 +197,15 @@ void ControllerSystem::OnUpdate(float deltaTime)
 
         if (colorsPressed == 1)
         {
+                using namespace DirectX;
+
                 desiredColorAlpha = 1.0f;
-                desiredColor      = DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[lastColorPressed]);
+                desiredColor      = DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_EDGE_COLORS[lastColorPressed]);
         }
         else
         {
                 desiredColorAlpha = 0.0f;
-                desiredColor      = DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[E_LIGHT_ORBS::WHITE_LIGHTS]);
+                //desiredColor      = DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[E_LIGHT_ORBS::WHITE_LIGHTS]);
         }
 
         currentColor      = DirectX::XMVectorLerp(currentColor, desiredColor, deltaTime * 8.0f);
@@ -208,25 +236,7 @@ void ControllerSystem::OnInitialize()
 
         // Player entity setup
         {
-                EntityHandle eHandle = m_HandleManager->CreateEntity();
-
-                ComponentHandle tHandle = eHandle.AddComponent<TransformComponent>();
-                ComponentHandle cHandle = eHandle.AddComponent<CameraComponent>();
-
-                eHandle.AddComponent<TransformComponent>();
-                eHandle.AddComponent<CameraComponent>();
-
-                auto tComp                   = eHandle.GetComponent<TransformComponent>();
-                tComp->wrapping              = false;
-                tComp->transform.translation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-                tComp->transform.rotation =
-                    DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(0.0f), 0.0f, 0.0f);
-
-                CameraComponent* cameraComp            = cHandle.Get<CameraComponent>();
-                cameraComp->m_Settings.m_HorizontalFOV = 100.0f;
-
-                GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->SetMainCameraComponent(cHandle);
-                m_Controllers[E_CONTROLLERS::PLAYER]->Init(eHandle);
+                CreatePlayer();
         }
 
         {
@@ -236,7 +246,7 @@ void ControllerSystem::OnInitialize()
                 ComponentHandle cHandle = eHandle.AddComponent<CameraComponent>();
 
                 auto tComp                             = eHandle.GetComponent<TransformComponent>();
-                tComp->transform.translation           = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+                tComp->transform.translation           = DirectX::XMVectorSet(0.0f, 3.0f, 0.0f, 1.0f);
                 tComp->wrapping                        = false;
                 auto cameraComp                        = cHandle.Get<CameraComponent>();
                 cameraComp->m_Settings.m_HorizontalFOV = 90.0f;

@@ -8,11 +8,15 @@
 #include "../../Engine/ResourceManager/ComputeShader.h"
 #include "..//..//Engine/Controller/ControllerSystem.h"
 #include "..//..//Engine/CoreInput/CoreInput.h"
+#include "..//..//Engine/Entities/EntityFactory.h"
 #include "..//..//Engine/GEngine.h"
 #include "..//..//Engine/GenericComponents/TransformComponent.h"
 #include "..//..//Engine/GenericComponents/TransformSystem.h"
+#include "..//..//Engine/Particle Systems/EmitterComponent.h"
+#include "..//..//Engine/Particle Systems/ParticleManager.h"
 #include "..//..//Engine/ResourceManager/Material.h"
 #include "..//..//Utility/Macros/DirectXMacros.h"
+#include "..//Components/StaticMeshComponent.h"
 #include "..//DebugRender/debug_renderer.h"
 #include "..//RenderingSystem.h"
 
@@ -82,6 +86,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
         ID3D11Resource* resource;
         DirectX::CreateDDSTextureFromFile(renderSystem->GetDevice(), str.c_str(), &resource, &terrainSourceSRV);
         ID3D11Texture2D* texture = (ID3D11Texture2D*)resource;
+
 
         D3D11_TEXTURE2D_DESC desc;
         texture->GetDesc(&desc);
@@ -173,8 +178,13 @@ void TerrainManager::_initialize(RenderSystem* rs)
 
         if (true)
         {
+                ID3D11ShaderResourceView* collisionSRV;
+                str = L"../Assets/Textures/TerrainCollision.dds";
+                DirectX::CreateDDSTextureFromFile(renderSystem->GetDevice(), str.c_str(), &resource, &collisionSRV);
+                resource->Release();
+
                 ID3D11Resource* sourceResource;
-                terrainSourceSRV->GetResource(&sourceResource);
+                collisionSRV->GetResource(&sourceResource);
                 sourceResource->Release();
                 renderSystem->GetContext()->CopySubresourceRegion(
                     terrainIntermediateTexture, 0, 0, 0, 0, sourceResource, 0, nullptr);
@@ -198,6 +208,8 @@ void TerrainManager::_initialize(RenderSystem* rs)
                         buffer += intermediateMipDimensions * sizeof(float);
                 }
                 renderSystem->GetContext()->Unmap(stagingTextureResource, 0);
+
+                collisionSRV->Release();
         }
 
         // Create instance data and buffers
@@ -332,6 +344,33 @@ void TerrainManager::_initialize(RenderSystem* rs)
         renderTestDataSteep.material = resourceManager->LoadMaterial("RockInstance01");
 
         instanceDrawCallsDataSteep.push_back(renderTestDataSteep);
+
+        // Load smoke
+        {
+                ComponentHandle transHandle, statHandle;
+                EntityHandle    entityH =
+                    EntityFactory::CreateStaticMeshEntity("Volcano00", "VolcanoMaterial", &transHandle, &statHandle);
+                TransformComponent*  trans         = transHandle.Get<TransformComponent>();
+                StaticMeshComponent* sm            = statHandle.Get<StaticMeshComponent>();
+                ComponentHandle      emitterHandle = entityH.AddComponent<EmitterComponent>();
+                EmitterComponent*    emitterComp   = emitterHandle.Get<EmitterComponent>();
+                emitterComp->SetIsActive(false);
+                sm->SetIsActive(false);
+                staticMeshesShowWithTerrain.push_back(statHandle);
+                trans->transform.scale       = XMVectorSet(1.5f, 1.5f, 1.5f, 1.0f);
+                trans->transform.translation = XMVectorSet(24.51, 0.0f, -139.36f, 1.0f);
+                trans->alignToTerrain        = false;
+                emitterComp->ParticleswithGravity(XMFLOAT3(-0.0f, 60.0f, -0.0f),
+                                                  XMFLOAT3(0.0f, 70.35f, 0.0f),
+                                                  {50.0f, 0.0f, 0.0f, 1.0f},
+                                                  {35.0f, 5.0f, 0.0f, 0.6f},
+                                                  XMFLOAT4(10.0f, 6.5f, 0.1f, 0.1f));
+
+                XMStoreFloat3(&emitterComp->EmitterData.emitterPosition, trans->transform.translation);
+                // emitterComp->EmitterData.flags = ALIGN_TO_VEL;
+                emitterComp->EmitterData.flags |= NO_COLLISION;
+                emitterComp->active = false;
+        }
 }
 using namespace DirectX;
 
@@ -402,7 +441,7 @@ void TerrainManager::_update(float deltaTime)
                               .GetComponent<CameraComponent>();
 
         XMVECTOR correctedTerrainPos = playerPos;
-        float    cellSize            = terrainConstantBufferCPU.gWorldCellSpace * scale * 8.0f;
+        float    cellSize            = terrainConstantBufferCPU.gWorldCellSpace * scale * 16.0f * 1.5f;
         XMVECTOR cellVector          = XMVectorSet(cellSize, 1.0f, cellSize, 1.0f);
         XMVECTOR modCell             = XMVectorMod(correctedTerrainPos, cellVector);
         modCell                      = XMVectorSetW(modCell, 0.0f);
@@ -489,6 +528,17 @@ void TerrainManager::_update(float deltaTime)
                 renderSystem->m_Context->DSSetShader(domainShader, nullptr, 0);
                 renderSystem->m_Context->DrawIndexed(patchQuadCount * 4, 0, 0);
         }
+
+        // Volcano Stuff
+        {
+                ID3D11HullShader*   nullHull   = nullptr;
+                ID3D11DomainShader* nullDomain = nullptr;
+                renderSystem->m_Context->HSSetShader(nullHull, 0, 0);
+                renderSystem->m_Context->DSSetShader(nullDomain, 0, 0);
+                renderSystem->m_Context->IASetInputLayout(renderSystem->m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
+                renderSystem->m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        }
+
         // Draw instanced
         if (GEngine::Get()->m_InstanceReveal > 0.0f)
         {
@@ -534,13 +584,8 @@ void TerrainManager::_update(float deltaTime)
                 memcpy(indexBuffers, mappedResource.pData, sizeof(uint32_t) * 2);
                 renderSystem->GetContext()->Unmap(indexCounterHelperBuffer, 0);
 
-                ID3D11HullShader*   nullHull   = nullptr;
-                ID3D11DomainShader* nullDomain = nullptr;
-                renderSystem->m_Context->HSSetShader(nullHull, 0, 0);
-                renderSystem->m_Context->DSSetShader(nullDomain, 0, 0);
 
                 renderSystem->m_Context->VSSetShaderResources(8, 1, &instanceSRV);
-                renderSystem->m_Context->IASetInputLayout(renderSystem->m_DefaultInputLayouts[E_INPUT_LAYOUT::DEFAULT]);
                 for (auto& data : instanceDrawCallsDataFlat)
                 {
                         StaticMesh* sm  = resourceManager->GetResource<StaticMesh>(data.mesh);
@@ -576,6 +621,47 @@ void TerrainManager::_update(float deltaTime)
                 }
         }
 
+        for (auto& compHandle : staticMeshesShowWithTerrain)
+        {
+                auto sm = compHandle.Get<StaticMeshComponent>();
+
+                // sm->SetIsActive(false);
+                // continue;
+                auto emitter = compHandle.Get()->GetParent().GetComponent<EmitterComponent>();
+                auto trans   = compHandle.Get()->GetParent().GetComponent<TransformComponent>();
+
+                XMVECTOR fw = (playerPos - trans->transform.translation);
+                if (MathLibrary::CalulateVectorLength(fw) < 0.01f)
+                {
+                        fw = VectorConstants::Forward;
+                }
+                fw                        = XMVectorSetY(fw, 0.0f);
+                fw                        = XMVector3Normalize(fw);
+                trans->transform.rotation = FQuaternion::LookAt(fw);
+
+                bool active = sm->IsActive();
+
+                // sm->GetParent().GetComponent<TransformComponent>()->transform.SetScale(terrainConstantBufferCPU.gTerrainAlpha);
+
+                if (active && GEngine::Get()->m_InstanceReveal <= 0.0f)
+                        sm->SetIsActive(false);
+
+                if (!active && GEngine::Get()->m_InstanceReveal > 0.0f)
+                {
+                        sm->SetIsActive(true);
+                        emitter->SetIsActive(true);
+                        emitter->active                         = true;
+                        emitter->spawnRate                      = 100000.0f;
+                        emitter->maxCount                       = ParticleData::gMaxParticleCount;
+                        emitter->EmitterData.textureIndex       = 3;
+                        emitter->EmitterData.minInitialVelocity = {-15.0f, 4.0f, -15.0f};
+                        emitter->EmitterData.maxInitialVelocity = {15.0f, 30.0f, 15.0f};
+                        emitter->EmitterData.acceleration       = {0.0, -10.8f, 0.0f};
+                        emitter->EmitterData.flags              = 1;
+                        emitter->EmitterData.particleScale      = {1.f, 1.5f};
+                        emitter->desiredCount                   = ParticleData::gMaxEmitterCount;
+                }
+        }
         // debug_renderer::AddSphere(Shapes::FSphere(test, 0.1f), 32, XMMatrixIdentity());
 
         renderSystem->m_Context->DSSetShader(nullptr, nullptr, 0);
