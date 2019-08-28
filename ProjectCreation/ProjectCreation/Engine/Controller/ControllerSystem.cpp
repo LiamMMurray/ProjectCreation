@@ -148,15 +148,16 @@ void ControllerSystem::OnUpdate(float deltaTime)
 
         if (IsVibrating == true)
         {
-                if (rumbleStrength <= 0)
+                if (rumbleStrengthL <= 0)
                 {
                         IsVibrating = false;
                 }
 
                 else
                 {
-                        rumbleStrength = MathLibrary::MoveTowards(rumbleStrength, 0, deltaTime * 1.5f);
-                        GamePad::Get()->IsVibrating(rumbleStrength);
+                        rumbleStrengthL = MathLibrary::MoveTowards(rumbleStrengthL, 0, deltaTime * 1.5f);
+                        rumbleStrengthR = MathLibrary::MoveTowards(rumbleStrengthR, 0, deltaTime * 1.5f);
+                        GamePad::Get()->IsVibrating(rumbleStrengthL, rumbleStrengthR);
                 }
         }
 
