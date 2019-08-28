@@ -67,7 +67,7 @@ class UIManager
         };
 
         using native_handle_type = void*;
-        native_handle_type m_WindowHandle;
+        native_handle_type         m_WindowHandle;
         std::vector<TimedFunction> timed_functions;
 
     public:
@@ -165,4 +165,6 @@ class UIManager
         std::unordered_map<int, std::vector<FontComponent>>   m_AllFonts;
 
         DirectX::SpriteFont* m_FontTypes[E_FONT_TYPE::COUNT];
+
+        std::tuple<unsigned, unsigned> m_currentTutorialIcon = {-1, -1};
 };
