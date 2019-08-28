@@ -740,11 +740,7 @@ void UIManager::Unpause()
                 }
         }
 }
-struct SomeStruct
-{
-        int x;
-        int y;
-};
+
 void UIManager::CheckResolution()
 {
         // Resizes the window
@@ -2379,6 +2375,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_TUTORIAL_LEVEL);
                 }
+
+                else if (curLevel->GetLevelType() == LEVEL_04)
+                {
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_04_TO_TUTORIAL_LEVEL);
+                }
         });
 
         // Level 1 Button
@@ -2406,6 +2407,12 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_01);
                 }
+
+                else if (curLevel->GetLevelType() == LEVEL_04)
+                {
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_04_TO_LEVEL_01);
+                }
+
                 for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
                 {
                         itr.mEnabled = false;
@@ -2437,6 +2444,11 @@ void UIManager::Initialize(native_handle_type hwnd)
                 else if (curLevel->GetLevelType() == LEVEL_03)
                 {
                         GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_02);
+                }
+
+                else if (curLevel->GetLevelType() == LEVEL_04)
+                {
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_04_TO_LEVEL_02);
                 }
                 for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
                 {
@@ -2470,6 +2482,12 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_03);
                 }
+
+                else if (curLevel->GetLevelType() == LEVEL_04)
+                {
+                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_04_TO_LEVEL_03);
+                }
+
                 for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
                 {
                         itr.mEnabled = false;

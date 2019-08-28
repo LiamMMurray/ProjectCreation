@@ -220,6 +220,9 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 m_SpeedBoostPoolCounter[color]++;
                 m_SpeedBoostPoolCounter[color] %= MAX_SPEEDBOOST_SOUNDS;
 
+                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating     = true;
+                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrengthL = 0.5f;
+                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrengthR = 0.1f;
 
                 return true;
         }
