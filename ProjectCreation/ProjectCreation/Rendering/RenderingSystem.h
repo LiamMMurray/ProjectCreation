@@ -261,7 +261,10 @@ class RenderSystem : public ISystem
         std::vector<PostProcessEffectBase*> m_PostProcessChain;
 
         void CreateDeviceAndSwapChain();
-        void CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDesc = nullptr);
+        void CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDesc = nullptr,
+                                        unsigned int          width          = 0,
+                                        unsigned int          height         = 0,
+                                        bool                  dontOverride   = false);
         void CreateRasterizerStates();
         void CreateInputLayouts();
         void CreateCommonShaders();
@@ -363,7 +366,7 @@ class RenderSystem : public ISystem
         {
                 return m_BackBufferWidth / m_BackBufferHeight;
         };
-        void OnWindowResize(WPARAM wParam, LPARAM lParam);
+        void OnWindowResize(unsigned int wParam, unsigned int lParam, bool dontOverride = false);
         void SetFullscreen(bool);
         bool GetFullscreen();
 

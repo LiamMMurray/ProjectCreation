@@ -175,7 +175,10 @@ void RenderSystem::CreateDeviceAndSwapChain()
         context->Release();
 }
 
-void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDesc)
+void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDesc,
+                                              unsigned int          width,
+                                              unsigned int          height,
+                                              bool                  dontOverride)
 {
         HRESULT          hr;
         ID3D11Texture2D* pBackBuffer;
@@ -202,10 +205,26 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
 
         // Preserve the existing buffer count and format.
         // Automatically choose the width and height to match the client rect for HWNDs.
-        hr = m_Swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+        if (dontOverride)
+        {
+                DXGI_MODE_DESC desc{};
+                desc.Format  = DXGI_FORMAT_B8G8R8A8_UNORM;
+                desc.Height  = (UINT)height;
+                desc.Width   = (UINT)width;
+                desc.Scaling = DXGI_MODE_SCALING_STRETCHED;
 
-        // Perform error handling here!
-        assert(SUCCEEDED(hr));
+                m_Swapchain->ResizeTarget(&desc);
+                hr = m_Swapchain->ResizeBuffers(0, desc.Height, desc.Width, DXGI_FORMAT_UNKNOWN, 0);
+
+                // m_Context->ClearState();
+        }
+        else
+        {
+                hr = m_Swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+
+                // Perform error handling here!
+                assert(SUCCEEDED(hr));
+        }
 
         // Create backbuffer render target
         hr = m_Swapchain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
@@ -1305,12 +1324,12 @@ void RenderSystem::SetMainCameraComponent(ComponentHandle cameraHandle)
         RefreshMainCameraSettings();
 }
 
-void RenderSystem::OnWindowResize(WPARAM wParam, LPARAM lParam)
+void RenderSystem::OnWindowResize(unsigned int wParam, unsigned int lParam, bool dontOverride)
 {
         if (m_Swapchain)
         {
                 D3D11_TEXTURE2D_DESC desc;
-                CreateDefaultRenderTargets(&desc);
+                CreateDefaultRenderTargets(&desc, wParam, lParam, dontOverride);
                 CreatePostProcessEffects(&desc);
                 RefreshMainCameraSettings();
 

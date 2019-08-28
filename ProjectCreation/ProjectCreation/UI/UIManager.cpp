@@ -218,7 +218,7 @@ void UIManager::SetFullscreen(bool val)
 {
         instance->m_RenderSystem->SetFullscreen(val);
         instance->StartupResAdjust((HWND)m_WindowHandle);
-        instance->UpdateResolutionText();	
+        instance->UpdateResolutionText();
 }
 
 void UIManager::UpdateResolutionText()
@@ -769,6 +769,13 @@ void UIManager::StartupResAdjust(HWND window)
 
 void UIManager::AdjustResolution(HWND window, int wWidth, int wHeight)
 {
+        if (instance->CSettings.m_IsFullscreen == true)
+        {
+                //instance->instance->m_RenderSystem->OnWindowResize(wWidth, wHeight, true);
+
+                return;
+        }
+
         RECT wr = {0, 0, wWidth, wHeight};                 // set the size
         AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE); // adjust the size
 
