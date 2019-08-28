@@ -17,8 +17,10 @@ class PlayerGroundState : public IPlayerControllerState
         }
 
 		void ScreenShake(float& shakeTime, float magnitude, float& pitchDelta, float& rollDelta);
-
+        DirectX::XMVECTOR volcanoPos;
+        
 		bool ShouldShake = false;
+        bool startedShaking = false;
 
         bool  bUseGravity                 = false;
         float m_SpeedboostTimer           = 0.0f;
