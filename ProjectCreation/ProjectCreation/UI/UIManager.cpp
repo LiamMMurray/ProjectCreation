@@ -147,21 +147,6 @@ void UIManager::AddText(ID3D11Device*        device,
         }
 }
 
-void UIManager::CreateBackground(ID3D11Device*        device,
-                                 ID3D11DeviceContext* deviceContext,
-                                 const wchar_t*       FileName,
-                                 float                ScreenWidth,
-                                 float                ScreenHeight)
-{
-        HRESULT hr =
-            DirectX::CreateDDSTextureFromFile(device, FileName, nullptr, instance->m_background.ReleaseAndGetAddressOf());
-
-        m_fullscreenRect.left   = 0;
-        m_fullscreenRect.top    = 0;
-        m_fullscreenRect.right  = (long)ScreenWidth;
-        m_fullscreenRect.bottom = (long)ScreenHeight;
-}
-
 
 // Helpful Functions
 void UIManager::UIClipCursor()
@@ -246,7 +231,7 @@ void UIManager::GameplayUpdate(float deltaTime)
         {
                 if (InputActions::EnterAction() == KeyState::DownFirst)
                 {
-                        instance->MainTilteUnpause();
+                        instance->MainTitleUnpause();
                 }
         }
         else
@@ -291,35 +276,35 @@ void UIManager::GameplayUpdate(float deltaTime)
 
         if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].desiredColor = {1, 1, 1, 0};
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].desiredColor = {1, 0.29f, 0, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].desiredColor = {1, 0.29f, 0, 0};
         }
         else if (TutorialLevel::currPhase == TutorialLevel::E_TUTORIAL_PHASE::PHASE_2)
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].desiredColor = {1, 1, 1, 1};
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].desiredColor = {1, 1, 1, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].desiredColor = {1, 0.29f, 0, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].desiredColor = {1, 0.29f, 0, 1};
         }
 
         if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].desiredColor = {1, 1, 1, 0};
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].desiredColor = {0, 0.933f, 0, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].desiredColor = {0, 0.933f, 0, 0};
         }
         else if (TutorialLevel::currPhase == TutorialLevel::E_TUTORIAL_PHASE::PHASE_3)
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].desiredColor = {1, 1, 1, 1};
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].desiredColor = {1, 1, 1, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].desiredColor = {0, 0.933f, 0, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].desiredColor = {0, 0.933f, 0, 1};
         }
 
         if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].desiredColor = {1, 1, 1, 0};
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].desiredColor = {0, 0.541f, 0.866f, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].desiredColor = {0, 0.541f, 0.866f, 0};
         }
         else if (TutorialLevel::currPhase == TutorialLevel::E_TUTORIAL_PHASE::PHASE_4)
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].desiredColor = {1, 1, 1, 1};
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].desiredColor = {1, 1, 1, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].desiredColor = {0, 0.541f, 0.866f, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].desiredColor = {0, 0.541f, 0.866f, 1};
         }
 
         /*BEGIN CONTROLLER REFACTORING*/
@@ -463,6 +448,9 @@ void UIManager::Splash_End()
 
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled = true;
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][1].mEnabled = true;
+
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].currColor = {1, 1, 1, 0};
+        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][1].currColor = {1, 1, 1, 0};
 }
 
 
@@ -485,12 +473,12 @@ void UIManager::WhiteOrbCollected()
                 if (GamePad::Get()->CheckConnection() == true)
                 {
                         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].mEnabled  = true;
-                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].currColor = {1, 1, 1, .0f};
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].currColor = {1, 0.29f, 0, .0f};
                 }
                 else
                 {
                         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled  = true;
-                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].currColor = {1, 1, 1, .0f};
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].currColor = {1, 0.29f, 0, .0f};
                 }
         };
         instance->timed_functions.push_back(disableIndicatorDelayed);
@@ -520,12 +508,12 @@ void UIManager::RedOrbCollected()
                 if (GamePad::Get()->CheckConnection() == true)
                 {
                         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].mEnabled  = true;
-                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].currColor = {1, 1, 1, .0f};
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].currColor = {0, 0.933f, 0, .0f};
                 }
                 else
                 {
                         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled  = true;
-                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].currColor = {1, 1, 1, .0f};
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].currColor = {0, 0.933f, 0, .0f};
                 }
         };
         instance->timed_functions.push_back(disableIndicatorDelayed);
@@ -561,7 +549,7 @@ void UIManager::GreenOrbCollected()
                 else
                 {
                         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].mEnabled  = true;
-                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].currColor = {1, 1, 1, .0f};
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].currColor = {0, 0.541f, 0.866f, .0f};
                 }
         };
         instance->timed_functions.push_back(disableIndicatorDelayed);
@@ -576,7 +564,7 @@ void UIManager::BlueOrbCollected()
 
 
 // Pausing and Unpausing
-void UIManager::MainTilteUnpause()
+void UIManager::MainTitleUnpause()
 {
         GEngine::Get()->SetGamePaused(false);
         for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu].size(); i++)
@@ -916,6 +904,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     0.1f * ScaleXRatio,
                                     0.1f * ScaleYRatio,
                                     false);
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].currColor    = {1, 0.29f, 0, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].desiredColor = {1, 0.29f, 0, 1};
 
                 instance->AddSprite(instance->m_RenderSystem->m_Device,
                                     instance->m_RenderSystem->m_Context,
@@ -926,6 +916,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     0.1f * ScaleXRatio,
                                     0.1f * ScaleYRatio,
                                     false);
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].currColor    = {0, 0.933f, 0, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].desiredColor = {0, 0.933f, 0, 1};
 
                 instance->AddSprite(instance->m_RenderSystem->m_Device,
                                     instance->m_RenderSystem->m_Context,
@@ -936,6 +928,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     0.1f * ScaleXRatio,
                                     0.1f * ScaleYRatio,
                                     false);
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].currColor    = {0, 0.541f, 0.866f, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].desiredColor = {0, 0.541f, 0.866f, 1};
 
                 // Controller Icons
                 instance->AddSprite(instance->m_RenderSystem->m_Device,
@@ -957,16 +951,20 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     0.1f * ScaleXRatio,
                                     0.1f * ScaleYRatio,
                                     false);
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].currColor    = {1, 0.29f, 0, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].desiredColor = {1, 0.29f, 0, 1};
 
                 instance->AddSprite(instance->m_RenderSystem->m_Device,
                                     instance->m_RenderSystem->m_Context,
                                     E_MENU_CATEGORIES::MainMenu,
-                                    L"../Assets/2d/Sprite/A_Button.dds",
+                                    L"../Assets/2d/Sprite/A_key.dds",
                                     0.0f * PosXRatio,
                                     0.1f * PosYRatio,
                                     0.1f * ScaleXRatio,
                                     0.1f * ScaleYRatio,
                                     false);
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].currColor    = {0, 0.933f, 0, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].desiredColor = {0, 0.933f, 0, 1};
 
                 instance->AddSprite(instance->m_RenderSystem->m_Device,
                                     instance->m_RenderSystem->m_Context,
@@ -977,6 +975,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     0.1f * ScaleXRatio,
                                     0.1f * ScaleYRatio,
                                     false);
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].currColor    = {0, 0.541f, 0.866f, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].desiredColor = {0, 0.541f, 0.866f, 1};
         }
         // Pause Menu
         {
@@ -2428,8 +2428,6 @@ void UIManager::Update(float deltaTime)
                 {
                         if (font.mEnabled)
                         {
-
-
                                 instance->m_SpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred,
                                                                instance->m_States->NonPremultiplied());
 
@@ -2444,10 +2442,13 @@ void UIManager::Update(float deltaTime)
                                                              0.0f,
                                                              0.0f);
 
+                                font.currColor = MathLibrary::MoveVectorColorTowards(
+										font.currColor, font.desiredColor, deltaTime * 1.0f);
+
                                 instance->m_FontTypes[font.mFontType]->DrawString(instance->m_SpriteBatch.get(),
                                                                                   font.mTextDisplay.c_str(),
                                                                                   position,
-                                                                                  DirectX::Colors::White,
+                                                                                  font.currColor,
                                                                                   0.0f,
                                                                                   font.mOrigin,
                                                                                   scale);

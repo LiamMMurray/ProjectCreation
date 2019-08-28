@@ -28,7 +28,6 @@
 
 #include <limits>
 #include "..//CollisionLibary/CollisionLibary.h"
-#include "../AI/AIComponent.h"
 
 #include "../CoreInput/InputActions.h"
 #include "../Particle Systems/EmitterComponent.h"
@@ -66,7 +65,7 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
                 pos                   = XMVectorSetY(pos, 0.0f);
                 auto entityH          = SpawnLightOrb(pos, color);
                 auto speedBoostHandle = entityH.AddComponent<SpeedboostComponent>();
-                entityH.AddComponent<AIComponent>();
+                //entityH.AddComponent<AIComponent>();
                 auto speedboostComponent             = speedBoostHandle.Get<SpeedboostComponent>();
                 speedboostComponent->collisionRadius = m_BoostRadius;
                 speedboostComponent->lifetime = MathLibrary::RandomFloatInRange(m_BoostLifespan - m_BoostLifespanVariance,

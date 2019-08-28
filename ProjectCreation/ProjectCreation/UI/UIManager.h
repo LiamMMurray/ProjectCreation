@@ -101,13 +101,7 @@ class UIManager
                      float                buttonwidth               = 0.5f,
                      float                buttonheight              = 0.5f);
 
-        void CreateBackground(ID3D11Device*        device,
-                              ID3D11DeviceContext* deviceContext,
-                              const wchar_t*       FileName,
-                              float                ScreenWidth,
-                              float                ScreenHeight);
-
-        void MainTilteUnpause();
+        void MainTitleUnpause();
         void Pause();
         void Unpause();
         void CheckResolution();

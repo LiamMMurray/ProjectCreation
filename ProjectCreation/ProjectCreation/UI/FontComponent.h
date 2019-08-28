@@ -15,9 +15,12 @@ class FontComponent
         unsigned int                 mWidth;
         unsigned int                 mHeight;
         DirectX::XMVECTOR            mOrigin;
+        float                        mScaleX;
+        float                        mScaleY;
 
-        float mScaleX;
-        float mScaleY;
+        DirectX::XMVECTOR currColor    = {1, 1, 1, 1};
+        DirectX::XMVECTOR desiredColor = {1, 1, 1, 1};
+
 
         ID3D11ShaderResourceView* mTexture;
 
