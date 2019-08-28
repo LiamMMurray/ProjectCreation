@@ -218,7 +218,7 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 // Settings for the orb sounds (Referencing SpeedBoostSystem.cpp lines 814-846
                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(color);
                 int index = SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount() - 1;
-                if (index == 1)
+                if (index == -1)
                         index = 2;
 
                 if (color == 3)
