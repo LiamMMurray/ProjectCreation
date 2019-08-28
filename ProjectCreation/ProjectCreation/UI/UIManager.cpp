@@ -1841,8 +1841,9 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
                 }
 
-                int ResBegin = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size();
-                int ResEnd   = instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
+                int ResBegin =
+                    (int)(instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size());
+                int ResEnd = (int)(instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size());
                 for (int i = ResBegin; i < ResEnd; i++)
                 {
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
@@ -1866,7 +1867,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 }
                 instance
                     ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
-                                [instance->CSettings.m_Volume * 0.1f - 11 +
+                                [(size_t)(instance->CSettings.m_Volume * 0.1f - 11) +
                                  instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
                                  instance->resDescriptors.size()]
                     .mEnabled = true;
@@ -2183,7 +2184,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                         }
                         instance
                             ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
-                                        [instance->CSettings.m_Volume * 0.1f - 11 +
+                                        [(size_t)(instance->CSettings.m_Volume * 0.1f - 11) +
                                          instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
                                          instance->resDescriptors.size()]
                             .mEnabled = true;
@@ -2208,7 +2209,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                         }
                         instance
                             ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
-                                        [instance->CSettings.m_Volume * 0.1f - 11 +
+                                        [(size_t)(instance->CSettings.m_Volume * 0.1f - 11) +
                                          instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
                                          instance->resDescriptors.size()]
                             .mEnabled = true;

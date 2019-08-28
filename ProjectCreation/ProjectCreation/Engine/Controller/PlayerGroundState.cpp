@@ -26,7 +26,7 @@ void PlayerGroundState::Enter()
 
         _playerController->RequestCurrentLevel();
 
-		volcanoPos = XMVectorSet(24.51, 0.0f, -139.36f, 1.0f);
+		volcanoPos = XMVectorSet(24.51f, 0.0f, -139.36f, 1.0f);
         
         // Sets the gravity vector for the player
         //_playerController->SetPlayerGravity(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f));

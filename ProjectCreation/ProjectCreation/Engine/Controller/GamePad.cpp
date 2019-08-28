@@ -41,7 +41,7 @@ void GamePad::IsVibrating(float strength)
 {
         instance->m_GamePadRumble.wLeftMotorSpeed = WORD(MAX_RUMBLE * strength);
         XInputSetState(instance->cId, &instance->m_GamePadRumble);
-        //std::cout << "Rumble Strength: " << instance->m_GamePadRumble.wLeftMotorSpeed << std::endl;
+        // std::cout << "Rumble Strength: " << instance->m_GamePadRumble.wLeftMotorSpeed << std::endl;
 }
 
 const uint16_t GamePad::IsPressed(const WORD button) const
@@ -60,12 +60,6 @@ const uint16_t GamePad::IsPressed(const WORD button) const
                 return (uint16_t)KeyState::Down;
         }
 
-        // Button Not Pressed
-        if (output == 0 && prevOutput == 0)
-        {
-                return (uint16_t)KeyState::Unpressed;
-        }
-
         // Button Was Just Pressed
         if ((output == 1 && prevOutput == 0))
         {
@@ -77,6 +71,8 @@ const uint16_t GamePad::IsPressed(const WORD button) const
         {
                 return (uint16_t)KeyState::Release;
         }
+
+        return (uint16_t)KeyState::Unpressed;
 }
 
 bool GamePad::CheckConnection()
