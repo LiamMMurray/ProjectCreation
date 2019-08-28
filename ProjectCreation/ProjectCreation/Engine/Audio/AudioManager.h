@@ -52,6 +52,8 @@ class AudioManager
 
         void _shutdown();
 
+		void StopAllMusic();
+
     public:
         static void          Initialize();
         static void          Shutdown();

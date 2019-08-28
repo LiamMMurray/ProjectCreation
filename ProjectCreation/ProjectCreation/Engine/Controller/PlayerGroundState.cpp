@@ -12,10 +12,14 @@
 #include "PlayerMovement.h"
 
 #include "..//Gameplay/OrbitSystem.h"
+#include "ControllerSystem.h"
 
 #define _USE_MATH_DEFINES
 
 using namespace DirectX;
+
+float PlayerGroundState::currMagnitude = 0.0f;
+float PlayerGroundState::goalMagnitude = 0.0f;
 
 void PlayerGroundState::Enter()
 {
@@ -26,8 +30,11 @@ void PlayerGroundState::Enter()
 
         _playerController->RequestCurrentLevel();
 
-		volcanoPos = XMVectorSet(24.51, 0.0f, -139.36f, 1.0f);
-        
+        volcanoPos = XMVectorSet(24.51, 0.0f, -139.36f, 1.0f);
+
+        currMagnitude = 0.0f;
+        goalMagnitude = 0.7f;
+
         // Sets the gravity vector for the player
         //_playerController->SetPlayerGravity(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f));
 }
@@ -128,23 +135,64 @@ void PlayerGroundState::Update(float deltaTime)
 
         eulerAngles.z          = XMConvertToRadians(rollDegrees);
         static float shakeTime = 5.0f;
-		
+
         // Player Approached Volcano
 
         float distance = MathLibrary::CalulateDistanceIgnoreY(_cachedTransform.translation, volcanoPos);
 
-        if (distance <= 50 && startedShaking == false)
+        // Only do if in level 4
+        if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() == E_Level_States::LEVEL_04)
         {
-                ShouldShake = true;
+                if (distance <= 50)
+                {
+                        currMagnitude = MathLibrary::MoveTowards(currMagnitude, goalMagnitude, deltaTime);
+                        if (startedShaking == false)
+                        {
+                                ShouldShake    = true;
+                                startedShaking = true;
+                        }
+                }
+
+                else if (distance > 50.0f && startedShaking == true)
+                {
+                        currMagnitude = 0.0f;
+                        shakeTime     = 0.0f;
+                        // ShouldShake = false;
+                        startedShaking = false;
+                }
+
+                if (distance <= 15.0f && doOnce == false) 
+				{
+                        currMagnitude = 0.0f;
+                        shakeTime     = 0.0f;
+                        startedShaking = false;
+
+                        UIManager::instance->DemoEnd();
+                        doOnce = true;
+				}
+
+                if (GCoreInput::GetKeyState(KeyCode::K) == KeyState::DownFirst)
+                {
+                        XMVECTOR temp                = XMVectorSet(10.0f, 0.0f, -100.0f, 1.0f);
+                        _cachedTransform.translation = MathLibrary::MoveTowards(_cachedTransform.translation, temp, 10.0f);
+
+                        // ShouldShake = true;
+                }
+
+                ScreenShake(shakeTime, currMagnitude, eulerAngles.x, eulerAngles.z);
+
+                controllerMagnitude = std::min(shakeTime, currMagnitude) - 0.1f;
+
+                if (GamePad::Get()->CheckConnection() == true)
+                {
+                        if (controllerMagnitude > 0.0f)
+                        {
+                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating     = true;
+                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrengthL = controllerMagnitude;
+                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrengthR = controllerMagnitude;
+                        }
+                }
         }
-
-        else if (distance > 50.0f && startedShaking == true)
-        {
-                ShouldShake = false;
-        }
-
-        ScreenShake(shakeTime, 0.7f, eulerAngles.x, eulerAngles.z);
-
         _cachedTransform.rotation = FQuaternion::FromEulerAngles(eulerAngles);
 
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, yawDelta));
@@ -259,7 +307,6 @@ void PlayerGroundState::Update(float deltaTime)
 
         _playerController->SetCurrentVelocity(currentVelocity);
         _playerController->SetEulerAngles(MathLibrary::NormalizeEulerAngles(eulerAngles));
-
 }
 
 void PlayerGroundState::Exit()
@@ -273,20 +320,27 @@ void PlayerGroundState::ScreenShake(float& shakeTime, float magnitude, float& pi
         {
                 if (shakeTime <= 0.0f)
                 {
-                        startedShaking = true;
+                        // startedShaking = true;
                         ShouldShake = false;
                         shakeTime   = 5.0f;
                         return;
                 }
 
-                float rollShake  = (MathLibrary::RandomFloatInRange(-2.0f, 2.0f) * std::min(shakeTime, magnitude));
-                float pitchShake = (MathLibrary::RandomFloatInRange(-1.0f, 1.0f) * std::min(shakeTime, magnitude));
-                shakeTime -= (GEngine::Get()->GetDeltaTime() * 1.5f);
+                // float pitchMin   = pitchDelta - 1.0f;
+                // float pitchMax   = pitchDelta + 1.0f;
+
+                float rollShake = (MathLibrary::RandomFloatInRange(-2.0f, 2.0f) * std::min(shakeTime, magnitude));
+                // float pitchShake = (MathLibrary::RandomFloatInRange(pitchMin, pitchMax) * std::min(shakeTime, magnitude));
+
+                if (shakeTime >= 0.2f)
+                {
+                        shakeTime -= (GEngine::Get()->GetDeltaTime() * 1.5f);
+                }
 
                 // rollDelta += XMConvertToRadians(rollShake);
 
-                rollDelta  = MathLibrary::LerpAngle(rollDelta, rollShake, GEngine::Get()->GetDeltaTime());
-                pitchDelta = MathLibrary::LerpAngle(pitchDelta, pitchShake, GEngine::Get()->GetDeltaTime());
+                rollDelta = MathLibrary::LerpAngle(rollDelta, rollShake, GEngine::Get()->GetDeltaTime());
+                // pitchDelta = MathLibrary::LerpAngle(pitchDelta, pitchShake, GEngine::Get()->GetDeltaTime());
         }
         return;
 }
