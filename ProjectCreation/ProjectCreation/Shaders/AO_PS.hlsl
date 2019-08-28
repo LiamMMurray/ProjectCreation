@@ -68,7 +68,10 @@ float main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
 
 
         int sampleCount = 4;
-        if (linearDepth < 300.0f)
+
+		bool check = (linearDepth < 300.0f) && (worldPos.y < 30.0f);
+
+        if (check)
                 [unroll] for (int i = 0; i < sampleCount; ++i)
                 {
                         float2 coord1 = reflect(vec[i], randomVec) * rad;

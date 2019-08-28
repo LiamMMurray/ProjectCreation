@@ -70,6 +70,8 @@ float4 main(INPUT_PIXEL input) : SV_TARGET
         float fakeShadow = 1.0f - saturate(pow(fresnel, 10.0f) * 2.0f);
 
         clip(clipMask < 0.5f ? -1 : 1);
+
+
         // return fakeShadow;
         float4 diffuseSample;
 
@@ -95,35 +97,6 @@ float4 main(INPUT_PIXEL input) : SV_TARGET
 
                 color += radiance * PBR(surface, -lightDir, viewWS, specColor) * input.linearDepth;
         }
-        // point light
-        /*{
-                float  ptRange    = 6.0f;
-                float3 ptColor    = {5.0f,0.0f,0.0f};
-                float3 PtLightPos = float3(0.0f, 0.0f, 0.0f);
-                float3 dir        = (PtLightPos - input.PosWS);
-                float  distance   = length(dir);
-                dir               = normalize(dir);
-
-                float amountLight = saturate(dot(dir, input.NormalWS));
-
-                float lightIntensity = saturate(dot(input.NormalWS, normalize(-dir)));
-                float specular       = 0.0f;
-                if (lightIntensity > 0.0f)
-                {
-                        ptColor += amountLight * lightIntensity;
-                        float3 reflection = normalize(reflect(normalize(-dir), input.NormalWS));
-                }
-
-                if (amountLight > 0.0f)
-                {
-                        float attenuation = 1.0f - saturate(distance / ptRange);
-
-                        ptColor += amountLight * surface.diffuseColor * attenuation;
-                }
-
-                color += ptColor * PBR(surface, -dir, viewWS, specColor);
-        }*/
-
         output += float4(color, 1.0f);
         return output;
 }
