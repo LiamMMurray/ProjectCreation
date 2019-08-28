@@ -400,24 +400,24 @@ void UIManager::Splash_FullSail()
 {
         instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled  = true;
         instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].currColor = {1, 1, 1, .0f};
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled  = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled  = false;
+        // instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled  = false;
+        // instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled  = false;
 }
 
 void UIManager::Splash_GPGames()
 {
         instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled  = true;
         instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].currColor = {1, 1, 1, .0f};
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled  = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled  = false;
+        // instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled  = false;
+        // instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled  = false;
 }
 
 void UIManager::Splash_Team()
 {
         instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].mEnabled  = true;
         instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][2].currColor = {1, 1, 1, .0f};
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled  = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled  = false;
+        // instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][0].mEnabled  = false;
+        // instance->m_AllSprites[E_MENU_CATEGORIES::SplashScreen][1].mEnabled  = false;
 }
 
 void UIManager::SplashUpdate(float globalTimer, float deltaTime)
@@ -472,12 +472,13 @@ void UIManager::WhiteOrbCollected()
         // If the controller is connected, it will turn on the Controller UI element
         // Otherwise it will turn on the keyboard UI element
         // It will always disable both UI elements in case the controller is unplugged
+        m_currentTutorialIcon = {1, 5};
 
         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].desiredColor = {1, 1, 1, 0};
         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].desiredColor = {1, 1, 1, 0};
 
         TimedFunction disableIndicatorDelayed;
-        disableIndicatorDelayed.delay = 1.5f;
+        disableIndicatorDelayed.delay = .3f;
         disableIndicatorDelayed.func  = []() {
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = false;
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled = false;
@@ -510,9 +511,10 @@ void UIManager::RedOrbCollected()
         //        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled  = true;
         //        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].currColor = {1, 1, 1, .0f};
         //}
+        m_currentTutorialIcon = {2, 6};
 
         TimedFunction disableIndicatorDelayed;
-        disableIndicatorDelayed.delay = 1.5f;
+        disableIndicatorDelayed.delay = .3f;
         disableIndicatorDelayed.func  = []() {
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled = false;
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].mEnabled = false;
@@ -546,9 +548,10 @@ void UIManager::GreenOrbCollected()
                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].currColor = {1, 1, 1, .0f};
                }
        */
+        m_currentTutorialIcon = {3, 7};
 
         TimedFunction disableIndicatorDelayed;
-        disableIndicatorDelayed.delay = 1.5f;
+        disableIndicatorDelayed.delay = .3f;
         disableIndicatorDelayed.func  = []() {
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].mEnabled = false;
@@ -569,6 +572,8 @@ void UIManager::GreenOrbCollected()
 
 void UIManager::BlueOrbCollected()
 {
+        m_currentTutorialIcon = {-1, -1};
+
         // Only needs to turn off the elements. There are none to turn on
         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].desiredColor = {1, 1, 1, 0};
         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].desiredColor = {1, 1, 1, 0};
@@ -584,6 +589,7 @@ void UIManager::MainTilteUnpause()
                 instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][i].mEnabled = false;
         }
 
+        m_currentTutorialIcon = {0, 4};
         // Left Click Image
         if (GamePad::Get()->CheckConnection() == true)
         {
@@ -611,7 +617,10 @@ void UIManager::Pause()
                 while (ShowCursor(FALSE) >= 0)
                         ;
         }
-
+        for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
+        {
+                itr.mEnabled = false;
+        }
         // Pause Menu Sprites
         for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
         {
@@ -675,6 +684,14 @@ void UIManager::Unpause()
                 {
                         font.mEnabled = false;
                 }
+        }
+
+        auto [currIconMouse, currIconController] = m_currentTutorialIcon;
+        if (currIconMouse != -1)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconMouse].mEnabled     = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconMouse].currColor    = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconMouse].desiredColor = {1, 1, 1, 1};
         }
 }
 
