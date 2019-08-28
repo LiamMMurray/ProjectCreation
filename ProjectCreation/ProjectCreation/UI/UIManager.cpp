@@ -733,6 +733,7 @@ void UIManager::StartupResAdjust(HWND window)
                 SupportedResolutions();
                 DXGI_MODE_DESC desc              = instance->resDescriptors.back();
                 instance->CSettings.m_Resolution = (int)(instance->resDescriptors.size() - 1);
+                instance->PSettings = instance->CSettings;
                 AdjustResolution(window, desc.Width, desc.Height);
         }
 }
