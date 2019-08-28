@@ -15,8 +15,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\AI\AIComponent.h" />
-    <ClInclude Include="Engine\AI\AISystem.h" />
     <ClInclude Include="ECS\Component.h" />
     <ClInclude Include="ECS\ComponentHandle.h" />
     <ClInclude Include="ECS\Entity.h" />
@@ -475,7 +473,6 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Engine\AI\AISystem.cpp" />
     <ClCompile Include="ECS\Entity.cpp" />
     <ClCompile Include="ECS\HandleManager.cpp" />
     <ClCompile Include="ECS\IComponent.cpp" />

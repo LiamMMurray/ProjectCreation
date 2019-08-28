@@ -7,6 +7,7 @@
 #include "WICTextureLoader.h"
 
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <vector>
 #include "CommonStates.h"
@@ -101,13 +102,12 @@ class UIManager
                      float                buttonwidth               = 0.5f,
                      float                buttonheight              = 0.5f);
 
-        void CreateBackground(ID3D11Device*        device,
-                              ID3D11DeviceContext* deviceContext,
-                              const wchar_t*       FileName,
-                              float                ScreenWidth,
-                              float                ScreenHeight);
+        static constexpr std::tuple<float, float, float> RedIconColor{1.0f, 0.4f, 0.2f};
+        static constexpr std::tuple<float, float, float> GreenIconColor{0.4f, 1.0f, 0.4f};
+        static constexpr std::tuple<float, float, float> BlueIconColor{0.3f, 0.7f, 1.0f};
 
-        void MainTilteUnpause();
+
+        void MainTitleUnpause();
         void Pause();
         void Unpause();
         void CheckResolution();

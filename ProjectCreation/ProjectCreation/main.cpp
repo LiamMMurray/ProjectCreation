@@ -48,7 +48,6 @@
 #include "Engine/Gameplay/SpeedBoostSystem.h"
 #include "Rendering/Components/DirectionalLightComponent.h"
 
-#include "Engine/AI/AISystem.h"
 #include "Engine/GenericComponents/TransformComponent.h"
 #include "Engine/MathLibrary/MathLibrary.h"
 #include "Utility/MemoryLeakDetection.h"
@@ -323,17 +322,6 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 speedBoostSystem->m_SystemName = "SpeedBoostSystem";
         }
 
-        // Create AI System
-        {
-                FSystemProperties sysInitProps;
-                sysInitProps.m_Priority   = E_SYSTEM_PRIORITY::NORMAL;
-                sysInitProps.m_UpdateRate = 0.0f;
-
-                AISystem* aiSystem;
-                systemManager->CreateSystem<AISystem>(&aiSystem);
-                systemManager->RegisterSystem(&sysInitProps, aiSystem);
-                aiSystem->m_SystemName = "AISystem";
-        }
 		
         GEngine::Get()->SetGamePaused(true);
         GEngine::Get()->GetLevelStateManager()->Init();
