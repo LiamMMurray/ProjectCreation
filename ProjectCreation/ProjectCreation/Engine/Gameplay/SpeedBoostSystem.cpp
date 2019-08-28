@@ -87,7 +87,7 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
 
                 emitterComponent->EmitterData.minInitialVelocity = {-0.1f, -0.0f, -0.1f};
                 emitterComponent->EmitterData.maxInitialVelocity = {0.3f, 1.75f, 0.3f};
-                emitterComponent->EmitterData.acceleration       = {0.0f, 1.05f, 0.0f};
+                emitterComponent->EmitterData.acceleration       = {0.0f, 1.0f, 0.0f};
                 emitterComponent->EmitterData.emitterPosition    = orbPos;
                 emitterComponent->rotate                         = true;
                 emitterComponent->rotationAxis                   = VectorConstants::Up;
@@ -628,13 +628,13 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                             case 1:
                                     break;
                             case 2:
-                                    emitterComp->EmitterData.acceleration.y       = 2.5f;
+                                    emitterComp->EmitterData.acceleration.y       = 1.5f;
                                     emitterComp->EmitterData.maxInitialVelocity.y = 2.5f;
                                     emitterComp->EmitterData.particleScale.y      = 0.2f;
                                     emitterComp->EmitterData.maxOffset            = {0.25, 0.0f, 0.25f};
                                     break;
                             case 3:
-                                    emitterComp->EmitterData.acceleration.y       = 3.5f;
+                                    emitterComp->EmitterData.acceleration.y       = 2.0f;
                                     emitterComp->EmitterData.maxInitialVelocity.y = 3.5f;
                                     emitterComp->EmitterData.particleScale.y      = 0.15f;
                                     emitterComp->EmitterData.maxOffset            = {0.0f, 0.0f, 0.0f};
