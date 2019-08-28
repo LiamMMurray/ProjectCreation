@@ -431,6 +431,7 @@ void SpeedBoostSystem::RequestUnlatchFromSpline(PlayerController* playerControll
         else
         {
                 playerController->SetUseGravity(true);
+                m_EnableRandomSpawns = true;
 
                 if (latchedSplineIndex != -1)
                 {
@@ -722,6 +723,9 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                         dirVector          = XMVector3Normalize(dirVector);
                         float dot          = MathLibrary::VectorDotProduct(dirVector, playerTransform->transform.GetForward());
 
+                        if (clusterIt->second.shouldDestroy == true)
+                                continue;
+
                         if (distance < (checkRadius))
                         {
                                 if ((latchedSplineIndex == -1 || distance < prevDistance))
@@ -932,7 +936,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                 else
                                 {
                                         RequestUnlatchFromSpline(playerController, deltaTime);
-                                        m_EnableRandomSpawns = true;
                                 }
                         }
                 }

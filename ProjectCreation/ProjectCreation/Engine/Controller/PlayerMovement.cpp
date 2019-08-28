@@ -99,6 +99,19 @@ void PlayerController::ProcessInput()
 void PlayerController::ApplyInput()
 {
         m_StateMachine.Update(cacheTime, _cachedControlledTransform);
+
+        auto cameraComponent = GetControlledEntity().GetComponent<CameraComponent>();
+
+        float targetFOV = 100.0f;
+        if (m_GroundState->bUseGravity == false)
+        {
+                float forwardSpeed = MathLibrary::CalulateVectorLength(m_CurrentVelocity);
+                targetFOV          = MathLibrary::lerp<float>(targetFOV, 200.0f, MathLibrary::saturate(forwardSpeed / 3.0f));
+        }
+        cameraComponent->m_Settings.m_HorizontalFOV =
+            MathLibrary::lerp<float>(cameraComponent->m_Settings.m_HorizontalFOV, targetFOV, cacheTime * 1.5f);
+        cameraComponent->dirty = true;
+
         FSphere fSpherePlayer;
         fSpherePlayer.center = _cachedControlledTransform.translation;
         fSpherePlayer.radius = 0.25f;
@@ -203,8 +216,10 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
         {
 
                 // Settings for the orb sounds (Referencing SpeedBoostSystem.cpp lines 814-846
-                int index = SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount();
                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IncreaseOrbCount(color);
+                int index = SYSTEM_MANAGER->GetSystem<ControllerSystem>()->GetOrbCount() - 1;
+                if (index == 1)
+                        index = 2;
 
                 if (color == 3)
                 {

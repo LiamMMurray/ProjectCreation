@@ -217,17 +217,6 @@ void PlayerGroundState::Update(float deltaTime)
         }
 
         _playerController->GetControlledEntity().GetComponent<TransformComponent>()->transform = _cachedTransform;
-        auto cameraComponent = _playerController->GetControlledEntity().GetComponent<CameraComponent>();
-
-        float targetFOV = 100.0f;
-        if (bUseGravity == false)
-        {
-                float forwardSpeed = MathLibrary::CalulateVectorLength(currentVelocity);
-                targetFOV          = MathLibrary::lerp<float>(targetFOV, 200.0f, MathLibrary::saturate(forwardSpeed / 3.0f));
-        }
-        cameraComponent->m_Settings.m_HorizontalFOV =
-            MathLibrary::lerp<float>(cameraComponent->m_Settings.m_HorizontalFOV, targetFOV, deltaTime * 1.5f);
-        cameraComponent->dirty = true;
 
         auto sunComp                        = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>();
         auto sunTransComp                   = GEngine::Get()->m_SunHandle.GetComponent<TransformComponent>();
