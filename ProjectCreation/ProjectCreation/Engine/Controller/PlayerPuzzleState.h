@@ -2,6 +2,10 @@
 #include "PlayerControllerState.h"
 
 #include "../MathLibrary/MathLibrary.h"
+// Audio Includes
+#include <Interface/G_Audio/GMusic.h>
+#include <Interface/G_Audio/GSound.h>
+#include "../Audio/AudioManager.h"
 
 class PlayerPuzzleState : public IPlayerControllerState
 {
@@ -11,6 +15,7 @@ class PlayerPuzzleState : public IPlayerControllerState
         float             dragAcceleration   = 0.6f;
         float             dragDeacceleration = 0.9f;
 
+        GW::AUDIO::GSound* PuzzleComplete;
 
     public:
         // Inherited via IPlayerControllerState

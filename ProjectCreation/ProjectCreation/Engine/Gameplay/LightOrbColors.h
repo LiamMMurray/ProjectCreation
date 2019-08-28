@@ -19,6 +19,7 @@ struct E_LIGHT_ORBS
 
         // BGRA colors
         static const DirectX::PackedVector::XMCOLOR ORB_COLORS[E_LIGHT_ORBS::COUNT];
+        static const DirectX::PackedVector::XMCOLOR ORB_EDGE_COLORS[E_LIGHT_ORBS::COUNT];
         static const DirectX::PackedVector::XMCOLOR RING_COLORS[3];
         static const KeyCode                        ColorInputKeyCodes[E_LIGHT_ORBS::COUNT];
         static constexpr char                       Literal[E_LIGHT_ORBS::COUNT][6] = {"RED", "GREEN", "BLUE", "WHITE"};
