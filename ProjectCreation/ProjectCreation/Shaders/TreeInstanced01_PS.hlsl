@@ -189,5 +189,9 @@ float4 main(INPUT_PIXEL pIn) : SV_TARGET
                 // color += IBL(surface, viewWS, specColor, diffuse, specular, integration);
                 color += _AmbientColor * surface.ambient * surface.diffuseColor;
         }
+
+        float dist = distance(pIn.PosWS, _EyePosition);
+        clip(dist > _playerRadius ? -1 : 1);
+
         return float4(color, 1.0f);
 }
