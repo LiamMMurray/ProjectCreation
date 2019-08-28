@@ -21,8 +21,7 @@ EntityHandle OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
 
         if (activeGoal.hasActiveGoal)
         {
-                activeGoal.activeGoalGround.Free();
-                activeGoal.activeGoalOrbit.Free();
+                DestroyPlanet(activeGoal.activeGoalGround.GetComponent<GoalComponent>());
         }
 
         /*** REFACTORING CODE START ***/
