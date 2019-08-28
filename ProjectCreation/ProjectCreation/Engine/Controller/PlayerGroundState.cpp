@@ -30,8 +30,11 @@ void PlayerGroundState::Enter()
 
         _playerController->RequestCurrentLevel();
 
-		volcanoPos = XMVectorSet(24.51f, 0.0f, -139.36f, 1.0f);
-        
+        volcanoPos = XMVectorSet(24.51, 0.0f, -139.36f, 1.0f);
+
+        currMagnitude = 0.0f;
+        goalMagnitude = 0.7f;
+		
         // Sets the gravity vector for the player
         //_playerController->SetPlayerGravity(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f));
 }
@@ -293,7 +296,6 @@ void PlayerGroundState::Update(float deltaTime)
 
         _playerController->SetCurrentVelocity(currentVelocity);
         _playerController->SetEulerAngles(MathLibrary::NormalizeEulerAngles(eulerAngles));
-
 }
 
 void PlayerGroundState::Exit()
@@ -307,20 +309,27 @@ void PlayerGroundState::ScreenShake(float& shakeTime, float magnitude, float& pi
         {
                 if (shakeTime <= 0.0f)
                 {
-                        startedShaking = true;
+                        // startedShaking = true;
                         ShouldShake = false;
                         shakeTime   = 5.0f;
                         return;
                 }
 
-                float rollShake  = (MathLibrary::RandomFloatInRange(-2.0f, 2.0f) * std::min(shakeTime, magnitude));
-                float pitchShake = (MathLibrary::RandomFloatInRange(-1.0f, 1.0f) * std::min(shakeTime, magnitude));
-                shakeTime -= (GEngine::Get()->GetDeltaTime() * 1.5f);
+                // float pitchMin   = pitchDelta - 1.0f;
+                // float pitchMax   = pitchDelta + 1.0f;
+
+                float rollShake = (MathLibrary::RandomFloatInRange(-2.0f, 2.0f) * std::min(shakeTime, magnitude));
+                // float pitchShake = (MathLibrary::RandomFloatInRange(pitchMin, pitchMax) * std::min(shakeTime, magnitude));
+
+                if (shakeTime >= 0.2f)
+                {
+                        shakeTime -= (GEngine::Get()->GetDeltaTime() * 1.5f);
+                }
 
                 // rollDelta += XMConvertToRadians(rollShake);
 
-                rollDelta  = MathLibrary::LerpAngle(rollDelta, rollShake, GEngine::Get()->GetDeltaTime());
-                pitchDelta = MathLibrary::LerpAngle(pitchDelta, pitchShake, GEngine::Get()->GetDeltaTime());
+                rollDelta = MathLibrary::LerpAngle(rollDelta, rollShake, GEngine::Get()->GetDeltaTime());
+                // pitchDelta = MathLibrary::LerpAngle(pitchDelta, pitchShake, GEngine::Get()->GetDeltaTime());
         }
         return;
 }

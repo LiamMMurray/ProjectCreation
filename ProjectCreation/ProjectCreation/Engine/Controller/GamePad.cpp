@@ -37,11 +37,11 @@ GamePad::GamePad()
         xInputToKeyState.insert(std::make_pair(XINPUT_KEYSTROKE_REPEAT, (uint16_t)KeyState::Down));
 }
 
-void GamePad::IsVibrating(float strength)
+void GamePad::IsVibrating(float strengthL, float strengthR)
 {
-        instance->m_GamePadRumble.wLeftMotorSpeed = WORD(MAX_RUMBLE * strength);
+        instance->m_GamePadRumble.wLeftMotorSpeed  = MAX_RUMBLE * strengthL;
+        instance->m_GamePadRumble.wRightMotorSpeed = MAX_RUMBLE * strengthR;
         XInputSetState(instance->cId, &instance->m_GamePadRumble);
-        // std::cout << "Rumble Strength: " << instance->m_GamePadRumble.wLeftMotorSpeed << std::endl;
 }
 
 const uint16_t GamePad::IsPressed(const WORD button) const

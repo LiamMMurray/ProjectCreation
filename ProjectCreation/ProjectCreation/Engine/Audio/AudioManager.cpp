@@ -86,6 +86,14 @@ void AudioManager::_shutdown()
         m_SoundEngine->DecrementCount();
 }
 
+void AudioManager::StopAllMusic()
+{
+        for (auto &music : m_LoadedMusic)
+        {
+                music.second->StopStream();
+        }
+}
+
 void AudioManager::Initialize()
 {
         assert(!instance);

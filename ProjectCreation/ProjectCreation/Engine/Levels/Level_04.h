@@ -13,7 +13,10 @@ class Level_04 : public ILevelState
         SpeedBoostSystem*  m_SpeedBoostSystem;
         OrbitSystem*       m_OrbitSystem;
         PlayerController*  m_PlayerController;
+
         GW::AUDIO::GMusic* Waves;
+        GW::AUDIO::GMusic* Eruption;
+        GW::AUDIO::GMusic* Forest;
 
     public:
         // Inherited via ILevelState

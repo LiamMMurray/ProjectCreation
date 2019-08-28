@@ -16,7 +16,7 @@ class GamePad
         GamePad();
         static GamePad* instance;
 
-        void           IsVibrating(float strength);
+        void           IsVibrating(float strengthL, float strengthR);
         const uint16_t IsPressed(const WORD button) const;
         bool           CheckConnection();
         bool           Refresh();

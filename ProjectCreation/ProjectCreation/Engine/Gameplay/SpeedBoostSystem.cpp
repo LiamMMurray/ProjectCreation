@@ -589,6 +589,9 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                     auto orbComp            = speedComp.GetParent().GetComponent<OrbComponent>();
                                     speedComp.lifetime      = -1.0f;
                                     orbComp->m_WantsDestroy = true;
+                                    SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating    = true;
+                                    SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrengthL = 0.5f;
+                                    SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrengthR = 0.0f;
                                     return;
                             }
                     }
@@ -852,7 +855,8 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                 }
 
                                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating    = true;
-                                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrength = 0.25f;
+                                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrengthL = 0.25f;
+                                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrengthR = 0.0f;
                                                 playerController->IncreaseCollectedSplineOrbCount(
                                                     clusterIt->second.targetColor);
                                         }

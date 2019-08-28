@@ -249,6 +249,7 @@ void UIManager::GameplayUpdate(float deltaTime)
         }
 
         // Pause & Unpause
+
         if (instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled == true)
         {
                 if (InputActions::EnterAction() == KeyState::DownFirst)
@@ -256,6 +257,7 @@ void UIManager::GameplayUpdate(float deltaTime)
                         instance->MainTitleUnpause();
                 }
         }
+
         else
         {
                 if (InputActions::PauseAction() == KeyState::DownFirst)
@@ -475,8 +477,16 @@ void UIManager::Splash_End()
 
 
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled = true;
-        instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][1].mEnabled = true;
 
+        if (GamePad::Get()->CheckConnection() == true) 
+		{
+                instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = true;
+        }
+
+        else
+        {
+                instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][1].mEnabled = true;
+        }
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].currColor = {1, 1, 1, 0};
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][1].currColor = {1, 1, 1, 0};
 }
@@ -955,6 +965,18 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   E_MENU_CATEGORIES::MainMenu,
                                   E_FONT_TYPE::Calibri,
                                   "PRESS ENTER TO CONTINUE...",
+                                  0.05f * ScaleXRatio,
+                                  0.05f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.1f * PosYRatio,
+                                  false,
+                                  false);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::MainMenu,
+                                  E_FONT_TYPE::CourierNew,
+                                  "Press The Back Button To Continue...",
                                   0.05f * ScaleXRatio,
                                   0.05f * ScaleYRatio,
                                   0.0f * PosXRatio,

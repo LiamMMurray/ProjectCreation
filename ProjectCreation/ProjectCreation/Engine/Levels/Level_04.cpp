@@ -33,6 +33,11 @@ void Level_04::Enter()
                 GEngine::Get()->SetPuzzleState(0.0f);
         }
 
+        else
+        {
+                AudioManager::Get()->PlaySoundWithVolume(1.0f, "TRANSITION_PLANTS");
+		}
+
         m_SpeedBoostSystem->m_ColorsCollected[0] = false;
         m_SpeedBoostSystem->m_ColorsCollected[1] = false;
         m_SpeedBoostSystem->m_ColorsCollected[2] = false;
@@ -56,6 +61,12 @@ void Level_04::Enter()
         AudioManager::Get()->ActivateMusicAndPause(Waves, true);
         Waves->ResumeStream();
 
+        AudioManager::Get()->ActivateMusicAndPause(Eruption, true);
+        Eruption->ResumeStream();
+
+        AudioManager::Get()->ActivateMusicAndPause(Forest, true);
+        Forest->ResumeStream();
+
         m_SpeedBoostSystem->SetTargetTerrain(1.0f);
 
         m_LevelType = E_Level_States::LEVEL_04;
@@ -77,5 +88,11 @@ Level_04::Level_04()
         m_PlayerController              = static_cast<PlayerController*>(controllerSys->GetCurrentController());
 
         Waves = AudioManager::Get()->LoadMusic("Ambience_andWaves");
-        Waves->SetVolume(0.6f);
+        Waves->SetVolume(0.4f);
+
+        Eruption = AudioManager::Get()->LoadMusic("EARTHQUAKE_SFX");
+        Eruption->SetVolume(0.3f);
+
+        Forest = AudioManager::Get()->LoadMusic("LEVEL_4_AMBIENCE");
+        Forest->SetVolume(0.6f);
 }

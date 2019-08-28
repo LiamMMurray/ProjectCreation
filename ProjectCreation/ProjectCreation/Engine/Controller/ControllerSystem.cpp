@@ -146,12 +146,14 @@ void ControllerSystem::OnUpdate(float deltaTime)
                 IncreaseOrbCount(E_LIGHT_ORBS::WHITE_LIGHTS);
         }
 
-        if (IsVibrating == true)
+        if (GamePad::Get()->CheckConnection() == true)
         {
                 if (rumbleStrengthL <= 0)
                 {
-                        IsVibrating = false;
-                }
+                        if (rumbleStrengthL <= 0)
+                        {
+                                IsVibrating = false;
+                        }
 
                 else
                 {
@@ -225,7 +227,8 @@ void ControllerSystem::OnInitialize()
 {
 
         IsVibrating    = false;
-        rumbleStrength = 0.0f;
+        rumbleStrengthL = 0.0f;
+        rumbleStrengthR = 0.0f;
 
         m_SystemManager = GEngine::Get()->GetSystemManager();
         m_HandleManager = GEngine::Get()->GetHandleManager();
