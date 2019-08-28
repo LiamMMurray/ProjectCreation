@@ -890,7 +890,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     E_MENU_CATEGORIES::MainMenu,
                                     L"../Assets/2d/Sprite/Mouse_Key.dds",
                                     0.0f * PosXRatio,
-                                    0.1f * PosYRatio,
+                                    0.3f * PosYRatio,
                                     0.1f * ScaleXRatio,
                                     0.1f * ScaleYRatio,
                                     false);
@@ -900,7 +900,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     E_MENU_CATEGORIES::MainMenu,
                                     L"../Assets/2d/Sprite/A_Key.dds",
                                     0.0f * PosXRatio,
-                                    0.1f * PosYRatio,
+                                    0.3f * PosYRatio,
                                     0.1f * ScaleXRatio,
                                     0.1f * ScaleYRatio,
                                     false);
@@ -912,7 +912,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     E_MENU_CATEGORIES::MainMenu,
                                     L"../Assets/2d/Sprite/S_Key.dds",
                                     0.0f * PosXRatio,
-                                    0.1f * PosYRatio,
+                                    0.3f * PosYRatio,
                                     0.1f * ScaleXRatio,
                                     0.1f * ScaleYRatio,
                                     false);
@@ -924,7 +924,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     E_MENU_CATEGORIES::MainMenu,
                                     L"../Assets/2d/Sprite/D_Key.dds",
                                     0.0f * PosXRatio,
-                                    0.1f * PosYRatio,
+                                    0.3f * PosYRatio,
                                     0.1f * ScaleXRatio,
                                     0.1f * ScaleYRatio,
                                     false);
@@ -937,7 +937,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     E_MENU_CATEGORIES::MainMenu,
                                     L"../Assets/2d/Sprite/RightTrigger.dds",
                                     0.0f * PosXRatio,
-                                    0.1f * PosYRatio,
+                                    0.3f * PosYRatio,
                                     0.1f * ScaleXRatio,
                                     0.1f * ScaleYRatio,
                                     false);
@@ -947,7 +947,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     E_MENU_CATEGORIES::MainMenu,
                                     L"../Assets/2d/Sprite/B_Button.dds",
                                     0.0f * PosXRatio,
-                                    0.1f * PosYRatio,
+                                    0.3f * PosYRatio,
                                     0.1f * ScaleXRatio,
                                     0.1f * ScaleYRatio,
                                     false);
@@ -959,7 +959,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     E_MENU_CATEGORIES::MainMenu,
                                     L"../Assets/2d/Sprite/A_key.dds",
                                     0.0f * PosXRatio,
-                                    0.1f * PosYRatio,
+                                    0.3f * PosYRatio,
                                     0.1f * ScaleXRatio,
                                     0.1f * ScaleYRatio,
                                     false);
@@ -971,7 +971,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                     E_MENU_CATEGORIES::MainMenu,
                                     L"../Assets/2d/Sprite/X_Button.dds",
                                     0.0f * PosXRatio,
-                                    0.1f * PosYRatio,
+                                    0.3f * PosYRatio,
                                     0.1f * ScaleXRatio,
                                     0.1f * ScaleYRatio,
                                     false);
