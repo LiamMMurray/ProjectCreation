@@ -593,8 +593,9 @@ void UIManager::BlueOrbCollected()
         m_currentTutorialIcon = {-1, -1};
 
         // Only needs to turn off the elements. There are none to turn on
-        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].desiredColor = {1, 1, 1, 0};
-        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].desiredColor = {1, 1, 1, 0};
+        auto [r, g, b]                                                      = BlueIconColor;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].desiredColor = {r, g, b, 0};
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].desiredColor = {r, g, b, 0};
 }
 
 
@@ -611,6 +612,7 @@ void UIManager::MainTitleUnpause()
         // Left Click Image
         if (GamePad::Get()->CheckConnection() == true)
         {
+
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled  = true;
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].currColor = {1, 1, 1, .0f};
         }
@@ -708,18 +710,23 @@ void UIManager::Unpause()
 
         if (currIconMouse != -1)
         {
-
+                auto spriteColor = instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconController].currColor;
                 if (GamePad::Get()->CheckConnection() == true)
                 {
-                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconController].mEnabled     = true;
-                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconController].currColor    = {1, 1, 1, 0};
-                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconController].desiredColor = {1, 1, 1, 1};
+
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconController].mEnabled  = true;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconController].currColor = {
+                            spriteColor.m128_f32[0], spriteColor.m128_f32[1], spriteColor.m128_f32[2], 0};
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconController].desiredColor = {
+                            spriteColor.m128_f32[0], spriteColor.m128_f32[1], spriteColor.m128_f32[2], 0};
                 }
                 else
                 {
-                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconMouse].mEnabled     = true;
-                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconMouse].currColor    = {1, 1, 1, 0};
-                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconMouse].desiredColor = {1, 1, 1, 1};
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconMouse].mEnabled  = true;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconMouse].currColor = {
+                            spriteColor.m128_f32[0], spriteColor.m128_f32[1], spriteColor.m128_f32[2], 0};
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconMouse].desiredColor = {
+                            spriteColor.m128_f32[0], spriteColor.m128_f32[1], spriteColor.m128_f32[2], 0};
                 }
         }
 }
@@ -2299,6 +2306,26 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         // Tutorial Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
+                {
+                        auto currColor   = itr.desiredColor;
+                        itr.desiredColor = {currColor.m128_f32[0], currColor.m128_f32[1], currColor.m128_f32[2], 0};
+                        itr.currColor    = {currColor.m128_f32[0], currColor.m128_f32[1], currColor.m128_f32[2], 0};
+                }
+                instance->m_currentTutorialIcon = {0, 4};
+                if (GamePad::Get()->CheckConnection() == true)
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][0].currColor    = {1.0f, 1.0f, 1.0f, 1.0f};
+                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][0].desiredColor = {1.0f, 1.0f, 1.0f, 1.0f};
+                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][0].mEnabled     = true;
+                }
+                else
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][4].currColor    = {1.0f, 1.0f, 1.0f, 1.0f};
+                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][4].desiredColor = {1.0f, 1.0f, 1.0f, 1.0f};
+                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][4].mEnabled     = true;
+                }
+
                 instance->Unpause();
                 // Load Level Function
                 auto curLevel = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState();
@@ -2323,7 +2350,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_TUTORIAL_LEVEL);
                 }
-                instance->m_currentTutorialIcon = {-1, -1};
         });
 
         // Level 1 Button
@@ -2350,6 +2376,10 @@ void UIManager::Initialize(native_handle_type hwnd)
                 else if (curLevel->GetLevelType() == LEVEL_03)
                 {
                         GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_01);
+                }
+                for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
+                {
+                        itr.mEnabled = false;
                 }
                 instance->m_currentTutorialIcon = {-1, -1};
         });
@@ -2379,6 +2409,10 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_02);
                 }
+                for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
+                {
+                        itr.mEnabled = false;
+                }
                 instance->m_currentTutorialIcon = {-1, -1};
         });
 
@@ -2406,6 +2440,10 @@ void UIManager::Initialize(native_handle_type hwnd)
                 else if (curLevel->GetLevelType() == LEVEL_03)
                 {
                         GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_03);
+                }
+                for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
+                {
+                        itr.mEnabled = false;
                 }
                 instance->m_currentTutorialIcon = {-1, -1};
         });
