@@ -600,7 +600,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
 
                     float angle         = MathLibrary::CalculateAngleBetweenVectors(r_flatPlayerForward, dir);
                     float checkDistance = m_DespawnDistanceOffset + m_MaxSpawnDistance;
-                    if (speedComp.lifetime <= 0.0f || distanceSq >= (checkDistance * checkDistance) || angle > m_SpawnAngle)
+                    if (speedComp.lifetime <= 0.0f || distanceSq >= (checkDistance * checkDistance))
                     {
                             auto orbComp            = speedComp.GetParent().GetComponent<OrbComponent>();
                             speedComp.lifetime      = -1.0f;
