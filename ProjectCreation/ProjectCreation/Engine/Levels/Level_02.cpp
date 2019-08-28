@@ -31,7 +31,7 @@ void Level_02::Enter()
 
 		else
         {
-                WavesTransition->Play();
+                AudioManager::Get()->PlaySoundWithVolume(1.0f, "TRANSITION_WATER");
 		}
 
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);
@@ -74,7 +74,4 @@ Level_02::Level_02()
 
         Waves = AudioManager::Get()->LoadMusic("Ambience_andWaves");
         Waves->SetVolume(0.6f);
-
-		WavesTransition = AudioManager::Get()->CreateSFX("TRANSITION_WATER");
-        WavesTransition->SetVolume(1.0f);
 }

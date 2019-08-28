@@ -34,7 +34,7 @@ void PlayerGroundState::Enter()
 
         currMagnitude = 0.0f;
         goalMagnitude = 0.7f;
-
+		
         // Sets the gravity vector for the player
         //_playerController->SetPlayerGravity(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f));
 }
@@ -161,15 +161,15 @@ void PlayerGroundState::Update(float deltaTime)
                         startedShaking = false;
                 }
 
-                if (distance <= 15.0f && doOnce == false) 
-				{
-                        currMagnitude = 0.0f;
-                        shakeTime     = 0.0f;
+                if (distance <= 15.0f && doOnce == false)
+                {
+                        currMagnitude  = 0.0f;
+                        shakeTime      = 0.0f;
                         startedShaking = false;
 
                         UIManager::instance->DemoEnd();
                         doOnce = true;
-				}
+                }
 
                 if (GCoreInput::GetKeyState(KeyCode::K) == KeyState::DownFirst)
                 {

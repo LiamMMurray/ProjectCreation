@@ -15,7 +15,6 @@ class PlayerPuzzleState : public IPlayerControllerState
         float             dragAcceleration   = 0.6f;
         float             dragDeacceleration = 0.9f;
 
-        GW::AUDIO::GSound* PuzzleComplete;
 
     public:
         // Inherited via IPlayerControllerState
