@@ -31,6 +31,7 @@ struct E_MENU_CATEGORIES
         };
 };
 
+
 struct E_FONT_TYPE
 {
         enum
@@ -59,24 +60,31 @@ struct CurrSettings
 
 class UIManager
 {
+        struct TimedFunction
+        {
+                void (*func)();
+                float delay;
+        };
+
         using native_handle_type = void*;
         native_handle_type m_WindowHandle;
+        std::vector<TimedFunction> timed_functions;
 
     public:
         static void Initialize(native_handle_type hwnd);
-        static void Update();
+        static void Update(float deltaTime);
         static void Shutdown();
 
         // Pause Menu
-        void AddSprite(ID3D11Device*        device,
-                       ID3D11DeviceContext* deviceContext,
-                       int                  category,
-                       const wchar_t*       FileName,
-                       float                PositionX,
-                       float                PositionY,
-                       float                scaleX,
-                       float                scaleY,
-                       bool                 enabled);
+        int AddSprite(ID3D11Device*        device,
+                      ID3D11DeviceContext* deviceContext,
+                      int                  category,
+                      const wchar_t*       FileName,
+                      float                PositionX,
+                      float                PositionY,
+                      float                scaleX,
+                      float                scaleY,
+                      bool                 enabled);
 
         void AddText(ID3D11Device*        device,
                      ID3D11DeviceContext* deviceContext,
@@ -120,19 +128,19 @@ class UIManager
         void BlueOrbCollected();
 
 
-        void        UIClipCursor();
+        void UIClipCursor();
 
 
         static UIManager* instance;
 
         RenderSystem* m_RenderSystem;
 
-        void DrawSprites();
+        void DrawSprites(float deltaTime);
         void Present();
 
     private:
-        void GameplayUpdate();
-        void SplashUpdate(float globalTimer);
+        void GameplayUpdate(float deltaTime);
+        void SplashUpdate(float globalTimer, float deltaTime);
 
         bool         m_FirstFull      = true; // Turns false when the game is put to fullscreen on launch
         bool         m_InMenu         = false;

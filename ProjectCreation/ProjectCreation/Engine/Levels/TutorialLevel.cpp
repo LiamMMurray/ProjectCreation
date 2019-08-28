@@ -13,10 +13,11 @@ TutorialLevel::E_TUTORIAL_PHASE TutorialLevel::currPhase = E_TUTORIAL_PHASE::PHA
 void TutorialLevel::Enter()
 {
         ControllerSystem* controllerSys = SYSTEM_MANAGER->GetSystem<ControllerSystem>();
-        if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad) {
+        if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
+        {
                 controllerSys->ResetPlayer();
                 GEngine::Get()->SetPuzzleState(0.0f);
-		}
+        }
 
         m_OrbitSystem->ClearTimedFunctions();
         m_OrbitSystem->InstantRemoveOrbitSystem();
@@ -51,46 +52,23 @@ void TutorialLevel::Enter()
         m_OrbitSystem->ClearCollectedMask();
 
         m_LevelType = E_Level_States::TUTORIAL_LEVEL;
+
+        UpdatePhase1(0.0f);
 }
 
 void TutorialLevel::Update(float deltaTime)
 {
-        switch (currPhase)
-        {
-                        // White Orbs
-                case E_TUTORIAL_PHASE::PHASE_1:
-                {
-                        UpdatePhase1(deltaTime);
-                }
-                break;
-
-                // Red Orbs
-                case E_TUTORIAL_PHASE::PHASE_2:
-                {
-                        UpdatePhase2(deltaTime);
-                }
-                break;
-
-                        // Green Orbs
-                case E_TUTORIAL_PHASE::PHASE_3:
-                {
-                        UpdatePhase3(deltaTime);
-                }
-                break;
-
-                        // Blue Orbs
-                case E_TUTORIAL_PHASE::PHASE_4:
-                {
-                        UpdatePhase4(deltaTime);
-                }
-                break;
-
-                case E_TUTORIAL_PHASE::PHASE_5:
-                {
-                        UpdatePhase5(deltaTime);
-                }
-                break;
-        }
+        //switch (currPhase)
+        //{
+        //        case E_TUTORIAL_PHASE::PHASE_2:
+        //        {
+        //                m_SpeedBoostSystem->m_ColorsCollected[0] = false;
+        //                for (int i = 1; i < 4; ++i)
+        //                {
+        //                        m_SpeedBoostSystem->m_ColorsCollected[i] = true;
+        //                }
+        //        }
+        //}
 }
 
 
@@ -134,6 +112,43 @@ void TutorialLevel::RequestNextPhase()
                 currPhase = phases[currPhaseIndex];
         }
         m_SpeedBoostSystem->RequestDestroyAllSpeedboosts();
+
+        switch (currPhase)
+        {
+                        // White Orbs
+                case E_TUTORIAL_PHASE::PHASE_1:
+                {
+                        UpdatePhase1(0.0f);
+                }
+                break;
+
+                // Red Orbs
+                case E_TUTORIAL_PHASE::PHASE_2:
+                {
+                        UpdatePhase2(0.0f);
+                }
+                break;
+
+                        // Green Orbs
+                case E_TUTORIAL_PHASE::PHASE_3:
+                {
+                        UpdatePhase3(0.0f);
+                }
+                break;
+
+                        // Blue Orbs
+                case E_TUTORIAL_PHASE::PHASE_4:
+                {
+                        UpdatePhase4(0.0f);
+                }
+                break;
+
+                case E_TUTORIAL_PHASE::PHASE_5:
+                {
+                        UpdatePhase5(0.0f);
+                }
+                break;
+        }
 }
 
 void TutorialLevel::UpdatePhase1(float deltaTime)
