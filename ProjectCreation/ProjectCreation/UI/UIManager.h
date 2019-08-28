@@ -7,6 +7,7 @@
 #include "WICTextureLoader.h"
 
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <vector>
 #include "CommonStates.h"
@@ -100,6 +101,11 @@ class UIManager
                      bool                 bOverrideButtonDimensions = false,
                      float                buttonwidth               = 0.5f,
                      float                buttonheight              = 0.5f);
+
+        static constexpr std::tuple<float, float, float> RedIconColor{1.0f, 0.4f, 0.2f};
+        static constexpr std::tuple<float, float, float> GreenIconColor{0.4f, 1.0f, 0.4f};
+        static constexpr std::tuple<float, float, float> BlueIconColor{0.3f, 0.7f, 1.0f};
+
 
         void MainTitleUnpause();
         void Pause();

@@ -144,8 +144,8 @@ inline namespace JobScheduler
                 static constexpr auto MAX_JOBS = nextPowerOf2(MAX_JOBS);
                 static constexpr auto MASK     = MAX_JOBS - 1;
                 JobInternal**         m_jobs;
-                alignas(8) volatile int64_t m_bottom;
-                alignas(8) volatile int64_t m_top;
+				volatile int64_t m_bottom;
+                volatile int64_t m_top;
                 JobQueue()
                 {}
                 void Initialize() volatile
@@ -361,8 +361,8 @@ inline namespace JobScheduler
                 g_thread_local_job_allocator_static.Initialize();
                 g_thread_local_job_allocator_temp.Initialize();
                 unsigned long long thread_index      = 0;
-                auto     g_job_queues_size = sizeof(JobQueue<MAX_JOBS_PER_FRAME>) * g_num_threads;
-                g_job_queues               = (volatile JobQueue<MAX_JOBS_PER_FRAME>*)_aligned_malloc(g_job_queues_size,
+                auto               g_job_queues_size = sizeof(JobQueue<MAX_JOBS_PER_FRAME>) * g_num_threads;
+                g_job_queues = (volatile JobQueue<MAX_JOBS_PER_FRAME>*)_aligned_malloc(g_job_queues_size,
                                                                                        alignof(JobQueue<MAX_JOBS_PER_FRAME>));
                 assert(g_job_queues);
                 for (volatile JobQueue<MAX_JOBS_PER_FRAME>* itr = g_job_queues; itr != &g_job_queues[g_num_threads]; ++itr)
@@ -392,6 +392,8 @@ inline namespace JobScheduler
                 TlsFree(g_tls_access_value);
         }
 } // namespace JobScheduler
+
+void function(int x, float y, char b);
 
 inline namespace JobSchedulerAbstractionsInternal
 {
