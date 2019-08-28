@@ -687,14 +687,28 @@ void UIManager::Unpause()
         }
 
         auto [currIconMouse, currIconController] = m_currentTutorialIcon;
+
         if (currIconMouse != -1)
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconMouse].mEnabled     = true;
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconMouse].currColor    = {1, 1, 1, 0};
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconMouse].desiredColor = {1, 1, 1, 1};
+
+                if (GamePad::Get()->CheckConnection() == true) {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconController].mEnabled     = true;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconController].currColor    = {1, 1, 1, 0};
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconController].desiredColor = {1, 1, 1, 1};
+				}
+                else
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconMouse].mEnabled     = true;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconMouse].currColor    = {1, 1, 1, 0};
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconMouse].desiredColor = {1, 1, 1, 1};
+                }
         }
 }
-
+struct SomeStruct
+{
+        int x;
+        int y;
+};
 void UIManager::CheckResolution()
 {
         // Resizes the window
@@ -2291,6 +2305,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_TUTORIAL_LEVEL);
                 }
+                instance->m_currentTutorialIcon = {-1, -1};
         });
 
         // Level 1 Button
@@ -2318,6 +2333,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_01);
                 }
+                instance->m_currentTutorialIcon = {-1, -1};
         });
 
         // Level 2 Button
@@ -2345,6 +2361,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_02);
                 }
+                instance->m_currentTutorialIcon = {-1, -1};
         });
 
         // Level 3 Button
@@ -2372,6 +2389,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 {
                         GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_03);
                 }
+                instance->m_currentTutorialIcon = {-1, -1};
         });
 
 
