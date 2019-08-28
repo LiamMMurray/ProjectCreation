@@ -62,7 +62,7 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
         color += 0.004f * dither / 255;
         color = color / (color + 1.f);
         // color *= 1.5f;
-        color = pow(color, 1.f / 2.2f);
+        color = pow(abs(color), 1.f / 2.2f);
 
         float ao = AO.Sample(sampleTypeClamp, texCoord).r;
         // return ao;

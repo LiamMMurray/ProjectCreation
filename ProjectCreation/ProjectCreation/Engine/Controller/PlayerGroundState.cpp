@@ -26,7 +26,8 @@ void PlayerGroundState::Enter()
 
         _playerController->RequestCurrentLevel();
 
-
+		volcanoPos = XMVectorSet(24.51f, 0.0f, -139.36f, 1.0f);
+        
         // Sets the gravity vector for the player
         //_playerController->SetPlayerGravity(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f));
 }
@@ -64,9 +65,9 @@ void PlayerGroundState::Update(float deltaTime)
         if (!doOnce && orbitSystem->goalsCollected == 3)
         {
                 GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_04);
-                //UIManager::instance->DemoEnd();
-                //GEngine::Get()->m_TargetInstanceReveal = 1.0f;
-                //doOnce                                 = true;
+                // UIManager::instance->DemoEnd();
+                // GEngine::Get()->m_TargetInstanceReveal = 1.0f;
+                // doOnce                                 = true;
         }
 
         XMVECTOR currentVelocity = _playerController->GetCurrentVelocity();
@@ -102,7 +103,7 @@ void PlayerGroundState::Update(float deltaTime)
 
                 eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
 
-				//std::cout << eulerAngles.x << std::endl;
+                // std::cout << eulerAngles.x << std::endl;
         }
 
         // Controller Isn't Connected
@@ -121,16 +122,33 @@ void PlayerGroundState::Update(float deltaTime)
                 eulerAngles.x = MathLibrary::clamp(eulerAngles.x, -pitchLimit, pitchLimit);
         }
         // Convert to degrees due to precision errors using small radian values
-        float rollDegrees         = XMConvertToDegrees(eulerAngles.z);
-        rollDegrees               = MathLibrary::clamp(rollDegrees, -rollLimit, rollLimit);
-        rollDegrees               = MathLibrary::lerp(rollDegrees, 0.0f, MathLibrary::clamp(deltaTime * rollLimit, 0.0f, 1.0f));
-        eulerAngles.z             = XMConvertToRadians(rollDegrees);
+        float rollDegrees = XMConvertToDegrees(eulerAngles.z);
+        rollDegrees       = MathLibrary::clamp(rollDegrees, -rollLimit, rollLimit);
+        rollDegrees       = MathLibrary::lerp(rollDegrees, 0.0f, MathLibrary::clamp(deltaTime * rollLimit, 0.0f, 1.0f));
+
+        eulerAngles.z          = XMConvertToRadians(rollDegrees);
+        static float shakeTime = 5.0f;
+		
+        // Player Approached Volcano
+
+        float distance = MathLibrary::CalulateDistanceIgnoreY(_cachedTransform.translation, volcanoPos);
+
+        if (distance <= 50 && startedShaking == false)
+        {
+                ShouldShake = true;
+        }
+
+        else if (distance > 50.0f && startedShaking == true)
+        {
+                ShouldShake = false;
+        }
+
+        ScreenShake(shakeTime, 0.7f, eulerAngles.x, eulerAngles.z);
+
         _cachedTransform.rotation = FQuaternion::FromEulerAngles(eulerAngles);
 
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, yawDelta));
-        //currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, yawDelta));
 
-        //currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Up, pitchDelta));
         currentVelocity = XMVector3Rotate(currentVelocity, XMQuaternionRotationAxis(VectorConstants::Right, pitchDelta));
 
         // Get the Speed from the gathered input
@@ -217,17 +235,6 @@ void PlayerGroundState::Update(float deltaTime)
         }
 
         _playerController->GetControlledEntity().GetComponent<TransformComponent>()->transform = _cachedTransform;
-        auto cameraComponent = _playerController->GetControlledEntity().GetComponent<CameraComponent>();
-
-        float targetFOV = 100.0f;
-        if (bUseGravity == false)
-        {
-                float forwardSpeed = MathLibrary::CalulateVectorLength(currentVelocity);
-                targetFOV          = MathLibrary::lerp<float>(targetFOV, 200.0f, MathLibrary::saturate(forwardSpeed / 3.0f));
-        }
-        cameraComponent->m_Settings.m_HorizontalFOV =
-            MathLibrary::lerp<float>(cameraComponent->m_Settings.m_HorizontalFOV, targetFOV, deltaTime * 1.5f);
-        cameraComponent->dirty = true;
 
         auto sunComp                        = GEngine::Get()->m_SunHandle.GetComponent<DirectionalLightComponent>();
         auto sunTransComp                   = GEngine::Get()->m_SunHandle.GetComponent<TransformComponent>();
@@ -241,9 +248,34 @@ void PlayerGroundState::Update(float deltaTime)
 
         _playerController->SetCurrentVelocity(currentVelocity);
         _playerController->SetEulerAngles(MathLibrary::NormalizeEulerAngles(eulerAngles));
+
 }
 
 void PlayerGroundState::Exit()
 {
         _playerController->SetCurrentVelocity(XMVectorZero());
+}
+
+void PlayerGroundState::ScreenShake(float& shakeTime, float magnitude, float& pitchDelta, float& rollDelta)
+{
+        if (ShouldShake == true)
+        {
+                if (shakeTime <= 0.0f)
+                {
+                        startedShaking = true;
+                        ShouldShake = false;
+                        shakeTime   = 5.0f;
+                        return;
+                }
+
+                float rollShake  = (MathLibrary::RandomFloatInRange(-2.0f, 2.0f) * std::min(shakeTime, magnitude));
+                float pitchShake = (MathLibrary::RandomFloatInRange(-1.0f, 1.0f) * std::min(shakeTime, magnitude));
+                shakeTime -= (GEngine::Get()->GetDeltaTime() * 1.5f);
+
+                // rollDelta += XMConvertToRadians(rollShake);
+
+                rollDelta  = MathLibrary::LerpAngle(rollDelta, rollShake, GEngine::Get()->GetDeltaTime());
+                pitchDelta = MathLibrary::LerpAngle(pitchDelta, pitchShake, GEngine::Get()->GetDeltaTime());
+        }
+        return;
 }

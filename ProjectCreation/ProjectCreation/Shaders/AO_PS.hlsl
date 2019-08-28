@@ -57,7 +57,7 @@ float main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
         float3 posVS1   = VSPositionFromDepth(texCoord + float2(_inverseScreenDimensions.x, 0.0f));
         float3 posVS2   = VSPositionFromDepth(texCoord + float2(0.0f, _inverseScreenDimensions.y));
         float3 normalVS = normalize(cross(posVS1 - posVS, posVS2 - posVS));
-        float3 normalWS = mul(float4(normalVS,1.0f), _invView).xyz;
+        float3 normalWS = mul(float4(normalVS, 1.0f), _invView).xyz;
         float  rad      = ao_sample_rad / posVS.z;
 
         float2 randomVec = GetRandomNormalFromTexture(texCoord, screenSize);
@@ -69,7 +69,7 @@ float main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
 
         int sampleCount = 4;
         if (linearDepth < 300.0f)
-                for (int i = 0; i < sampleCount; ++i)
+                [unroll] for (int i = 0; i < sampleCount; ++i)
                 {
                         float2 coord1 = reflect(vec[i], randomVec) * rad;
                         float2 coord2 = float2(coord1.x * 0.707 - coord1.y * 0.707, coord1.x * 0.707 + coord1.y * 0.707);

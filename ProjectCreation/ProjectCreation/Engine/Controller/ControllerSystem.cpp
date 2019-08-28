@@ -39,9 +39,9 @@ void ControllerSystem::CreatePlayer()
         eHandle.AddComponent<TransformComponent>();
         eHandle.AddComponent<CameraComponent>();
 
-        auto tComp                   = eHandle.GetComponent<TransformComponent>();
-        tComp->wrapping              = false;
-        
+        auto tComp      = eHandle.GetComponent<TransformComponent>();
+        tComp->wrapping = false;
+
 
         CameraComponent* cameraComp            = cHandle.Get<CameraComponent>();
         cameraComp->m_Settings.m_HorizontalFOV = 100.0f;
@@ -125,8 +125,8 @@ void ControllerSystem::OnPreUpdate(float deltaTime)
 {}
 
 void ControllerSystem::OnUpdate(float deltaTime)
-{		
-		if (GCoreInput::GetKeyState(KeyCode::One) == KeyState::DownFirst)
+{
+        if (GCoreInput::GetKeyState(KeyCode::One) == KeyState::DownFirst)
         {
                 IncreaseOrbCount(E_LIGHT_ORBS::RED_LIGHTS);
         }
@@ -197,13 +197,15 @@ void ControllerSystem::OnUpdate(float deltaTime)
 
         if (colorsPressed == 1)
         {
+                using namespace DirectX;
+
                 desiredColorAlpha = 1.0f;
-                desiredColor      = DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[lastColorPressed]);
+                desiredColor      = DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_EDGE_COLORS[lastColorPressed]);
         }
         else
         {
                 desiredColorAlpha = 0.0f;
-                desiredColor      = DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[E_LIGHT_ORBS::WHITE_LIGHTS]);
+                //desiredColor      = DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[E_LIGHT_ORBS::WHITE_LIGHTS]);
         }
 
         currentColor      = DirectX::XMVectorLerp(currentColor, desiredColor, deltaTime * 8.0f);

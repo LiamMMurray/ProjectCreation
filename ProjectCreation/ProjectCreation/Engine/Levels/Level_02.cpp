@@ -29,6 +29,11 @@ void Level_02::Enter()
                 GEngine::Get()->SetPuzzleState(0.0f);
         }
 
+		else
+        {
+                WavesTransition->Play();
+		}
+
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);
         GEngine::Get()->SetDesiredPlayerRadius(1500.0f);
         GEngine::Get()->SetTransitionSpeed(15.0f);
@@ -69,4 +74,7 @@ Level_02::Level_02()
 
         Waves = AudioManager::Get()->LoadMusic("Ambience_andWaves");
         Waves->SetVolume(0.6f);
+
+		WavesTransition = AudioManager::Get()->CreateSFX("TRANSITION_WATER");
+        WavesTransition->SetVolume(1.0f);
 }

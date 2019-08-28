@@ -12,7 +12,7 @@
 #include "../Utility/MemoryLeakDetection.h"
 
 #include "../Engine/ConsoleWindow/ConsoleWindow.h"
-
+#include "../Engine/Levels/TutorialLevel.h"
 class TutorialLevel;
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
@@ -278,13 +278,48 @@ void UIManager::GameplayUpdate(float deltaTime)
         }
 
         // Left Click
-        if (instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled == true)
+        if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
         {
-                if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
-                {
-                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = false;
-                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled = false;
-                }
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].desiredColor = {1, 1, 1, 0};
+        }
+        else if (TutorialLevel::currPhase == TutorialLevel::E_TUTORIAL_PHASE::PHASE_1)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].desiredColor = {1, 1, 1, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].desiredColor = {1, 1, 1, 1};
+        }
+
+        if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].desiredColor = {1, 1, 1, 0};
+        }
+        else if (TutorialLevel::currPhase == TutorialLevel::E_TUTORIAL_PHASE::PHASE_2)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].desiredColor = {1, 1, 1, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].desiredColor = {1, 1, 1, 1};
+        }
+
+        if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].desiredColor = {1, 1, 1, 0};
+        }
+        else if (TutorialLevel::currPhase == TutorialLevel::E_TUTORIAL_PHASE::PHASE_3)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].desiredColor = {1, 1, 1, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].desiredColor = {1, 1, 1, 1};
+        }
+
+        if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].desiredColor = {1, 1, 1, 0};
+        }
+        else if (TutorialLevel::currPhase == TutorialLevel::E_TUTORIAL_PHASE::PHASE_4)
+        {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].desiredColor = {1, 1, 1, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].desiredColor = {1, 1, 1, 1};
         }
 
         /*BEGIN CONTROLLER REFACTORING*/
@@ -314,11 +349,6 @@ void UIManager::GameplayUpdate(float deltaTime)
 
         POINT cursorPoint;
         GetCursorPos(&cursorPoint);
-
-        // if (instance->CSettings.m_IsFullscreen == true)
-        //{
-        //        ScreenToClient((HWND)instance->m_WindowHandle, &cursorPoint);
-        //}
 
         if (GamePad::Get()->CheckConnection() == true)
         {
@@ -443,52 +473,105 @@ void UIManager::WhiteOrbCollected()
         // Otherwise it will turn on the keyboard UI element
         // It will always disable both UI elements in case the controller is unplugged
 
-        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].desiredColor = {1, 1, 1, 0};
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].desiredColor = {1, 1, 1, 0};
 
-        if (GamePad::Get()->CheckConnection() == true)
-        {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].mEnabled = true;
-        }
-        else
-        {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled = true;
-        }
+        TimedFunction disableIndicatorDelayed;
+        disableIndicatorDelayed.delay = 1.5f;
+        disableIndicatorDelayed.func  = []() {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled = false;
+
+                if (GamePad::Get()->CheckConnection() == true)
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].mEnabled  = true;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].currColor = {1, 1, 1, .0f};
+                }
+                else
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled  = true;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].currColor = {1, 1, 1, .0f};
+                }
+        };
+        instance->timed_functions.push_back(disableIndicatorDelayed);
 }
 
 void UIManager::RedOrbCollected()
 {
-        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].mEnabled = false;
-        if (GamePad::Get()->CheckConnection() == true)
-        {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].mEnabled = true;
-        }
-        else
-        {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled = true;
-        }
+        // instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].desiredColor = {1, 1, 1, 0};
+        // instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].desiredColor = {1, 1, 1, 0};
+        // if (GamePad::Get()->CheckConnection() == true)
+        //{
+        //        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].mEnabled  = true;
+        //        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].currColor = {1, 1, 1, .0f};
+        //}
+        // else
+        //{
+        //        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled  = true;
+        //        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].currColor = {1, 1, 1, .0f};
+        //}
+
+        TimedFunction disableIndicatorDelayed;
+        disableIndicatorDelayed.delay = 1.5f;
+        disableIndicatorDelayed.func  = []() {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].mEnabled = false;
+
+                if (GamePad::Get()->CheckConnection() == true)
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].mEnabled  = true;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].currColor = {1, 1, 1, .0f};
+                }
+                else
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled  = true;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].currColor = {1, 1, 1, .0f};
+                }
+        };
+        instance->timed_functions.push_back(disableIndicatorDelayed);
 }
 
 void UIManager::GreenOrbCollected()
 {
-        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].mEnabled = false;
-        if (GamePad::Get()->CheckConnection() == true)
-        {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].mEnabled = true;
-        }
-        else
-        {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].mEnabled = true;
-        }
+        /*       instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].desiredColor = {1, 1, 1, 0};
+               instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].desiredColor = {1, 1, 1, 0};
+               if (GamePad::Get()->CheckConnection() == true)
+               {
+                       instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].mEnabled  = true;
+                       instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].currColor = {1, 1, 1, .0f};
+               }
+               else
+               {
+                       instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].mEnabled  = true;
+                       instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].currColor = {1, 1, 1, .0f};
+               }
+       */
+
+        TimedFunction disableIndicatorDelayed;
+        disableIndicatorDelayed.delay = 1.5f;
+        disableIndicatorDelayed.func  = []() {
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].mEnabled = false;
+
+                if (GamePad::Get()->CheckConnection() == true)
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].mEnabled  = true;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].currColor = {1, 1, 1, .0f};
+                }
+                else
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].mEnabled  = true;
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].currColor = {1, 1, 1, .0f};
+                }
+        };
+        instance->timed_functions.push_back(disableIndicatorDelayed);
 }
 
 void UIManager::BlueOrbCollected()
 {
         // Only needs to turn off the elements. There are none to turn on
-        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].mEnabled = false;
-        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].mEnabled = false;
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].desiredColor = {1, 1, 1, 0};
+        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].desiredColor = {1, 1, 1, 0};
 }
 
 
@@ -504,11 +587,13 @@ void UIManager::MainTilteUnpause()
         // Left Click Image
         if (GamePad::Get()->CheckConnection() == true)
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled  = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].currColor = {1, 1, 1, .0f};
         }
         else
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled  = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].currColor = {1, 1, 1, .0f};
         }
 }
 
@@ -1782,7 +1867,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 }
                 instance
                     ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
-                                [(unsigned int)(instance->CSettings.m_Volume * 0.1f - 11) +
+                                [(size_t)(instance->CSettings.m_Volume * 0.1f - 11) +
                                  instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
                                  instance->resDescriptors.size()]
                     .mEnabled = true;
@@ -2099,7 +2184,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                         }
                         instance
                             ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
-                                        [(unsigned int)(instance->CSettings.m_Volume * 0.1f - 11) +
+                                        [(size_t)(instance->CSettings.m_Volume * 0.1f - 11) +
                                          instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
                                          instance->resDescriptors.size()]
                             .mEnabled = true;
@@ -2124,7 +2209,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                         }
                         instance
                             ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
-                                        [(unsigned int)(instance->CSettings.m_Volume * 0.1f - 11) +
+                                        [(size_t)(instance->CSettings.m_Volume * 0.1f - 11) +
                                          instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
                                          instance->resDescriptors.size()]
                             .mEnabled = true;

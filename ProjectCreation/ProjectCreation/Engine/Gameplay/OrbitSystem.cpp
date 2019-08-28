@@ -263,14 +263,17 @@ void OrbitSystem::OnUpdate(float deltaTime)
                 }
         }
 
-        for (auto i = 0; i < m_timedFunctions.size(); i++)
+        for (int i = 0; i < m_timedFunctions.size(); i++)
         {
                 m_timedFunctions[i].m_delay -= deltaTime;
-				if (m_timedFunctions[i].m_delay <= 0) {
+                if (m_timedFunctions[i].m_delay <= 0)
+                {
+                        size_t size = m_timedFunctions.size();
                         m_timedFunctions[i].m_function();
-                        m_timedFunctions.erase(m_timedFunctions.begin() + i);
+                        if (!m_timedFunctions.empty())
+                                m_timedFunctions.erase(m_timedFunctions.begin() + i);
                         --i;
-				}
+                }
         }
 }
 
