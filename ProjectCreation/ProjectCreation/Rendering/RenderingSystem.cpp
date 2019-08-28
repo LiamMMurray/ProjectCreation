@@ -159,7 +159,7 @@ void RenderSystem::CreateDeviceAndSwapChain()
         fd.Scaling                 = DXGI_MODE_SCALING_STRETCHED;
 
         hr = dxgiFactory2->CreateSwapChainForHwnd(m_Device, (HWND)m_WindowHandle, &sd, &fd, nullptr, &m_Swapchain);
-        // dxgiFactory->MakeWindowAssociation(window->GetHandle(), DXGI_MWA_NO_ALT_ENTER);
+        dxgiFactory->MakeWindowAssociation((HWND)m_WindowHandle, DXGI_MWA_NO_ALT_ENTER);
         dxgiFactory2->Release();
 
 #ifdef _DEBUG

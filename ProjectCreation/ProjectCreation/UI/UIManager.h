@@ -133,6 +133,8 @@ class UIManager
         void Present();
 
     private:
+        void SetFullscreen(bool val);
+        void UpdateResolutionText();
         void GameplayUpdate(float deltaTime);
         void SplashUpdate(float globalTimer, float deltaTime);
 

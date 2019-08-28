@@ -214,6 +214,28 @@ void UIManager::Present()
         m_RenderSystem->Present();
 }
 
+void UIManager::SetFullscreen(bool val)
+{
+        instance->m_RenderSystem->SetFullscreen(val);
+        instance->StartupResAdjust((HWND)m_WindowHandle);
+        instance->UpdateResolutionText();	
+}
+
+void UIManager::UpdateResolutionText()
+{
+        for (int i = (int)(instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() - instance->resDescriptors.size());
+             i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
+             i++)
+        {
+                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
+        }
+        instance
+            ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
+                        [instance->CSettings.m_Resolution + instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
+                         instance->resDescriptors.size()]
+            .mEnabled = true;
+}
+
 void UIManager::GameplayUpdate(float deltaTime)
 {
         float aspectRatio = instance->m_ScreenSize.x / instance->m_ScreenSize.y;
@@ -277,40 +299,40 @@ void UIManager::GameplayUpdate(float deltaTime)
         if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
         {
                 auto [r, g, b]                                                      = RedIconColor;
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].desiredColor = {r,g,b, 0};
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].desiredColor = {r,g,b, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].desiredColor = {r, g, b, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].desiredColor = {r, g, b, 0};
         }
         else if (TutorialLevel::currPhase == TutorialLevel::E_TUTORIAL_PHASE::PHASE_2)
         {
-                auto [r, g, b] = RedIconColor;
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].desiredColor = {r,g,b, 1};
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].desiredColor = {r,g,b, 1};
+                auto [r, g, b]                                                      = RedIconColor;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].desiredColor = {r, g, b, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].desiredColor = {r, g, b, 1};
         }
 
         if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
         {
-                auto [r, g, b] = GreenIconColor;
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].desiredColor = {r,g,b, 0};
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].desiredColor = {r,g,b, 0};
+                auto [r, g, b]                                                      = GreenIconColor;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].desiredColor = {r, g, b, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].desiredColor = {r, g, b, 0};
         }
         else if (TutorialLevel::currPhase == TutorialLevel::E_TUTORIAL_PHASE::PHASE_3)
         {
-                auto [r, g, b] = GreenIconColor;
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].desiredColor = {r,g,b, 1};
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].desiredColor = {r,g,b, 1};
+                auto [r, g, b]                                                      = GreenIconColor;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].desiredColor = {r, g, b, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].desiredColor = {r, g, b, 1};
         }
 
         if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
         {
-                auto [r, g, b] = BlueIconColor;
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].desiredColor = {r,g,b, 0};
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].desiredColor = {r,g,b, 0};
+                auto [r, g, b]                                                      = BlueIconColor;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].desiredColor = {r, g, b, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].desiredColor = {r, g, b, 0};
         }
         else if (TutorialLevel::currPhase == TutorialLevel::E_TUTORIAL_PHASE::PHASE_4)
         {
-                auto [r, g, b] = BlueIconColor;
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].desiredColor = {r,g,b, 1};
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].desiredColor = {r,g,b, 1};
+                auto [r, g, b]                                                      = BlueIconColor;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][3].desiredColor = {r, g, b, 1};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].desiredColor = {r, g, b, 1};
         }
 
         /*BEGIN CONTROLLER REFACTORING*/
@@ -551,11 +573,11 @@ void UIManager::GreenOrbCollected()
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][2].mEnabled = false;
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].mEnabled = false;
 
-			auto [blueR, blueG, blueB] = BlueIconColor;
+                auto [blueR, blueG, blueB] = BlueIconColor;
                 if (GamePad::Get()->CheckConnection() == true)
                 {
                         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].mEnabled  = true;
-                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].currColor = {blueR, blueG, blueB,0.0f};
+                        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].currColor = {blueR, blueG, blueB, 0.0f};
                 }
                 else
                 {
@@ -724,7 +746,7 @@ void UIManager::CheckResolution()
 
 void UIManager::StartupResAdjust(HWND window)
 {
-        if (instance->m_AdjustedScreen == false)
+        // if (instance->m_AdjustedScreen == false)
         {
                 instance->m_AdjustedScreen = true;
                 instance->m_window         = window;
@@ -733,7 +755,7 @@ void UIManager::StartupResAdjust(HWND window)
                 SupportedResolutions();
                 DXGI_MODE_DESC desc              = instance->resDescriptors.back();
                 instance->CSettings.m_Resolution = (int)(instance->resDescriptors.size() - 1);
-                instance->PSettings = instance->CSettings;
+                instance->PSettings              = instance->CSettings;
                 AdjustResolution(window, desc.Width, desc.Height);
         }
 }
@@ -2023,7 +2045,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = false; // Off
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = true;  // On
                 }
-                instance->m_RenderSystem->SetFullscreen(instance->CSettings.m_IsFullscreen);
+                instance->SetFullscreen(instance->CSettings.m_IsFullscreen);
         });
 
         // Apply Button
@@ -2073,7 +2095,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Width,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Height);
 
-                instance->m_RenderSystem->SetFullscreen(instance->CSettings.m_IsFullscreen);
+                // instance->SetFullscreen(instance->CSettings.m_IsFullscreen);
                 AudioManager::Get()->SetMasterVolume(0.1f * instance->CSettings.m_Volume);
         });
 
@@ -2088,19 +2110,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->CSettings.m_Resolution--;
                 }
 
-                for (int i = (int)(instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                   instance->resDescriptors.size());
-                     i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
-                     i++)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
-                }
-                instance
-                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
-                                [instance->CSettings.m_Resolution +
-                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                 instance->resDescriptors.size()]
-                    .mEnabled = true;
+                instance->UpdateResolutionText();
                 // Change Resolution HERE
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Width,
@@ -2118,19 +2128,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->CSettings.m_Resolution++;
                 }
 
-                for (int i = (int)(instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                   instance->resDescriptors.size());
-                     i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size();
-                     i++)
-                {
-                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][i].mEnabled = false;
-                }
-                instance
-                    ->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu]
-                                [instance->CSettings.m_Resolution +
-                                 instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu].size() -
-                                 instance->resDescriptors.size()]
-                    .mEnabled = true;
+                instance->UpdateResolutionText();
+
                 // Change Resolution HERE
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->CSettings.m_Resolution].Width,
