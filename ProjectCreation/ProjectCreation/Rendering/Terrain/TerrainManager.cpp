@@ -6,6 +6,8 @@
 #include "../..//FileIO/FileIO.h"
 #include "../..//Utility/StringUtility.h"
 #include "../../Engine/ResourceManager/ComputeShader.h"
+#include "..//..//Engine/CollisionLibary/CollisionComponents.h"
+#include "..//..//Engine/CollisionLibary/CollisionLibary.h"
 #include "..//..//Engine/Controller/ControllerSystem.h"
 #include "..//..//Engine/CoreInput/CoreInput.h"
 #include "..//..//Engine/Entities/EntityFactory.h"
@@ -19,7 +21,6 @@
 #include "..//Components/StaticMeshComponent.h"
 #include "..//DebugRender/debug_renderer.h"
 #include "..//RenderingSystem.h"
-
 TerrainManager* TerrainManager::instance;
 
 void TerrainManager::_initialize(RenderSystem* rs)
@@ -370,6 +371,9 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 // emitterComp->EmitterData.flags = ALIGN_TO_VEL;
                 emitterComp->EmitterData.flags |= NO_COLLISION;
                 emitterComp->active = false;
+
+
+
         }
 }
 using namespace DirectX;
@@ -629,7 +633,6 @@ void TerrainManager::_update(float deltaTime)
                 // continue;
                 auto emitter = compHandle.Get()->GetParent().GetComponent<EmitterComponent>();
                 auto trans   = compHandle.Get()->GetParent().GetComponent<TransformComponent>();
-                
                 bool active = sm->IsActive();
 
                 // sm->GetParent().GetComponent<TransformComponent>()->transform.SetScale(terrainConstantBufferCPU.gTerrainAlpha);

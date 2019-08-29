@@ -11,9 +11,11 @@
 #include "PlayerControllerStateMachine.h"
 #include "PlayerMovement.h"
 
+#include "..//..//Rendering/DebugRender/debug_renderer.h"
+#include "..//CollisionLibary/CollisionComponents.h"
+#include "..//CollisionLibary/CollisionLibary.h"
 #include "..//Gameplay/OrbitSystem.h"
 #include "ControllerSystem.h"
-
 #define _USE_MATH_DEFINES
 
 using namespace DirectX;
@@ -30,11 +32,11 @@ void PlayerGroundState::Enter()
 
         _playerController->RequestCurrentLevel();
 
-        volcanoPos = XMVectorSet(24.51, 0.0f, -139.36f, 1.0f);
+        volcanoPos = XMVectorSet(24.51f, 0.0f, -139.36f, 1.0f);
 
         currMagnitude = 0.0f;
         goalMagnitude = 0.7f;
-		
+
         // Sets the gravity vector for the player
         //_playerController->SetPlayerGravity(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f));
 }
@@ -272,15 +274,42 @@ void PlayerGroundState::Update(float deltaTime)
                 m_ExtraYSpeed = 0.0f;
         }
 
+        //
+        //XMVECTOR offset = XMVector3Rotate(actualVelocity * deltaTime, _cachedTransform.rotation.data);
+        //offset          = XMVector3Normalize(XMVectorSetY(offset, 0.0f)) * XMVectorGetX(XMVector3Length(offset));
 
-        // Process offset
-        {
-                XMVECTOR offset = actualVelocity * deltaTime;
-                _cachedTransform.translation += offset;
-                float posY                   = XMVectorGetY(_cachedTransform.translation);
-                posY                         = std::max(posY, 0.0f);
-                _cachedTransform.translation = XMVectorSetY(_cachedTransform.translation, posY);
-        }
+        //Shapes::FSphere playerSPhere;
+        //playerSPhere.center = _cachedTransform.translation;
+        //playerSPhere.radius = 1.0f;
+
+        //Shapes::FSphere playerSPhereOffset;
+        //playerSPhere.center = _cachedTransform.translation + actualVelocity * deltaTime;
+        //playerSPhere.radius = 1.0f;
+
+        //Shapes::FSphere volcanoShere;
+        //volcanoShere.center = XMVectorSet(24.0f, 54.2f, -137.0f, 1.0f);
+        //volcanoShere.radius = 15.0f;
+
+        //debug_renderer::AddSphere(volcanoShere, 8, XMMatrixIdentity());
+
+        //Collision::FAdvancedCollisionResult result =
+        //    CollisionLibary::SweepSphereToSphere(playerSPhere, playerSPhereOffset, volcanoShere, 1.0f);
+
+        //// Process offset
+        //if (result.collisionType != Collision::ECollisionType::EOveralap &&
+        //    result.collisionType != Collision::ECollisionType::ECollide)
+        //{
+        //        XMVECTOR offset = actualVelocity * deltaTime;
+        //        _cachedTransform.translation += offset;
+        //        float posY                   = XMVectorGetY(_cachedTransform.translation);
+        //        posY                         = std::max(posY, 0.0f);
+        //        _cachedTransform.translation = XMVectorSetY(_cachedTransform.translation, posY);
+        //}
+        //else
+        //{
+        //        actualVelocity               = actualVelocity - deltaVec * delta;
+        //        _cachedTransform.translation = result.finalPosition + actualVelocity * delta;
+        //}
 
         _playerController->GetControlledEntity().GetComponent<TransformComponent>()->transform = _cachedTransform;
 

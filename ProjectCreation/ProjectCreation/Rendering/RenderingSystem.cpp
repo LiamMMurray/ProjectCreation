@@ -219,7 +219,7 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
         BOOL currentState;
         m_Swapchain->GetFullscreenState(&currentState, nullptr);
 
-        if (currentState != goFullscreen)
+        if ((bool)currentState != goFullscreen)
         {
                 hr = m_Swapchain->SetFullscreenState(goFullscreen, nullptr);
                 assert(SUCCEEDED(hr));
