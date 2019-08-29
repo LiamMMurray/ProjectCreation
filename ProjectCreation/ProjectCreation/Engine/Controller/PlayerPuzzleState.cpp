@@ -19,10 +19,6 @@ void PlayerPuzzleState::Enter()
         auto goalComp                       = _playerController->GetGoalComponent().Get<GoalComponent>();
         goalComp->goalState                 = E_GOAL_STATE::Puzzle;
         GEngine::Get()->m_TargetPuzzleState = 1.0f;
-
-        PuzzleComplete = AudioManager::Get()->CreateSFX("PUZZLE_COMPLETION");
-        PuzzleComplete->SetVolume(0.6f);
-
 }
 
 void PlayerPuzzleState::Update(float deltaTime)
@@ -113,7 +109,8 @@ void PlayerPuzzleState::Update(float deltaTime)
                 orbitSystem->activeGoal.hasActiveGoal = false;
                 orbitSystem->goalsCollected++;
                 orbitSystem->collectedMask[orbitSystem->activeGoal.activeColor] = true;
-                PuzzleComplete->Play();
+
+                AudioManager::Get()->PlaySoundWithVolume(0.6f, "PUZZLE_COMPLETION");
         }
 }
 

@@ -64,8 +64,8 @@ class PlayerController : public IController
     public:
         int m_TotalSplineOrbCount;
 
-        float m_MouseSensitivity[3]      = {2.5f, 5.0f, 7.5f};
-        float m_ControllerSensitivity[3] = {50.0f, 75.0f, 100.0f};
+        float m_MouseSensitivity[3]      = {1.0f, 5.0f, 10.0f};
+        float m_ControllerSensitivity[3] = {25.0f, 75.0f, 125.0f};
 
         void IncreaseCollectedSplineOrbCount(int color);
 

@@ -33,48 +33,8 @@ void PlayerController::GatherInput()
         m_CurrentInput = XMVectorZero();
         if (IsEnabled())
         {
-                // requestedDirection = MoveDirections::NO_DIRECTION;
                 XMFLOAT4 tempDir = {0.0f, 0.0f, 0.0f, 0.0f};
-                // XMFLOAT4 tempJump = {0.0f, 0.0f, 0.0f, 0.0f};
 
-                // REVERTED: [Player will use 'W' 'A' 'S' 'D' for movement]
-                {
-
-                    // Check Forward speed
-                    // if (GCoreInput::GetKeyState(KeyCode::W) == KeyState::Down)
-                    // {
-                    //         tempDir.z += 1.0f;
-                    // }
-                    // // Backward
-                    // if (GCoreInput::GetKeyState(KeyCode::S) == KeyState::Down)
-                    // {
-                    //         tempDir.z -= 1.0f;
-                    // }
-                    // // Left
-                    // if (GCoreInput::GetKeyState(KeyCode::A) == KeyState::Down)
-                    // {
-                    //         tempDir.x -= 1.0f;
-                    // }
-                    // // Right
-                    // if (GCoreInput::GetKeyState(KeyCode::D) == KeyState::Down)
-                    // {
-                    //         tempDir.x += 1.0f;
-                    // }
-                    // // Jump
-                    // if (GCoreInput::GetKeyState(KeyCode::Space) == KeyState::DownFirst)
-                    // {
-                    //         tempJump.y += 3.0f;
-                    // }
-                    //
-                    // m_JumpForce = XMLoadFloat4(&tempJump);
-                }
-
-                // REVERTED: [Changing movement so that the player will always move forward]
-                {
-                    // tempDir = XMFLOAT4{0.0f, 0.0f, 2.0f, 0.0f};
-                }
-
-                // CURRENT: [Changing movement so that the player will click the left mouse button to move forward]
                 {
                         if (GamePad::Get()->CheckConnection() == true)
                         {
@@ -260,8 +220,9 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
                 m_SpeedBoostPoolCounter[color]++;
                 m_SpeedBoostPoolCounter[color] %= MAX_SPEEDBOOST_SOUNDS;
 
-                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating    = true;
-                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrength = 0.5f;
+                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating     = true;
+                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrengthL = 0.5f;
+                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrengthR = 0.1f;
 
                 return true;
         }

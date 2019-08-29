@@ -12,7 +12,6 @@ class Level_02 : public ILevelState
         OrbitSystem*       m_OrbitSystem;
         PlayerController*  m_PlayerController;
         GW::AUDIO::GMusic* Waves;
-        GW::AUDIO::GSound* WavesTransition;
 
     public:
         // Inherited via ILevelState

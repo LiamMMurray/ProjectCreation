@@ -428,12 +428,12 @@ void TerrainManager::_update(float deltaTime)
 
         ResourceManager* resourceManager = GEngine::Get()->GetResourceManager();
 
-        XMVECTOR playerPos = GEngine::Get()
-                                 ->GetSystemManager()
-                                 ->GetSystem<TransformSystem>()
-                                 ->GetPlayerWrapTransformHandle()
-                                 .Get<TransformComponent>()
-                                 ->transform.translation;
+        TransformComponent* playerTransform = GEngine::Get()
+                                                  ->GetSystemManager()
+                                                  ->GetSystem<TransformSystem>()
+                                                  ->GetPlayerWrapTransformHandle()
+                                                  .Get<TransformComponent>();
+        XMVECTOR playerPos = playerTransform->transform.translation;
 
         auto cameraComp = GET_SYSTEM(ControllerSystem)
                               ->m_Controllers[ControllerSystem::E_CONTROLLERS::PLAYER]
@@ -629,22 +629,16 @@ void TerrainManager::_update(float deltaTime)
                 // continue;
                 auto emitter = compHandle.Get()->GetParent().GetComponent<EmitterComponent>();
                 auto trans   = compHandle.Get()->GetParent().GetComponent<TransformComponent>();
-
-                XMVECTOR fw = (playerPos - trans->transform.translation);
-                if (MathLibrary::CalulateVectorLength(fw) < 0.01f)
-                {
-                        fw = VectorConstants::Forward;
-                }
-                fw                        = XMVectorSetY(fw, 0.0f);
-                fw                        = XMVector3Normalize(fw);
-                trans->transform.rotation = FQuaternion::LookAt(fw);
-
+                
                 bool active = sm->IsActive();
 
                 // sm->GetParent().GetComponent<TransformComponent>()->transform.SetScale(terrainConstantBufferCPU.gTerrainAlpha);
 
                 if (active && GEngine::Get()->m_InstanceReveal <= 0.0f)
+                {
                         sm->SetIsActive(false);
+                        emitter->SetIsActive(false);
+                }
 
                 if (!active && GEngine::Get()->m_InstanceReveal > 0.0f)
                 {

@@ -22,6 +22,11 @@ class PlayerGroundState : public IPlayerControllerState
 		bool ShouldShake = false;
         bool startedShaking = false;
 
+		static float currMagnitude;
+		static float goalMagnitude;
+
+		float controllerMagnitude;
+
         bool  bUseGravity                 = false;
         float m_SpeedboostTimer           = 0.0f;
         float m_SpeedboostDuration        = 3.0f;

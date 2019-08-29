@@ -1,7 +1,6 @@
 #include "Interpolation.hlsl"
 #include "Samplers.hlsl"
 #include "Terrain_Includes.hlsl"
-#include "DoSpeedWave.hlsli"
 
 struct DomainOutput
 {

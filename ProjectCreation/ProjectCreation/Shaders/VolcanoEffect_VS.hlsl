@@ -11,7 +11,7 @@ INPUT_PIXEL main(INPUT_VERTEX input)
 
         INPUT_PIXEL output = (INPUT_PIXEL)0;
 
-        output.Tex = input.Tex * float2(1.4f, 1.3f);
+        output.Tex = input.Tex * float2(2.0f, 1.0f);
         output.Tex.y += _Time * 0.04f;
         float heightSample = (float)diffuseMap.SampleLevel(sampleTypeWrap, output.Tex / 2.0f, 0);
         heightSample       = saturate(pow(heightSample * 2.0f - 1.0f, 2.0f));

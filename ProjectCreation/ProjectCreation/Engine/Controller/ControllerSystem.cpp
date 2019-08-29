@@ -146,17 +146,13 @@ void ControllerSystem::OnUpdate(float deltaTime)
                 IncreaseOrbCount(E_LIGHT_ORBS::WHITE_LIGHTS);
         }
 
-        if (IsVibrating == true)
+        if (GamePad::Get()->CheckConnection() == true)
         {
-                if (rumbleStrength <= 0)
+                if (rumbleStrengthL > 0)
                 {
-                        IsVibrating = false;
-                }
-
-                else
-                {
-                        rumbleStrength = MathLibrary::MoveTowards(rumbleStrength, 0, deltaTime * 1.5f);
-                        GamePad::Get()->IsVibrating(rumbleStrength);
+                        rumbleStrengthL = MathLibrary::MoveTowards(rumbleStrengthL, 0, deltaTime * 1.5f);
+                        rumbleStrengthR = MathLibrary::MoveTowards(rumbleStrengthR, 0, deltaTime * 1.5f);
+                        GamePad::Get()->IsVibrating(rumbleStrengthL, rumbleStrengthR);
                 }
         }
 
@@ -205,7 +201,8 @@ void ControllerSystem::OnUpdate(float deltaTime)
         else
         {
                 desiredColorAlpha = 0.0f;
-                //desiredColor      = DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[E_LIGHT_ORBS::WHITE_LIGHTS]);
+                // desiredColor      =
+                // DirectX::PackedVector::XMLoadColor(&E_LIGHT_ORBS::ORB_COLORS[E_LIGHT_ORBS::WHITE_LIGHTS]);
         }
 
         currentColor      = DirectX::XMVectorLerp(currentColor, desiredColor, deltaTime * 8.0f);
@@ -217,14 +214,16 @@ void ControllerSystem::OnUpdate(float deltaTime)
         }
 }
 
+
 void ControllerSystem::OnPostUpdate(float deltaTime)
 {}
 
 void ControllerSystem::OnInitialize()
 {
 
-        IsVibrating    = false;
-        rumbleStrength = 0.0f;
+        IsVibrating     = false;
+        rumbleStrengthL = 0.0f;
+        rumbleStrengthR = 0.0f;
 
         m_SystemManager = GEngine::Get()->GetSystemManager();
         m_HandleManager = GEngine::Get()->GetHandleManager();

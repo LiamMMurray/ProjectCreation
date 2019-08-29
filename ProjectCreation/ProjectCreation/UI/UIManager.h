@@ -132,7 +132,13 @@ class UIManager
         void DrawSprites(float deltaTime);
         void Present();
 
+        std::pair<unsigned int, unsigned int> GetHighestSupportedResolution();
+
+        void CatchWinProcSetFullscreen();
+
     private:
+        void SetFullscreen(bool val);
+        void UpdateResolutionText();
         void GameplayUpdate(float deltaTime);
         void SplashUpdate(float globalTimer, float deltaTime);
 

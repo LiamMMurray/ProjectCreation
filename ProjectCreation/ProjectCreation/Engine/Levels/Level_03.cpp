@@ -31,6 +31,11 @@ void Level_03::Enter()
                 GEngine::Get()->SetPuzzleState(0.0f);
         }
 
+		else
+        {
+                AudioManager::Get()->PlaySoundWithVolume(1.0f, "TRANSITION_LAND");
+        }
+
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);
         if (GEngine::Get()->GetCurrentPlayerRadius() == 0.0f)
         {

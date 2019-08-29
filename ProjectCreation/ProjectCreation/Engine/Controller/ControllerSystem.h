@@ -63,7 +63,7 @@ class ControllerSystem : public ISystem
 
         bool IsVibrating;
 
-        float rumbleStrength;
+        float rumbleStrengthL, rumbleStrengthR;
 
         void DisplayConsoleMenu();
 
