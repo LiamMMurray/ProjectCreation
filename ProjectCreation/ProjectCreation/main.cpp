@@ -1,5 +1,4 @@
 #include "Utility/StaticSentinelDumpMemoryLeaks.h"
-#include "Utility/StaticSentinelDumpMemoryLeaks.h"
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #define NOMINMAX
@@ -14,7 +13,7 @@
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
 
-#include"Engine/Audio/ContinousSoundSystem.h"
+#include "Engine/Audio/ContinousSoundSystem.h"
 
 #include "UI/UIManager.h"
 
@@ -28,13 +27,13 @@
 #include "Engine/EngineInitShutdownHelpers.h"
 #include "Engine/Entities/EntityFactory.h"
 
+#include "Engine/Animation/AnimationSystem.h"
+#include "Engine/Particle Systems/EmitterComponent.h"
+#include "Engine/Particle Systems/ParticleData.h"
+#include "Engine/ResourceManager/SkeletalMesh.h"
 #include "Rendering/Components/CameraComponent.h"
 #include "Rendering/Components/SkeletalMeshComponent.h"
 #include "Rendering/Components/StaticMeshComponent.h"
-#include "Engine/Particle Systems/EmitterComponent.h"
-#include"Engine/Particle Systems/ParticleData.h"
-#include "Engine/Animation/AnimationSystem.h"
-#include "Engine/ResourceManager/SkeletalMesh.h"
 /////testing -vic
 #include "Rendering/DebugRender/debug_renderer.h"
 ////testing -vic
@@ -120,9 +119,14 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                                 GCoreInput::GatherInput(hWnd, message, wParam, lParam);
                                 break;
                         }
-                        case WM_SIZE:
+                        case WM_WINDOWPOSCHANGED:
                         {
-                                GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->OnWindowResize(wParam, lParam);
+                                if (UIManager::instance)
+                                {
+                                        UIManager::instance->CatchWinProcSetFullscreen();
+                                }
+                                // GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>()->OnWindowResize(wParam,
+                                // lParam);
                                 break;
                         }
                 }
@@ -179,7 +183,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         if (GEngine::ShowFPS)
                 style = WS_OVERLAPPEDWINDOW;
 
-        RECT wr = {0, 0, 1600, 900};                       // set the size
+        RECT wr = {0, 0, 1600, 900};         // set the size
         AdjustWindowRect(&wr, style, FALSE); // adjust the size
 
 
@@ -243,7 +247,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
             /*std::vector<std::string> animNames = {"Idle", "Walk", "Run"};
             ComponentHandle          transformHandle;
             EntityFactory::CreateSkeletalMeshEntity("Walk", "NewMaterial", animNames, nullptr, &transformHandle);
-           
+           
 
 
 
@@ -293,7 +297,6 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 emitterComponent->desiredCount                   = ParticleData::gMaxEmitterCount;
 
 
-
                 auto dirComp = dirLightEntityHandle.GetComponent<DirectionalLightComponent>();
                 dirComp->m_LightRotation =
                     XMQuaternionRotationRollPitchYaw(XMConvertToRadians(25.0f), XMConvertToRadians(90.0f), 0.0f);
@@ -322,13 +325,13 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 speedBoostSystem->m_SystemName = "SpeedBoostSystem";
         }
 
-		
+
         GEngine::Get()->SetGamePaused(true);
         GEngine::Get()->GetLevelStateManager()->Init();
         UIManager::instance->StartupResAdjust(handle);
 
-        
-		GEngine::Get()->Signal();
+
+        GEngine::Get()->Signal();
         while (msg.message != WM_QUIT && !GEngine::Get()->WantsGameExit())
         {
                 GCoreInput::UpdateInput();

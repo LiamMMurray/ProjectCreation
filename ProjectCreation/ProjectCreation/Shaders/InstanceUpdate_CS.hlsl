@@ -3,7 +3,6 @@
 #include "Samplers.hlsl"
 #include "Terrain_Includes.hlsl"
 #include "Wrap.hlsl"
-#include "DoSpeedWave.hlsli"
 Texture2D MaskMap : register(t10);
 
 
@@ -45,9 +44,11 @@ bool AABBToFrustum(float3 center, float3 extents)
         float2 MaxGlobal = -MinGlobal;
 
 
-        pos.xz         = wrap(pos.xz, _EyePosition.xz + MinGlobal, _EyePosition.xz + MaxGlobal);
-        float3 prevPos = pos;
-        pos.xz         = wrap(pos.xz, _EyePosition.xz + MinLocal, _EyePosition.xz + MaxLocal);
+        pos.xz                         = wrap(pos.xz, _EyePosition.xz + MinGlobal, _EyePosition.xz + MaxGlobal);
+        InstanceTransforms[id].mtx._41 = pos.x;
+        InstanceTransforms[id].mtx._43 = pos.z;
+        float3 prevPos                 = pos;
+        pos.xz                         = wrap(pos.xz, _EyePosition.xz + MinLocal, _EyePosition.xz + MaxLocal);
 
         float2 tex = pos.xz / (float2(gScale, gScale)) - 0.5f;
 
@@ -56,14 +57,12 @@ bool AABBToFrustum(float3 center, float3 extents)
         pos.y /= 8000.0f / gScale;
 
 
-		//pos = DoSpeedWave(pos, 1.7f);
         InstanceTransforms[id].mtx._42 = pos.y;
 
 
         float3 slopeMaskSample = MaskMap.SampleLevel(sampleTypeWrap, tex, 0).rgb;
 
         float deltaPos = distance(pos.xz, prevPos.xz);
-
 
         InstanceTransforms[id].lifeTime *= ceil(_InstanceReveal);
 
@@ -88,8 +87,7 @@ bool AABBToFrustum(float3 center, float3 extents)
         float3 boxCenter  = 0.5f * (vMin + vMax);
         float3 boxExtents = 0.5f * (vMax - vMin);
         bool   shouldCull = AABBToFrustum(boxCenter, boxExtents);
-
-        if (deltaPos < scale / 10.0f)
+        if (deltaPos <= scale)
         {
                 InstanceTransforms[id].lifeTime = min(InstanceTransforms[id].lifeTime + _DeltaTime, 1.0f);
 

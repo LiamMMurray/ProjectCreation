@@ -178,7 +178,7 @@ void RenderSystem::CreateDeviceAndSwapChain()
 void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDesc,
                                               unsigned int          width,
                                               unsigned int          height,
-                                              bool                  dontOverride)
+                                              bool                  goFullscreen)
 {
         HRESULT          hr;
         ID3D11Texture2D* pBackBuffer;
@@ -205,26 +205,30 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
 
         // Preserve the existing buffer count and format.
         // Automatically choose the width and height to match the client rect for HWNDs.
-        if (dontOverride)
+        DXGI_MODE_DESC desc{};
+        desc.Format  = DXGI_FORMAT_B8G8R8A8_UNORM;
+        desc.Height  = (UINT)height;
+        desc.Width   = (UINT)width;
+        desc.Scaling = DXGI_MODE_SCALING_STRETCHED;
+
+        m_Swapchain->ResizeTarget(&desc);
+        // hr = m_Swapchain->ResizeBuffers(0, desc.Height, desc.Width, DXGI_FORMAT_UNKNOWN, 0);
+
+        m_Context->ClearState();
+
+        BOOL currentState;
+        m_Swapchain->GetFullscreenState(&currentState, nullptr);
+
+        if (currentState != goFullscreen)
         {
-                DXGI_MODE_DESC desc{};
-                desc.Format  = DXGI_FORMAT_B8G8R8A8_UNORM;
-                desc.Height  = (UINT)height;
-                desc.Width   = (UINT)width;
-                desc.Scaling = DXGI_MODE_SCALING_STRETCHED;
-
-                m_Swapchain->ResizeTarget(&desc);
-                hr = m_Swapchain->ResizeBuffers(0, desc.Height, desc.Width, DXGI_FORMAT_UNKNOWN, 0);
-
-                // m_Context->ClearState();
-        }
-        else
-        {
-                hr = m_Swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
-
-                // Perform error handling here!
+                hr = m_Swapchain->SetFullscreenState(goFullscreen, nullptr);
                 assert(SUCCEEDED(hr));
         }
+
+        hr = m_Swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+
+        // Perform error handling here!
+        assert(SUCCEEDED(hr));
 
         // Create backbuffer render target
         hr = m_Swapchain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
@@ -755,6 +759,21 @@ void RenderSystem::Present()
         m_Swapchain->Present1(0, 0, &parameters);
 }
 
+void RenderSystem::InitDrawOnBackBufferPipeline()
+{
+        m_Context->OMSetRenderTargets(1, &m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER], nullptr);
+        D3D11_VIEWPORT viewport;
+        viewport.Height   = m_BackBufferHeight;
+        viewport.Width    = m_BackBufferWidth;
+        viewport.MaxDepth = 1.0f;
+        viewport.MinDepth = 0.0f;
+        viewport.TopLeftX = 0;
+        viewport.TopLeftY = 0;
+
+        m_Context->RSSetViewports(1, &viewport);
+        m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
+}
+
 void RenderSystem::DrawMeshInstanced(ID3D11Buffer* vertexBuffer,
                                      ID3D11Buffer* indexBuffer,
                                      uint32_t      indexCount,
@@ -1183,7 +1202,9 @@ void RenderSystem::OnInitialize()
 
         CreateDeviceAndSwapChain();
         D3D11_TEXTURE2D_DESC desc;
-        CreateDefaultRenderTargets(&desc);
+        UIManager::Initialize(m_WindowHandle);
+        auto res = UIManager::instance->GetHighestSupportedResolution();
+        CreateDefaultRenderTargets(&desc, res.first, res.second, false);
         CreateRasterizerStates();
         CreateCommonShaders();
         CreateInputLayouts();
@@ -1208,7 +1229,6 @@ void RenderSystem::OnInitialize()
         m_Context->RSSetViewports(1, &viewport);
         m_Context->OMSetRenderTargets(1, &m_DefaultRenderTargets[E_RENDER_TARGET::BACKBUFFER], nullptr);
 
-        UIManager::Initialize(m_WindowHandle);
         TerrainManager::Initialize(this);
         ParticleManager::Initialize();
         {
@@ -1225,7 +1245,7 @@ void RenderSystem::OnInitialize()
 
 void RenderSystem::OnShutdown()
 {
-        SetFullscreen(false);
+        m_Swapchain->SetFullscreenState(false, nullptr);
 
         for (int i = 0; i < E_RENDER_TARGET::COUNT; ++i)
         {
@@ -1324,16 +1344,14 @@ void RenderSystem::SetMainCameraComponent(ComponentHandle cameraHandle)
         RefreshMainCameraSettings();
 }
 
-void RenderSystem::OnWindowResize(unsigned int wParam, unsigned int lParam, bool dontOverride)
+void RenderSystem::OnWindowResize(unsigned int wParam, unsigned int lParam, bool goFullScreen)
 {
         if (m_Swapchain)
         {
                 D3D11_TEXTURE2D_DESC desc;
-                CreateDefaultRenderTargets(&desc, wParam, lParam, dontOverride);
+                CreateDefaultRenderTargets(&desc, wParam, lParam, goFullScreen);
                 CreatePostProcessEffects(&desc);
                 RefreshMainCameraSettings();
-
-                std::cout << m_BackBufferHeight << "   " << m_BackBufferWidth << std::endl;
         }
 }
 
@@ -1341,19 +1359,11 @@ void RenderSystem::SetFullscreen(bool val)
 {
         if (val)
         {
-                DXGI_MODE_DESC desc{};
-                desc.Format  = DXGI_FORMAT_B8G8R8A8_UNORM;
-                desc.Height  = (UINT)m_BackBufferHeight;
-                desc.Width   = (UINT)m_BackBufferHeight;
-                desc.Scaling = DXGI_MODE_SCALING_STRETCHED;
-
-                IDXGIOutput* target = nullptr;
-                m_Swapchain->SetFullscreenState(true, target);
-                m_Swapchain->ResizeTarget(&desc);
+                OnWindowResize((unsigned int)m_BackBufferWidth, (unsigned int)m_BackBufferHeight, true);
         }
         else
         {
-                m_Swapchain->SetFullscreenState(false, nullptr);
+                OnWindowResize((unsigned int)m_BackBufferWidth, (unsigned int)m_BackBufferHeight, false);
         }
 }
 

@@ -35,6 +35,15 @@ float2 rand_2_0004(in float2 uv)
         return float2(noiseX, noiseY) * 0.004;
 }
 
+
+float3 rand_3(in float2 uv)
+{
+        float noiseX = (frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453));
+        float noiseY = (frac(sin(dot(uv, float2(12.9898, 78.233) * 7.8591)) * 43758.5453));
+        float noiseZ = (frac(sin(dot(uv, float2(12.9898, 78.233) * 9.2874)) * 43758.5453));
+        return float3(noiseX, noiseY, noiseZ);
+}
+
 float3 WrapPos(float3 pos, float3 min, float3 max)
 {
         return pos - (max - min) * floor(pos / (max - min));
