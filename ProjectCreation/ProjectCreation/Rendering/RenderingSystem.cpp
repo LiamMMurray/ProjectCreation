@@ -1010,7 +1010,7 @@ void RenderSystem::OnPreUpdate(float deltaTime)
         });
 
         // Sort transluscent meshes back to front
-        std::sort(m_OpaqueDraws.begin(), m_OpaqueDraws.end(), [this](const FDraw& a, const FDraw& b) -> bool {
+        std::sort(m_TransluscentDraws.begin(), m_TransluscentDraws.end(), [this](const FDraw& a, const FDraw& b) -> bool {
                 XMVECTOR va = XMVector3TransformCoord(a.mtx.r[3], m_CachedMainViewProjectionMatrix);
                 XMVECTOR vb = XMVector3TransformCoord(b.mtx.r[3], m_CachedMainViewProjectionMatrix);
 
@@ -1085,7 +1085,7 @@ void RenderSystem::OnUpdate(float deltaTime)
                              &m_ConstantBuffer_SCENE,
                              sizeof(m_ConstantBuffer_SCENE));
 
-        float blendFactor[] = {0.75f, 0.75f, 0.75f, 1.0f};
+        float blendFactor[] = {1.0f, 1.0f, 1.0f, 1.0f};
         UINT  sampleMask    = 0xffffffff;
 
         m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
@@ -1119,7 +1119,7 @@ void RenderSystem::OnUpdate(float deltaTime)
 
         /** Render transluscent meshes **/
         m_Context->OMSetDepthStencilState(m_DepthStencilStates[E_DEPTH_STENCIL_STATE::TRANSLUSCENT], 1);
-        m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Additive], blendFactor, sampleMask);
+        m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Transluscent], blendFactor, sampleMask);
         for (size_t i = 0, n = m_TransluscentDraws.size(); i < n; ++i)
         {
                 /*if (m_TransluscentDraws[i].meshType == FDraw::EDrawType::Static)
@@ -1139,7 +1139,7 @@ void RenderSystem::OnUpdate(float deltaTime)
         DrawLines();
 
         m_Context->RSSetState(m_DefaultRasterizerStates[E_RASTERIZER_STATE::DEFAULT]);
-
+        m_Context->OMSetBlendState(m_BlendStates[E_BLEND_STATE::Additive], blendFactor, sampleMask);
         ParticleManager::Update(deltaTime);
 
         // Set the backbuffer as render target

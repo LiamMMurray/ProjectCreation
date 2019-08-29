@@ -62,6 +62,7 @@ float4 main(INPUT_PIXEL input) : SV_TARGET
 
         float dist         = distance(_EyePosition.xz, input.PosWS.xz);
         float distanceClip = 1.0f - saturate((dist - 200.0f) / 20.0f);
+        distanceClip -= 6.0f * ceil(frac(distanceClip)) * (1.0f - saturate(input.PosWS.y / 100.0f));
         clip(distanceClip < 0.5f ? -1 : 1);
 
         float fresnel = saturate(dot(normalize(surface.normal.xz), normalize(viewWS.xz)));

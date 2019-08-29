@@ -635,7 +635,10 @@ void TerrainManager::_update(float deltaTime)
                 // sm->GetParent().GetComponent<TransformComponent>()->transform.SetScale(terrainConstantBufferCPU.gTerrainAlpha);
 
                 if (active && GEngine::Get()->m_InstanceReveal <= 0.0f)
+                {
                         sm->SetIsActive(false);
+                        emitter->SetIsActive(false);
+                }
 
                 if (!active && GEngine::Get()->m_InstanceReveal > 0.0f)
                 {

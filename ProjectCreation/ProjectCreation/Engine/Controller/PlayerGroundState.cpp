@@ -255,7 +255,7 @@ void PlayerGroundState::Update(float deltaTime)
         {
                 float currY   = XMVectorGetY(_cachedTransform.translation);
                 float sign    = MathLibrary::GetSign(currY);
-                float gravity = -sign * 400.0f * deltaTime;
+                float gravity = -sign * 500.0f * deltaTime;
                 // Calculate current velocity based on itself, the deltaVector, and delta
                 actualVelocity += gravity * VectorConstants::Up;
         }
