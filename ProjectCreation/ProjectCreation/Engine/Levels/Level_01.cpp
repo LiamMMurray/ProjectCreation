@@ -1,5 +1,6 @@
 #include "Level_01.h"
 #include <DirectXMath.h>
+#include "../../UI/UIManager.h"
 #include "../Controller/ControllerSystem.h"
 #include "../Gameplay/OrbitSystem.h"
 #include "LevelStateMachine.h"
@@ -23,7 +24,8 @@ void Level_01::Enter()
 
                 m_OrbitSystem->ClearCollectedMask();
 
-				                GEngine::Get()->SetPuzzleState(0.0f);
+                GEngine::Get()->SetPuzzleState(0.0f);
+
         }
 
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);

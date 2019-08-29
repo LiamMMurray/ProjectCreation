@@ -624,64 +624,67 @@ void UIManager::MainTitleUnpause()
         {
 
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled = true;
-                //        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].currColor = {1, 1, 1, .0f};
+                //        //        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].currColor = {1, 1, 1, .0f};
         }
         else
         {
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = true;
-                //        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].currColor = {1, 1, 1, .0f};
+                //        //        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].currColor = {1, 1, 1, .0f};
         }
 }
 
 void UIManager::Pause()
 {
-        instance->m_InMenu = true;
-        GEngine::Get()->SetGamePaused(true);
-        if (instance->m_InMenu)
+        if (!instance->m_TransitioningLevels)
         {
-                while (ShowCursor(TRUE) < 0)
-                        ;
-        }
-        else
-        {
-                while (ShowCursor(FALSE) >= 0)
-                        ;
-        }
-        for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
-        {
-                itr.mEnabled = false;
-        }
-        // Pause Menu Sprites
-        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
-        {
-                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
-        }
-        // Text
-        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
-        {
-                instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
-        }
+                instance->m_InMenu = true;
+                GEngine::Get()->SetGamePaused(true);
+                if (instance->m_InMenu)
+                {
+                        while (ShowCursor(TRUE) < 0)
+                                ;
+                }
+                else
+                {
+                        while (ShowCursor(FALSE) >= 0)
+                                ;
+                }
+                for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
+                {
+                        itr.mEnabled = false;
+                }
+                // Pause Menu Sprites
+                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
+                }
+                // Text
+                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
+                }
 
-        // Options Menu Sprites
-        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
-        {
-                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
-        }
-        // Text
-        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
-        {
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
-        }
+                // Options Menu Sprites
+                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
+                }
+                // Text
+                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
+                }
 
-        // Level Select Menu Sprites
-        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu].size(); i++)
-        {
-                instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
-        }
-        // Text
-        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu].size(); i++)
-        {
-                instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
+                // Level Select Menu Sprites
+                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu].size(); i++)
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
+                }
+                // Text
+                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu].size(); i++)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
+                }
         }
 }
 
@@ -2358,8 +2361,8 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         // Tutorial Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                instance->m_TransitioningLevels = true;
                 instance->Unpause();
-
                 // Fade in to black instantly
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].mEnabled     = true;
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].currColor    = {1, 1, 1, 0};
@@ -2409,14 +2412,20 @@ void UIManager::Initialize(native_handle_type hwnd)
                 fadeOutDelayed.delay = 3.5f;
                 fadeOutDelayed.func  = []() {
                         instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 0};
+                        instance->m_TransitioningLevels                                      = false;
+
                 };
                 instance->timed_functions.push_back(fadeOutDelayed);
         });
 
         // Level 1 Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                instance->m_TransitioningLevels = true;
                 instance->Unpause();
-
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled     = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled     = false;
                 // Fade in to black instantly
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].mEnabled     = true;
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].currColor    = {1, 1, 1, 0};
@@ -2466,6 +2475,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                 fadeOutDelayed.delay = 3.5f;
                 fadeOutDelayed.func  = []() {
                         instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 0};
+                        instance->m_TransitioningLevels                                      = false;
+
                 };
                 instance->timed_functions.push_back(fadeOutDelayed);
 
@@ -2478,8 +2489,12 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         // Level 2 Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                instance->m_TransitioningLevels = true;
                 instance->Unpause();
-
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled     = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled     = false;
                 // Fade in to black instantly
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].mEnabled     = true;
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].currColor    = {1, 1, 1, 0};
@@ -2530,6 +2545,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                 fadeOutDelayed.delay = 3.5f;
                 fadeOutDelayed.func  = []() {
                         instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 0};
+                        instance->m_TransitioningLevels                                      = false;
+
                 };
                 instance->timed_functions.push_back(fadeOutDelayed);
 
@@ -2542,8 +2559,13 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         // Level 3 Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][4].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                instance->Unpause();
+                instance->m_TransitioningLevels = true;
 
+                instance->Unpause();
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled     = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled     = false;
                 // Fade in to black instantly
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].mEnabled     = true;
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].currColor    = {1, 1, 1, 0};
@@ -2594,6 +2616,8 @@ void UIManager::Initialize(native_handle_type hwnd)
                 fadeOutDelayed.delay = 3.5f;
                 fadeOutDelayed.func  = []() {
                         instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 0};
+                        instance->m_TransitioningLevels                                      = false;
+
                 };
                 instance->timed_functions.push_back(fadeOutDelayed);
 
@@ -2606,8 +2630,13 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         // Level 4 Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][5].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                instance->Unpause();
+                instance->m_TransitioningLevels = true;
 
+                instance->Unpause();
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled     = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled     = false;
                 // Fade in to black instantly
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].mEnabled     = true;
                 instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].currColor    = {1, 1, 1, 0};
@@ -2658,6 +2687,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                 fadeOutDelayed.delay = 3.5f;
                 fadeOutDelayed.func  = []() {
                         instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 0};
+                        instance->m_TransitioningLevels                                      = false;
                 };
                 instance->timed_functions.push_back(fadeOutDelayed);
 
