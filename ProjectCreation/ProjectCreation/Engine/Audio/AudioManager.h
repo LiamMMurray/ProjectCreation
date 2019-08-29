@@ -45,6 +45,8 @@ class AudioManager
         void               SetMasterVolume(float val);
         void               ActivateMusicAndPause(GW::AUDIO::GMusic*, bool looping = false);
 
+        void PlayMusic(const char* name);
+
         inline float GetMasterVolume()
         {
                 return m_MasterVolume;
@@ -52,7 +54,7 @@ class AudioManager
 
         void _shutdown();
 
-		void StopAllMusic();
+        void StopAllMusic();
 
     public:
         static void          Initialize();

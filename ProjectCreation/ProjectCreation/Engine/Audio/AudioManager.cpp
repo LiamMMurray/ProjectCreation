@@ -73,8 +73,12 @@ void AudioManager::SetMasterVolume(float val)
 void AudioManager::ActivateMusicAndPause(GW::AUDIO::GMusic *m, bool looping)
 {
         m->StreamStart(looping);
+        m->SetVolume(m_MasterVolume);
         m->PauseStream();
 }
+
+void AudioManager::PlayMusic(const char *name)
+{}
 
 void AudioManager::_shutdown()
 {
