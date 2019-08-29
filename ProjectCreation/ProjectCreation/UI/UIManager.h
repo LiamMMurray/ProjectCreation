@@ -28,6 +28,7 @@ struct E_MENU_CATEGORIES
                 LevelMenu,
                 ControlsMenu,
                 Demo,
+				LevelFade,
                 COUNT
         };
 };
