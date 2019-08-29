@@ -83,7 +83,7 @@ void PlayerPuzzleState::Update(float deltaTime)
         {
                 goalTransform->transform.translation = clampedPos;
         }
-
+		//
         Shapes::FSphere sphereA(goalTransform->transform.translation, goalComp->initialTransform.GetRadius()*0.75f);
         Shapes::FSphere sphereB(goalComp->goalTransform.translation, goalComp->goalTransform.GetRadius()*0.75f);
 
