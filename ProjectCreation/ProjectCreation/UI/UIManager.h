@@ -28,6 +28,7 @@ struct E_MENU_CATEGORIES
                 LevelMenu,
                 ControlsMenu,
                 Demo,
+                LevelFade,
                 COUNT
         };
 };
@@ -142,10 +143,12 @@ class UIManager
         void GameplayUpdate(float deltaTime);
         void SplashUpdate(float globalTimer, float deltaTime);
 
-        bool         m_FirstFull      = true; // Turns false when the game is put to fullscreen on launch
-        bool         m_InMenu         = false;
-        bool         m_AdjustedScreen = false;
-        bool         m_BreakSplash    = false;
+        bool m_FirstFull           = true; // Turns false when the game is put to fullscreen on launch
+        bool m_InMenu              = false;
+        bool m_AdjustedScreen      = false;
+        bool m_BreakSplash         = false;
+        bool m_TransitioningLevels = false;
+
         CurrSettings PSettings;
         CurrSettings CSettings;
         float        m_SliderHandle;

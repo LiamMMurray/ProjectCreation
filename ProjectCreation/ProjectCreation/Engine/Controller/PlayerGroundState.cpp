@@ -28,7 +28,7 @@ void PlayerGroundState::Enter()
 
         _playerController->SetEulerAngles(playerTransformComponent->transform.rotation.ToEulerAngles());
 
-        _playerController->RequestCurrentLevel();
+        //_playerController->RequestCurrentLevel();
 
         volcanoPos = XMVectorSet(24.51, 0.0f, -139.36f, 1.0f);
 

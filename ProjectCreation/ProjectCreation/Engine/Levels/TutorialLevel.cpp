@@ -25,7 +25,6 @@ void TutorialLevel::Enter()
         m_OrbitSystem->InstantRemoveOrbitSystem();
         // Update(GEngine::Get()->GetDeltaTime());
         Instance       = this;
-        currPhaseIndex = 0;
 
         m_SpeedBoostSystem->m_ColorsCollected[0] = false;
         m_SpeedBoostSystem->m_ColorsCollected[1] = false;
@@ -93,6 +92,7 @@ TutorialLevel::TutorialLevel()
         m_PlayerTransform = m_PlayerEntityHandle.GetComponent<TransformComponent>();
 
         m_HandleManager = GEngine::Get()->GetHandleManager();
+        currPhaseIndex  = 0;
 }
 
 void TutorialLevel::RequestNextPhase()
@@ -156,6 +156,7 @@ void TutorialLevel::RequestNextPhase()
 
 void TutorialLevel::UpdatePhase1(float deltaTime)
 {
+        UIManager::instance->MainTitleUnpause();
         for (int i = 0; i < 3; ++i)
         {
                 m_SpeedBoostSystem->m_ColorsCollected[i] = true;

@@ -286,6 +286,7 @@ void UIManager::GameplayUpdate(float deltaTime)
                 if (InputActions::EnterAction() == KeyState::DownFirst)
                 {
                         instance->MainTitleUnpause();
+                        //TutorialLevel::Get()->RequestNextPhase();
                 }
         }
 
@@ -654,65 +655,68 @@ void UIManager::MainTitleUnpause()
         if (GamePad::Get()->CheckConnection() == true)
         {
 
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled  = true;
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].currColor = {1, 1, 1, .0f};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled = true;
+                //        //        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].currColor = {1, 1, 1, .0f};
         }
         else
         {
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled  = true;
-                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].currColor = {1, 1, 1, .0f};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = true;
+                //        //        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].currColor = {1, 1, 1, .0f};
         }
 }
 
 void UIManager::Pause()
 {
-        instance->m_InMenu = true;
-        GEngine::Get()->SetGamePaused(true);
-        if (instance->m_InMenu)
+        if (!instance->m_TransitioningLevels)
         {
-                while (ShowCursor(TRUE) < 0)
-                        ;
-        }
-        else
-        {
-                while (ShowCursor(FALSE) >= 0)
-                        ;
-        }
-        for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
-        {
-                itr.mEnabled = false;
-        }
-        // Pause Menu Sprites
-        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
-        {
-                instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
-        }
-        // Text
-        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
-        {
-                instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
-        }
+                instance->m_InMenu = true;
+                GEngine::Get()->SetGamePaused(true);
+                if (instance->m_InMenu)
+                {
+                        while (ShowCursor(TRUE) < 0)
+                                ;
+                }
+                else
+                {
+                        while (ShowCursor(FALSE) >= 0)
+                                ;
+                }
+                for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
+                {
+                        itr.mEnabled = false;
+                }
+                // Pause Menu Sprites
+                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
+                }
+                // Text
+                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu].size(); i++)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::PauseMenu][i].mEnabled = true;
+                }
 
-        // Options Menu Sprites
-        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
-        {
-                instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
-        }
-        // Text
-        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
-        {
-                instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
-        }
+                // Options Menu Sprites
+                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
+                }
+                // Text
+                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu].size(); i++)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsMenu][i].mEnabled = false;
+                }
 
-        // Level Select Menu Sprites
-        for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu].size(); i++)
-        {
-                instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
-        }
-        // Text
-        for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu].size(); i++)
-        {
-                instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
+                // Level Select Menu Sprites
+                for (int i = 0; i < instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu].size(); i++)
+                {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
+                }
+                // Text
+                for (int i = 0; i < instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu].size(); i++)
+                {
+                        instance->m_AllFonts[E_MENU_CATEGORIES::LevelMenu][i].mEnabled = false;
+                }
         }
 }
 
@@ -735,7 +739,8 @@ void UIManager::Unpause()
         {
                 for (auto& sprite : it.second)
                 {
-                        sprite.mEnabled = false;
+                        if (it.first != E_MENU_CATEGORIES::LevelFade)
+                                sprite.mEnabled = false;
                 }
         }
 
@@ -945,6 +950,17 @@ void UIManager::Initialize(native_handle_type hwnd)
             new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/calibri.spritefont");
         instance->m_FontTypes[E_FONT_TYPE::CourierNew] =
             new DirectX::SpriteFont(instance->m_RenderSystem->m_Device, L"../Assets/2d/Text/couriernew.spritefont");
+
+        // Level Fade
+        instance->AddSprite(instance->m_RenderSystem->m_Device,
+                            instance->m_RenderSystem->m_Context,
+                            E_MENU_CATEGORIES::LevelFade,
+                            L"../Assets/2d/Sprite/Black_Solid.dds",
+                            0.0f,
+                            0.0f,
+                            2.0f,
+                            2.0f,
+                            false);
 
         // Splash Screen
         {
@@ -1555,6 +1571,21 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   true,
                                   pauseButtonWidth * ScaleXRatio,
                                   pauseButtonHeight * ScaleYRatio);
+
+                instance->AddText(instance->m_RenderSystem->m_Device,
+                                  instance->m_RenderSystem->m_Context,
+                                  E_MENU_CATEGORIES::LevelMenu,
+                                  E_FONT_TYPE::Calibri,
+                                  "LEVEL 4",
+                                  0.035f * ScaleXRatio,
+                                  0.035f * ScaleYRatio,
+                                  0.0f * PosXRatio,
+                                  0.18f * PosYRatio,
+                                  false,
+                                  true,
+                                  true,
+                                  pauseButtonWidth * ScaleXRatio,
+                                  pauseButtonHeight * ScaleYRatio);
         }
         // Controls Menu
         {
@@ -1777,7 +1808,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::Demo,
                                   E_FONT_TYPE::Calibri,
-                                  "Audio Developer",
+                                  "Music and Aduio Developer",
                                   0.05f * ScaleXRatio,
                                   0.05f * ScaleYRatio,
                                   0.3f * PosXRatio,
@@ -2360,87 +2391,125 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         // Tutorial Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
-                for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
-                {
-                        auto currColor   = itr.desiredColor;
-                        itr.desiredColor = {currColor.m128_f32[0], currColor.m128_f32[1], currColor.m128_f32[2], 0};
-                        itr.currColor    = {currColor.m128_f32[0], currColor.m128_f32[1], currColor.m128_f32[2], 0};
-                }
-                instance->m_currentTutorialIcon = {0, 4};
-                if (GamePad::Get()->CheckConnection() == true)
-                {
-                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][0].currColor    = {1.0f, 1.0f, 1.0f, 1.0f};
-                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][0].desiredColor = {1.0f, 1.0f, 1.0f, 1.0f};
-                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][0].mEnabled     = true;
-                }
-                else
-                {
-                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][4].currColor    = {1.0f, 1.0f, 1.0f, 1.0f};
-                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][4].desiredColor = {1.0f, 1.0f, 1.0f, 1.0f};
-                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][4].mEnabled     = true;
-                }
-
+                SYSTEM_MANAGER->GetSystem<OrbitSystem>()->ClearTimedFunctions();
+                instance->m_TransitioningLevels = true;
                 instance->Unpause();
-                // Load Level Function
-                auto curLevel = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState();
+                // Fade in to black instantly
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].mEnabled     = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].currColor    = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 1};
 
-                if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(
-                            E_LevelStateEvents::TUTORIAL_LEVEL_TO_TUTORIAL_LEVEL);
-                }
+                // after 3 seconds go to the level
+                TimedFunction transitionDelayed;
+                transitionDelayed.delay = 3.0f;
+                transitionDelayed.func  = []() {
+                        // Load Level Function
+                        auto curLevel = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState();
 
-                else if (curLevel->GetLevelType() == LEVEL_01)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_TUTORIAL_LEVEL);
-                }
+                        if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::TUTORIAL_LEVEL_TO_TUTORIAL_LEVEL);
+                        }
 
-                else if (curLevel->GetLevelType() == LEVEL_02)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_TUTORIAL_LEVEL);
-                }
+                        else if (curLevel->GetLevelType() == LEVEL_01)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_01_TO_TUTORIAL_LEVEL);
+                        }
 
-                else if (curLevel->GetLevelType() == LEVEL_03)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_TUTORIAL_LEVEL);
-                }
+                        else if (curLevel->GetLevelType() == LEVEL_02)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_02_TO_TUTORIAL_LEVEL);
+                        }
 
-                else if (curLevel->GetLevelType() == LEVEL_04)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_04_TO_TUTORIAL_LEVEL);
-                }
+                        else if (curLevel->GetLevelType() == LEVEL_03)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_03_TO_TUTORIAL_LEVEL);
+                        }
+
+                        else if (curLevel->GetLevelType() == LEVEL_04)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_04_TO_TUTORIAL_LEVEL);
+                        }
+                };
+                instance->timed_functions.push_back(transitionDelayed);
+
+                // after 3.5 seconds black solid fade out
+                TimedFunction fadeOutDelayed;
+                fadeOutDelayed.delay = 3.5f;
+                fadeOutDelayed.func  = []() {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 0};
+                        instance->m_TransitioningLevels                                      = false;
+                };
+                instance->timed_functions.push_back(fadeOutDelayed);
         });
 
         // Level 1 Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                SYSTEM_MANAGER->GetSystem<OrbitSystem>()->ClearTimedFunctions();
+
+                instance->m_TransitioningLevels = true;
                 instance->Unpause();
-                // Load Level Function
-                auto curLevel = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState();
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled     = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled     = false;
+                // Fade in to black instantly
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].mEnabled     = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].currColor    = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 1};
 
-                if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_01);
-                }
+                // after 3 seconds go to the level
+                TimedFunction transitionDelayed;
+                transitionDelayed.delay = 3.0f;
+                transitionDelayed.func  = []() {
+                        // Load Level Function
+                        auto curLevel = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState();
 
-                else if (curLevel->GetLevelType() == LEVEL_01)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_01);
-                }
+                        if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_01);
+                        }
 
-                else if (curLevel->GetLevelType() == LEVEL_02)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_01);
-                }
+                        else if (curLevel->GetLevelType() == LEVEL_01)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_01_TO_LEVEL_01);
+                        }
 
-                else if (curLevel->GetLevelType() == LEVEL_03)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_01);
-                }
+                        else if (curLevel->GetLevelType() == LEVEL_02)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_02_TO_LEVEL_01);
+                        }
 
-                else if (curLevel->GetLevelType() == LEVEL_04)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_04_TO_LEVEL_01);
-                }
+                        else if (curLevel->GetLevelType() == LEVEL_03)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_03_TO_LEVEL_01);
+                        }
+
+                        else if (curLevel->GetLevelType() == LEVEL_04)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_04_TO_LEVEL_01);
+                        }
+                };
+                instance->timed_functions.push_back(transitionDelayed);
+
+                // after 3.5 seconds black solid fade out
+                TimedFunction fadeOutDelayed;
+                fadeOutDelayed.delay = 3.5f;
+                fadeOutDelayed.func  = []() {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 0};
+                        instance->m_TransitioningLevels                                      = false;
+                };
+                instance->timed_functions.push_back(fadeOutDelayed);
 
                 for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
                 {
@@ -2451,34 +2520,68 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         // Level 2 Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                SYSTEM_MANAGER->GetSystem<OrbitSystem>()->ClearTimedFunctions();
+
+                instance->m_TransitioningLevels = true;
                 instance->Unpause();
-                // Load Level Function
-                auto curLevel = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState();
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled     = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled     = false;
+                // Fade in to black instantly
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].mEnabled     = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].currColor    = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 1};
 
-                if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_02);
-                }
+                // after 3 seconds go to the level
+                TimedFunction transitionDelayed;
+                transitionDelayed.delay = 3.0f;
+                transitionDelayed.func  = []() {
+                        // Load Level Function
+                        auto curLevel = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState();
 
-                else if (curLevel->GetLevelType() == LEVEL_01)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_02);
-                }
+                        if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_02);
+                        }
 
-                else if (curLevel->GetLevelType() == LEVEL_02)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_02);
-                }
+                        else if (curLevel->GetLevelType() == LEVEL_01)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_01_TO_LEVEL_02);
+                        }
 
-                else if (curLevel->GetLevelType() == LEVEL_03)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_02);
-                }
+                        else if (curLevel->GetLevelType() == LEVEL_02)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_02_TO_LEVEL_02);
+                        }
 
-                else if (curLevel->GetLevelType() == LEVEL_04)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_04_TO_LEVEL_02);
-                }
+                        else if (curLevel->GetLevelType() == LEVEL_03)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_03_TO_LEVEL_02);
+                        }
+
+                        else if (curLevel->GetLevelType() == LEVEL_04)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_04_TO_LEVEL_02);
+                        }
+                };
+
+                instance->timed_functions.push_back(transitionDelayed);
+
+                // after 3.5 seconds black solid fade out
+                TimedFunction fadeOutDelayed;
+                fadeOutDelayed.delay = 3.5f;
+                fadeOutDelayed.func  = []() {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 0};
+                        instance->m_TransitioningLevels                                      = false;
+                };
+                instance->timed_functions.push_back(fadeOutDelayed);
+
                 for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
                 {
                         itr.mEnabled = false;
@@ -2488,34 +2591,140 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         // Level 3 Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][4].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                SYSTEM_MANAGER->GetSystem<OrbitSystem>()->ClearTimedFunctions();
+
+                instance->m_TransitioningLevels = true;
+
                 instance->Unpause();
-                // Load Level Function
-                auto curLevel = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState();
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled     = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled     = false;
+                // Fade in to black instantly
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].mEnabled     = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].currColor    = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 1};
 
-                if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_03);
-                }
+                // after 3 seconds go to the level
+                TimedFunction transitionDelayed;
+                transitionDelayed.delay = 3.0f;
+                transitionDelayed.func  = []() {
+                        // Load Level Function
+                        auto curLevel = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState();
 
-                else if (curLevel->GetLevelType() == LEVEL_01)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_01_TO_LEVEL_03);
-                }
+                        if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_03);
+                        }
 
-                else if (curLevel->GetLevelType() == LEVEL_02)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_03);
-                }
+                        else if (curLevel->GetLevelType() == LEVEL_01)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_01_TO_LEVEL_03);
+                        }
 
-                else if (curLevel->GetLevelType() == LEVEL_03)
-                {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_03);
-                }
+                        else if (curLevel->GetLevelType() == LEVEL_02)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_02_TO_LEVEL_03);
+                        }
 
-                else if (curLevel->GetLevelType() == LEVEL_04)
+                        else if (curLevel->GetLevelType() == LEVEL_03)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_03_TO_LEVEL_03);
+                        }
+
+                        else if (curLevel->GetLevelType() == LEVEL_04)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_04_TO_LEVEL_03);
+                        }
+                };
+
+                instance->timed_functions.push_back(transitionDelayed);
+
+                // after 3.5 seconds black solid fade out
+                TimedFunction fadeOutDelayed;
+                fadeOutDelayed.delay = 3.5f;
+                fadeOutDelayed.func  = []() {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 0};
+                        instance->m_TransitioningLevels                                      = false;
+                };
+                instance->timed_functions.push_back(fadeOutDelayed);
+
+                for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
                 {
-                        GEngine::Get()->GetLevelStateManager()->ForceLoadState(E_LevelStateEvents::LEVEL_04_TO_LEVEL_03);
+                        itr.mEnabled = false;
                 }
+                instance->m_currentTutorialIcon = {-1, -1};
+        });
+
+        // Level 4 Button
+        instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][5].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                SYSTEM_MANAGER->GetSystem<OrbitSystem>()->ClearTimedFunctions();
+
+                instance->m_TransitioningLevels = true;
+
+                instance->Unpause();
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].desiredColor = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled     = false;
+                instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled     = false;
+                // Fade in to black instantly
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].mEnabled     = true;
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].currColor    = {1, 1, 1, 0};
+                instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 1};
+
+                // after 3 seconds go to the level
+                TimedFunction transitionDelayed;
+                transitionDelayed.delay = 3.0f;
+                transitionDelayed.func  = []() {
+                        // Load Level Function
+                        auto curLevel = GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState();
+
+                        if (curLevel->GetLevelType() == TUTORIAL_LEVEL)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::TUTORIAL_LEVEL_TO_LEVEL_04);
+                        }
+
+                        else if (curLevel->GetLevelType() == LEVEL_01)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_01_TO_LEVEL_04);
+                        }
+
+                        else if (curLevel->GetLevelType() == LEVEL_02)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_02_TO_LEVEL_04);
+                        }
+
+                        else if (curLevel->GetLevelType() == LEVEL_03)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_03_TO_LEVEL_04);
+                        }
+
+                        else if (curLevel->GetLevelType() == LEVEL_04)
+                        {
+                                GEngine::Get()->GetLevelStateManager()->ForceLoadState(
+                                    E_LevelStateEvents::LEVEL_04_TO_LEVEL_04);
+                        }
+                };
+
+                instance->timed_functions.push_back(transitionDelayed);
+
+                // after 3.5 seconds black solid fade out
+                TimedFunction fadeOutDelayed;
+                fadeOutDelayed.delay = 3.5f;
+                fadeOutDelayed.func  = []() {
+                        instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 0};
+                        instance->m_TransitioningLevels                                      = false;
+                };
+                instance->timed_functions.push_back(fadeOutDelayed);
 
                 for (auto& itr : instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu])
                 {
