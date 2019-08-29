@@ -214,11 +214,42 @@ void UIManager::Present()
         m_RenderSystem->Present();
 }
 
+std::pair<unsigned int, unsigned int> UIManager::GetHighestSupportedResolution()
+{
+        DXGI_MODE_DESC desc = instance->resDescriptors.back();
+        return std::make_pair((unsigned int)desc.Width, (unsigned int)desc.Height);
+}
+
+void UIManager::CatchWinProcSetFullscreen()
+{
+        if (m_RenderSystem)
+        {
+                if (m_RenderSystem->m_Swapchain)
+                {
+                        BOOL fullscreen;
+                        m_RenderSystem->GetSwapChain()->GetFullscreenState(&fullscreen, nullptr);
+                        if ((instance->CSettings.m_IsFullscreen != (bool)fullscreen) && fullscreen == 0)
+                        {
+                                instance->CSettings.m_IsFullscreen = false;
+                                instance->PSettings.m_IsFullscreen = false;
+                                SetFullscreen(false);
+
+                                if (instance->m_AllSprites[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled == true)
+                                {
+                                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = false; // Off
+                                        instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = true;  // On
+                                }
+                        }
+                }
+        }
+}
+
 void UIManager::SetFullscreen(bool val)
 {
         instance->m_RenderSystem->SetFullscreen(val);
-        instance->StartupResAdjust((HWND)m_WindowHandle);
-        instance->UpdateResolutionText();
+        // instance->StartupResAdjust((HWND)m_WindowHandle);
+        // instance->UpdateResolutionText();
+        instance->m_RenderSystem->InitDrawOnBackBufferPipeline();
 }
 
 void UIManager::UpdateResolutionText()
@@ -478,8 +509,8 @@ void UIManager::Splash_End()
 
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled = true;
 
-        if (GamePad::Get()->CheckConnection() == true) 
-		{
+        if (GamePad::Get()->CheckConnection() == true)
+        {
                 instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = true;
         }
 
@@ -777,7 +808,9 @@ void UIManager::AdjustResolution(HWND window, int wWidth, int wHeight)
 {
         if (instance->CSettings.m_IsFullscreen == true)
         {
-                //instance->instance->m_RenderSystem->OnWindowResize(wWidth, wHeight, true);
+                // instance->instance->m_RenderSystem->OnWindowResize(wWidth, wHeight, true);
+                m_RenderSystem->OnWindowResize(wWidth, wHeight, true);
+                m_RenderSystem->InitDrawOnBackBufferPipeline();
 
                 return;
         }
@@ -790,8 +823,11 @@ void UIManager::AdjustResolution(HWND window, int wWidth, int wHeight)
         int posX = GetSystemMetrics(SM_CXSCREEN) / 2 - (wWidth) / 2;
         int posY = GetSystemMetrics(SM_CYSCREEN) / 2 - (wHeight) / 2;
 
-        ::SetWindowPos(window, 0, posX, posY, wr.right - wr.left, wr.bottom - wr.top, WS_POPUP);
+        ::SetWindowPos(window, 0, posX, posY, wr.right - wr.left, wr.bottom - wr.top, WS_OVERLAPPEDWINDOW);
         MoveWindow(window, posX, posY, wWidth, wHeight, true);
+
+        m_RenderSystem->OnWindowResize(wWidth, wHeight, false);
+        m_RenderSystem->InitDrawOnBackBufferPipeline();
 }
 
 void UIManager::SupportedResolutions()
@@ -2050,16 +2086,12 @@ void UIManager::Initialize(native_handle_type hwnd)
                 }
 
 
-                instance->CSettings.m_Resolution   = instance->PSettings.m_Resolution;
-                instance->CSettings.m_Volume       = instance->PSettings.m_Volume;
-                instance->CSettings.m_IsFullscreen = instance->PSettings.m_IsFullscreen;
-                instance->CSettings.m_Sensitivity  = instance->PSettings.m_Sensitivity;
+                instance->CSettings = instance->PSettings;
 
+                instance->SetFullscreen(instance->PSettings.m_IsFullscreen);
                 instance->AdjustResolution(instance->m_window,
                                            instance->resDescriptors[instance->PSettings.m_Resolution].Width,
                                            instance->resDescriptors[instance->PSettings.m_Resolution].Height);
-
-                instance->m_RenderSystem->SetFullscreen(instance->PSettings.m_IsFullscreen);
         });
 
         // Window Mode
@@ -2069,7 +2101,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                         instance->CSettings.m_IsFullscreen                                  = true;
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][0].mEnabled = true;  // Off
                         instance->m_AllFonts[E_MENU_CATEGORIES::OptionsSubmenu][1].mEnabled = false; // On
-                        instance->CSettings.m_Resolution                                    = 8;
+                        // instance->CSettings.m_Resolution                                    = 8;
                 }
                 else
                 {
@@ -2118,17 +2150,14 @@ void UIManager::Initialize(native_handle_type hwnd)
                 }
 
 
-                instance->PSettings.m_Resolution   = instance->CSettings.m_Resolution;
-                instance->PSettings.m_Volume       = instance->CSettings.m_Volume;
-                instance->PSettings.m_IsFullscreen = instance->CSettings.m_IsFullscreen;
-                instance->PSettings.m_Sensitivity  = instance->CSettings.m_Sensitivity;
-
-                instance->AdjustResolution(instance->m_window,
-                                           instance->resDescriptors[instance->CSettings.m_Resolution].Width,
-                                           instance->resDescriptors[instance->CSettings.m_Resolution].Height);
+                // instance->AdjustResolution(instance->m_window,
+                //                           instance->resDescriptors[instance->CSettings.m_Resolution].Width,
+                //                           instance->resDescriptors[instance->CSettings.m_Resolution].Height);
 
                 // instance->SetFullscreen(instance->CSettings.m_IsFullscreen);
                 AudioManager::Get()->SetMasterVolume(0.1f * instance->CSettings.m_Volume);
+
+                instance->PSettings = instance->CSettings;
         });
 
         // Left Resolution Button

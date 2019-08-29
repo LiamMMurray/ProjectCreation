@@ -28,7 +28,7 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
 {
         float  depthSample = ScreenDepth.Sample(sampleTypeClamp, texCoord).r;
         float3 viewPos     = VSPositionFromDepth(texCoord);
-        float3 worldPos    = mul(float4(viewPos,1.0f), _invView).xyz;
+        float3 worldPos    = mul(float4(viewPos, 1.0f), _invView).xyz;
         float  linearDepth = viewPos.z;
         // return worldPos.xyzz / 100.0f;
 
@@ -57,6 +57,7 @@ float4 main(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TARGET0
         float3 fogColor = float3(0.4f, 0.6f, 0.8f);
 
 
+		
         float3 dither = InterleavedGradientNoise(pos.xy + _time);
         color += bloom;
         color += 0.004f * dither / 255;

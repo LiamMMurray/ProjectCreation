@@ -347,7 +347,7 @@ class RenderSystem : public ISystem
 
     public:
         void Present();
-
+        void InitDrawOnBackBufferPipeline();
         void DrawMeshInstanced(ID3D11Buffer* vertexBuffer,
                                ID3D11Buffer* indexBuffer,
                                uint32_t      indexCount,
@@ -366,7 +366,7 @@ class RenderSystem : public ISystem
         {
                 return m_BackBufferWidth / m_BackBufferHeight;
         };
-        void OnWindowResize(unsigned int wParam, unsigned int lParam, bool dontOverride = false);
+        void OnWindowResize(unsigned int wParam, unsigned int lParam, bool goFullscreen);
         void SetFullscreen(bool);
         bool GetFullscreen();
 
