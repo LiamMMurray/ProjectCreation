@@ -286,6 +286,7 @@ void UIManager::GameplayUpdate(float deltaTime)
                 if (InputActions::EnterAction() == KeyState::DownFirst)
                 {
                         instance->MainTitleUnpause();
+                        //TutorialLevel::Get()->RequestNextPhase();
                 }
         }
 
@@ -1807,7 +1808,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::Demo,
                                   E_FONT_TYPE::Calibri,
-                                  "Audio Developer",
+                                  "Music and Aduio Developer",
                                   0.05f * ScaleXRatio,
                                   0.05f * ScaleYRatio,
                                   0.3f * PosXRatio,
@@ -2390,6 +2391,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         // Tutorial Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][1].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                SYSTEM_MANAGER->GetSystem<OrbitSystem>()->ClearTimedFunctions();
                 instance->m_TransitioningLevels = true;
                 instance->Unpause();
                 // Fade in to black instantly
@@ -2442,13 +2444,14 @@ void UIManager::Initialize(native_handle_type hwnd)
                 fadeOutDelayed.func  = []() {
                         instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 0};
                         instance->m_TransitioningLevels                                      = false;
-
                 };
                 instance->timed_functions.push_back(fadeOutDelayed);
         });
 
         // Level 1 Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][2].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                SYSTEM_MANAGER->GetSystem<OrbitSystem>()->ClearTimedFunctions();
+
                 instance->m_TransitioningLevels = true;
                 instance->Unpause();
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].desiredColor = {1, 1, 1, 0};
@@ -2505,7 +2508,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                 fadeOutDelayed.func  = []() {
                         instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 0};
                         instance->m_TransitioningLevels                                      = false;
-
                 };
                 instance->timed_functions.push_back(fadeOutDelayed);
 
@@ -2518,6 +2520,8 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         // Level 2 Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][3].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                SYSTEM_MANAGER->GetSystem<OrbitSystem>()->ClearTimedFunctions();
+
                 instance->m_TransitioningLevels = true;
                 instance->Unpause();
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].desiredColor = {1, 1, 1, 0};
@@ -2575,7 +2579,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                 fadeOutDelayed.func  = []() {
                         instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 0};
                         instance->m_TransitioningLevels                                      = false;
-
                 };
                 instance->timed_functions.push_back(fadeOutDelayed);
 
@@ -2588,6 +2591,8 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         // Level 3 Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][4].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                SYSTEM_MANAGER->GetSystem<OrbitSystem>()->ClearTimedFunctions();
+
                 instance->m_TransitioningLevels = true;
 
                 instance->Unpause();
@@ -2646,7 +2651,6 @@ void UIManager::Initialize(native_handle_type hwnd)
                 fadeOutDelayed.func  = []() {
                         instance->m_AllSprites[E_MENU_CATEGORIES::LevelFade][0].desiredColor = {1, 1, 1, 0};
                         instance->m_TransitioningLevels                                      = false;
-
                 };
                 instance->timed_functions.push_back(fadeOutDelayed);
 
@@ -2659,6 +2663,8 @@ void UIManager::Initialize(native_handle_type hwnd)
 
         // Level 4 Button
         instance->m_AllSprites[E_MENU_CATEGORIES::LevelMenu][5].OnMouseDown.AddEventListener([](UIMouseEvent* e) {
+                SYSTEM_MANAGER->GetSystem<OrbitSystem>()->ClearTimedFunctions();
+
                 instance->m_TransitioningLevels = true;
 
                 instance->Unpause();
