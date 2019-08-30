@@ -36,11 +36,6 @@
 #include "../JobScheduler.h"
 using namespace DirectX;
 
-std::random_device                    r;
-std::default_random_engine            e1(r());
-std::uniform_real_distribution<float> uniform_dist(0.0f, 1.0f);
-
-
 EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
 {
         EntityHandle controlledEntity = SYSTEM_MANAGER->GetSystem<ControllerSystem>()
