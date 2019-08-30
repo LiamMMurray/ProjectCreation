@@ -49,9 +49,12 @@ float4 main(INPUT_PIXEL input) : SV_TARGET
         float3 normalSample = normalMap.Sample(sampleTypeWrap, input.Tex).xyz * 2.f - 1.f;
         float3 normalSample2 =
             normalMap.Sample(sampleTypeWrap, input.Tex * 2.0f + _Time * float2(1.0f, -0.2f) * 0.1f).xyz * 2.f - 1.f;
+        float3 normalSample3 =
+            normalMap.Sample(sampleTypeWrap, input.Tex * 8.0f + _Time * float2(1.0f, -0.2f) * 0.05f).xyz * 2.f - 1.f;
         normalSample.z  = sqrt(1 - normalSample.x * normalSample.x - normalSample.y * normalSample.y);
         normalSample2.z = sqrt(1 - normalSample2.x * normalSample2.x - normalSample2.y * normalSample2.y);
-        normalSample    = normalize(normalSample + normalSample2);
+        normalSample3.z = sqrt(1 - normalSample3.x * normalSample3.x - normalSample3.y * normalSample3.y);
+        normalSample    = normalize(normalSample + normalSample2 + 0.3f * normalSample3);
         /*   surface.normal = _normalIntensity * input.TangentWS * normalSample.x +
                             _normalIntensity * input.BinormalWS * normalSample.y + input.NormalWS * normalSample.z;*/
         surface.normal = input.TangentWS * normalSample.x + input.BinormalWS * normalSample.y + input.NormalWS * normalSample.z;
@@ -79,7 +82,12 @@ float4 main(INPUT_PIXEL input) : SV_TARGET
 
         diffuseSample = 1.0f * diffuseMap.Sample(sampleTypeWrap, input.Tex);
 
-        clip((diffuseSample.a) < 0.1f ? -1 : 1); // masked
+        float mask = Mask1.Sample(sampleTypeWrap, input.Tex * 16.0f).b;
+
+        float nearClip = saturate(dist / 10.0f);
+        nearClip *= 1.0f - (1.0f - nearClip) * mask;
+
+        clip((diffuseSample.a * nearClip) < 0.1f ? -1 : 1); // masked
 
         // return lerp(2.0f, 0.15f, fakeShadow);
         surface.diffuseColor *= diffuseSample.xyz;

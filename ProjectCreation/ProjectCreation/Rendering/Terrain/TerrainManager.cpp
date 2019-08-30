@@ -350,10 +350,10 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 ComponentHandle transHandle, statHandle;
                 EntityHandle    entityH =
                     EntityFactory::CreateStaticMeshEntity("Volcano00", "VolcanoMaterial", &transHandle, &statHandle);
-                TransformComponent*  trans         = transHandle.Get<TransformComponent>();
-                StaticMeshComponent* sm            = statHandle.Get<StaticMeshComponent>();
-                ComponentHandle      emitterHandle = entityH.AddComponent<EmitterComponent>();
-                EmitterComponent*    emitterComp   = emitterHandle.Get<EmitterComponent>();
+                TransformComponent*  trans = transHandle.Get<TransformComponent>();
+                StaticMeshComponent* sm    = statHandle.Get<StaticMeshComponent>();
+                ComponentHandle   emitterHandle = entityH.AddComponent<EmitterComponent>();
+                EmitterComponent* emitterComp   = emitterHandle.Get<EmitterComponent>();
                 emitterComp->SetIsActive(false);
                 sm->SetIsActive(false);
                 staticMeshesShowWithTerrain.push_back(statHandle);
@@ -629,7 +629,7 @@ void TerrainManager::_update(float deltaTime)
                 // continue;
                 auto emitter = compHandle.Get()->GetParent().GetComponent<EmitterComponent>();
                 auto trans   = compHandle.Get()->GetParent().GetComponent<TransformComponent>();
-                
+
                 bool active = sm->IsActive();
 
                 // sm->GetParent().GetComponent<TransformComponent>()->transform.SetScale(terrainConstantBufferCPU.gTerrainAlpha);
