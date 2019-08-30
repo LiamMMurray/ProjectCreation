@@ -156,7 +156,7 @@ void TutorialLevel::RequestNextPhase()
 
 void TutorialLevel::UpdatePhase1(float deltaTime)
 {
-        UIManager::instance->MainTitleUnpause();
+        //UIManager::instance->MainTitleUnpause();
         for (int i = 0; i < 3; ++i)
         {
                 m_SpeedBoostSystem->m_ColorsCollected[i] = true;

@@ -52,8 +52,6 @@ void LevelStateManager::Init()
         m_LevelStateMachine.AddTransition(levelStates[4], levelStates[2], E_LevelStateEvents::LEVEL_04_TO_LEVEL_02);
         m_LevelStateMachine.AddTransition(levelStates[4], levelStates[3], E_LevelStateEvents::LEVEL_04_TO_LEVEL_03);
         m_LevelStateMachine.AddTransition(levelStates[4], levelStates[4], E_LevelStateEvents::LEVEL_04_TO_LEVEL_04);
-
-        // RequestState(0);
 }
 
 void LevelStateManager::Shutdown()

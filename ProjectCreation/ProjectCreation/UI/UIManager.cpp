@@ -649,7 +649,6 @@ void UIManager::MainTitleUnpause()
         {
                 instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][i].mEnabled = false;
         }
-
         m_currentTutorialIcon = {0, 4};
         // Left Click Image
         if (GamePad::Get()->CheckConnection() == true)
@@ -663,6 +662,8 @@ void UIManager::MainTitleUnpause()
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].mEnabled = true;
                 //        //        instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][0].currColor = {1, 1, 1, .0f};
         }
+
+        GEngine::Get()->GetLevelStateManager()->RequestState(0);
 }
 
 void UIManager::Pause()
