@@ -1,11 +1,11 @@
 #include "ParticleManager.h"
+#include <DirectXMacros.h>
 #include <d3d11_1.h>
 #include "../../Engine/MathLibrary/MathLibrary.h"
 #include "../../FileIO/FileIO.h"
 #include "../../Rendering/RenderingSystem.h"
 #include "../../Rendering/Terrain/TerrainManager.h"
 #include "../../Rendering/Vertex.h"
-#include "../../Utility/Macros/DirectXMacros.h"
 #include "..//..//Engine/GEngine.h"
 #include "../GEngine.h"
 #include "../MathLibrary/ColorConstants.h"
@@ -42,10 +42,7 @@ void ParticleManager::update(float deltaTime)
         m_RenderSystem->m_Context->OMSetRenderTargets(0, nullptr, nullptr);
         int emitterIndex = 0;
         // Build update list
-		for (auto& emitterComp : m_Emitters)
-		{
-              
-		}
+        for (auto& emitterComp : m_Emitters) {}
         for (auto& emitterComponent : GEngine::Get()->GetHandleManager()->GetActiveComponents<EmitterComponent>())
         {
                 if (emitterComponent.active == true)

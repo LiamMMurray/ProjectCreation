@@ -1,7 +1,7 @@
 #pragma once
 
 #include <DirectXMath.h>
-#include "../../ECS/HandleManager.h"
+#include <HandleManager.h>
 
 class IController
 {

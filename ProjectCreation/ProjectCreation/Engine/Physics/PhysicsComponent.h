@@ -1,5 +1,5 @@
 #pragma once
-#include "../../ECS/Component.h"
+#include <Component.h>
 #include <DirectXMath.h>
 
 class PhysicsComponent : public Component<PhysicsComponent>

@@ -1,6 +1,6 @@
 #pragma once
 #include "IEventDelegate.h"
-#include "../../Utility/TypeIndexFactory.h"
+#include <TypeIndexFactory.h>
 
 class IEvent;
 template <typename T, typename EventType>

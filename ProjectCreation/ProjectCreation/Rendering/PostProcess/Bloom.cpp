@@ -9,8 +9,8 @@
 #include "../../Engine/ResourceManager/Texture2D.h"
 #include "../../Engine/ResourceManager/VertexShader.h"
 
-#include "../../Utility/Macros/DirectXMacros.h"
-#include "../../Utility/RenderUtility.h"
+#include <DirectXMacros.h>
+#include <RenderUtility.h>
 
 #include "../..//Engine/MathLibrary/ColorConstants.h"
 #include "../..//Engine/MathLibrary/MathLibrary.h"

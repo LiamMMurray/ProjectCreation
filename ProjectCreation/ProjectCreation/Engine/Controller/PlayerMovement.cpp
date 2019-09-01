@@ -1,5 +1,5 @@
 #include "PlayerMovement.h"
-#include "../../ECS/Entity.h"
+#include <Entity.h>
 #include "..//Gameplay/GoalComponent.h"
 #include "..//Gameplay/OrbitSystem.h"
 #include "../CollisionLibary/CollisionLibary.h"

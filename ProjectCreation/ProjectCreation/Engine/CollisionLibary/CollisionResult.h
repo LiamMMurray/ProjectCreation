@@ -1,7 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 #include <vector>
-#include "../../ECS/ComponentHandle.h"
+#include <ComponentHandle.h>
 #include "Shapes.h"
 
 namespace Collision

@@ -1,5 +1,5 @@
 #pragma once
-#include "../../ECS/Component.h"
+#include <Component.h>
 #include "3DSoundTypes.h"
 
 class SoundComponent : public Component<SoundComponent>

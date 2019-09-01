@@ -3,8 +3,8 @@
 #include <queue>
 #include <vector>
 
-#include "../../ECS/HandleManager.h"
-#include "../../ECS/SystemManager.h"
+#include <HandleManager.h>
+#include <SystemManager.h>
 #include "..//ResourceManager/IResource.h"
 
 #include "..//Controller/PlayerMovement.h"
@@ -13,7 +13,7 @@
 #include "SpeedboostComponent.h"
 #include "SplineCluster.h"
 
-#include "../../Utility/Random.h"
+#include <Random.h>
 class TransformComponent;
 class ResourceManager;
 class SpeedboostComponent;

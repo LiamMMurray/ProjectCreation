@@ -1,7 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 #include <vector>
-#include "..//..//ECS/ECSTypes.h"
+#include <ECSTypes.h>
 #include "..//MathLibrary/Splines/FGoodSpline.h"
 #include "..//MathLibrary/Transform.h"
 

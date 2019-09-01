@@ -1,4 +1,4 @@
-#include "../Utility/MemoryLeakDetection.h"
+#include <MemoryLeakDetection.h>
 
 #include "../Engine/JobScheduler.h"
 #include "GEngine.h"

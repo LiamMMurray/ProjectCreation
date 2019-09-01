@@ -1,7 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 #include <vector>
-#include "../../ECS/Component.h"
+#include <Component.h>
 #include "Pools.h"
 #define ALIGN_TO_VEL (1 << 0)
 #define NO_COLLISION (1 << 1)

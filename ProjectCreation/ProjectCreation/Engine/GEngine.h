@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..//Utility/Macros/GlobalMacros.h"
+#include <GlobalMacros.h>
 
 #define COMPONENT_MANAGER GEngine::Get()->GetHandleManager()
 #define SYSTEM_MANAGER GEngine::Get()->GetSystemManager()
@@ -8,9 +8,9 @@
 #define ENTITY_MANAGER GEngine::Get()->GetHandleManager()
 #define RESOURCE_MANAGER GEngine::Get()->GetResourceManager()
 
-#include "../ECS/HandleManager.h"
-#include "../ECS/SystemManager.h"
-#include "../Utility/Profiling.h"
+#include <HandleManager.h>
+#include <SystemManager.h>
+#include <Profiling.h>
 #include "ResourceManager/ResourceManager.h"
 #include "XTime.h"
 

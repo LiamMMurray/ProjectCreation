@@ -19,14 +19,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ECS\Component.h" />
-    <ClInclude Include="ECS\ComponentHandle.h" />
-    <ClInclude Include="ECS\Entity.h" />
-    <ClInclude Include="ECS\EntityHandle.h" />
-    <ClInclude Include="ECS\IComponent.h" />
-    <ClInclude Include="ECS\IPoolElement.h" />
-    <ClInclude Include="ECS\Memory.h" />
-    <ClInclude Include="ECS\Pools.h" />
+    <ClInclude Include="ECS\public\Component.h" />
+    <ClInclude Include="ECS\public\ComponentHandle.h" />
+    <ClInclude Include="ECS\public\ECS.h" />
+    <ClInclude Include="ECS\public\ECSMem.h" />
+    <ClInclude Include="ECS\public\ECSTypes.h" />
+    <ClInclude Include="ECS\public\Entity.h" />
+    <ClInclude Include="ECS\public\EntityHandle.h" />
+    <ClInclude Include="ECS\public\Handle.h" />
+    <ClInclude Include="ECS\public\HandleManager.h" />
+    <ClInclude Include="ECS\public\IComponent.h" />
+    <ClInclude Include="ECS\public\IContainer.h" />
+    <ClInclude Include="ECS\public\IPoolElement.h" />
+    <ClInclude Include="ECS\public\ISystem.h" />
+    <ClInclude Include="ECS\public\Pools.h" />
+    <ClInclude Include="ECS\public\SystemManager.h" />
     <ClInclude Include="Engine\Audio\3DSoundComponent.h" />
     <ClInclude Include="Engine\Audio\3DSoundTypes.h" />
     <ClInclude Include="Engine\Audio\AudioManager.h" />
@@ -88,16 +95,10 @@
     <ClInclude Include="Engine\Controller\IController.h" />
     <ClInclude Include="Engine\Controller\PlayerMovement.h" />
     <ClInclude Include="Engine\CoreInput\CoreInput.h" />
-    <ClInclude Include="ECS\ECS.h" />
-    <ClInclude Include="ECS\ECSTypes.h" />
-    <ClInclude Include="ECS\HandleManager.h" />
     <ClInclude Include="Engine\Animation\AnimationComponent.h" />
     <ClInclude Include="Engine\Animation\AnimationContainers.h" />
     <ClInclude Include="Engine\Animation\AnimationSystem.h" />
     <ClInclude Include="Engine\GEngine.h" />
-    <ClInclude Include="ECS\Handle.h" />
-    <ClInclude Include="ECS\ISystem.h" />
-    <ClInclude Include="ECS\SystemManager.h" />
     <ClInclude Include="ECS\Util.h" />
     <ClInclude Include="Engine\ResourceManager\ComputeShader.h" />
     <ClInclude Include="Engine\ResourceManager\GeometryShader.h" />
@@ -115,6 +116,13 @@
     <ClInclude Include="Engine\MathLibrary\Quaternion.h" />
     <ClInclude Include="Engine\MathLibrary\Transform.h" />
     <ClInclude Include="Engine\MathLibrary\Vector.h" />
+    <ClInclude Include="ForwardDeclarations\public\D3DNativeTypes.h" />
+    <ClInclude Include="ForwardDeclarations\public\STLTypes.h" />
+    <ClInclude Include="ForwardDeclarations\public\WinProcTypes.h" />
+    <ClInclude Include="Hashing\public\PairHash.h" />
+    <ClInclude Include="Hashing\public\SpookyHashV2.h" />
+    <ClInclude Include="Macros\public\DirectXMacros.h" />
+    <ClInclude Include="Macros\public\GlobalMacros.h" />
     <ClInclude Include="Rendering\InstanceData.h" />
     <ClInclude Include="Rendering\Terrain\TerrainManager.h" />
     <ClInclude Include="Shaders\InstanceData.hlsl" />
@@ -149,12 +157,16 @@
     <ClInclude Include="Engine\ResourceManager\StaticMesh.h" />
     <ClInclude Include="Engine\ResourceManager\Texture2D.h" />
     <ClInclude Include="Engine\ResourceManager\VertexShader.h" />
-    <ClInclude Include="Utility\BitwiseUtility.h" />
-    <ClInclude Include="Utility\Hashing\SpookyHashV2.h" />
-    <ClInclude Include="Utility\Macros\GlobalMacros.h" />
-    <ClInclude Include="Utility\Profiling.h" />
-    <ClInclude Include="Utility\StaticSentinelDumpMemoryLeaks.h" />
-    <ClInclude Include="Utility\TypeIndexFactory.h" />
+    <ClInclude Include="Utility\public\BitwiseUtility.h" />
+    <ClInclude Include="Utility\public\MemoryDefines.h" />
+    <ClInclude Include="Utility\public\MemoryLeakDetection.h" />
+    <ClInclude Include="Utility\public\Profiling.h" />
+    <ClInclude Include="Utility\public\Random.h" />
+    <ClInclude Include="Utility\public\Range.h" />
+    <ClInclude Include="Utility\public\RenderUtility.h" />
+    <ClInclude Include="Utility\public\StaticSentinelDumpMemoryLeaks.h" />
+    <ClInclude Include="Utility\public\StringUtility.h" />
+    <ClInclude Include="Utility\public\TypeIndexFactory.h" />
     <FxCompile Include="Shaders\AlignCamera_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Vertex</ShaderType>
@@ -345,18 +357,8 @@
     <ClInclude Include="Shaders\Constants.hlsl" />
     <ClInclude Include="Shaders\Math.hlsl" />
     <ClInclude Include="Shaders\Samplers.hlsl" />
-    <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
-    <ClInclude Include="Utility\ForwardDeclarations\STLTypes.h" />
-    <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
-    <ClInclude Include="Utility\Hashing\PairHash.h" />
-    <ClInclude Include="Utility\Macros\DirectXMacros.h" />
-    <ClInclude Include="Utility\MemoryDefines.h" />
-    <ClInclude Include="Utility\MemoryLeakDetection.h" />
-    <ClInclude Include="Utility\Range.h" />
-    <ClInclude Include="Utility\RenderUtility.h" />
     <ClInclude Include="Engine\MathLibrary\Splines\FGoodSpline.h" />
     <ClInclude Include="Engine\MathLibrary\Splines\splines.hpp" />
-    <ClInclude Include="Utility\StringUtility.h" />
     <ClInclude Include="Shaders\PostProcessConstantBuffers.hlsl">
       <FileType>Document</FileType>
     </ClInclude>
@@ -544,12 +546,14 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ECS\Entity.cpp" />
-    <ClCompile Include="ECS\HandleManager.cpp" />
-    <ClCompile Include="ECS\IComponent.cpp" />
-    <ClCompile Include="ECS\IPoolElement.cpp" />
-    <ClCompile Include="ECS\Memory.cpp" />
-    <ClCompile Include="ECS\Pools.cpp" />
+    <ClCompile Include="ECS\private\Entity.cpp" />
+    <ClCompile Include="ECS\private\HandleManager.cpp" />
+    <ClCompile Include="ECS\private\IComponent.cpp" />
+    <ClCompile Include="ECS\private\IPoolElement.cpp" />
+    <ClCompile Include="ECS\private\ISystem.cpp" />
+    <ClCompile Include="ECS\private\Memory.cpp" />
+    <ClCompile Include="ECS\private\Pools.cpp" />
+    <ClCompile Include="ECS\private\SystemManager.cpp" />
     <ClCompile Include="Engine\Animation\AnimationComponent.cpp" />
     <ClCompile Include="Engine\Audio\3DSoundComponent.cpp" />
     <ClCompile Include="Engine\Audio\AudioManager.cpp" />
@@ -595,12 +599,11 @@
     <ClCompile Include="Engine\CoreInput\CoreInput.cpp" />
     <ClCompile Include="Engine\Animation\AnimationSystem.cpp" />
     <ClCompile Include="Engine\GEngine.cpp" />
-    <ClCompile Include="ECS\ISystem.cpp" />
-    <ClCompile Include="ECS\SystemManager.cpp" />
     <ClCompile Include="Engine\ResourceManager\ComputeShader.cpp" />
     <ClCompile Include="Engine\ResourceManager\GeometryShader.cpp" />
     <ClCompile Include="Engine\XTime.cpp" />
     <ClCompile Include="FileIO\FileIO.cpp" />
+    <ClCompile Include="Hashing\private\SpookyHashV2.cpp" />
     <ClCompile Include="Rendering\Terrain\TerrainManager.cpp" />
     <ClCompile Include="Engine\Audio\SoundComponent.cpp" />
     <ClCompile Include="UI\FontComponent.cpp" />
@@ -626,15 +629,14 @@
     <ClCompile Include="Engine\ResourceManager\Texture2D.cpp" />
     <ClCompile Include="Engine\ResourceManager\VertexShader.cpp" />
     <ClCompile Include="UI\UICollision.cpp" />
-    <ClCompile Include="Utility\Hashing\SpookyHashV2.cpp" />
-    <ClCompile Include="Utility\Profiling.cpp" />
-    <ClCompile Include="Utility\RenderUtility.cpp" />
+    <ClCompile Include="Utility\private\Profiling.cpp" />
+    <ClCompile Include="Utility\private\RenderUtility.cpp" />
+    <ClCompile Include="Utility\private\StringUtility.cpp" />
     <ClCompile Include="UI\UIManager.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="UI\SpriteComponent.cpp" />
-    <ClCompile Include="Utility\StringUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shaders\DefaultPixelIn.hlsl">
@@ -750,7 +752,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Utility\public;$(ProjectDir)Macros\public;$(ProjectDir)Hashing\public;$(ProjectDir)ForwardDeclarations\public;$(ProjectDir)ECS\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>

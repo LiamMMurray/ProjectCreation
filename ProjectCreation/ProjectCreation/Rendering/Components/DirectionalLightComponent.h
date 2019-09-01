@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "../../ECS/HandleManager.h"
+#include <HandleManager.h>
 
 #include "../../Engine/MathLibrary/MathLibrary.h"
 

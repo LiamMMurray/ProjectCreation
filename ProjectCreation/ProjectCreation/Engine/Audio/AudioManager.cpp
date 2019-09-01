@@ -1,7 +1,7 @@
 #include "AudioManager.h"
 #include <assert.h>
 #include <sstream>
-#include "../../Utility/MemoryLeakDetection.h"
+#include <MemoryLeakDetection.h>
 #include "../MathLibrary/MathLibrary.h"
 
 #include "..//GEngine.h"

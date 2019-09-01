@@ -8,8 +8,8 @@
 #include <tuple>
 #undef GetJob
 
-#include "../Utility/BitwiseUtility.h"
-#include "../Utility/Range.h"
+#include <BitwiseUtility.h>
+#include <Range.h>
 
 inline namespace JobSchedulerInternalUtility
 {

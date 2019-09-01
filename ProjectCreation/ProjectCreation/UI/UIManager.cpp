@@ -7,9 +7,9 @@
 #include "../Engine/CoreInput/CoreInput.h"
 #include "../Engine/GEngine.h"
 #include "../Rendering/RenderingSystem.h"
-#include "../Utility/Hashing/PairHash.h"
-#include "../Utility/Macros/DirectXMacros.h"
-#include "../Utility/MemoryLeakDetection.h"
+#include <PairHash.h>
+#include <DirectXMacros.h>
+#include <MemoryLeakDetection.h>
 
 #include "../Engine/ConsoleWindow/ConsoleWindow.h"
 #include "../Engine/Levels/TutorialLevel.h"

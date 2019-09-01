@@ -19,7 +19,7 @@
 #include <windowsx.h>
 
 #include <wrl/client.h>
-#include "../Utility/Macros/DirectXMacros.h"
+#include <DirectXMacros.h>
 
 #include "../Engine/ResourceManager/AnimationClip.h"
 #include "../Engine/ResourceManager/GeometryShader.h"
@@ -48,7 +48,7 @@
 
 #include "..//Engine/Controller/ControllerSystem.h"
 #include "../Engine/MathLibrary/ColorConstants.h"
-#include "../Utility/MemoryLeakDetection.h"
+#include <MemoryLeakDetection.h>
 #include "DebugRender/debug_renderer.h"
 
 void RenderSystem::CreateDeviceAndSwapChain()

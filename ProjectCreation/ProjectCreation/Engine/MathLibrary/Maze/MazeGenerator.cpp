@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <stack>
 #include <vector>
-#include "../../../Utility/MemoryLeakDetection.h"
-#include "../../../Utility/Random.h"
+#include <MemoryLeakDetection.h>
+#include <Random.h>
 MazeGenerator::MazePoint MazeGenerator::GetRandomNeighbor(MazePoint point, unsigned rows, unsigned cols, bool** visited)
 {
         std::vector<MazePoint> neigh(4);

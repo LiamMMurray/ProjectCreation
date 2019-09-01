@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../ECS/ECSTypes.h"
-#include "../../ECS/HandleManager.h"
+#include <ECSTypes.h>
+#include <HandleManager.h>
 #include "Shapes.h"
 
 class CollisionGrid;

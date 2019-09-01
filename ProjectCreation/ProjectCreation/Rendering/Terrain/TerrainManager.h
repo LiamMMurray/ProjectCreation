@@ -3,7 +3,7 @@
 #include <DirectXMath.h>
 #include "..//..//Engine/MathLibrary/Transform.h"
 #include "..//..//Engine/ResourceManager/IResource.h"
-#include "..//..//Utility/ForwardDeclarations/D3DNativeTypes.h"
+#include <D3DNativeTypes.h>
 #include "..//InstanceData.h"
 class RenderSystem;
 

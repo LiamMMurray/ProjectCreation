@@ -1,5 +1,5 @@
 #include "DebugCameraController.h"
-#include "../../ECS/Entity.h"
+#include <Entity.h>
 #include "../CoreInput/CoreInput.h"
 #include "../GEngine.h"
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "../../ECS/Component.h"
+#include <Component.h>
 #include "3DSoundTypes.h"
 
 #include <bitset>

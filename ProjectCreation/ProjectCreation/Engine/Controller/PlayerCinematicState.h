@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../ECS/HandleManager.h"
+#include <HandleManager.h>
 #include "../MathLibrary/MathLibrary.h"
 #include "PlayerControllerState.h"
 

@@ -5,8 +5,8 @@
 #include <DirectXMath.h>
 #include <string>
 #include <vector>
-#include "../../ECS/ECSTypes.h"
-#include "../../ECS/ISystem.h"
+#include <ECSTypes.h>
+#include <ISystem.h>
 #include "..//Particle Systems/Pools.h"
 #include "3DSoundComponent.h"
 #include "SoundComponent.h"

@@ -1,4 +1,4 @@
-#include "Utility/StaticSentinelDumpMemoryLeaks.h"
+#include <StaticSentinelDumpMemoryLeaks.h> 
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h
 #define NOMINMAX
@@ -49,7 +49,7 @@
 
 #include "Engine/GenericComponents/TransformComponent.h"
 #include "Engine/MathLibrary/MathLibrary.h"
-#include "Utility/MemoryLeakDetection.h"
+#include <MemoryLeakDetection.h>
 
 #pragma comment(lib, "dbghelp")
 

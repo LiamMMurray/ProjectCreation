@@ -1,6 +1,6 @@
 #include "PhysicsComponent.h"
 #include "../GenericComponents/TransformComponent.h"
-#include "../../ECS/Entity.h"
+#include <Entity.h>
 #include "../GEngine.h"
 
 void PhysicsComponent::AddForce(DirectX::XMVECTOR force)

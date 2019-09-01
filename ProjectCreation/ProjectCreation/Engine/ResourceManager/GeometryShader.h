@@ -1,5 +1,5 @@
 #pragma once
-#include "../../Utility/ForwardDeclarations/D3DNativeTypes.h"
+#include <D3DNativeTypes.h>
 #include "Resource.h"
 struct GeometryShader : public Resource<GeometryShader>
 {
