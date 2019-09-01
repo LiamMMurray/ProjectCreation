@@ -3,7 +3,7 @@
 #include <d3d11_1.h>
 #include < Directxpackedvector.h >
 #include "../..//Engine/ResourceManager/StaticMesh.h"
-#include "../..//FileIO/FileIO.h"
+#include <FileIO.h>
 #include <StringUtility.h>
 #include "../../Engine/ResourceManager/ComputeShader.h"
 #include "..//..//Engine/Controller/ControllerSystem.h"

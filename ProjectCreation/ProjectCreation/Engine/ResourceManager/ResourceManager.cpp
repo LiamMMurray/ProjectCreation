@@ -1,12 +1,12 @@
 #include "ResourceManager.h"
 #include <assert.h>
 
-#include "../../Rendering/RenderingSystem.h"
+#include <RenderingSystem.h>
 #include "../GEngine.h"
 
 #include <StringUtility.h>
 
-#include "../../FileIO/FileIO.h"
+#include <FileIO.h>
 
 #include <d3d11_1.h>
 

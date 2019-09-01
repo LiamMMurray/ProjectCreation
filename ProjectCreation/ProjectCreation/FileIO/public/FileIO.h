@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "../../ErrorHandling/ErrorTypes.h"
+#include <ErrorTypes.h>
 
 #include "DDSTextureLoader.h"
 

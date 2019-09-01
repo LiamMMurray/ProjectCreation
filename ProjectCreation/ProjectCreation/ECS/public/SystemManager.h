@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <queue>
 #include <unordered_map>
-#include "../../ErrorHandling/ErrorTypes.h"
+#include <ErrorTypes.h>
 #include <MemoryLeakDetection.h>
 #include "ECSTypes.h"
 #include "ISystem.h"

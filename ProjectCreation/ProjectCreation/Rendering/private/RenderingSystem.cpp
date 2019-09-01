@@ -7,7 +7,7 @@
 #include "../../Engine/CoreInput/CoreInput.h"
 #include "../../Engine/GEngine.h"
 #include "../../Engine/MathLibrary/MathLibrary.h"
-#include "../../FileIO/FileIO.h"
+#include <FileIO.h>
 #include <Bloom.h>
 
 #include <d3d11_1.h>

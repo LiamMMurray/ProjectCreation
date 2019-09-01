@@ -104,7 +104,7 @@
     <ClInclude Include="Engine\ResourceManager\GeometryShader.h" />
     <ClInclude Include="Engine\XTime.h" />
     <ClInclude Include="Engine\Entities\TestEntities.h" />
-    <ClInclude Include="ErrorHandling\ErrorTypes.h" />
+    <ClInclude Include="Utility\public\ErrorTypes.h" />
     <ClInclude Include="Engine\MathLibrary\MathConstants.h" />
     <ClInclude Include="Engine\MathLibrary\MathLibrary.h" />
     <ClInclude Include="Engine\MathLibrary\Quaternion.h" />
