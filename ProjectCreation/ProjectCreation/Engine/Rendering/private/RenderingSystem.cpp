@@ -1,12 +1,12 @@
 #include "RenderingSystem.h"
 #include <algorithm>
 #include <iostream>
-#include "../..//Engine/Entities/EntityFactory.h"
-#include "../../Engine/Controller/ControllerSystem.h"
-#include "../../Engine/Controller/PlayerMovement.h"
-#include "../../Engine/CoreInput/CoreInput.h"
-#include "../../Engine/GEngine.h"
-#include "../../Engine/MathLibrary/MathLibrary.h"
+#include "../../Entities/EntityFactory.h"
+#include "../../Controller/ControllerSystem.h"
+#include "../../Controller/PlayerMovement.h"
+#include "../../CoreInput/CoreInput.h"
+#include "../../GEngine.h"
+#include "../../MathLibrary/MathLibrary.h"
 #include <FileIO.h>
 #include <Bloom.h>
 
@@ -21,23 +21,23 @@
 #include <wrl/client.h>
 #include <DirectXMacros.h>
 
-#include "../../Engine/ResourceManager/AnimationClip.h"
-#include "../../Engine/ResourceManager/GeometryShader.h"
-#include "../../Engine/ResourceManager/Material.h"
-#include "../../Engine/ResourceManager/PixelShader.h"
-#include "../../Engine/ResourceManager/SkeletalMesh.h"
-#include "../../Engine/ResourceManager/StaticMesh.h"
-#include "../../Engine/ResourceManager/Texture2D.h"
-#include "../../Engine/ResourceManager/VertexShader.h"
+#include "../../ResourceManager/AnimationClip.h"
+#include "../../ResourceManager/GeometryShader.h"
+#include "../../ResourceManager/Material.h"
+#include "../../ResourceManager/PixelShader.h"
+#include "../../ResourceManager/SkeletalMesh.h"
+#include "../../ResourceManager/StaticMesh.h"
+#include "../../ResourceManager/Texture2D.h"
+#include "../../ResourceManager/VertexShader.h"
 
 // Will refactor this
-#include "../../Engine/Gameplay/OrbitSystem.h"
-#include "../../Engine/Gameplay/SpeedboostSystem.h"
+#include "../../Gameplay/OrbitSystem.h"
+#include "../../Gameplay/SpeedboostSystem.h"
 
-#include "../../Engine/GenericComponents/TransformComponent.h"
+#include "../../GenericComponents/TransformComponent.h"
 #include "Vertex.h"
 
-#include "../../Engine/Particle Systems/ParticleManager.h"
+#include "../../Particle Systems/ParticleManager.h"
 #include <UIManager.h>
 
 #include <CameraComponent.h>
@@ -46,8 +46,8 @@
 #include <StaticMeshComponent.h>
 #include <TerrainManager.h>
 
-#include "../..//Engine/Controller/ControllerSystem.h"
-#include "../../Engine/MathLibrary/ColorConstants.h"
+#include "../../Controller/ControllerSystem.h"
+#include "../../MathLibrary/ColorConstants.h"
 #include <MemoryLeakDetection.h>
 #include <debug_renderer.h>
 

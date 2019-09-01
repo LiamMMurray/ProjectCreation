@@ -1,6 +1,6 @@
 #pragma once
 #include <DirectXMath.h>
-#include "../../Engine/MathLibrary/MathConstants.h"
+#include "../../MathLibrary/MathConstants.h"
 struct FVertex
 {
         DirectX::XMFLOAT3 position;

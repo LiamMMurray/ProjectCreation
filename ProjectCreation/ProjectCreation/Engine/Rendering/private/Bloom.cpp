@@ -4,16 +4,16 @@
 #include <d3d11_1.h>
 #include <math.h>
 
-#include "../../Engine/GEngine.h"
-#include "../../Engine/ResourceManager/PixelShader.h"
-#include "../../Engine/ResourceManager/Texture2D.h"
-#include "../../Engine/ResourceManager/VertexShader.h"
+#include "../../GEngine.h"
+#include "../../ResourceManager/PixelShader.h"
+#include "../../ResourceManager/Texture2D.h"
+#include "../../ResourceManager/VertexShader.h"
 
 #include <DirectXMacros.h>
 #include <RenderUtility.h>
 
-#include "../..//Engine/MathLibrary/ColorConstants.h"
-#include "../..//Engine/MathLibrary/MathLibrary.h"
+#include "../../MathLibrary/ColorConstants.h"
+#include "../../MathLibrary/MathLibrary.h"
 
 #include <RenderingSystem.h>
 

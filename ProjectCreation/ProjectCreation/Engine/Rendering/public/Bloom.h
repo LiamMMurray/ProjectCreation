@@ -4,7 +4,7 @@
 #include <DirectXMath.h>
 #include <stdint.h>
 
-#include "../../Engine/ResourceManager/IResource.h"
+#include "../../ResourceManager/IResource.h"
 
 struct E_BLOOM_PS_SRV
 {

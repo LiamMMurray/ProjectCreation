@@ -4,8 +4,8 @@
 
 #include <HandleManager.h>
 
-#include "../../Engine/ResourceManager/IResource.h"
-#include "../../Engine/Animation/AnimationContainers.h"
+#include "../../ResourceManager/IResource.h"
+#include "../../Animation/AnimationContainers.h"
 
 struct SkeletalMeshComponent : public Component<SkeletalMeshComponent>
 {

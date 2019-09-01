@@ -2,19 +2,19 @@
 #include <d3d11.h>
 #include <d3d11_1.h>
 #include < Directxpackedvector.h >
-#include "../..//Engine/ResourceManager/StaticMesh.h"
+#include "../../ResourceManager/StaticMesh.h"
 #include <FileIO.h>
 #include <StringUtility.h>
-#include "../../Engine/ResourceManager/ComputeShader.h"
-#include "..//..//Engine/Controller/ControllerSystem.h"
-#include "..//..//Engine/CoreInput/CoreInput.h"
-#include "..//..//Engine/Entities/EntityFactory.h"
-#include "..//..//Engine/GEngine.h"
-#include "..//..//Engine/GenericComponents/TransformComponent.h"
-#include "..//..//Engine/GenericComponents/TransformSystem.h"
-#include "..//..//Engine/Particle Systems/EmitterComponent.h"
-#include "..//..//Engine/Particle Systems/ParticleManager.h"
-#include "..//..//Engine/ResourceManager/Material.h"
+#include "..//..//ResourceManager/ComputeShader.h"
+#include "..//..//Controller/ControllerSystem.h"
+#include "..//..//CoreInput/CoreInput.h"
+#include "..//..//Entities/EntityFactory.h"
+#include "..//..//GEngine.h"
+#include "..//..//GenericComponents/TransformComponent.h"
+#include "..//..//GenericComponents/TransformSystem.h"
+#include "..//..//Particle Systems/EmitterComponent.h"
+#include "..//..//Particle Systems/ParticleManager.h"
+#include "..//..//ResourceManager/Material.h"
 #include <DirectXMacros.h>
 #include <StaticMeshComponent.h>
 #include <debug_renderer.h>

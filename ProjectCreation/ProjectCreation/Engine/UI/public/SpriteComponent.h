@@ -2,9 +2,9 @@
 
 #include <d3d11.h>
 #include <Component.h>
-#include "../../Engine/Events/Event.h"
-#include "../../Engine/Events/EventDelegate.h"
-#include "../../Engine/Events/EventManager.h"
+#include "../../Events/Event.h"
+#include "../../Events/EventDelegate.h"
+#include "../../Events/EventManager.h"
 #include "UICollision.h"
 
 #include "SimpleMath.h"

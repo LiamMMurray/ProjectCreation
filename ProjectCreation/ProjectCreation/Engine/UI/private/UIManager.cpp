@@ -1,18 +1,18 @@
 #include <UIManager.h>
 #include <Windows.h>
 #include <iostream>
-#include "../../Engine/CoreInput/InputActions.h"
+#include "../../CoreInput/InputActions.h"
 
-#include "../../Engine/Controller/ControllerSystem.h"
-#include "../../Engine/CoreInput/CoreInput.h"
-#include "../../Engine/GEngine.h"
+#include "../../Controller/ControllerSystem.h"
+#include "../../CoreInput/CoreInput.h"
+#include "../../GEngine.h"
 #include <RenderingSystem.h>
 #include <PairHash.h>
 #include <DirectXMacros.h>
 #include <MemoryLeakDetection.h>
 
-#include "../../Engine/ConsoleWindow/ConsoleWindow.h"
-#include "../../Engine/Levels/TutorialLevel.h"
+#include "../../ConsoleWindow/ConsoleWindow.h"
+#include "../../Levels/TutorialLevel.h"
 class TutorialLevel;
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h

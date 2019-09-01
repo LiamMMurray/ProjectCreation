@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "../../Engine/ResourceManager/ResourceInfoTypes.h"
+#include "../../ResourceManager/ResourceInfoTypes.h"
 
 namespace FileIO
 {

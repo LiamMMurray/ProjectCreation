@@ -3,7 +3,7 @@
 #include <vector>
 #include "BasicIOTypes.h"
 
-#include "../../Engine/ResourceManager/ResourceInfoTypes.h"
+#include "../../ResourceManager/ResourceInfoTypes.h"
 
 #include <cstddef>
 

@@ -2,7 +2,7 @@
 
 #include <HandleManager.h>
 
-#include "../../Engine/ResourceManager/IResource.h"
+#include "../../ResourceManager/IResource.h"
 #include <Component.h>
 
 struct StaticMeshComponent : public Component<StaticMeshComponent>

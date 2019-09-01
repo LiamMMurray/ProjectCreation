@@ -1,8 +1,8 @@
 #pragma once
 
 #include <DirectXMath.h>
-#include "..//..//Engine/MathLibrary/Transform.h"
-#include "..//..//Engine/ResourceManager/IResource.h"
+#include "../../MathLibrary/Transform.h"
+#include "../../ResourceManager/IResource.h"
 #include <D3DNativeTypes.h>
 #include <InstanceData.h>
 class RenderSystem;

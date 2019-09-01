@@ -8,7 +8,7 @@
 #include <WinProcTypes.h>
 #include <PostProcessEffectBase.h>
 
-#include "../../Engine/ResourceManager/IResource.h"
+#include "../../ResourceManager/IResource.h"
 
 #include "ConstantBuffers.h"
 

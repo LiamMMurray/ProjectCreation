@@ -6,7 +6,7 @@
 
 #include "DDSTextureLoader.h"
 
-#include "../../Engine/Animation/AnimationContainers.h"
+#include "../../Animation/AnimationContainers.h"
 
 #include "Material.h"
 #include "SkeletalMesh.h"

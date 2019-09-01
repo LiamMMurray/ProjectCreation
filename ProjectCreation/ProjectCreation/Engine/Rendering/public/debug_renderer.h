@@ -1,8 +1,8 @@
 #pragma once
-#include "../../Engine/Animation/AnimationContainers.h"
-#include "../../Engine/CollisionLibary/CollisionResult.h"
-#include "../../Engine/MathLibrary/ColorConstants.h"
-#include "../../Engine/MathLibrary/MathLibrary.h"
+#include "../../Animation/AnimationContainers.h"
+#include "../../CollisionLibary/CollisionResult.h"
+#include "../../MathLibrary/ColorConstants.h"
+#include "../../MathLibrary/MathLibrary.h"
 #include <Vertex.h>
 
 // Interface to the debug renderer
