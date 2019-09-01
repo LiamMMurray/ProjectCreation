@@ -2,7 +2,7 @@
 #include <DirectXMacros.h>
 #include <d3d11_1.h>
 #include "../../Engine/MathLibrary/MathLibrary.h"
-#include "../../FileIO/FileIO.h"
+#include <FileIO.h>
 #include <RenderingSystem.h>
 #include <TerrainManager.h>
 #include <Vertex.h>

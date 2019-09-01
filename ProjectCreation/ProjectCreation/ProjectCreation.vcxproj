@@ -105,17 +105,17 @@
     <ClInclude Include="Engine\XTime.h" />
     <ClInclude Include="Engine\Entities\TestEntities.h" />
     <ClInclude Include="ErrorHandling\ErrorTypes.h" />
-    <ClInclude Include="FileIO\BasicIOTypes.h" />
-    <ClInclude Include="FileIO\FileIO.h" />
-    <ClInclude Include="FileIO\Material.h" />
-    <ClInclude Include="FileIO\Shader.h" />
-    <ClInclude Include="FileIO\SkeletalMesh.h" />
-    <ClInclude Include="FileIO\StaticMesh.h" />
     <ClInclude Include="Engine\MathLibrary\MathConstants.h" />
     <ClInclude Include="Engine\MathLibrary\MathLibrary.h" />
     <ClInclude Include="Engine\MathLibrary\Quaternion.h" />
     <ClInclude Include="Engine\MathLibrary\Transform.h" />
     <ClInclude Include="Engine\MathLibrary\Vector.h" />
+    <ClInclude Include="FileIO\public\BasicIOTypes.h" />
+    <ClInclude Include="FileIO\public\FileIO.h" />
+    <ClInclude Include="FileIO\public\Material.h" />
+    <ClInclude Include="FileIO\public\Shader.h" />
+    <ClInclude Include="FileIO\public\SkeletalMesh.h" />
+    <ClInclude Include="FileIO\public\StaticMesh.h" />
     <ClInclude Include="ForwardDeclarations\public\D3DNativeTypes.h" />
     <ClInclude Include="ForwardDeclarations\public\STLTypes.h" />
     <ClInclude Include="ForwardDeclarations\public\WinProcTypes.h" />
@@ -602,7 +602,7 @@
     <ClCompile Include="Engine\ResourceManager\ComputeShader.cpp" />
     <ClCompile Include="Engine\ResourceManager\GeometryShader.cpp" />
     <ClCompile Include="Engine\XTime.cpp" />
-    <ClCompile Include="FileIO\FileIO.cpp" />
+    <ClCompile Include="FileIO\private\FileIO.cpp" />
     <ClCompile Include="Hashing\private\SpookyHashV2.cpp" />
     <ClCompile Include="Engine\Audio\SoundComponent.cpp" />
     <ClCompile Include="main.cpp" />
@@ -749,7 +749,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Utility\public;$(ProjectDir)Macros\public;$(ProjectDir)Hashing\public;$(ProjectDir)ForwardDeclarations\public;$(ProjectDir)ECS\public;$(ProjectDir)UI\public;$(ProjectDir)Rendering\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Utility\public;$(ProjectDir)Macros\public;$(ProjectDir)Hashing\public;$(ProjectDir)ForwardDeclarations\public;$(ProjectDir)ECS\public;$(ProjectDir)UI\public;$(ProjectDir)Rendering\public;$(ProjectDir)FileIO\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -773,7 +773,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Utility\public;$(ProjectDir)Macros\public;$(ProjectDir)Hashing\public;$(ProjectDir)ForwardDeclarations\public;$(ProjectDir)ECS\public;$(ProjectDir)UI\public;$(ProjectDir)Rendering\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Utility\public;$(ProjectDir)Macros\public;$(ProjectDir)Hashing\public;$(ProjectDir)ForwardDeclarations\public;$(ProjectDir)ECS\public;$(ProjectDir)UI\public;$(ProjectDir)Rendering\public;$(ProjectDir)FileIO\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -801,7 +801,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Utility\public;$(ProjectDir)Macros\public;$(ProjectDir)Hashing\public;$(ProjectDir)ForwardDeclarations\public;$(ProjectDir)ECS\public;$(ProjectDir)UI\public;$(ProjectDir)Rendering\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Utility\public;$(ProjectDir)Macros\public;$(ProjectDir)Hashing\public;$(ProjectDir)ForwardDeclarations\public;$(ProjectDir)ECS\public;$(ProjectDir)UI\public;$(ProjectDir)Rendering\public;$(ProjectDir)FileIO\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -829,7 +829,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Utility\public;$(ProjectDir)Macros\public;$(ProjectDir)Hashing\public;$(ProjectDir)ForwardDeclarations\public;$(ProjectDir)ECS\public;$(ProjectDir)UI\public;$(ProjectDir)Rendering\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Utility\public;$(ProjectDir)Macros\public;$(ProjectDir)Hashing\public;$(ProjectDir)ForwardDeclarations\public;$(ProjectDir)ECS\public;$(ProjectDir)UI\public;$(ProjectDir)Rendering\public;$(ProjectDir)FileIO\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

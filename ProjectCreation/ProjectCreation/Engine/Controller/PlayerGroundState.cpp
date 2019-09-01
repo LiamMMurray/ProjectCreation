@@ -2,8 +2,8 @@
 #include <cmath>
 #include <iostream>
 #include <UIManager.h>
-#include "..//..//Rendering/Components/CameraComponent.h"
-#include "..//..//Rendering/Components/DirectionalLightComponent.h"
+#include <CameraComponent.h>
+#include <DirectionalLightComponent.h>
 #include "..//GEngine.h"
 #include "..//GenericComponents/TransformComponent.h"
 #include "..//MathLibrary/MathLibrary.h"
