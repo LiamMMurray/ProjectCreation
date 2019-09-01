@@ -6,7 +6,7 @@
 #include "../MathLibrary/MathLibrary.h"
 #include "../MathLibrary/Quaternion.h"
 
-#include "../../Rendering/DebugRender/debug_renderer.h"
+#include <debug_renderer.h>
 #include "..//Controller/ControllerSystem.h"
 #include "../CollisionLibary/CollisionLibary.h"
 

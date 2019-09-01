@@ -1,7 +1,7 @@
 #include "OrbitSystem.h"
 #include <limits>
-#include "../../Rendering/Components/StaticMeshComponent.h"
-#include "..//..//Rendering/Components/DirectionalLightComponent.h"
+#include <StaticMeshComponent.h>
+#include <DirectionalLightComponent.h>
 #include "..//CoreInput/CoreInput.h"
 #include "..//Entities/EntityFactory.h"
 #include "..//GEngine.h"

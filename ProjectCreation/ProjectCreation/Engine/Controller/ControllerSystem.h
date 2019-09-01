@@ -2,7 +2,7 @@
 
 #include <DirectXMath.h>
 #include <HandleManager.h>
-#include "../../Rendering/Components/CameraComponent.h"
+#include <CameraComponent.h>
 #include "../Controller/IController.h"
 #include "../GEngine.h"
 #include "../Gameplay/LightOrbColors.h"

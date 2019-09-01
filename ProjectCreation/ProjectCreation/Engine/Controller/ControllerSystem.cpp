@@ -2,7 +2,7 @@
 #include "ControllerSystem.h"
 
 #include <iostream>
-#include "../..//Rendering/Terrain/TerrainManager.h"
+#include <TerrainManager.h>
 #include "..//Gameplay/LightOrbColors.h"
 #include "../Controller/IController.h"
 #include "../CoreInput/CoreInput.h"
@@ -12,12 +12,12 @@
 #include "..//Gameplay/OrbitSystem.h"
 #include "..//Gameplay/SpeedboostSystem.h"
 
-#include "../../Rendering/DebugRender/debug_renderer.h"
-#include "../../Rendering/RenderingSystem.h"
+#include <debug_renderer.h>
+#include <RenderingSystem.h>
 
 #include "../CollisionLibary/Shapes.h"
 
-#include "../../UI/UIManager.h"
+#include <UIManager.h>
 
 #include <WinUser.h>
 #include "../CoreInput/InputActions.h"

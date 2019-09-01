@@ -1,6 +1,6 @@
 #include "EntityFactory.h"
-#include "../../Rendering/Components/SkeletalMeshComponent.h"
-#include "../../Rendering/Components/StaticMeshComponent.h"
+#include <SkeletalMeshComponent.h>
+#include <StaticMeshComponent.h>
 #include "../Animation/AnimationComponent.h"
 #include "../GEngine.h"
 #include "../GenericComponents/TransformComponent.h"

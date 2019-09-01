@@ -1,5 +1,5 @@
 #include "SplineCluster.h"
-#include "../../Rendering/Terrain/TerrainManager.h"
+#include <TerrainManager.h>
 #include "..//MathLibrary/MathLibrary.h"
 
 using namespace DirectX;

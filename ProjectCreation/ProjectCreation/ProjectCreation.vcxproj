@@ -123,29 +123,28 @@
     <ClInclude Include="Hashing\public\SpookyHashV2.h" />
     <ClInclude Include="Macros\public\DirectXMacros.h" />
     <ClInclude Include="Macros\public\GlobalMacros.h" />
-    <ClInclude Include="Rendering\InstanceData.h" />
-    <ClInclude Include="Rendering\Terrain\TerrainManager.h" />
+    <ClInclude Include="Rendering\public\Bloom.h" />
+    <ClInclude Include="Rendering\public\CameraComponent.h" />
+    <ClInclude Include="Rendering\public\ConstantBuffers.h" />
+    <ClInclude Include="Rendering\public\debug_renderer.h" />
+    <ClInclude Include="Rendering\public\DirectionalLightComponent.h" />
+    <ClInclude Include="Rendering\public\InstanceData.h" />
+    <ClInclude Include="Rendering\public\LightBuffers.h" />
+    <ClInclude Include="Rendering\public\PointLightComponent.h" />
+    <ClInclude Include="Rendering\public\PostProcessEffectBase.h" />
+    <ClInclude Include="Rendering\public\RenderingSystem.h" />
+    <ClInclude Include="Rendering\public\SkeletalMeshComponent.h" />
+    <ClInclude Include="Rendering\public\StaticMeshComponent.h" />
+    <ClInclude Include="Rendering\public\TerrainManager.h" />
+    <ClInclude Include="Rendering\public\Vertex.h" />
     <ClInclude Include="Shaders\InstanceData.hlsl" />
     <ClInclude Include="Shaders\Interpolation.hlsl" />
     <ClInclude Include="Shaders\MVPBuffer.hlsl" />
     <ClInclude Include="Shaders\PBRMath.hlsl" />
     <ClInclude Include="Engine\Audio\SoundComponent.h" />
-    <ClInclude Include="UI\FontComponent.h" />
     <ClInclude Include="Engine\Particle Systems\ParticleBufferSetup.h" />
     <ClInclude Include="Engine\Particle Systems\ParticleData.h" />
     <ClInclude Include="Engine\Particle Systems\ParticleManager.h" />
-    <ClInclude Include="Rendering\Components\CameraComponent.h" />
-    <ClInclude Include="Rendering\Components\DirectionalLightComponent.h" />
-    <ClInclude Include="Rendering\Components\PointLightComponent.h" />
-    <ClInclude Include="Rendering\ConstantBuffers.h" />
-    <ClInclude Include="Rendering\Components\SkeletalMeshComponent.h" />
-    <ClInclude Include="Rendering\Components\StaticMeshComponent.h" />
-    <ClInclude Include="Rendering\DebugRender\debug_renderer.h" />
-    <ClInclude Include="Rendering\LightBuffers.h" />
-    <ClInclude Include="Rendering\PostProcess\Bloom.h" />
-    <ClInclude Include="Rendering\PostProcess\PostProcessEffectBase.h" />
-    <ClInclude Include="Rendering\RenderingSystem.h" />
-    <ClInclude Include="Rendering\Vertex.h" />
     <ClInclude Include="Engine\ResourceManager\AnimationClip.h" />
     <ClInclude Include="Engine\ResourceManager\Material.h" />
     <ClInclude Include="Engine\ResourceManager\PixelShader.h" />
@@ -157,6 +156,10 @@
     <ClInclude Include="Engine\ResourceManager\StaticMesh.h" />
     <ClInclude Include="Engine\ResourceManager\Texture2D.h" />
     <ClInclude Include="Engine\ResourceManager\VertexShader.h" />
+    <ClInclude Include="UI\public\FontComponent.h" />
+    <ClInclude Include="UI\public\SpriteComponent.h" />
+    <ClInclude Include="UI\public\UICollision.h" />
+    <ClInclude Include="UI\public\UIManager.h" />
     <ClInclude Include="Utility\public\BitwiseUtility.h" />
     <ClInclude Include="Utility\public\MemoryDefines.h" />
     <ClInclude Include="Utility\public\MemoryLeakDetection.h" />
@@ -348,9 +351,6 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">4.1</ShaderModel>
     </FxCompile>
     <ClInclude Include="System\PhysicsSystem.h" />
-    <ClInclude Include="UI\SpriteComponent.h" />
-    <ClInclude Include="UI\UICollision.h" />
-    <ClInclude Include="UI\UIManager.h" />
     <ClInclude Include="Engine\Physics\PhysicsSystem.h" />
     <ClInclude Include="Shaders\BasePassTextureMaps.hlsl" />
     <ClInclude Include="Shaders\BloomInclude.hlsl" />
@@ -604,21 +604,13 @@
     <ClCompile Include="Engine\XTime.cpp" />
     <ClCompile Include="FileIO\FileIO.cpp" />
     <ClCompile Include="Hashing\private\SpookyHashV2.cpp" />
-    <ClCompile Include="Rendering\Terrain\TerrainManager.cpp" />
     <ClCompile Include="Engine\Audio\SoundComponent.cpp" />
-    <ClCompile Include="UI\FontComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\MathLibrary\MathLibrary.cpp" />
     <ClCompile Include="Engine\MathLibrary\Quaternion.cpp" />
     <ClCompile Include="Engine\MathLibrary\Transform.cpp" />
     <ClCompile Include="Engine\MathLibrary\Vector.cpp" />
     <ClCompile Include="Engine\Particle Systems\ParticleBufferSetup.cpp" />
-    <ClCompile Include="Rendering\DebugRender\debug_renderer.cpp" />
-    <ClCompile Include="Rendering\PostProcess\Bloom.cpp" />
-    <ClCompile Include="Rendering\RenderingSystem.cpp" />
-    <ClCompile Include="Rendering\Components\SkeletalMeshComponent.cpp" />
-    <ClCompile Include="Rendering\Components\StaticMeshComponent.cpp" />
-    <ClCompile Include="Rendering\Vertex.cpp" />
     <ClCompile Include="Engine\ResourceManager\AnimationClip.cpp" />
     <ClCompile Include="Engine\ResourceManager\IResource.cpp" />
     <ClCompile Include="Engine\ResourceManager\Material.cpp" />
@@ -628,15 +620,20 @@
     <ClCompile Include="Engine\ResourceManager\StaticMesh.cpp" />
     <ClCompile Include="Engine\ResourceManager\Texture2D.cpp" />
     <ClCompile Include="Engine\ResourceManager\VertexShader.cpp" />
-    <ClCompile Include="UI\UICollision.cpp" />
+    <ClCompile Include="Rendering\private\Bloom.cpp" />
+    <ClCompile Include="Rendering\private\debug_renderer.cpp" />
+    <ClCompile Include="Rendering\private\RenderingSystem.cpp" />
+    <ClCompile Include="Rendering\private\SkeletalMeshComponent.cpp" />
+    <ClCompile Include="Rendering\private\StaticMeshComponent.cpp" />
+    <ClCompile Include="Rendering\private\TerrainManager.cpp" />
+    <ClCompile Include="Rendering\private\Vertex.cpp" />
+    <ClCompile Include="UI\private\FontComponent.cpp" />
+    <ClCompile Include="UI\private\SpriteComponent.cpp" />
+    <ClCompile Include="UI\private\UICollision.cpp" />
+    <ClCompile Include="UI\private\UIManager.cpp" />
     <ClCompile Include="Utility\private\Profiling.cpp" />
     <ClCompile Include="Utility\private\RenderUtility.cpp" />
     <ClCompile Include="Utility\private\StringUtility.cpp" />
-    <ClCompile Include="UI\UIManager.cpp">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="UI\SpriteComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shaders\DefaultPixelIn.hlsl">
@@ -752,7 +749,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Utility\public;$(ProjectDir)Macros\public;$(ProjectDir)Hashing\public;$(ProjectDir)ForwardDeclarations\public;$(ProjectDir)ECS\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Utility\public;$(ProjectDir)Macros\public;$(ProjectDir)Hashing\public;$(ProjectDir)ForwardDeclarations\public;$(ProjectDir)ECS\public;$(ProjectDir)UI\public;$(ProjectDir)Rendering\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -776,7 +773,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(SolutionDir)DirectXTK-apr2019\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Utility\public;$(ProjectDir)Macros\public;$(ProjectDir)Hashing\public;$(ProjectDir)ForwardDeclarations\public;$(ProjectDir)ECS\public;$(ProjectDir)UI\public;$(ProjectDir)Rendering\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -804,7 +801,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(SolutionDir)DirectXTK-apr2019\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Utility\public;$(ProjectDir)Macros\public;$(ProjectDir)Hashing\public;$(ProjectDir)ForwardDeclarations\public;$(ProjectDir)ECS\public;$(ProjectDir)UI\public;$(ProjectDir)Rendering\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -832,7 +829,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(SolutionDir)DirectXTK-apr2019\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Utility\public;$(ProjectDir)Macros\public;$(ProjectDir)Hashing\public;$(ProjectDir)ForwardDeclarations\public;$(ProjectDir)ECS\public;$(ProjectDir)UI\public;$(ProjectDir)Rendering\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

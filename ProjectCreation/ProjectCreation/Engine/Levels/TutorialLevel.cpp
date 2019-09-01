@@ -1,5 +1,5 @@
 #include "TutorialLevel.h"
-#include "../../UI/UIManager.h"
+#include <UIManager.h>
 #include "../Controller/ControllerSystem.h"
 
 using namespace DirectX;

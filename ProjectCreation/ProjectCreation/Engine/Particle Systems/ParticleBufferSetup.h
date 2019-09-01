@@ -1,5 +1,5 @@
 #pragma once
-#include "../../Rendering/Vertex.h"
+#include <Vertex.h>
 #include <D3DNativeTypes.h>
 #include "ParticleData.h"
 

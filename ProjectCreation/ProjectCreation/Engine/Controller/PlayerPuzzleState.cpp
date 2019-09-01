@@ -1,5 +1,5 @@
 #include "PlayerPuzzleState.h"
-#include "..//..//Rendering/Components/CameraComponent.h"
+#include <CameraComponent.h>
 #include "..//CollisionLibary/CollisionLibary.h"
 #include "..//CoreInput/InputActions.h"
 #include "..//GEngine.h"

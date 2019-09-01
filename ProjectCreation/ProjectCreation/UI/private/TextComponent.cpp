@@ -1,4 +1,4 @@
-#include "TextComponent.h"
+#include <TextComponent.h>
 
 TextComponent::TextComponent()
 {}

@@ -1,7 +1,7 @@
 #include "AnimationSystem.h"
 #include "AnimationComponent.h"
 
-#include "../../Rendering/Components/SkeletalMeshComponent.h"
+#include <SkeletalMeshComponent.h>
 
 #include "../GEngine.h"
 
@@ -11,7 +11,7 @@
 
 #include "../MathLibrary/MathLibrary.h"
 
-#include "../../Rendering/DebugRender/debug_renderer.h"
+#include <debug_renderer.h>
 
 using namespace DirectX;
 

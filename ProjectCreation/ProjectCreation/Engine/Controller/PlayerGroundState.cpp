@@ -1,7 +1,7 @@
 #include "PlayerGroundState.h"
 #include <cmath>
 #include <iostream>
-#include "../../UI/UIManager.h"
+#include <UIManager.h>
 #include "..//..//Rendering/Components/CameraComponent.h"
 #include "..//..//Rendering/Components/DirectionalLightComponent.h"
 #include "..//GEngine.h"

@@ -5,7 +5,7 @@
 
 #include "BasicIOTypes.h"
 
-#include "../Rendering/Vertex.h"
+#include <Vertex.h>
 
 namespace FileIO
 {

@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "../Rendering/Vertex.h"
+#include <Vertex.h>
 #include "../Engine/Animation/AnimationContainers.h"
 
 namespace FileIO

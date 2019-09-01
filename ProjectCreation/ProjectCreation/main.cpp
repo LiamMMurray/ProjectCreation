@@ -15,7 +15,7 @@
 
 #include "Engine/Audio/ContinousSoundSystem.h"
 
-#include "UI/UIManager.h"
+#include <UIManager.h>
 
 #include "Engine/CollisionLibary/CollisionLibary.h"
 #include "Engine/CollisionLibary/CollisionResult.h"
@@ -31,11 +31,11 @@
 #include "Engine/Particle Systems/EmitterComponent.h"
 #include "Engine/Particle Systems/ParticleData.h"
 #include "Engine/ResourceManager/SkeletalMesh.h"
-#include "Rendering/Components/CameraComponent.h"
-#include "Rendering/Components/SkeletalMeshComponent.h"
-#include "Rendering/Components/StaticMeshComponent.h"
+#include <CameraComponent.h>
+#include <SkeletalMeshComponent.h>
+#include <StaticMeshComponent.h>
 /////testing -vic
-#include "Rendering/DebugRender/debug_renderer.h"
+#include <debug_renderer.h>
 ////testing -vic
 ///
 
@@ -45,7 +45,7 @@
 
 #include "Engine/Gameplay/OrbitSystem.h"
 #include "Engine/Gameplay/SpeedBoostSystem.h"
-#include "Rendering/Components/DirectionalLightComponent.h"
+#include <DirectionalLightComponent.h>
 
 #include "Engine/GenericComponents/TransformComponent.h"
 #include "Engine/MathLibrary/MathLibrary.h"
