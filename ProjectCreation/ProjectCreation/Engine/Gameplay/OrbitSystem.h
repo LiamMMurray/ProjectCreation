@@ -3,8 +3,8 @@
 #include <functional>
 #include <vector>
 
-#include "../../ECS/HandleManager.h"
-#include "../../ECS/SystemManager.h"
+#include <HandleManager.h>
+#include <SystemManager.h>
 #include "..//ResourceManager/IResource.h"
 #include "../MathLibrary/MathLibrary.h"
 #include "GoalComponent.h"

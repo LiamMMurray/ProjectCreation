@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include "..//..//ECS//HandleManager.h"
+#include <HandleManager.h>
 
 namespace EntityFactory
 {

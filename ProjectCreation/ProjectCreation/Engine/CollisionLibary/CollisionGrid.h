@@ -4,8 +4,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include "../../ECS/ECSTypes.h"
-#include "../../Utility/Hashing/PairHash.h"
+#include <ECSTypes.h>
+#include <PairHash.h>
 #include "CollisionHelpers.h"
 #include "Shapes.h"
 

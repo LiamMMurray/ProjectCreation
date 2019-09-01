@@ -1,5 +1,5 @@
 #pragma once
-#include "../../ECS/ISystem.h"
+#include <ISystem.h>
 #include <DirectXMath.h>
 
 class PhysicsSystem : public ISystem

@@ -2,7 +2,7 @@
 
 #include <d3d11.h>
 #include <string>
-#include "../ECS/Component.h"
+#include <Component.h>
 #include "SimpleMath.h"
 #include "SpriteFont.h"
 

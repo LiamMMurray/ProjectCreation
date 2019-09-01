@@ -4,7 +4,7 @@
 #include "../../Rendering/RenderingSystem.h"
 #include "../GEngine.h"
 
-#include "../../Utility/StringUtility.h"
+#include <StringUtility.h>
 
 #include "../../FileIO/FileIO.h"
 

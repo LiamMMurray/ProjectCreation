@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
-#include "../../../Utility/Hashing/PairHash.h"
-#include "../../../Utility/MemoryLeakDetection.h"
+#include <PairHash.h>
+#include <MemoryLeakDetection.h>
 #include "IState.h"
 
 class StateMachine

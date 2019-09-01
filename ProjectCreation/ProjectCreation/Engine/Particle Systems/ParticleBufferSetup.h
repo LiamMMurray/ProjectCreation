@@ -1,6 +1,6 @@
 #pragma once
 #include "../../Rendering/Vertex.h"
-#include "../../Utility/ForwardDeclarations/D3DNativeTypes.h"
+#include <D3DNativeTypes.h>
 #include "ParticleData.h"
 
 struct ParticleBuffer

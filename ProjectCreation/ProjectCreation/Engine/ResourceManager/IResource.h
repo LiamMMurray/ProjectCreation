@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "../../ECS/ECSTypes.h"
+#include <ECSTypes.h>
 
 class IResource;
 

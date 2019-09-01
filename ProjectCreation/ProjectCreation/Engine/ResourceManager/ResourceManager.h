@@ -7,7 +7,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include "../../Utility/MemoryLeakDetection.h"
+#include <MemoryLeakDetection.h>
+
 namespace Animation
 {
         struct FSkeleton;

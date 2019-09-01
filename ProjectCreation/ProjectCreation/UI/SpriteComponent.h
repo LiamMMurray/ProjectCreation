@@ -1,7 +1,7 @@
 #pragma once
 
 #include <d3d11.h>
-#include "../ECS/Component.h"
+#include <Component.h>
 #include "../Engine/Events/Event.h"
 #include "../Engine/Events/EventDelegate.h"
 #include "../Engine/Events/EventManager.h"

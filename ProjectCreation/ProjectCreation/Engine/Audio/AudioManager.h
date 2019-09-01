@@ -5,7 +5,7 @@
 #include <Interface/G_Audio/GAudio.h>
 #include <string>
 #include <unordered_map>
-#include "..//..//ECS/ECSTypes.h"
+#include <ECSTypes.h>
 #include "3DSoundComponent.h"
 
 //! Macro used to determine if a function succeeded.

@@ -1,7 +1,7 @@
 #include "debug_renderer.h"
 #include <array>
 #include "../../Engine/MathLibrary/ColorConstants.h"
-#include "../../Utility/MemoryDefines.h"
+#include <MemoryDefines.h>
 
 using namespace DirectX;
 

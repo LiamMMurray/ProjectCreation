@@ -1,7 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
-#include "../../ECS/EntityHandle.h"
-#include "../../ECS/HandleManager.h"
+#include <EntityHandle.h>
+#include <HandleManager.h>
 #include "../Controller/ControllerSystem.h"
 #include "../Controller/PlayerMovement.h"
 #include "../GEngine.h"

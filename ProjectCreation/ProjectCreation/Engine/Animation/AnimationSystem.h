@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../ECS/HandleManager.h"
-#include "../../ECS/SystemManager.h"
-#include "../../Utility/ForwardDeclarations/D3DNativeTypes.h"
-#include "../../Utility/ForwardDeclarations/WinProcTypes.h"
+#include <HandleManager.h>
+#include <SystemManager.h>
+#include <D3DNativeTypes.h>
+#include <WinProcTypes.h>
 
 #include "AnimationComponent.h"
 #include "AnimationContainers.h"

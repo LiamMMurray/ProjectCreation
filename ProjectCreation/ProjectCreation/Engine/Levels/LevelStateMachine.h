@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..//..//ECS/ECSTypes.h"
+#include <ECSTypes.h>
 #include "..//Gameplay/StateMachine/StateMachine.h"
 
 class LevelStateMachine : public StateMachine

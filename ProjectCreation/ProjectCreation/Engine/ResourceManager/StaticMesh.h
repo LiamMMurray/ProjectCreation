@@ -2,7 +2,7 @@
 
 #include "Resource.h"
 
-#include "../../Utility/ForwardDeclarations/D3DNativeTypes.h"
+#include <D3DNativeTypes.h>
 
 struct StaticMesh : public Resource<StaticMesh>
 {

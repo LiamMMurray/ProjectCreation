@@ -3,7 +3,7 @@
 
 #include <d3d11.h>
 
-#include "../../Utility/Macros/DirectXMacros.h"
+#include <DirectXMacros.h>
 
 #include "../GEngine.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 #include <unordered_set>
-#include "../../ECS/Component.h"
+#include <Component.h>
 #include "CollisionResult.h"
 #include "Shapes.h"
 

@@ -1,6 +1,6 @@
 #pragma once
-#include "../../ECS/ECS.h"
-#include "../../Utility/ForwardDeclarations/D3DNativeTypes.h"
+#include <ECS.h>
+#include <D3DNativeTypes.h>
 #include "../ResourceManager/IResource.h"
 #include "ParticleBufferSetup.h"
 #include "ParticleData.h"

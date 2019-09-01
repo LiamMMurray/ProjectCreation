@@ -1,6 +1,6 @@
 #pragma once
 #include "IResource.h"
-#include "..//..//Utility//TypeIndexFactory.h"
+#include <TypeIndexFactory.h>
 typedef ECSTypeId<IResource> ResourceTypeID;
 
 

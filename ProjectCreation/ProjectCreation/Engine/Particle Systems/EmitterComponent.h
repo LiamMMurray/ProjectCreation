@@ -1,5 +1,5 @@
 #pragma once
-#include "../../ECS/Component.h"
+#include <Component.h>
 #include "../MathLibrary/Quaternion.h"
 #include "ParticleData.h"
 class EmitterComponent : public Component<EmitterComponent>

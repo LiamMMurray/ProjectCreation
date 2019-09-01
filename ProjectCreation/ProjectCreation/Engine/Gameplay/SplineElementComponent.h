@@ -1,7 +1,7 @@
 #pragma once
 
 #include <DirectXMath.h>
-#include "../../ECS/Component.h"
+#include <Component.h>
 
 class SpeedboostSplineComponent : public Component<SpeedboostSplineComponent>
 {

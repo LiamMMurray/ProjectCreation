@@ -4,7 +4,7 @@
 #include < Directxpackedvector.h >
 #include "../..//Engine/ResourceManager/StaticMesh.h"
 #include "../..//FileIO/FileIO.h"
-#include "../..//Utility/StringUtility.h"
+#include <StringUtility.h>
 #include "../../Engine/ResourceManager/ComputeShader.h"
 #include "..//..//Engine/Controller/ControllerSystem.h"
 #include "..//..//Engine/CoreInput/CoreInput.h"
@@ -15,7 +15,7 @@
 #include "..//..//Engine/Particle Systems/EmitterComponent.h"
 #include "..//..//Engine/Particle Systems/ParticleManager.h"
 #include "..//..//Engine/ResourceManager/Material.h"
-#include "..//..//Utility/Macros/DirectXMacros.h"
+#include <DirectXMacros.h>
 #include "..//Components/StaticMeshComponent.h"
 #include "..//DebugRender/debug_renderer.h"
 #include "..//RenderingSystem.h"
