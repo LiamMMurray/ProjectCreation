@@ -28,9 +28,9 @@
 #include "Engine/Entities/EntityFactory.h"
 
 #include "Engine/Animation/AnimationSystem.h"
-#include "Engine/Particle Systems/EmitterComponent.h"
-#include "Engine/Particle Systems/ParticleData.h"
-#include "Engine/ResourceManager/SkeletalMesh.h"
+#include <EmitterComponent.h>
+#include <ParticleData.h>
+#include <SkeletalMesh.h>
 #include <CameraComponent.h>
 #include <SkeletalMeshComponent.h>
 #include <StaticMeshComponent.h>

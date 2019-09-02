@@ -2,7 +2,7 @@
 
 #include <HandleManager.h>
 
-#include "../../Engine/ResourceManager/AnimationClip.h"
+#include <AnimationClip.h>
 
 class AnimationComponent : public Component<AnimationComponent>
 {

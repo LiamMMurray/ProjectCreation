@@ -8,10 +8,10 @@
 
 #include "../../Animation/AnimationContainers.h"
 
-#include "Material.h"
-#include "SkeletalMesh.h"
-#include "StaticMesh.h"
-#include "Shader.h"
+#include <FMaterial.h>
+#include <FSkeletalMesh.h>
+#include <FStaticMesh.h>
+#include <FShader.h>
 
 namespace FileIO
 {

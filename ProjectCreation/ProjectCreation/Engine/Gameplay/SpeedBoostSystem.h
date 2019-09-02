@@ -5,7 +5,7 @@
 
 #include <HandleManager.h>
 #include <SystemManager.h>
-#include "..//ResourceManager/IResource.h"
+#include <IResource.h>
 
 #include "..//Controller/PlayerMovement.h"
 #include "../Controller/GamePad.h"

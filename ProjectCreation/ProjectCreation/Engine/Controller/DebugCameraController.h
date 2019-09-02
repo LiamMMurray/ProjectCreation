@@ -3,7 +3,7 @@
 #include "IController.h"
 
 #include "../GenericComponents/TransformComponent.h"
-#include "../Physics/PhysicsComponent.h"
+#include <PhysicsComponent.h>
 
 #include "../CollisionLibary/Shapes.h"
 

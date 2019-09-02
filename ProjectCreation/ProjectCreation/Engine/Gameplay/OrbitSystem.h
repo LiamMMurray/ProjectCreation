@@ -5,7 +5,7 @@
 
 #include <HandleManager.h>
 #include <SystemManager.h>
-#include "..//ResourceManager/IResource.h"
+#include <IResource.h>
 #include "../MathLibrary/MathLibrary.h"
 #include "GoalComponent.h"
 

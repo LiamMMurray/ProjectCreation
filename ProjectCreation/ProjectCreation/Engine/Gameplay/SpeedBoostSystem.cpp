@@ -21,7 +21,7 @@
 #include "..//MathLibrary/MathLibrary.h"
 #include "../Controller/PlayerMovement.h"
 
-#include "../ResourceManager/Material.h"
+#include <Material.h>
 
 #include "../MathLibrary/Maze/MazeGenerator.h"
 #include "../MathLibrary/Splines/FGoodSpline.h"
@@ -30,7 +30,7 @@
 #include "..//CollisionLibary/CollisionLibary.h"
 
 #include "../CoreInput/InputActions.h"
-#include "../Particle Systems/EmitterComponent.h"
+#include <EmitterComponent.h>
 
 #include "..//Audio/ContinousSoundSystem.h"
 #include "../JobScheduler.h"

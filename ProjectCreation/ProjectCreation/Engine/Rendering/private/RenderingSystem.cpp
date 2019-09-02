@@ -21,14 +21,14 @@
 #include <wrl/client.h>
 #include <DirectXMacros.h>
 
-#include "../../ResourceManager/AnimationClip.h"
-#include "../../ResourceManager/GeometryShader.h"
-#include "../../ResourceManager/Material.h"
-#include "../../ResourceManager/PixelShader.h"
-#include "../../ResourceManager/SkeletalMesh.h"
-#include "../../ResourceManager/StaticMesh.h"
-#include "../../ResourceManager/Texture2D.h"
-#include "../../ResourceManager/VertexShader.h"
+#include <AnimationClip.h>
+#include <GeometryShader.h>
+#include <Material.h>
+#include <PixelShader.h>
+#include <SkeletalMesh.h>
+#include <StaticMesh.h>
+#include <Texture2D.h>
+#include <VertexShader.h>
 
 // Will refactor this
 #include "../../Gameplay/OrbitSystem.h"
@@ -37,7 +37,7 @@
 #include "../../GenericComponents/TransformComponent.h"
 #include "Vertex.h"
 
-#include "../../Particle Systems/ParticleManager.h"
+#include <ParticleManager.h>
 #include <UIManager.h>
 
 #include <CameraComponent.h>

@@ -5,9 +5,9 @@
 
 #include "../GEngine.h"
 
-#include "../ResourceManager/AnimationClip.h"
-#include "../ResourceManager/ResourceManager.h"
-#include "../ResourceManager/SkeletalMesh.h"
+#include <AnimationClip.h>
+#include <ResourceManager.h>
+#include <SkeletalMesh.h>
 
 #include "../MathLibrary/MathLibrary.h"
 

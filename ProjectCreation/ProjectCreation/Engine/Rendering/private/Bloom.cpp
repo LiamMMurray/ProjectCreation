@@ -5,9 +5,9 @@
 #include <math.h>
 
 #include "../../GEngine.h"
-#include "../../ResourceManager/PixelShader.h"
-#include "../../ResourceManager/Texture2D.h"
-#include "../../ResourceManager/VertexShader.h"
+#include <PixelShader.h>
+#include <Texture2D.h>
+#include <VertexShader.h>
 
 #include <DirectXMacros.h>
 #include <RenderUtility.h>

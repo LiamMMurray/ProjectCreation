@@ -4,7 +4,7 @@
 
 #include "../ConsoleWindow/ConsoleWindow.h"
 #include "../MathLibrary/MathLibrary.h"
-#include "../Physics/PhysicsComponent.h"
+#include <PhysicsComponent.h>
 #include "PlayerControllerStateMachine.h"
 
 #include "..//CoreInput/CoreInput.h"

@@ -1,7 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 #include <Component.h>
-#include "../../ResourceManager/IResource.h"
+#include <IResource.h>
 
 struct FCameraSettings
 {

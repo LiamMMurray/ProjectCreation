@@ -11,7 +11,7 @@
 #include <HandleManager.h>
 #include <SystemManager.h>
 #include <Profiling.h>
-#include "ResourceManager/ResourceManager.h"
+#include <ResourceManager.h>
 #include "XTime.h"
 
 #include <DirectXMath.h>

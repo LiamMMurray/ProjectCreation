@@ -2,19 +2,19 @@
 #include <d3d11.h>
 #include <d3d11_1.h>
 #include < Directxpackedvector.h >
-#include "../../ResourceManager/StaticMesh.h"
+#include <StaticMesh.h>
 #include <FileIO.h>
 #include <StringUtility.h>
-#include "..//..//ResourceManager/ComputeShader.h"
+#include <ComputeShader.h>
 #include "..//..//Controller/ControllerSystem.h"
 #include "..//..//CoreInput/CoreInput.h"
 #include "..//..//Entities/EntityFactory.h"
 #include "..//..//GEngine.h"
 #include "..//..//GenericComponents/TransformComponent.h"
 #include "..//..//GenericComponents/TransformSystem.h"
-#include "..//..//Particle Systems/EmitterComponent.h"
-#include "..//..//Particle Systems/ParticleManager.h"
-#include "..//..//ResourceManager/Material.h"
+#include <EmitterComponent.h>
+#include <ParticleManager.h>
+#include <Material.h>
 #include <DirectXMacros.h>
 #include <StaticMeshComponent.h>
 #include <debug_renderer.h>

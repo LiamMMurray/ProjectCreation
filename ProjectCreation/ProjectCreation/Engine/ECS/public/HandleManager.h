@@ -6,7 +6,7 @@
 #include <TypeIndexFactory.h>
 #include "ComponentHandle.h"
 #include "IPoolElement.h"
-#include "Pools.h"
+#include <ECSPools.h>
 
 #include <limits>
 namespace std

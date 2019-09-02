@@ -8,8 +8,8 @@
 #include "../Controller/ControllerSystem.h"
 #include "../GenericComponents/TransformComponent.h"
 #include "../Levels/TutorialLevel.h"
-#include "../Particle Systems/EmitterComponent.h"
-#include "../ResourceManager/Material.h"
+#include <EmitterComponent.h>
+#include <Material.h>
 #include "SpeedBoostSystem.h"
 
 

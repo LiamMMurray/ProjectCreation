@@ -7,7 +7,7 @@
 #include <vector>
 #include <ECSTypes.h>
 #include <ISystem.h>
-#include "..//Particle Systems/Pools.h"
+#include <Pools.h>
 #include "3DSoundComponent.h"
 #include "SoundComponent.h"
 

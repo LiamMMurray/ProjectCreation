@@ -5,7 +5,7 @@
 #include "../GEngine.h"
 #include "../GenericComponents/TransformComponent.h"
 
-#include "../ResourceManager/SkeletalMesh.h"
+#include <SkeletalMesh.h>
 
 EntityHandle EntityFactory::CreateDummyTransformEntity(ComponentHandle* outTransformHandle)
 {

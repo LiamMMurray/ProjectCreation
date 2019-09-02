@@ -5,7 +5,7 @@
 #include "../Engine/Animation/AnimationSystem.h"
 #include "../Engine/Controller/ControllerSystem.h"
 #include "../Engine/CoreInput/CoreInput.h"
-#include "../Engine/Physics/PhysicsSystem.h"
+#include <PhysicsSystem.h>
 
 void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type handle)
 {
