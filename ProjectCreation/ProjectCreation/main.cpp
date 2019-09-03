@@ -48,7 +48,7 @@
 #include <DirectionalLightComponent.h>
 
 #include "Engine/GenericComponents/TransformComponent.h"
-#include "Engine/MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 #include <MemoryLeakDetection.h>
 
 #pragma comment(lib, "dbghelp")

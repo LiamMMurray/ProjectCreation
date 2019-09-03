@@ -86,8 +86,8 @@
     <ClInclude Include="Engine\Levels\Level_03.h" />
     <ClInclude Include="Engine\Levels\Level_04.h" />
     <ClInclude Include="Engine\Levels\TutorialLevel.h" />
-    <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
-    <ClInclude Include="Engine\MathLibrary\Maze\MazeGenerator.h" />
+    <ClInclude Include="Engine\MathLibrary\public\ColorConstants.h" />
+    <ClInclude Include="Engine\MathLibrary\public\MazeGenerator.h" />
     <ClInclude Include="Engine\Particle Systems\public\EmitterComponent.h" />
     <ClInclude Include="Engine\Particle Systems\public\ParticleBufferSetup.h" />
     <ClInclude Include="Engine\Particle Systems\public\ParticleData.h" />
@@ -133,11 +133,10 @@
     <ClInclude Include="Engine\XTime.h" />
     <ClInclude Include="Engine\Entities\TestEntities.h" />
     <ClInclude Include="Engine\Utility\public\ErrorTypes.h" />
-    <ClInclude Include="Engine\MathLibrary\MathConstants.h" />
-    <ClInclude Include="Engine\MathLibrary\MathLibrary.h" />
-    <ClInclude Include="Engine\MathLibrary\Quaternion.h" />
-    <ClInclude Include="Engine\MathLibrary\Transform.h" />
-    <ClInclude Include="Engine\MathLibrary\Vector.h" />
+    <ClInclude Include="Engine\MathLibrary\public\MathConstants.h" />
+    <ClInclude Include="Engine\MathLibrary\public\MathLibrary.h" />
+    <ClInclude Include="Engine\MathLibrary\public\Quaternion.h" />
+    <ClInclude Include="Engine\MathLibrary\public\Transform.h" />
     <ClInclude Include="Engine\FileIO\public\BasicIOTypes.h" />
     <ClInclude Include="Engine\FileIO\public\FileIO.h" />
     <ClInclude Include="Engine\FileIO\public\FMaterial.h" />
@@ -357,8 +356,8 @@
     <ClInclude Include="Shaders\Constants.hlsl" />
     <ClInclude Include="Shaders\Math.hlsl" />
     <ClInclude Include="Shaders\Samplers.hlsl" />
-    <ClInclude Include="Engine\MathLibrary\Splines\FGoodSpline.h" />
-    <ClInclude Include="Engine\MathLibrary\Splines\splines.hpp" />
+    <ClInclude Include="Engine\MathLibrary\public\FGoodSpline.h" />
+    <ClInclude Include="Engine\MathLibrary\public\splines.hpp" />
     <ClInclude Include="Shaders\PostProcessConstantBuffers.hlsl">
       <FileType>Document</FileType>
     </ClInclude>
@@ -589,8 +588,8 @@
     <ClCompile Include="Engine\Levels\Level_03.cpp" />
     <ClCompile Include="Engine\Levels\Level_04.cpp" />
     <ClCompile Include="Engine\Levels\TutorialLevel.cpp" />
-    <ClCompile Include="Engine\MathLibrary\Maze\MazeGenerator.cpp" />
-    <ClCompile Include="Engine\MathLibrary\Splines\FGoodSpline.cpp" />
+    <ClCompile Include="Engine\MathLibrary\private\MazeGenerator.cpp" />
+    <ClCompile Include="Engine\MathLibrary\private\FGoodSpline.cpp" />
     <ClCompile Include="Engine\Particle Systems\private\EmitterComponent.cpp" />
     <ClCompile Include="Engine\Particle Systems\private\ParticleBufferSetup.cpp" />
     <ClCompile Include="Engine\Particle Systems\private\ParticleData.cpp" />
@@ -622,10 +621,9 @@
     <ClCompile Include="Engine\Hashing\private\SpookyHashV2.cpp" />
     <ClCompile Include="Engine\Audio\SoundComponent.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Engine\MathLibrary\MathLibrary.cpp" />
-    <ClCompile Include="Engine\MathLibrary\Quaternion.cpp" />
-    <ClCompile Include="Engine\MathLibrary\Transform.cpp" />
-    <ClCompile Include="Engine\MathLibrary\Vector.cpp" />
+    <ClCompile Include="Engine\MathLibrary\private\MathLibrary.cpp" />
+    <ClCompile Include="Engine\MathLibrary\private\Quaternion.cpp" />
+    <ClCompile Include="Engine\MathLibrary\private\Transform.cpp" />
     <ClCompile Include="Engine\UI\private\FontComponent.cpp" />
     <ClCompile Include="Engine\UI\private\SpriteComponent.cpp" />
     <ClCompile Include="Engine\UI\private\UICollision.cpp" />
@@ -668,7 +666,14 @@
     <ClCompile Include="Engine\Physics\private\PhysicsSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Engine\MathLibrary\Splines\splines.inl" />
+    <CopyFileToFolders Include="Engine\MathLibrary\private\SPLINE_LICENSE">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+    <None Include="Engine\MathLibrary\public\splines.inl" />
     <None Include="packages.config" />
     <None Include="Shaders\Bezier.hlsli" />
     <None Include="Shaders\DoSpeedWave.hlsli" />
@@ -748,7 +753,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -772,7 +777,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -800,7 +805,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -828,7 +833,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
