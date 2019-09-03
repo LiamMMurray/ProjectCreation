@@ -1,5 +1,5 @@
 #pragma once
-#include "IEvent.h"
+#include <IEvent.h>
 #include <TypeIndexFactory.h>
 
 template <typename T>

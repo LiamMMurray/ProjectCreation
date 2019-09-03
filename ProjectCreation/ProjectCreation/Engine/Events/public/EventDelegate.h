@@ -1,5 +1,5 @@
 #pragma once
-#include "IEventDelegate.h"
+#include <IEventDelegate.h>
 #include <TypeIndexFactory.h>
 
 class IEvent;

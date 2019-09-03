@@ -2,13 +2,13 @@
 
 #include <d3d11.h>
 #include <Component.h>
-#include "../../Events/Event.h"
-#include "../../Events/EventDelegate.h"
-#include "../../Events/EventManager.h"
-#include "UICollision.h"
+#include <Event.h>
+#include <EventDelegate.h>
+#include <EventManager.h>
+#include <UICollision.h>
 
-#include "SimpleMath.h"
-#include "SpriteFont.h"
+#include <SimpleMath.h>
+#include <SpriteFont.h>
 
 class SpriteComponent;
 class UIMouseEvent : public Event<UIMouseEvent>
