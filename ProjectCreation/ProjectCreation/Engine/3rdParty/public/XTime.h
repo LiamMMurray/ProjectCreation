@@ -1,6 +1,6 @@
 #pragma once         // microsoft include guard for visual studio.
 #define NOMINMAX
-#include "Windows.h" // needed for timer ops
+#include <Windows.h> // needed for timer ops
 // XTime is a timer class desingned to be used by D3D11 grahpics applications.(use one per thread)
 // Use it for tracking time intervals in seconds with double percision.
 // It also supports weighted time smoothing for time based movement. (should not be used for tracking time)

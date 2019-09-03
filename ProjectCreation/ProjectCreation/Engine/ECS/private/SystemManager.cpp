@@ -1,5 +1,5 @@
-#include "SystemManager.h"
-#include "../../GEngine.h"
+#include <SystemManager.h>
+#include <GEngine.h>
 #include <Profiling.h>
 void SystemManager::Update(float deltaTime)
 {

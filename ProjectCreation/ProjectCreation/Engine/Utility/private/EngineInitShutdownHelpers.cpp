@@ -1,10 +1,10 @@
 #include "EngineInitShutdownHelpers.h"
 
 #include <TransformSystem.h>
-#include "..//Engine/Audio/ContinousSoundSystem.h"
-#include "../Engine/Animation/AnimationSystem.h"
+#include <ContinousSoundSystem.h>
+#include <AnimationSystem.h>
 #include <ControllerSystem.h>
-#include "../Engine/CoreInput/CoreInput.h"
+#include <CoreInput.h>
 #include <PhysicsSystem.h>
 
 void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type handle)

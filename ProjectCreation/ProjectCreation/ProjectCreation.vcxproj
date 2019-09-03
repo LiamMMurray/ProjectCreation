@@ -146,7 +146,7 @@
     <ClInclude Include="Engine\ForwardDeclarations\public\STLTypes.h" />
     <ClInclude Include="Engine\ForwardDeclarations\public\WinProcTypes.h" />
     <ClInclude Include="Engine\Hashing\public\PairHash.h" />
-    <ClInclude Include="Engine\Hashing\public\SpookyHashV2.h" />
+    <ClInclude Include="Engine\3rdParty\public\SpookyHashV2.h" />
     <ClInclude Include="Engine\Macros\public\DirectXMacros.h" />
     <ClInclude Include="Engine\Macros\public\GlobalMacros.h" />
     <ClInclude Include="Shaders\InstanceData.hlsl" />
@@ -615,7 +615,7 @@
     <ClCompile Include="Engine\ResourceManager\private\VertexShader.cpp" />
     <ClCompile Include="Engine\3rdParty\private\XTime.cpp" />
     <ClCompile Include="Engine\FileIO\private\FileIO.cpp" />
-    <ClCompile Include="Engine\Hashing\private\SpookyHashV2.cpp" />
+    <ClCompile Include="Engine\3rdParty\private\SpookyHashV2.cpp" />
     <ClCompile Include="Engine\Audio\private\SoundComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\MathLibrary\private\MathLibrary.cpp" />

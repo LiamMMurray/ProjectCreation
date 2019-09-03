@@ -5,7 +5,7 @@
 
 #include <DirectXMacros.h>
 
-#include "../../GEngine.h"
+#include <GEngine.h>
 
 #include <PixelShader.h>
 #include <VertexShader.h>

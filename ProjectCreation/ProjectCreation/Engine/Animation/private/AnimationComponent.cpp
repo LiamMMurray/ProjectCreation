@@ -1,4 +1,4 @@
-#include "AnimationComponent.h"
+#include <AnimationComponent.h>
 
 #include <MathLibrary.h>
 #include <assert.h>

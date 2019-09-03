@@ -1,17 +1,17 @@
 #include <UIManager.h>
 #include <Windows.h>
 #include <iostream>
-#include "../../CoreInput/InputActions.h"
+#include <InputActions.h>
 
 #include <ControllerSystem.h>
-#include "../../CoreInput/CoreInput.h"
-#include "../../GEngine.h"
+#include <CoreInput.h>
+#include <GEngine.h>
 #include <RenderingSystem.h>
 #include <PairHash.h>
 #include <DirectXMacros.h>
 #include <MemoryLeakDetection.h>
 
-#include "../../ConsoleWindow/ConsoleWindow.h"
+#include <ConsoleWindow.h>
 #include <TutorialLevel.h>
 class TutorialLevel;
 

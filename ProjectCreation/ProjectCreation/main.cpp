@@ -13,21 +13,21 @@
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
 
-#include "Engine/Audio/ContinousSoundSystem.h"
+#include <ContinousSoundSystem.h>
 
 #include <UIManager.h>
 
-#include "Engine/CollisionLibary/CollisionLibary.h"
-#include "Engine/CollisionLibary/CollisionResult.h"
+#include <CollisionLibary.h>
+#include <CollisionResult.h>
 
-#include "Engine/CoreInput/CoreInput.h"
+#include <CoreInput.h>
 
-#include "Engine/ConsoleWindow/ConsoleWindow.h"
+#include <ConsoleWindow.h>
 
-#include "Engine/EngineInitShutdownHelpers.h"
+#include<EngineInitShutdownHelpers.h>
 #include <EntityFactory.h>
 
-#include "Engine/Animation/AnimationSystem.h"
+#include <AnimationSystem.h>
 #include <EmitterComponent.h>
 #include <ParticleData.h>
 #include <SkeletalMesh.h>

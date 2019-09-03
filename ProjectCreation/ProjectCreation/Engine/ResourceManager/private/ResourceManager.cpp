@@ -1,8 +1,8 @@
-#include "ResourceManager.h"
+#include <ResourceManager.h>
 #include <assert.h>
 
 #include <RenderingSystem.h>
-#include "../../GEngine.h"
+#include <GEngine.h>
 
 #include <StringUtility.h>
 
@@ -10,15 +10,15 @@
 
 #include <d3d11_1.h>
 
-#include "AnimationClip.h"
-#include "ComputeShader.h"
-#include "GeometryShader.h"
-#include "Material.h"
-#include "PixelShader.h"
-#include "SkeletalMesh.h"
-#include "StaticMesh.h"
-#include "Texture2D.h"
-#include "VertexShader.h"
+#include <AnimationClip.h>
+#include <ComputeShader.h>
+#include <GeometryShader.h>
+#include <Material.h>
+#include <PixelShader.h>
+#include <SkeletalMesh.h>
+#include <StaticMesh.h>
+#include <Texture2D.h>
+#include <VertexShader.h>
 
 
 ResourceHandle ResourceManager::LoadMaterial(const char* name)

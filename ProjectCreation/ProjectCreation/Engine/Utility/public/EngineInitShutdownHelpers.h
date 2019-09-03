@@ -1,8 +1,8 @@
 #pragma once
 
-#include "GEngine.h"
+#include <GEngine.h>
 #include <RenderingSystem.h>
-#include "../Engine/Audio/AudioManager.h"
+#include <AudioManager.h>
 
 namespace EngineHelpers
 {
