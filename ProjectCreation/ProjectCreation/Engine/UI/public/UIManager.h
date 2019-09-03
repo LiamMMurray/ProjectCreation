@@ -10,9 +10,9 @@
 #include <tuple>
 #include <unordered_map>
 #include <vector>
-#include "CommonStates.h"
-#include "FontComponent.h"
-#include "SpriteComponent.h"
+#include <CommonStates.h>
+#include <FontComponent.h>
+#include <SpriteComponent.h>
 
 class RenderSystem;
 
