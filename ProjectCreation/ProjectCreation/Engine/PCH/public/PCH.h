@@ -1,6 +1,6 @@
 #pragma once
 #include <MemoryLeakDetection.h>
-
+#define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
@@ -24,6 +24,3 @@
 #include <XTime.h>
 #include <SpookyHashV2.h>
 #include <ResourceManager.h>
-
-#undef min
-#undef max
