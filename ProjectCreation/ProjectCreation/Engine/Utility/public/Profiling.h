@@ -6,7 +6,14 @@
 #include <stack>
 #include <string>
 #include <thread>
+
+
 #define PROFILING
+
+#ifndef _DEBUG
+#undef PROFILING
+#endif
+
 inline LARGE_INTEGER TimeStamp()
 {
         LARGE_INTEGER TimeStamp;
