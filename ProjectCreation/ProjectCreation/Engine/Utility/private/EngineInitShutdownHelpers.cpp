@@ -7,7 +7,7 @@
 #include <CoreInput.h>
 #include <PhysicsSystem.h>
 
-void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type handle)
+void EngineUtil::InitEngineSystemManagers(RenderSystem::native_handle_type handle)
 {
         GEngine::Initialize();
         AudioManager::Initialize();
@@ -92,7 +92,7 @@ void EngineHelpers::InitEngineSystemManagers(RenderSystem::native_handle_type ha
         GCoreInput::InitializeInput((HWND)handle);
 }
 
-void EngineHelpers::ShutdownEngineSystemManagers()
+void EngineUtil::ShutdownEngineSystemManagers()
 {
         // ControllerSystem::Shutdown();
         AudioManager::Shutdown();

@@ -150,6 +150,7 @@
     <ClInclude Include="Engine\3rdParty\public\SpookyHashV2.h" />
     <ClInclude Include="Engine\Macros\public\DirectXMacros.h" />
     <ClInclude Include="Engine\Macros\public\GlobalMacros.h" />
+    <ClInclude Include="Engine\Utility\public\WindowsUtility.h" />
     <ClInclude Include="Shaders\InstanceData.hlsl" />
     <ClInclude Include="Shaders\Interpolation.hlsl" />
     <ClInclude Include="Shaders\MVPBuffer.hlsl" />
@@ -624,6 +625,7 @@
     <ClCompile Include="Engine\FileIO\private\FileIO.cpp" />
     <ClCompile Include="Engine\3rdParty\private\SpookyHashV2.cpp" />
     <ClCompile Include="Engine\Audio\private\SoundComponent.cpp" />
+    <ClCompile Include="Engine\Utility\private\WindowsUtility.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\MathLibrary\private\MathLibrary.cpp" />
     <ClCompile Include="Engine\MathLibrary\private\Quaternion.cpp" />

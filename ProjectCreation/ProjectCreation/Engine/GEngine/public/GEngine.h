@@ -9,9 +9,9 @@
 #define RESOURCE_MANAGER GEngine::Get()->GetResourceManager()
 
 #include <HandleManager.h>
-#include <SystemManager.h>
 #include <Profiling.h>
 #include <ResourceManager.h>
+#include <SystemManager.h>
 #include "XTime.h"
 
 #include <DirectXMath.h>
@@ -30,8 +30,8 @@ class GEngine
 
         XTime m_XTime;
 
-
         static GEngine* instance;
+    public:
         bool            m_DebugMode     = false;
         bool            m_GameIsPaused  = false;
         bool            m_WantsGameExit = false;
@@ -43,7 +43,6 @@ class GEngine
         float m_DesiredPlayerRadius   = 0.0f;
         float m_RadiusTransitionSpeed = 5.0f;
 
-    public:
         void              Signal();
         DirectX::XMVECTOR m_OriginOffset     = DirectX::XMVECTORF32{0.0f, 0.0f, 0.0f, 0.0f};
         DirectX::XMVECTOR m_WorldOffsetDelta = DirectX::XMVECTORF32{0.0f, 0.0f, 0.0f, 0.0f};
