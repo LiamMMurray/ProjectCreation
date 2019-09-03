@@ -60,7 +60,7 @@
     <ClInclude Include="Engine\ECS\public\JobScheduler.h" />
     <ClInclude Include="Engine\ECS\public\SystemManager.h" />
     <ClInclude Include="Engine\EngineInitShutdownHelpers.h" />
-    <ClInclude Include="Engine\Entities\EntityFactory.h" />
+    <ClInclude Include="Engine\Utility\public\EntityFactory.h" />
     <ClInclude Include="Engine\Events\public\Event.h" />
     <ClInclude Include="Engine\Events\public\EventDelegate.h" />
     <ClInclude Include="Engine\Events\public\EventManager.h" />
@@ -573,7 +573,7 @@
     <ClCompile Include="Engine\ECS\private\Pools.cpp" />
     <ClCompile Include="Engine\ECS\private\SystemManager.cpp" />
     <ClCompile Include="Engine\EngineInitShutdownHelpers.cpp" />
-    <ClCompile Include="Engine\Entities\EntityFactory.cpp" />
+    <ClCompile Include="Engine\Utility\private\EntityFactory.cpp" />
     <ClCompile Include="Engine\Gameplay\private\LightOrbColors.cpp" />
     <ClCompile Include="Engine\Gameplay\private\OrbitSystem.cpp" />
     <ClCompile Include="Engine\Gameplay\private\SpeedBoostSystem.cpp" />

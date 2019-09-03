@@ -25,7 +25,7 @@
 #include "Engine/ConsoleWindow/ConsoleWindow.h"
 
 #include "Engine/EngineInitShutdownHelpers.h"
-#include "Engine/Entities/EntityFactory.h"
+#include <EntityFactory.h>
 
 #include "Engine/Animation/AnimationSystem.h"
 #include <EmitterComponent.h>

@@ -1,7 +1,7 @@
 #include "RenderingSystem.h"
 #include <algorithm>
 #include <iostream>
-#include "../../Entities/EntityFactory.h"
+#include <EntityFactory.h>
 #include <ControllerSystem.h>
 #include <PlayerMovement.h>
 #include "../../CoreInput/CoreInput.h"

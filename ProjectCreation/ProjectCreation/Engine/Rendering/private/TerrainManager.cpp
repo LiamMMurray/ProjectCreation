@@ -8,7 +8,7 @@
 #include <ComputeShader.h>
 #include <ControllerSystem.h>
 #include "..//..//CoreInput/CoreInput.h"
-#include "..//..//Entities/EntityFactory.h"
+#include <EntityFactory.h>
 #include "..//..//GEngine.h"
 #include <TransformComponent.h>
 #include <TransformSystem.h>

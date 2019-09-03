@@ -1,7 +1,7 @@
 #include <SpeedBoostSystem.h>
 #include <algorithm>
 #include <ControllerSystem.h>
-#include "../../Entities/EntityFactory.h"
+#include <EntityFactory.h>
 #include "../../GEngine.h"
 
 #include <TransformComponent.h>

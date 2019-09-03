@@ -6,7 +6,7 @@
 #include <StaticMeshComponent.h>
 #include <limits>
 #include "../../CoreInput/CoreInput.h"
-#include "../../Entities/EntityFactory.h"
+#include <EntityFactory.h>
 #include "../../GEngine.h"
 #include <TransformComponent.h>
 #include <TutorialLevel.h>
