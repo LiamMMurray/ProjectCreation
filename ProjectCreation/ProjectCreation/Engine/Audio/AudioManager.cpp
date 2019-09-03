@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <sstream>
 #include <MemoryLeakDetection.h>
-#include "../MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 
 #include "..//GEngine.h"
 #include "ContinousSoundSystem.h"

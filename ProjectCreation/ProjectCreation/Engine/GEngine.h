@@ -15,7 +15,7 @@
 #include "XTime.h"
 
 #include <DirectXMath.h>
-#include "Levels/LevelStateManager.h"
+#include <LevelStateManager.h>
 
 class GEngine
 {

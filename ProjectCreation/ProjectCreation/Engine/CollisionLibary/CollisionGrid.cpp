@@ -1,6 +1,6 @@
 #include "CollisionGrid.h"
 #include <DirectXMath.h>
-#include "../MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 using namespace DirectX;
 
 CollisionGrid::CollisionGrid()

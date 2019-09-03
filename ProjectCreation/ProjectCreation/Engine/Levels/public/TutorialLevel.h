@@ -4,14 +4,14 @@
 #include <HandleManager.h>
 #include <ControllerSystem.h>
 #include <PlayerMovement.h>
-#include "../GEngine.h"
-#include "../Gameplay/OrbRespawnComponent.h"
-#include "../Gameplay/OrbitSystem.h"
-#include "../Gameplay/SpeedBoostSystem.h"
-#include "../Gameplay/SpeedboostComponent.h"
-#include "../Gameplay/SplineElementComponent.h"
-#include "../GenericComponents/TransformComponent.h"
-#include "LevelState.h"
+#include "../../GEngine.h"
+#include "../../Gameplay/OrbRespawnComponent.h"
+#include "../../Gameplay/OrbitSystem.h"
+#include "../../Gameplay/SpeedBoostSystem.h"
+#include "../../Gameplay/SpeedboostComponent.h"
+#include "../../Gameplay/SplineElementComponent.h"
+#include "../../GenericComponents/TransformComponent.h"
+#include <LevelState.h>
 
 class TutorialLevel : public ILevelState
 {

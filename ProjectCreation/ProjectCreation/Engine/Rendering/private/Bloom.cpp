@@ -12,8 +12,8 @@
 #include <DirectXMacros.h>
 #include <RenderUtility.h>
 
-#include "../../MathLibrary/ColorConstants.h"
-#include "../../MathLibrary/MathLibrary.h"
+#include <ColorConstants.h>
+#include <MathLibrary.h>
 
 #include <RenderingSystem.h>
 

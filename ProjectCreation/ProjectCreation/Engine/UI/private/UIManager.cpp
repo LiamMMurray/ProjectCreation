@@ -12,7 +12,7 @@
 #include <MemoryLeakDetection.h>
 
 #include "../../ConsoleWindow/ConsoleWindow.h"
-#include "../../Levels/TutorialLevel.h"
+#include <TutorialLevel.h>
 class TutorialLevel;
 
 #define WIN32_LEAN_AND_MEAN // Gets rid of bloat on Windows.h

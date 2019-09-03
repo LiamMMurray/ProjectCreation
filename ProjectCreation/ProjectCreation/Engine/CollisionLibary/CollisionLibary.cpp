@@ -1,6 +1,6 @@
 #include "CollisionLibary.h"
 #include <unordered_map>
-#include "../MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 #include "CollisionGrid.h"
 using namespace std;
 using namespace DirectX;

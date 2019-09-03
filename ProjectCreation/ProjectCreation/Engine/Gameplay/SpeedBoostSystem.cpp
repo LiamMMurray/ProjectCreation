@@ -11,7 +11,7 @@
 #include "SpeedboostComponent.h"
 #include "SplineElementComponent.h"
 
-#include "../Levels/TutorialLevel.h"
+#include <TutorialLevel.h>
 
 #include <cmath>
 #include <map>

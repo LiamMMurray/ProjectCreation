@@ -9,7 +9,7 @@
 #include "..//Entities/EntityFactory.h"
 #include "..//GEngine.h"
 #include "../GenericComponents/TransformComponent.h"
-#include "../Levels/TutorialLevel.h"
+#include <TutorialLevel.h>
 #include "SpeedBoostSystem.h"
 
 
