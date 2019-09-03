@@ -1,4 +1,4 @@
-#include "ParticleManager.h"
+#include <ParticleManager.h>
 #include <DirectXMacros.h>
 #include <d3d11_1.h>
 #include <MathLibrary.h>
@@ -6,8 +6,7 @@
 #include <RenderingSystem.h>
 #include <TerrainManager.h>
 #include <Vertex.h>
-#include "../..//..//Engine/GEngine.h"
-#include "../../GEngine.h"
+#include <GEngine.h>
 #include <ColorConstants.h>
 #include <ComputeShader.h>
 #include <GeometryShader.h>
@@ -18,7 +17,7 @@
 
 
 #include <TransformComponent.h>
-#include "ParticleBufferSetup.h"
+#include <ParticleBufferSetup.h>
 using namespace ParticleData;
 using namespace DirectX;
 using namespace Pools;

@@ -4,7 +4,7 @@
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 
-#include "../../CoreInput/CoreInput.h"
+#include <CoreInput.h>
 
 struct E_LIGHT_ORBS
 {

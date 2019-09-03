@@ -1,8 +1,8 @@
-#include "EntityFactory.h"
+#include <EntityFactory.h>
 #include <SkeletalMeshComponent.h>
 #include <StaticMeshComponent.h>
-#include "../../Animation/AnimationComponent.h"
-#include "../../GEngine.h"
+#include <AnimationComponent.h>
+#include <GEngine.h>
 #include <TransformComponent.h>
 
 #include <SkeletalMesh.h>

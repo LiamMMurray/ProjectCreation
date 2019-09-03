@@ -1,7 +1,7 @@
 #include <TransformSystem.h>
 #include <TerrainManager.h>
 #include <ControllerSystem.h>
-#include "../../GEngine.h"
+#include <GEngine.h>
 #include <MathLibrary.h>
 #include <TransformComponent.h>
 

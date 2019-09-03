@@ -5,7 +5,7 @@
 #include <HandleManager.h>
 
 #include <IResource.h>
-#include "../../Animation/AnimationContainers.h"
+#include <AnimationContainers.h>
 
 struct SkeletalMeshComponent : public Component<SkeletalMeshComponent>
 {

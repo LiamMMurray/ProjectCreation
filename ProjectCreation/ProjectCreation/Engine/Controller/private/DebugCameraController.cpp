@@ -1,16 +1,16 @@
 #include "DebugCameraController.h"
 #include <Entity.h>
-#include "../../CoreInput/CoreInput.h"
-#include "../../GEngine.h"
+#include <CoreInput.h>
+#include <GEngine.h>
 
 #include <MathLibrary.h>
 #include <Quaternion.h>
 
 #include <debug_renderer.h>
 #include <ControllerSystem.h>
-#include "../../CollisionLibary/CollisionLibary.h"
+#include <CollisionLibary.h>
 
-#include "../../CollisionLibary/Shapes.h"
+#include <CollisionShapes.h>
 
 // v Testing only delete when done v
 #include <iostream>

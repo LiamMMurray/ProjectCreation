@@ -4,7 +4,7 @@
 #include <HandleManager.h>
 #include <CameraComponent.h>
 #include <IController.h>
-#include "../../GEngine.h"
+#include <GEngine.h>
 #include <LightOrbColors.h>
 #include <JGamePad.h>
 

@@ -5,7 +5,7 @@
 #include <TransformComponent.h>
 #include <PhysicsComponent.h>
 
-#include "../../CollisionLibary/Shapes.h"
+#include <CollisionShapes.h>
 
 class DebugCameraController : public IController
 {

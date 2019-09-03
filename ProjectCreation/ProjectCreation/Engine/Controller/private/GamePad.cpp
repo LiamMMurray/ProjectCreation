@@ -1,8 +1,8 @@
 #include <JGamePad.h>
 //#include <winerror.h>
 //#include <d3d11.h>
-#include "../../ConsoleWindow/ConsoleWindow.h"
-#include "../../GEngine.h"
+#include <ConsoleWindow.h>
+#include <GEngine.h>
 
 JGamePad* JGamePad::instance = nullptr;
 

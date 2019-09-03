@@ -2,14 +2,14 @@
 #include <algorithm>
 #include <ControllerSystem.h>
 #include <EntityFactory.h>
-#include "../../GEngine.h"
+#include <GEngine.h>
 
 #include <TransformComponent.h>
-#include "GoalComponent.h"
-#include "OrbRespawnComponent.h"
-#include "OrbitSystem.h"
-#include "SpeedboostComponent.h"
-#include "SplineElementComponent.h"
+#include <GoalComponent.h>
+#include <OrbRespawnComponent.h>
+#include <OrbitSystem.h>
+#include <SpeedboostComponent.h>
+#include <SplineElementComponent.h>
 
 #include <TutorialLevel.h>
 
@@ -17,7 +17,7 @@
 #include <map>
 #include <random>
 #include <string>
-#include "../../CoreInput/CoreInput.h"
+#include <CoreInput.h>
 #include <MathLibrary.h>
 #include <PlayerMovement.h>
 
@@ -27,12 +27,12 @@
 #include <FGoodSpline.h>
 
 #include <limits>
-#include "../../CollisionLibary/CollisionLibary.h"
+#include <CollisionLibary.h>
 
-#include "../../CoreInput/InputActions.h"
+#include <InputActions.h>
 #include <EmitterComponent.h>
 
-#include "../../Audio/ContinousSoundSystem.h"
+#include <ContinousSoundSystem.h>
 #include <JobScheduler.h>
 using namespace DirectX;
 

@@ -1,8 +1,8 @@
-#include "PlayerPuzzleState.h"
+#include <PlayerPuzzleState.h>
 #include <CameraComponent.h>
-#include "../../CollisionLibary/CollisionLibary.h"
-#include "../../CoreInput/InputActions.h"
-#include "../../GEngine.h"
+#include <CollisionLibary.h>
+#include <InputActions.h>
+#include <GEngine.h>
 #include <GoalComponent.h>
 #include <OrbitSystem.h>
 #include <TransformComponent.h>

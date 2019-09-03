@@ -5,7 +5,7 @@
 // Audio Includes
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
-#include "../../Audio/AudioManager.h"
+#include <AudioManager.h>
 
 class PlayerPuzzleState : public IPlayerControllerState
 {

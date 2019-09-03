@@ -4,10 +4,10 @@
 #include <UIManager.h>
 #include <CameraComponent.h>
 #include <DirectionalLightComponent.h>
-#include "../../GEngine.h"
+#include <GEngine.h>
 #include <TransformComponent.h>
 #include <MathLibrary.h>
-#include "../../CoreInput/CoreInput.h"
+#include <CoreInput.h>
 #include <PlayerControllerStateMachine.h>
 #include <PlayerMovement.h>
 #include <JGamePad.h>

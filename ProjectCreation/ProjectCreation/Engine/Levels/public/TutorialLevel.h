@@ -4,7 +4,7 @@
 #include <HandleManager.h>
 #include <ControllerSystem.h>
 #include <PlayerMovement.h>
-#include "../../GEngine.h"
+#include <GEngine.h>
 #include <OrbRespawnComponent.h>
 #include <OrbitSystem.h>
 #include <SpeedBoostSystem.h>

@@ -2,10 +2,10 @@
 #include <Entity.h>
 #include <GoalComponent.h>
 #include <OrbitSystem.h>
-#include "../../CollisionLibary/CollisionLibary.h"
-#include "../../CollisionLibary/CollisionResult.h"
-#include "../../CoreInput/CoreInput.h"
-#include "../../GEngine.h"
+#include <CollisionLibary.h>
+#include <CollisionResult.h>
+#include <CoreInput.h>
+#include <GEngine.h>
 #include <TransformComponent.h>
 #include <MathLibrary.h>
 #include <Quaternion.h>
@@ -17,10 +17,10 @@
 #include "PlayerStateEvents.h"
 
 #include <debug_renderer.h>
-#include "../../Audio/ContinousSoundSystem.h"
+#include <ContinousSoundSystem.h>
 // v Testing only delete when done v
 #include <iostream>
-#include "../../CoreInput/InputActions.h"
+#include <InputActions.h>
 // ^ Testing only delete when done ^
 using namespace DirectX;
 using namespace Shapes;

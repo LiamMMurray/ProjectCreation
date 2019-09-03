@@ -4,9 +4,9 @@
 
 #include <ErrorTypes.h>
 
-#include "DDSTextureLoader.h"
+#include <DDSTextureLoader.h>
 
-#include "../../Animation/AnimationContainers.h"
+#include <AnimationContainers.h>
 
 #include <FMaterial.h>
 #include <FSkeletalMesh.h>

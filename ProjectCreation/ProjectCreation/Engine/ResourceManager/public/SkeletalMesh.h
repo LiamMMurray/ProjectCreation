@@ -2,8 +2,8 @@
 
 #include <D3DNativeTypes.h>
 
-#include "Resource.h"
-#include "../../Animation/AnimationContainers.h"
+#include <Resource.h>
+#include <AnimationContainers.h>
 
 struct SkeletalMesh : public Resource<SkeletalMesh>
 {

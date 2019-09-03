@@ -5,7 +5,7 @@
 #include <TerrainManager.h>
 #include <LightOrbColors.h>
 #include <IController.h>
-#include "../../CoreInput/CoreInput.h"
+#include <CoreInput.h>
 #include "DebugCameraController.h"
 #include "PlayerMovement.h"
 
@@ -15,12 +15,12 @@
 #include <debug_renderer.h>
 #include <RenderingSystem.h>
 
-#include "../../CollisionLibary/Shapes.h"
+#include <CollisionShapes.h>
 
 #include <UIManager.h>
 
 #include <WinUser.h>
-#include "../../CoreInput/InputActions.h"
+#include <InputActions.h>
 
 using namespace std;
 

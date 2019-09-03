@@ -4,7 +4,7 @@
 
 #include <D3DNativeTypes.h>
 
-#include "../../Animation/AnimationContainers.h"
+#include <AnimationContainers.h>
 
 struct AnimationClip : public Resource<AnimationClip>
 {

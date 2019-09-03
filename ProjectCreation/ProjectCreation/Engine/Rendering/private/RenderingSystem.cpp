@@ -1,11 +1,11 @@
-#include "RenderingSystem.h"
+#include <RenderingSystem.h>
 #include <algorithm>
 #include <iostream>
 #include <EntityFactory.h>
 #include <ControllerSystem.h>
 #include <PlayerMovement.h>
-#include "../../CoreInput/CoreInput.h"
-#include "../../GEngine.h"
+#include <CoreInput.h>
+#include <GEngine.h>
 #include <MathLibrary.h>
 #include <FileIO.h>
 #include <Bloom.h>
@@ -35,7 +35,7 @@
 #include <SpeedboostSystem.h>
 
 #include <TransformComponent.h>
-#include "Vertex.h"
+#include <Vertex.h>
 
 #include <ParticleManager.h>
 #include <UIManager.h>

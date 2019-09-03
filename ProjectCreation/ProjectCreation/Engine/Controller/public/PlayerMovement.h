@@ -1,18 +1,18 @@
 #pragma once
 #include <ECSTypes.h>
-#include "IController.h"
+#include <IController.h>
 
-#include "../../ConsoleWindow/ConsoleWindow.h"
+#include <ConsoleWindow.h>
 #include <MathLibrary.h>
 #include <PhysicsComponent.h>
-#include "PlayerControllerStateMachine.h"
+#include <PlayerControllerStateMachine.h>
 
-#include "../..//CoreInput/CoreInput.h"
+#include <CoreInput.h>
 #include <LightOrbColors.h>
 // Audio Includes
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
-#include "../../Audio/AudioManager.h"
+#include <AudioManager.h>
 #include <JGamePad.h>
 
 class TransformComponent;

@@ -4,7 +4,7 @@
 #include <d3d11_1.h>
 #include <math.h>
 
-#include "../../GEngine.h"
+#include <GEngine.h>
 #include <PixelShader.h>
 #include <Texture2D.h>
 #include <VertexShader.h>

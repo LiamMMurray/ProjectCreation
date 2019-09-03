@@ -5,9 +5,9 @@
 #include <Material.h>
 #include <StaticMeshComponent.h>
 #include <limits>
-#include "../../CoreInput/CoreInput.h"
+#include <CoreInput.h>
 #include <EntityFactory.h>
-#include "../../GEngine.h"
+#include <GEngine.h>
 #include <TransformComponent.h>
 #include <TutorialLevel.h>
 #include <SpeedBoostSystem.h>

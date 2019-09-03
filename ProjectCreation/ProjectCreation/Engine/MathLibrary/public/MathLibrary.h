@@ -10,8 +10,8 @@
 
 #include <algorithm>
 #include <Vertex.h>
-#include "../../CollisionLibary/Shapes.h"
-#include "Transform.h"
+#include <CollisionShapes.h>
+#include <Transform.h>
 #define RANDOMFLOAT rand() / (float)RAND_MAX
 #define RANDOMDOUBLE rand() / (double)RAND_MAX
 class MathLibrary

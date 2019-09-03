@@ -7,9 +7,9 @@
 #include <StringUtility.h>
 #include <ComputeShader.h>
 #include <ControllerSystem.h>
-#include "..//..//CoreInput/CoreInput.h"
+#include <CoreInput.h>
 #include <EntityFactory.h>
-#include "..//..//GEngine.h"
+#include <GEngine.h>
 #include <TransformComponent.h>
 #include <TransformSystem.h>
 #include <EmitterComponent.h>
