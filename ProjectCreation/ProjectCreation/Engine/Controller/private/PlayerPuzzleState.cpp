@@ -64,7 +64,7 @@ void PlayerPuzzleState::Update(float deltaTime)
         else
         {
                 accel = dragDeacceleration;
-                dragVelocity -= XMVector3Normalize(dragVelocity) * min(accel * deltaTime, speed);
+                dragVelocity -= XMVector3Normalize(dragVelocity) * std::min(accel * deltaTime, speed);
         }
         dragVelocity = XMVector3ClampLength(dragVelocity, 0.0f, goalDragMaxSpeed);
 

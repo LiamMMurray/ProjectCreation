@@ -28,6 +28,7 @@
     <ClInclude Include="Engine\CollisionLibrary\public\CollisionGrid.h" />
     <ClInclude Include="Engine\CollisionLibrary\public\CollisionLibary.h" />
     <ClInclude Include="Engine\CollisionLibrary\public\CollisionComponents.h" />
+    <ClInclude Include="Engine\PCH\public\PCH.h" />
     <ClInclude Include="Engine\Utility\public\ContainerUtility.h" />
     <ClInclude Include="Engine\CollisionLibrary\public\CollisionShapes.h" />
     <ClInclude Include="Engine\Controller\public\ControllerSystem.h" />
@@ -570,6 +571,12 @@
     <ClCompile Include="Engine\ECS\private\Memory.cpp" />
     <ClCompile Include="Engine\ECS\private\Pools.cpp" />
     <ClCompile Include="Engine\ECS\private\SystemManager.cpp" />
+    <ClCompile Include="Engine\PCH\private\PCH.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Engine\Utility\private\EngineInitShutdownHelpers.cpp" />
     <ClCompile Include="Engine\Utility\private\EntityFactory.cpp" />
     <ClCompile Include="Engine\Gameplay\private\LightOrbColors.cpp" />
@@ -750,9 +757,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\Gameplay\public;$(ProjectDir)Engine\StateMachine\public;$(ProjectDir)Engine\Events\public;$(ProjectDir)Engine\Animation\public;$(ProjectDir)Engine\Audio\public;$(ProjectDir)Engine\CollisionLibrary\public;$(ProjectDir)Engine\CoreInput\public;$(ProjectDir)Engine\3rdParty\public;$(ProjectDir)Engine\GEngine\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\Gameplay\public;$(ProjectDir)Engine\StateMachine\public;$(ProjectDir)Engine\Events\public;$(ProjectDir)Engine\Animation\public;$(ProjectDir)Engine\Audio\public;$(ProjectDir)Engine\CollisionLibrary\public;$(ProjectDir)Engine\CoreInput\public;$(ProjectDir)Engine\3rdParty\public;$(ProjectDir)Engine\GEngine\public;$(ProjectDir)Engine\PCH\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>PCH.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -774,8 +784,11 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\Gameplay\public;$(ProjectDir)Engine\StateMachine\public;$(ProjectDir)Engine\Events\public;$(ProjectDir)Engine\Animation\public;$(ProjectDir)Engine\Audio\public;$(ProjectDir)Engine\CollisionLibrary\public;$(ProjectDir)Engine\CoreInput\public;$(ProjectDir)Engine\3rdParty\public;$(ProjectDir)Engine\GEngine\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\Gameplay\public;$(ProjectDir)Engine\StateMachine\public;$(ProjectDir)Engine\Events\public;$(ProjectDir)Engine\Animation\public;$(ProjectDir)Engine\Audio\public;$(ProjectDir)Engine\CollisionLibrary\public;$(ProjectDir)Engine\CoreInput\public;$(ProjectDir)Engine\3rdParty\public;$(ProjectDir)Engine\GEngine\public;$(ProjectDir)Engine\PCH\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <ForcedIncludeFiles>PCH.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -802,8 +815,11 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\Gameplay\public;$(ProjectDir)Engine\StateMachine\public;$(ProjectDir)Engine\Events\public;$(ProjectDir)Engine\Animation\public;$(ProjectDir)Engine\Audio\public;$(ProjectDir)Engine\CollisionLibrary\public;$(ProjectDir)Engine\CoreInput\public;$(ProjectDir)Engine\3rdParty\public;$(ProjectDir)Engine\GEngine\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\Gameplay\public;$(ProjectDir)Engine\StateMachine\public;$(ProjectDir)Engine\Events\public;$(ProjectDir)Engine\Animation\public;$(ProjectDir)Engine\Audio\public;$(ProjectDir)Engine\CollisionLibrary\public;$(ProjectDir)Engine\CoreInput\public;$(ProjectDir)Engine\3rdParty\public;$(ProjectDir)Engine\GEngine\public;$(ProjectDir)Engine\PCH\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>PCH.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -830,8 +846,11 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\Gameplay\public;$(ProjectDir)Engine\StateMachine\public;$(ProjectDir)Engine\Events\public;$(ProjectDir)Engine\Animation\public;$(ProjectDir)Engine\Audio\public;$(ProjectDir)Engine\CollisionLibrary\public;$(ProjectDir)Engine\CoreInput\public;$(ProjectDir)Engine\3rdParty\public;$(ProjectDir)Engine\GEngine\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\Gameplay\public;$(ProjectDir)Engine\StateMachine\public;$(ProjectDir)Engine\Events\public;$(ProjectDir)Engine\Animation\public;$(ProjectDir)Engine\Audio\public;$(ProjectDir)Engine\CollisionLibrary\public;$(ProjectDir)Engine\CoreInput\public;$(ProjectDir)Engine\3rdParty\public;$(ProjectDir)Engine\GEngine\public;$(ProjectDir)Engine\PCH\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>PCH.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

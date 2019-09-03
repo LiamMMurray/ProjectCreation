@@ -17,7 +17,7 @@ using namespace DirectX;
 
 EntityHandle OrbitSystem::CreateGoal(int color, DirectX::XMVECTOR position)
 {
-        color = min(2, color);
+        color = std::min(2, color);
 
         if (activeGoal.hasActiveGoal)
         {
@@ -212,12 +212,12 @@ void OrbitSystem::OnUpdate(float deltaTime)
                         float dist  = MathLibrary::CalulateDistance(goalComp.initialTransform.translation,
                                                                    goalComp.goalTransform.translation);
                         float speed = MathLibrary::lerp(
-                            goalComp.transitionInitialSpeed, goalComp.transitionFinalSpeed, min(1.0f, goalComp.currAlpha));
+                            goalComp.transitionInitialSpeed, goalComp.transitionFinalSpeed, std::min(1.0f, goalComp.currAlpha));
                         goalComp.currAlpha =
                             MathLibrary::MoveTowards(goalComp.currAlpha, goalComp.targetAlpha, speed * deltaTime * 1.0f / dist);
 
                         transComp->transform =
-                            FTransform::Lerp(goalComp.initialTransform, goalComp.goalTransform, min(1.0f, goalComp.currAlpha));
+                            FTransform::Lerp(goalComp.initialTransform, goalComp.goalTransform, std::min(1.0f, goalComp.currAlpha));
                 }
         }
 

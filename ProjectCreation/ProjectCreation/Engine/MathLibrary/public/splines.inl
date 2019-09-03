@@ -57,7 +57,7 @@ void Spline<Point_t, Real_t>::set_node_type(spline::Node_e type)
 template <typename Point_t, typename Real_t>
 Point_t Spline<Point_t, Real_t>::eval_f(Real_t u) const
 {
-        u = max(min(u, (Real_t)1), (Real_t)0); // clamp between [0 1]
+        u = std::max(std::min(u, (Real_t)1), (Real_t)0); // clamp between [0 1]
         return eval(u, _point, _k, _node);
 }
 
@@ -69,7 +69,7 @@ Point_t Spline<Point_t, Real_t>::eval_df(Real_t u) const
 
         using namespace DirectX;
 
-        u = max(min(u, (Real_t)1), (Real_t)0); // clamp between [0 1]
+        u = std::max(std::min(u, (Real_t)1), (Real_t)0); // clamp between [0 1]
         return eval(u, _vec, (_k - 1), _node, 1) * (Real_t)(_k - 1);
 }
 
@@ -150,7 +150,7 @@ Point_t Spline<Point_t, Real_t>::
 
         // TODO: use buffers in attributes for better performances ?
         std::vector<Point_t> p_rec(k, Point_t());
-        for (int i = dec, j = 0; i < min((int)point.size(), (dec + k)); ++i, ++j)
+        for (int i = dec, j = 0; i < std::min((int)point.size(), (dec + k)); ++i, ++j)
                 p_rec[j] = point[i];
 
         std::vector<Real_t> node_rec(k + k - 2, (Real_t)0);
