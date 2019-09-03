@@ -31,8 +31,8 @@
 #include <VertexShader.h>
 
 // Will refactor this
-#include "../../Gameplay/OrbitSystem.h"
-#include "../../Gameplay/SpeedboostSystem.h"
+#include <OrbitSystem.h>
+#include <SpeedboostSystem.h>
 
 #include <TransformComponent.h>
 #include "Vertex.h"

@@ -8,7 +8,7 @@
 #include "PlayerControllerStateMachine.h"
 
 #include "../..//CoreInput/CoreInput.h"
-#include "../..//Gameplay/LightOrbColors.h"
+#include <LightOrbColors.h>
 // Audio Includes
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>

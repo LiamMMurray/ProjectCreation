@@ -1,7 +1,7 @@
 #include <PlayerCinematicState.h>
 
 #include "../..//GEngine.h"
-#include "../..//Gameplay/GoalComponent.h"
+#include <GoalComponent.h>
 #include <TransformComponent.h>
 #include <MathLibrary.h>
 #include "../../CoreInput/CoreInput.h"

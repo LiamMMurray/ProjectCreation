@@ -1,7 +1,7 @@
 #include "PlayerMovement.h"
 #include <Entity.h>
-#include "../../Gameplay/GoalComponent.h"
-#include "../../Gameplay/OrbitSystem.h"
+#include <GoalComponent.h>
+#include <OrbitSystem.h>
 #include "../../CollisionLibary/CollisionLibary.h"
 #include "../../CollisionLibary/CollisionResult.h"
 #include "../../CoreInput/CoreInput.h"

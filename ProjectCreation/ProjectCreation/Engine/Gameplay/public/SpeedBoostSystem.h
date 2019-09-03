@@ -9,9 +9,9 @@
 
 #include <PlayerMovement.h>
 #include <JGamePad.h>
-#include "LightOrbColors.h"
-#include "SpeedboostComponent.h"
-#include "SplineCluster.h"
+#include <LightOrbColors.h>
+#include <SpeedboostComponent.h>
+#include <SplineCluster.h>
 
 #include <Random.h>
 class TransformComponent;

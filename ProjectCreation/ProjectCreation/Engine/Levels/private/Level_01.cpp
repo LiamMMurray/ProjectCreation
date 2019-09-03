@@ -2,7 +2,7 @@
 #include <DirectXMath.h>
 #include <UIManager.h>
 #include <ControllerSystem.h>
-#include "../../Gameplay/OrbitSystem.h"
+#include <OrbitSystem.h>
 #include "LevelStateMachine.h"
 
 using namespace DirectX;

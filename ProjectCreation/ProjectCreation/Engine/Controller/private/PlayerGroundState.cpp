@@ -12,7 +12,7 @@
 #include <PlayerMovement.h>
 #include <JGamePad.h>
 
-#include "../../Gameplay/OrbitSystem.h"
+#include <OrbitSystem.h>
 #include <ControllerSystem.h>
 
 #define _USE_MATH_DEFINES

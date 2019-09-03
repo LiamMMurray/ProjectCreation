@@ -3,14 +3,14 @@
 
 #include <iostream>
 #include <TerrainManager.h>
-#include "../../Gameplay/LightOrbColors.h"
+#include <LightOrbColors.h>
 #include <IController.h>
 #include "../../CoreInput/CoreInput.h"
 #include "DebugCameraController.h"
 #include "PlayerMovement.h"
 
-#include "../..//Gameplay/OrbitSystem.h"
-#include "../..//Gameplay/SpeedboostSystem.h"
+#include <OrbitSystem.h>
+#include <SpeedboostSystem.h>
 
 #include <debug_renderer.h>
 #include <RenderingSystem.h>

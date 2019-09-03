@@ -1,8 +1,8 @@
 #pragma once
 #include <LevelState.h>
 #include "../../GEngine.h"
-#include "../../Gameplay/SpeedBoostSystem.h"
-#include "../../Gameplay/OrbitSystem.h"
+#include <SpeedBoostSystem.h>
+#include <OrbitSystem.h>
 
 
 // LEVEL 1: SPACE

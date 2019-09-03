@@ -1,8 +1,8 @@
-#include "SpeedBoostSystem.h"
+#include <SpeedBoostSystem.h>
 #include <algorithm>
 #include <ControllerSystem.h>
-#include "../Entities/EntityFactory.h"
-#include "../GEngine.h"
+#include "../../Entities/EntityFactory.h"
+#include "../../GEngine.h"
 
 #include <TransformComponent.h>
 #include "GoalComponent.h"
@@ -17,7 +17,7 @@
 #include <map>
 #include <random>
 #include <string>
-#include "..//CoreInput/CoreInput.h"
+#include "../../CoreInput/CoreInput.h"
 #include <MathLibrary.h>
 #include <PlayerMovement.h>
 
@@ -27,12 +27,12 @@
 #include <FGoodSpline.h>
 
 #include <limits>
-#include "..//CollisionLibary/CollisionLibary.h"
+#include "../../CollisionLibary/CollisionLibary.h"
 
-#include "../CoreInput/InputActions.h"
+#include "../../CoreInput/InputActions.h"
 #include <EmitterComponent.h>
 
-#include "..//Audio/ContinousSoundSystem.h"
+#include "../../Audio/ContinousSoundSystem.h"
 #include <JobScheduler.h>
 using namespace DirectX;
 

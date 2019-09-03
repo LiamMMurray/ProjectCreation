@@ -1,8 +1,8 @@
 #pragma once
 #include "../../Audio/AudioManager.h"
 #include <PlayerMovement.h>
-#include "../../Gameplay/OrbitSystem.h"
-#include "../../Gameplay/SpeedBoostSystem.h"
+#include <OrbitSystem.h>
+#include <SpeedBoostSystem.h>
 #include <LevelState.h>
 
 // LEVEL 4 : PLANTS

@@ -43,8 +43,8 @@
 
 #include <ControllerSystem.h>
 
-#include "Engine/Gameplay/OrbitSystem.h"
-#include "Engine/Gameplay/SpeedBoostSystem.h"
+#include <OrbitSystem.h>
+#include <SpeedBoostSystem.h>
 #include <DirectionalLightComponent.h>
 
 #include <TransformComponent.h>

@@ -5,11 +5,11 @@
 #include <ControllerSystem.h>
 #include <PlayerMovement.h>
 #include "../../GEngine.h"
-#include "../../Gameplay/OrbRespawnComponent.h"
-#include "../../Gameplay/OrbitSystem.h"
-#include "../../Gameplay/SpeedBoostSystem.h"
-#include "../../Gameplay/SpeedboostComponent.h"
-#include "../../Gameplay/SplineElementComponent.h"
+#include <OrbRespawnComponent.h>
+#include <OrbitSystem.h>
+#include <SpeedBoostSystem.h>
+#include <SpeedboostComponent.h>
+#include <SplineElementComponent.h>
 #include <TransformComponent.h>
 #include <LevelState.h>
 

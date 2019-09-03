@@ -1,16 +1,16 @@
-#include "OrbitSystem.h"
+#include <OrbitSystem.h>
 #include <ControllerSystem.h>
 #include <DirectionalLightComponent.h>
 #include <EmitterComponent.h>
 #include <Material.h>
 #include <StaticMeshComponent.h>
 #include <limits>
-#include "..//CoreInput/CoreInput.h"
-#include "..//Entities/EntityFactory.h"
-#include "..//GEngine.h"
+#include "../../CoreInput/CoreInput.h"
+#include "../../Entities/EntityFactory.h"
+#include "../../GEngine.h"
 #include <TransformComponent.h>
 #include <TutorialLevel.h>
-#include "SpeedBoostSystem.h"
+#include <SpeedBoostSystem.h>
 
 
 using namespace DirectX;

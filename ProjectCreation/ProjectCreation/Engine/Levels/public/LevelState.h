@@ -1,5 +1,5 @@
 #pragma once
-#include "../../Gameplay/StateMachine/IState.h"
+#include <IState.h>
 
 // make enum
 

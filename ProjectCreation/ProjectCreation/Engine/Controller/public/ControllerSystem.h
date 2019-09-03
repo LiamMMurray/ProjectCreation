@@ -5,7 +5,7 @@
 #include <CameraComponent.h>
 #include <IController.h>
 #include "../../GEngine.h"
-#include "../../Gameplay/LightOrbColors.h"
+#include <LightOrbColors.h>
 #include <JGamePad.h>
 
 class ControllerSystem : public ISystem

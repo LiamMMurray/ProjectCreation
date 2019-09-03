@@ -2,7 +2,7 @@
 #include <Component.h>
 
 #include <DirectXMath.h>
-#include "LightOrbColors.h"
+#include <LightOrbColors.h>
 
 class SpeedboostComponent : public Component<SpeedboostComponent>
 {
