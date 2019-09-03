@@ -41,7 +41,7 @@
 
 #include "Engine/Levels/LevelStateManager.h"
 
-#include "Engine/Controller/ControllerSystem.h"
+#include <ControllerSystem.h>
 
 #include "Engine/Gameplay/OrbitSystem.h"
 #include "Engine/Gameplay/SpeedBoostSystem.h"
@@ -206,7 +206,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 
         /** Main init engine **/
-        GamePad::Get()->Init();
+        JGamePad::Get()->Init();
         EngineHelpers::InitEngineSystemManagers(handle);
         SystemManager*   systemManager   = GEngine::Get()->GetSystemManager();
         HandleManager*   HandleManager   = GEngine::Get()->GetHandleManager();
@@ -385,7 +385,7 @@ int WINAPI _WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
                 GEngine::Get()->GetSystemManager()->Update(deltaTime);
                 GEngine::Get()->m_MainThreadProfilingContext.End();
         }
-        GamePad::Shutdown();
+        JGamePad::Shutdown();
         EngineHelpers::ShutdownEngineSystemManagers();
 
         return 0;

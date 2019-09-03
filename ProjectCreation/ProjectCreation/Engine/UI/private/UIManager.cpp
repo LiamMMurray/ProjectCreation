@@ -3,7 +3,7 @@
 #include <iostream>
 #include "../../CoreInput/InputActions.h"
 
-#include "../../Controller/ControllerSystem.h"
+#include <ControllerSystem.h>
 #include "../../CoreInput/CoreInput.h"
 #include "../../GEngine.h"
 #include <RenderingSystem.h>
@@ -397,12 +397,12 @@ void UIManager::GameplayUpdate(float deltaTime)
         POINT cursorPoint;
         GetCursorPos(&cursorPoint);
 
-        if (GamePad::Get()->CheckConnection() == true)
+        if (JGamePad::Get()->CheckConnection() == true)
         {
                 for (int i = 0; i < instance->resDescriptors.size(); i++)
                 {
-                        int XPos = int(GamePad::Get()->leftStickX * 10.0f);
-                        int YPos = int(GamePad::Get()->leftStickY * 10.0f);
+                        int XPos = int(JGamePad::Get()->leftStickX * 10.0f);
+                        int YPos = int(JGamePad::Get()->leftStickY * 10.0f);
 
                         SetCursorPos(cursorPoint.x + XPos, cursorPoint.y - YPos);
                 }
@@ -510,7 +510,7 @@ void UIManager::Splash_End()
 
         instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][0].mEnabled = true;
 
-        if (GamePad::Get()->CheckConnection() == true)
+        if (JGamePad::Get()->CheckConnection() == true)
         {
                 instance->m_AllFonts[E_MENU_CATEGORIES::MainMenu][2].mEnabled = true;
         }
@@ -542,7 +542,7 @@ void UIManager::WhiteOrbCollected()
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled = false;
 
                 auto [redR, redG, redB] = RedIconColor;
-                if (GamePad::Get()->CheckConnection() == true)
+                if (JGamePad::Get()->CheckConnection() == true)
                 {
                         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].mEnabled  = true;
                         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].currColor = {redR, redG, redB, 0.0f};
@@ -578,7 +578,7 @@ void UIManager::RedOrbCollected()
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][1].mEnabled = false;
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][5].mEnabled = false;
                 auto [greenR, greenG, greenB]                                   = GreenIconColor;
-                if (GamePad::Get()->CheckConnection() == true)
+                if (JGamePad::Get()->CheckConnection() == true)
                 {
                         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].mEnabled  = true;
                         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].currColor = {greenR, greenG, greenB, .0f};
@@ -616,7 +616,7 @@ void UIManager::GreenOrbCollected()
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][6].mEnabled = false;
 
                 auto [blueR, blueG, blueB] = BlueIconColor;
-                if (GamePad::Get()->CheckConnection() == true)
+                if (JGamePad::Get()->CheckConnection() == true)
                 {
                         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].mEnabled  = true;
                         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][7].currColor = {blueR, blueG, blueB, 0.0f};
@@ -651,7 +651,7 @@ void UIManager::MainTitleUnpause()
         }
         m_currentTutorialIcon = {0, 4};
         // Left Click Image
-        if (GamePad::Get()->CheckConnection() == true)
+        if (JGamePad::Get()->CheckConnection() == true)
         {
 
                 instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][4].mEnabled = true;
@@ -758,7 +758,7 @@ void UIManager::Unpause()
         if (currIconMouse != -1)
         {
                 auto spriteColor = instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconController].currColor;
-                if (GamePad::Get()->CheckConnection() == true)
+                if (JGamePad::Get()->CheckConnection() == true)
                 {
 
                         instance->m_AllSprites[E_MENU_CATEGORIES::MainMenu][currIconController].mEnabled  = true;
@@ -2778,7 +2778,7 @@ void UIManager::Initialize(native_handle_type hwnd)
 
 void UIManager::Update(float deltaTime)
 {
-        GamePad::Get()->Refresh();
+        JGamePad::Get()->Refresh();
         GEngine::Get()->m_MainThreadProfilingContext.Begin("UIManager", "UIManager");
         using namespace DirectX;
 

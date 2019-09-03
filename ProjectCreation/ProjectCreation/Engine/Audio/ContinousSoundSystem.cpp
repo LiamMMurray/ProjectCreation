@@ -2,7 +2,7 @@
 #include "..//Gameplay/LightOrbColors.h"
 #include "..//GenericComponents/TransformComponent.h"
 #include "..//MathLibrary/MathLibrary.h"
-#include "../Controller/ControllerSystem.h"
+#include <ControllerSystem.h>
 #include "../GEngine.h"
 #include "3DSoundComponent.h"
 #include "AudioManager.h"

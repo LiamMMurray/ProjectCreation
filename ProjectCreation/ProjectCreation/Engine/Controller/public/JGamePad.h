@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include "Xinput.h"
 
-class GamePad
+class JGamePad
 {
         XINPUT_STATE     m_InputState;
         XINPUT_STATE     m_PrevInputState;
@@ -13,8 +13,8 @@ class GamePad
 
 
     public:
-        GamePad();
-        static GamePad* instance;
+        JGamePad();
+        static JGamePad* instance;
 
         void           IsVibrating(float strengthL, float strengthR);
         const uint16_t IsPressed(const WORD button) const;
@@ -37,7 +37,7 @@ class GamePad
 
         static void Shutdown();
 
-        static GamePad* Get();
+        static JGamePad* Get();
 
         inline XINPUT_GAMEPAD GetGamePad()
         {

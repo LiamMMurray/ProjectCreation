@@ -1,9 +1,7 @@
 #include "PhysicsSystem.h"
 #include <iostream>
 #include "../../GEngine.h"
-
-#include "../../Controller/PlayerMovement.h"
-
+#include <PlayerMovement.h>
 #include <DirectXMath.h>
 
 void PhysicsSystem::OnPreUpdate(float deltaTime)

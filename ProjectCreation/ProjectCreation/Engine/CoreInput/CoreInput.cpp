@@ -134,5 +134,5 @@ KeyState GCoreInput::GetMouseState(MouseCode target)
 
 KeyState GCoreInput::GetControllerState(ControllerCode target)
 {
-        return (KeyState)GamePad::Get()->IsPressed((WORD)target);
+        return (KeyState)JGamePad::Get()->IsPressed((WORD)target);
 }

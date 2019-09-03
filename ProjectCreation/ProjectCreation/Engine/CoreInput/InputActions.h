@@ -1,5 +1,5 @@
 #pragma once
-#include "../Controller/GamePad.h"
+#include <JGamePad.h>
 #include "CoreInput.h"
 
 struct E_ACTION_STATE

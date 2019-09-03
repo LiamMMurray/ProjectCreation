@@ -1,6 +1,6 @@
 #include "SpeedBoostSystem.h"
 #include <algorithm>
-#include "../Controller/ControllerSystem.h"
+#include <ControllerSystem.h>
 #include "../Entities/EntityFactory.h"
 #include "../GEngine.h"
 
@@ -19,7 +19,7 @@
 #include <string>
 #include "..//CoreInput/CoreInput.h"
 #include "..//MathLibrary/MathLibrary.h"
-#include "../Controller/PlayerMovement.h"
+#include <PlayerMovement.h>
 
 #include <Material.h>
 
@@ -33,7 +33,7 @@
 #include <EmitterComponent.h>
 
 #include "..//Audio/ContinousSoundSystem.h"
-#include "../JobScheduler.h"
+#include <JobScheduler.h>
 using namespace DirectX;
 
 EntityHandle SpeedBoostSystem::SpawnSpeedOrb()

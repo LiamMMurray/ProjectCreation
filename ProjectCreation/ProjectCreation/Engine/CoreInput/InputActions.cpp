@@ -3,7 +3,7 @@
 uint16_t InputActions::CheckAction(uint16_t action)
 {
         uint16_t returnType;
-        if (GamePad::Get()->CheckConnection() == true) // has controller
+        if (JGamePad::Get()->CheckConnection() == true) // has controller
         {
                 auto temp = (KeyState)GCoreInput::GetControllerState((ControllerCode)GamepadInputs[action]);
                 return (uint16_t)GCoreInput::GetControllerState((ControllerCode)GamepadInputs[action]);
@@ -22,7 +22,7 @@ uint16_t InputActions::PauseAction()
 {
         uint16_t returnType;
 
-        if (GamePad::Get()->CheckConnection() == true) // has controller
+        if (JGamePad::Get()->CheckConnection() == true) // has controller
         {
                 returnType = (KeyState)GCoreInput::GetControllerState(ControllerCode::BUTTON_START);
                 if (returnType == KeyState::DownFirst)
@@ -41,7 +41,7 @@ uint16_t InputActions::MouseClickAction()
 {
         uint16_t returnType;
 
-        if (GamePad::Get()->CheckConnection() == true) // has controller
+        if (JGamePad::Get()->CheckConnection() == true) // has controller
         {
                 returnType = (KeyState)GCoreInput::GetControllerState(ControllerCode::BUTTON_A);
                 if (returnType == KeyState::Release)
@@ -60,7 +60,7 @@ uint16_t InputActions::MoveAction()
 {
         uint16_t returnType;
 
-        if (GamePad::Get()->CheckConnection() == true) // has controller
+        if (JGamePad::Get()->CheckConnection() == true) // has controller
         {
                 returnType = (KeyState)GCoreInput::GetControllerState(ControllerCode::BUTTON_START);
                 if (returnType == KeyState::DownFirst)
@@ -79,7 +79,7 @@ uint16_t InputActions::EnterAction()
 {
         uint16_t returnType;
 
-        if (GamePad::Get()->CheckConnection() == true) // has controller
+        if (JGamePad::Get()->CheckConnection() == true) // has controller
         {
                 returnType = (KeyState)GCoreInput::GetControllerState(ControllerCode::BUTTON_BACK);
                 if (returnType != KeyState::Unpressed)

@@ -1,12 +1,12 @@
-#include "TerrainManager.h"
+#include <TerrainManager.h>
 #include <d3d11.h>
 #include <d3d11_1.h>
-#include < Directxpackedvector.h >
+#include <Directxpackedvector.h>
 #include <StaticMesh.h>
 #include <FileIO.h>
 #include <StringUtility.h>
 #include <ComputeShader.h>
-#include "..//..//Controller/ControllerSystem.h"
+#include <ControllerSystem.h>
 #include "..//..//CoreInput/CoreInput.h"
 #include "..//..//Entities/EntityFactory.h"
 #include "..//..//GEngine.h"

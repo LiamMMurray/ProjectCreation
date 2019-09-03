@@ -1,12 +1,12 @@
-#include "GamePad.h"
+#include <JGamePad.h>
 //#include <winerror.h>
 //#include <d3d11.h>
-#include "../ConsoleWindow/ConsoleWindow.h"
-#include "../GEngine.h"
+#include "../../ConsoleWindow/ConsoleWindow.h"
+#include "../../GEngine.h"
 
-GamePad* GamePad::instance = nullptr;
+JGamePad* JGamePad::instance = nullptr;
 
-GamePad::GamePad()
+JGamePad::JGamePad()
 {
         DWORD dwResult;
         for (DWORD i = 0; i < XUSER_MAX_COUNT; i++)
@@ -37,14 +37,14 @@ GamePad::GamePad()
         xInputToKeyState.insert(std::make_pair(XINPUT_KEYSTROKE_REPEAT, (uint16_t)KeyState::Down));
 }
 
-void GamePad::IsVibrating(float strengthL, float strengthR)
+void JGamePad::IsVibrating(float strengthL, float strengthR)
 {
         instance->m_GamePadRumble.wLeftMotorSpeed  = MAX_RUMBLE * strengthL;
         instance->m_GamePadRumble.wRightMotorSpeed = MAX_RUMBLE * strengthR;
         XInputSetState(instance->cId, &instance->m_GamePadRumble);
 }
 
-const uint16_t GamePad::IsPressed(const WORD button) const
+const uint16_t JGamePad::IsPressed(const WORD button) const
 {
         uint16_t output     = (m_InputState.Gamepad.wButtons & button) != 0;
         uint16_t prevOutput = (m_PrevInputState.Gamepad.wButtons & button) != 0;
@@ -75,7 +75,7 @@ const uint16_t GamePad::IsPressed(const WORD button) const
         return (uint16_t)KeyState::Unpressed;
 }
 
-bool GamePad::CheckConnection()
+bool JGamePad::CheckConnection()
 {
         int controllerId = -1;
 
@@ -94,7 +94,7 @@ bool GamePad::CheckConnection()
 }
 
 // Returns false if the controller has been disconnected
-bool GamePad::Refresh()
+bool JGamePad::Refresh()
 {
         if (instance->cId == -1)
                 CheckConnection();
@@ -143,14 +143,14 @@ bool GamePad::Refresh()
         return false;
 }
 
-GamePad* GamePad::Get()
+JGamePad* JGamePad::Get()
 {
         return instance;
 }
 
-void GamePad::Init()
+void JGamePad::Init()
 {
-        instance             = new GamePad();
+        instance             = new JGamePad();
         instance->MAX_RUMBLE = 65535.0f;
         instance->normLX     = fmaxf(-1, (float)instance->m_InputState.Gamepad.sThumbLX / 32767);
         instance->normLY     = fmaxf(-1, (float)instance->m_InputState.Gamepad.sThumbLY / 32767);
@@ -161,7 +161,7 @@ void GamePad::Init()
         instance->cId        = -1;
 }
 
-void GamePad::Shutdown()
+void JGamePad::Shutdown()
 {
         delete instance;
 }

@@ -2,8 +2,8 @@
 #include <DirectXMath.h>
 #include <EntityHandle.h>
 #include <HandleManager.h>
-#include "../Controller/ControllerSystem.h"
-#include "../Controller/PlayerMovement.h"
+#include <ControllerSystem.h>
+#include <PlayerMovement.h>
 #include "../GEngine.h"
 #include "../Gameplay/OrbRespawnComponent.h"
 #include "../Gameplay/OrbitSystem.h"

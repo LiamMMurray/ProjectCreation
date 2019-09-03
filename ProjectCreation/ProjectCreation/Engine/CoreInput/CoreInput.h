@@ -10,7 +10,7 @@
 #pragma once
 #include <Windows.h>
 #include <stdint.h>
-#include "../Controller/GamePad.h"
+#include <JGamePad.h>
 
 #ifndef _WINDEF_
 struct HINSTANCE__; // Forward or never

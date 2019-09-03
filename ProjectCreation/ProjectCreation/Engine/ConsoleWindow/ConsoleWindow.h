@@ -1,7 +1,7 @@
 #pragma once
 
 //INCLUDES
-#include "../Controller/PlayerMovement.h"
+#include <PlayerMovement.h>
 #define NOMINMAX
 #include <Windows.h>
 #include <iostream>

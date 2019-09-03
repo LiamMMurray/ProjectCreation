@@ -1,6 +1,6 @@
 #include <MemoryLeakDetection.h>
 
-#include "../Engine/JobScheduler.h"
+#include <JobScheduler.h>
 #include "GEngine.h"
 #include "MathLibrary/MathLibrary.h"
 GEngine*         GEngine::instance        = 0;

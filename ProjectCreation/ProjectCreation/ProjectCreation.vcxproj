@@ -30,16 +30,18 @@
     <ClInclude Include="Engine\CollisionLibary\CollisionComponents.h" />
     <ClInclude Include="Engine\Commands.h" />
     <ClInclude Include="Engine\ContainerUtility.h" />
-    <ClInclude Include="Engine\Controller\ControllerSystem.h" />
-    <ClInclude Include="Engine\Controller\DebugCameraController.h" />
     <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
-    <ClInclude Include="Engine\Controller\GamePad.h" />
-    <ClInclude Include="Engine\Controller\PlayerCinematicState.h" />
-    <ClInclude Include="Engine\Controller\PlayerControllerState.h" />
-    <ClInclude Include="Engine\Controller\PlayerControllerStateMachine.h" />
-    <ClInclude Include="Engine\Controller\PlayerGroundState.h" />
-    <ClInclude Include="Engine\Controller\PlayerPuzzleState.h" />
-    <ClInclude Include="Engine\Controller\PlayerStateEvents.h" />
+    <ClInclude Include="Engine\Controller\public\ControllerSystem.h" />
+    <ClInclude Include="Engine\Controller\public\DebugCameraController.h" />
+    <ClInclude Include="Engine\Controller\public\JGamePad.h" />
+    <ClInclude Include="Engine\Controller\public\IController.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerCinematicState.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerControllerState.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerControllerStateMachine.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerGroundState.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerMovement.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerPuzzleState.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerStateEvents.h" />
     <ClInclude Include="Engine\CoreInput\InputActions.h" />
     <ClInclude Include="Engine\ECS\public\Component.h" />
     <ClInclude Include="Engine\ECS\public\ComponentHandle.h" />
@@ -55,6 +57,7 @@
     <ClInclude Include="Engine\ECS\public\IPoolElement.h" />
     <ClInclude Include="Engine\ECS\public\ISystem.h" />
     <ClInclude Include="Engine\ECS\public\ECSPools.h" />
+    <ClInclude Include="Engine\ECS\public\JobScheduler.h" />
     <ClInclude Include="Engine\ECS\public\SystemManager.h" />
     <ClInclude Include="Engine\EngineInitShutdownHelpers.h" />
     <ClInclude Include="Engine\Entities\EntityFactory.h" />
@@ -74,7 +77,6 @@
     <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
     <ClInclude Include="Engine\GenericComponents\TransformSystem.h" />
-    <ClInclude Include="Engine\JobScheduler.h" />
     <ClInclude Include="Engine\Levels\LevelState.h" />
     <ClInclude Include="Engine\Levels\LevelStateEvents.h" />
     <ClInclude Include="Engine\Levels\LevelStateMachine.h" />
@@ -95,8 +97,6 @@
     <ClInclude Include="Engine\GenericComponents\TestComponents.h" />
     <ClInclude Include="Engine\GenericComponents\TransformComponent.h" />
     <ClInclude Include="Engine\ConsoleWindow\ConsoleWindow.h" />
-    <ClInclude Include="Engine\Controller\IController.h" />
-    <ClInclude Include="Engine\Controller\PlayerMovement.h" />
     <ClInclude Include="Engine\CoreInput\CoreInput.h" />
     <ClInclude Include="Engine\Animation\AnimationComponent.h" />
     <ClInclude Include="Engine\Animation\AnimationContainers.h" />
@@ -555,13 +555,15 @@
     <ClCompile Include="Engine\CollisionLibary\CollisionGrid.cpp" />
     <ClCompile Include="Engine\CollisionLibary\CollisionLibary.cpp" />
     <ClCompile Include="Engine\CollisionLibary\Shapes.cpp" />
-    <ClCompile Include="Engine\Controller\ControllerSystem.cpp" />
-    <ClCompile Include="Engine\Controller\DebugCameraController.cpp" />
-    <ClCompile Include="Engine\Controller\GamePad.cpp" />
-    <ClCompile Include="Engine\Controller\PlayerCinematicState.cpp" />
-    <ClCompile Include="Engine\Controller\PlayerControllerStateMachine.cpp" />
-    <ClCompile Include="Engine\Controller\PlayerGroundState.cpp" />
-    <ClCompile Include="Engine\Controller\PlayerPuzzleState.cpp" />
+    <ClCompile Include="Engine\Controller\private\ControllerSystem.cpp" />
+    <ClCompile Include="Engine\Controller\private\DebugCameraController.cpp" />
+    <ClCompile Include="Engine\Controller\private\GamePad.cpp" />
+    <ClCompile Include="Engine\Controller\private\IController.cpp" />
+    <ClCompile Include="Engine\Controller\private\PlayerCinematicState.cpp" />
+    <ClCompile Include="Engine\Controller\private\PlayerControllerStateMachine.cpp" />
+    <ClCompile Include="Engine\Controller\private\PlayerGroundState.cpp" />
+    <ClCompile Include="Engine\Controller\private\PlayerMovement.cpp" />
+    <ClCompile Include="Engine\Controller\private\PlayerPuzzleState.cpp" />
     <ClCompile Include="Engine\CoreInput\InputActions.cpp" />
     <ClCompile Include="Engine\ECS\private\Entity.cpp" />
     <ClCompile Include="Engine\ECS\private\HandleManager.cpp" />
@@ -580,7 +582,6 @@
     <ClCompile Include="Engine\Gameplay\StateMachine\IState.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
     <ClCompile Include="Engine\GenericComponents\TransformSystem.cpp" />
-    <ClCompile Include="Engine\JobScheduler.cpp" />
     <ClCompile Include="Engine\Levels\LevelStateMachine.cpp" />
     <ClCompile Include="Engine\Levels\LevelStateManager.cpp" />
     <ClCompile Include="Engine\Levels\Level_01.cpp" />
@@ -595,8 +596,6 @@
     <ClCompile Include="Engine\Particle Systems\private\ParticleData.cpp" />
     <ClCompile Include="Engine\Particle Systems\private\ParticleManager.cpp" />
     <ClCompile Include="Engine\Physics\private\PhysicsComponent.cpp" />
-    <ClCompile Include="Engine\Controller\IController.cpp" />
-    <ClCompile Include="Engine\Controller\PlayerMovement.cpp" />
     <ClCompile Include="Engine\CoreInput\CoreInput.cpp" />
     <ClCompile Include="Engine\Animation\AnimationSystem.cpp" />
     <ClCompile Include="Engine\GEngine.cpp" />
@@ -749,7 +748,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -773,7 +772,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -801,7 +800,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -829,7 +828,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <iostream>
 #include "../../Entities/EntityFactory.h"
-#include "../../Controller/ControllerSystem.h"
-#include "../../Controller/PlayerMovement.h"
+#include <ControllerSystem.h>
+#include <PlayerMovement.h>
 #include "../../CoreInput/CoreInput.h"
 #include "../../GEngine.h"
 #include "../../MathLibrary/MathLibrary.h"
@@ -46,7 +46,7 @@
 #include <StaticMeshComponent.h>
 #include <TerrainManager.h>
 
-#include "../../Controller/ControllerSystem.h"
+#include <ControllerSystem.h>
 #include "../../MathLibrary/ColorConstants.h"
 #include <MemoryLeakDetection.h>
 #include <debug_renderer.h>

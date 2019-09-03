@@ -1,6 +1,6 @@
 #pragma once
 #include "../Audio/AudioManager.h"
-#include "../Controller/PlayerMovement.h"
+#include <PlayerMovement.h>
 #include "../Gameplay/OrbitSystem.h"
 #include "../Gameplay/SpeedBoostSystem.h"
 #include "LevelState.h"

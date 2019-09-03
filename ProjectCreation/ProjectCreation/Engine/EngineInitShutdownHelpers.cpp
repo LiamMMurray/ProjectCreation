@@ -3,7 +3,7 @@
 #include "..///Engine/GenericComponents/TransformSystem.h"
 #include "..//Engine/Audio/ContinousSoundSystem.h"
 #include "../Engine/Animation/AnimationSystem.h"
-#include "../Engine/Controller/ControllerSystem.h"
+#include <ControllerSystem.h>
 #include "../Engine/CoreInput/CoreInput.h"
 #include <PhysicsSystem.h>
 
