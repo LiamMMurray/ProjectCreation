@@ -47,7 +47,7 @@
 #include "Engine/Gameplay/SpeedBoostSystem.h"
 #include <DirectionalLightComponent.h>
 
-#include "Engine/GenericComponents/TransformComponent.h"
+#include <TransformComponent.h>
 #include <MathLibrary.h>
 #include <MemoryLeakDetection.h>
 

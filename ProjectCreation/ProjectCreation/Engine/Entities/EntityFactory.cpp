@@ -3,7 +3,7 @@
 #include <StaticMeshComponent.h>
 #include "../Animation/AnimationComponent.h"
 #include "../GEngine.h"
-#include "../GenericComponents/TransformComponent.h"
+#include <TransformComponent.h>
 
 #include <SkeletalMesh.h>
 

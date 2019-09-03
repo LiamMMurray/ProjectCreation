@@ -2,7 +2,7 @@
 
 #include "../..//GEngine.h"
 #include "../..//Gameplay/GoalComponent.h"
-#include "../..//GenericComponents/TransformComponent.h"
+#include <TransformComponent.h>
 #include <MathLibrary.h>
 #include "../../CoreInput/CoreInput.h"
 #include <PlayerControllerStateMachine.h>

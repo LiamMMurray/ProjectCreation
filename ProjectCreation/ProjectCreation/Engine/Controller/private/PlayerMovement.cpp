@@ -6,7 +6,7 @@
 #include "../../CollisionLibary/CollisionResult.h"
 #include "../../CoreInput/CoreInput.h"
 #include "../../GEngine.h"
-#include "../../GenericComponents/TransformComponent.h"
+#include <TransformComponent.h>
 #include <MathLibrary.h>
 #include <Quaternion.h>
 #include "ControllerSystem.h"

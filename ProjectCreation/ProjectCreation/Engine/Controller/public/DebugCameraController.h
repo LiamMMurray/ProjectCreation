@@ -2,7 +2,7 @@
 #include <ECSTypes.h>
 #include "IController.h"
 
-#include "../../GenericComponents/TransformComponent.h"
+#include <TransformComponent.h>
 #include <PhysicsComponent.h>
 
 #include "../../CollisionLibary/Shapes.h"

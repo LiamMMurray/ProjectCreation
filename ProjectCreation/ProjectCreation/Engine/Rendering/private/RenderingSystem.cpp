@@ -34,7 +34,7 @@
 #include "../../Gameplay/OrbitSystem.h"
 #include "../../Gameplay/SpeedboostSystem.h"
 
-#include "../../GenericComponents/TransformComponent.h"
+#include <TransformComponent.h>
 #include "Vertex.h"
 
 #include <ParticleManager.h>

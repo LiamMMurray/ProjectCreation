@@ -10,7 +10,7 @@
 #include "../../Gameplay/SpeedBoostSystem.h"
 #include "../../Gameplay/SpeedboostComponent.h"
 #include "../../Gameplay/SplineElementComponent.h"
-#include "../../GenericComponents/TransformComponent.h"
+#include <TransformComponent.h>
 #include <LevelState.h>
 
 class TutorialLevel : public ILevelState

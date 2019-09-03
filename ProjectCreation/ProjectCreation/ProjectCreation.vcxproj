@@ -43,22 +43,22 @@
     <ClInclude Include="Engine\Controller\public\PlayerPuzzleState.h" />
     <ClInclude Include="Engine\Controller\public\PlayerStateEvents.h" />
     <ClInclude Include="Engine\CoreInput\InputActions.h" />
-    <ClInclude Include="Engine\ECS\public\Component.h" />
-    <ClInclude Include="Engine\ECS\public\ComponentHandle.h" />
-    <ClInclude Include="Engine\ECS\public\ECS.h" />
-    <ClInclude Include="Engine\ECS\public\ECSMem.h" />
-    <ClInclude Include="Engine\ECS\public\ECSTypes.h" />
-    <ClInclude Include="Engine\ECS\public\Entity.h" />
-    <ClInclude Include="Engine\ECS\public\EntityHandle.h" />
-    <ClInclude Include="Engine\ECS\public\Handle.h" />
-    <ClInclude Include="Engine\ECS\public\HandleManager.h" />
-    <ClInclude Include="Engine\ECS\public\IComponent.h" />
-    <ClInclude Include="Engine\ECS\public\IContainer.h" />
-    <ClInclude Include="Engine\ECS\public\IPoolElement.h" />
-    <ClInclude Include="Engine\ECS\public\ISystem.h" />
-    <ClInclude Include="Engine\ECS\public\ECSPools.h" />
-    <ClInclude Include="Engine\ECS\public\JobScheduler.h" />
-    <ClInclude Include="Engine\ECS\public\SystemManager.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\Component.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\ComponentHandle.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\ECS.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\ECSMem.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\ECSTypes.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\Entity.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\EntityHandle.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\Handle.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\HandleManager.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\IComponent.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\IContainer.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\IPoolElement.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\ISystem.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\ECSPools.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\JobScheduler.h" />
+    <ClInclude Include="Engine\ECS\Internals\public\SystemManager.h" />
     <ClInclude Include="Engine\EngineInitShutdownHelpers.h" />
     <ClInclude Include="Engine\Entities\EntityFactory.h" />
     <ClInclude Include="Engine\Events\Event.h" />
@@ -76,7 +76,7 @@
     <ClInclude Include="Engine\Gameplay\SpeedBoostSystem.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
     <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
-    <ClInclude Include="Engine\GenericComponents\TransformSystem.h" />
+    <ClInclude Include="Engine\ECS\Systems\public\TransformSystem.h" />
     <ClInclude Include="Engine\Levels\public\LevelState.h" />
     <ClInclude Include="Engine\Levels\public\LevelStateEvents.h" />
     <ClInclude Include="Engine\Levels\public\LevelStateMachine.h" />
@@ -95,7 +95,7 @@
     <ClInclude Include="Engine\Particle Systems\public\Pools.h" />
     <ClInclude Include="Engine\Physics\public\PhysicsComponent.h" />
     <ClInclude Include="Engine\GenericComponents\TestComponents.h" />
-    <ClInclude Include="Engine\GenericComponents\TransformComponent.h" />
+    <ClInclude Include="Engine\ECS\Components\public\TransformComponent.h" />
     <ClInclude Include="Engine\ConsoleWindow\ConsoleWindow.h" />
     <ClInclude Include="Engine\CoreInput\CoreInput.h" />
     <ClInclude Include="Engine\Animation\AnimationComponent.h" />
@@ -564,14 +564,14 @@
     <ClCompile Include="Engine\Controller\private\PlayerMovement.cpp" />
     <ClCompile Include="Engine\Controller\private\PlayerPuzzleState.cpp" />
     <ClCompile Include="Engine\CoreInput\InputActions.cpp" />
-    <ClCompile Include="Engine\ECS\private\Entity.cpp" />
-    <ClCompile Include="Engine\ECS\private\HandleManager.cpp" />
-    <ClCompile Include="Engine\ECS\private\IComponent.cpp" />
-    <ClCompile Include="Engine\ECS\private\IPoolElement.cpp" />
-    <ClCompile Include="Engine\ECS\private\ISystem.cpp" />
-    <ClCompile Include="Engine\ECS\private\Memory.cpp" />
-    <ClCompile Include="Engine\ECS\private\Pools.cpp" />
-    <ClCompile Include="Engine\ECS\private\SystemManager.cpp" />
+    <ClCompile Include="Engine\ECS\Internals\private\Entity.cpp" />
+    <ClCompile Include="Engine\ECS\Internals\private\HandleManager.cpp" />
+    <ClCompile Include="Engine\ECS\Internals\private\IComponent.cpp" />
+    <ClCompile Include="Engine\ECS\Internals\private\IPoolElement.cpp" />
+    <ClCompile Include="Engine\ECS\Internals\private\ISystem.cpp" />
+    <ClCompile Include="Engine\ECS\Internals\private\Memory.cpp" />
+    <ClCompile Include="Engine\ECS\Internals\private\Pools.cpp" />
+    <ClCompile Include="Engine\ECS\Internals\private\SystemManager.cpp" />
     <ClCompile Include="Engine\EngineInitShutdownHelpers.cpp" />
     <ClCompile Include="Engine\Entities\EntityFactory.cpp" />
     <ClCompile Include="Engine\Gameplay\LightOrbColors.cpp" />
@@ -580,7 +580,7 @@
     <ClCompile Include="Engine\Gameplay\SplineCluster.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\IState.cpp" />
     <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
-    <ClCompile Include="Engine\GenericComponents\TransformSystem.cpp" />
+    <ClCompile Include="Engine\ECS\Systems\private\TransformSystem.cpp" />
     <ClCompile Include="Engine\Levels\private\LevelStateMachine.cpp" />
     <ClCompile Include="Engine\Levels\private\LevelStateManager.cpp" />
     <ClCompile Include="Engine\Levels\private\Level_01.cpp" />
@@ -753,7 +753,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\Internals\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\ECS\Components\public;$(ProjectDir)Engine\ECS\Systems\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -777,7 +777,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\Internals\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\ECS\Components\public;$(ProjectDir)Engine\ECS\Systems\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -805,7 +805,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\Internals\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\ECS\Components\public;$(ProjectDir)Engine\ECS\Systems\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -833,7 +833,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\Internals\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\ECS\Components\public;$(ProjectDir)Engine\ECS\Systems\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

@@ -4,7 +4,7 @@
 #include "../Entities/EntityFactory.h"
 #include "../GEngine.h"
 
-#include "..//GenericComponents/TransformComponent.h"
+#include <TransformComponent.h>
 #include "GoalComponent.h"
 #include "OrbRespawnComponent.h"
 #include "OrbitSystem.h"

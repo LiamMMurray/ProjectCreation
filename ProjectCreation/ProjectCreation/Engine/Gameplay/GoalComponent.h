@@ -1,7 +1,7 @@
 #pragma once
 #include <Component.h>
 
-#include "../GenericComponents/TransformComponent.h"
+#include <TransformComponent.h>
 
 enum class E_GOAL_STATE
 {

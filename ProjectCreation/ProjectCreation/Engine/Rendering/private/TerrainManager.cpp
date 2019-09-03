@@ -10,8 +10,8 @@
 #include "..//..//CoreInput/CoreInput.h"
 #include "..//..//Entities/EntityFactory.h"
 #include "..//..//GEngine.h"
-#include "..//..//GenericComponents/TransformComponent.h"
-#include "..//..//GenericComponents/TransformSystem.h"
+#include <TransformComponent.h>
+#include <TransformSystem.h>
 #include <EmitterComponent.h>
 #include <ParticleManager.h>
 #include <Material.h>

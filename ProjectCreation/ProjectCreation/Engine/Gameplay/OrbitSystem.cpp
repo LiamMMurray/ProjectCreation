@@ -8,7 +8,7 @@
 #include "..//CoreInput/CoreInput.h"
 #include "..//Entities/EntityFactory.h"
 #include "..//GEngine.h"
-#include "../GenericComponents/TransformComponent.h"
+#include <TransformComponent.h>
 #include <TutorialLevel.h>
 #include "SpeedBoostSystem.h"
 

@@ -17,7 +17,7 @@
 #include <VertexShader.h>
 
 
-#include "../..//GenericComponents/TransformComponent.h"
+#include <TransformComponent.h>
 #include "ParticleBufferSetup.h"
 using namespace ParticleData;
 using namespace DirectX;

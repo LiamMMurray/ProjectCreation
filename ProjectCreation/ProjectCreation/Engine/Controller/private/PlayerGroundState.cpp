@@ -5,7 +5,7 @@
 #include <CameraComponent.h>
 #include <DirectionalLightComponent.h>
 #include "../../GEngine.h"
-#include "../../GenericComponents/TransformComponent.h"
+#include <TransformComponent.h>
 #include <MathLibrary.h>
 #include "../../CoreInput/CoreInput.h"
 #include <PlayerControllerStateMachine.h>
