@@ -1,6 +1,6 @@
 #include "AnimationComponent.h"
 
-#include "../MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 #include <assert.h>
 
 void AnimationComponent::SetWeights(int count, float* weights)

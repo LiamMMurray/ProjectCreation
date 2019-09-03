@@ -1,7 +1,7 @@
 #pragma once
 #include <PlayerControllerState.h>
 
-#include "../../MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 // Audio Includes
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>

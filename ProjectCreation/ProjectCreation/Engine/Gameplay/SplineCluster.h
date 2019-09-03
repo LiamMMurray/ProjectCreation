@@ -2,8 +2,8 @@
 #include <DirectXMath.h>
 #include <vector>
 #include <ECSTypes.h>
-#include "..//MathLibrary/Splines/FGoodSpline.h"
-#include "..//MathLibrary/Transform.h"
+#include <FGoodSpline.h>
+#include <Transform.h>
 
 struct SplinePoint
 {

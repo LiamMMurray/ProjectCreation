@@ -3,7 +3,7 @@
 #include "IController.h"
 
 #include "../../ConsoleWindow/ConsoleWindow.h"
-#include "../../MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 #include <PhysicsComponent.h>
 #include "PlayerControllerStateMachine.h"
 

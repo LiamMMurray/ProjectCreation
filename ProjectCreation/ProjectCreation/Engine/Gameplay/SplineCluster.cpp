@@ -1,6 +1,6 @@
 #include "SplineCluster.h"
 #include <TerrainManager.h>
-#include "..//MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 
 using namespace DirectX;
 

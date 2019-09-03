@@ -9,7 +9,7 @@
 #include <ResourceManager.h>
 #include <SkeletalMesh.h>
 
-#include "../MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 
 #include <debug_renderer.h>
 

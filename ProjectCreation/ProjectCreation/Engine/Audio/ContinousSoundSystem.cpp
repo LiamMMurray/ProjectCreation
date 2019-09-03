@@ -1,7 +1,7 @@
 #include "ContinousSoundSystem.h"
 #include "..//Gameplay/LightOrbColors.h"
 #include "..//GenericComponents/TransformComponent.h"
-#include "..//MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 #include <ControllerSystem.h>
 #include "../GEngine.h"
 #include "3DSoundComponent.h"

@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include "../MathLibrary/MathLibrary.h"
-
+#include <MathLibrary.h>
 #include <vector>
 
 namespace Animation

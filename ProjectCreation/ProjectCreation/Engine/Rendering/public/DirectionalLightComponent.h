@@ -3,7 +3,7 @@
 
 #include <HandleManager.h>
 
-#include "../../MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 
 struct DirectionalLightComponent : public Component<DirectionalLightComponent>
 {

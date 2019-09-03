@@ -2,7 +2,7 @@
 #include <TerrainManager.h>
 #include <ControllerSystem.h>
 #include "..//GEngine.h"
-#include "..//MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 #include "TransformComponent.h"
 
 using namespace DirectX;

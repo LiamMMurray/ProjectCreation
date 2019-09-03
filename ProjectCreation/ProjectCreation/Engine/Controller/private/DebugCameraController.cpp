@@ -3,8 +3,8 @@
 #include "../../CoreInput/CoreInput.h"
 #include "../../GEngine.h"
 
-#include "../../MathLibrary/MathLibrary.h"
-#include "../../MathLibrary/Quaternion.h"
+#include <MathLibrary.h>
+#include <Quaternion.h>
 
 #include <debug_renderer.h>
 #include <ControllerSystem.h>

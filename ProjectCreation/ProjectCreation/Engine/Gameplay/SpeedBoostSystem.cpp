@@ -18,13 +18,13 @@
 #include <random>
 #include <string>
 #include "..//CoreInput/CoreInput.h"
-#include "..//MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 #include <PlayerMovement.h>
 
 #include <Material.h>
 
-#include "../MathLibrary/Maze/MazeGenerator.h"
-#include "../MathLibrary/Splines/FGoodSpline.h"
+#include <MazeGenerator.h>
+#include <FGoodSpline.h>
 
 #include <limits>
 #include "..//CollisionLibary/CollisionLibary.h"

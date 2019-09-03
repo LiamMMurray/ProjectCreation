@@ -1,6 +1,6 @@
 #include "Level_04.h"
 #include "../GEngine.h"
-#include "../MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 
 #include <ControllerSystem.h>
 

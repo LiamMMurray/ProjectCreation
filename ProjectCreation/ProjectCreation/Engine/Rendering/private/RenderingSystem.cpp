@@ -6,7 +6,7 @@
 #include <PlayerMovement.h>
 #include "../../CoreInput/CoreInput.h"
 #include "../../GEngine.h"
-#include "../../MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 #include <FileIO.h>
 #include <Bloom.h>
 
@@ -47,7 +47,7 @@
 #include <TerrainManager.h>
 
 #include <ControllerSystem.h>
-#include "../../MathLibrary/ColorConstants.h"
+#include <ColorConstants.h>
 #include <MemoryLeakDetection.h>
 #include <debug_renderer.h>
 

@@ -6,7 +6,7 @@
 #include <HandleManager.h>
 #include <SystemManager.h>
 #include <IResource.h>
-#include "../MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 #include "GoalComponent.h"
 
 class TransformComponent;

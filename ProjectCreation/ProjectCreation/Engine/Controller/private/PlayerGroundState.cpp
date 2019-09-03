@@ -6,7 +6,7 @@
 #include <DirectionalLightComponent.h>
 #include "../../GEngine.h"
 #include "../../GenericComponents/TransformComponent.h"
-#include "../../MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 #include "../../CoreInput/CoreInput.h"
 #include <PlayerControllerStateMachine.h>
 #include <PlayerMovement.h>

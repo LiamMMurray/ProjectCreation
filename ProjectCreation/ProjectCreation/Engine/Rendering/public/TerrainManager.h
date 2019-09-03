@@ -1,7 +1,7 @@
 #pragma once
 
 #include <DirectXMath.h>
-#include "../../MathLibrary/Transform.h"
+#include <Transform.h>
 #include <IResource.h>
 #include <D3DNativeTypes.h>
 #include <InstanceData.h>

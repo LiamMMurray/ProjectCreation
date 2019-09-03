@@ -1,5 +1,5 @@
 #include <EmitterComponent.h>
-#include"../../MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 using namespace ParticleData;
 using namespace DirectX;
 

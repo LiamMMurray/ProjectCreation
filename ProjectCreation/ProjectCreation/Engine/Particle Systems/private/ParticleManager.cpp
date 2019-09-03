@@ -1,14 +1,14 @@
 #include "ParticleManager.h"
 #include <DirectXMacros.h>
 #include <d3d11_1.h>
-#include "../../../Engine/MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 #include <FileIO.h>
 #include <RenderingSystem.h>
 #include <TerrainManager.h>
 #include <Vertex.h>
 #include "../..//..//Engine/GEngine.h"
 #include "../../GEngine.h"
-#include "../../MathLibrary/ColorConstants.h"
+#include <ColorConstants.h>
 #include <ComputeShader.h>
 #include <GeometryShader.h>
 #include <PixelShader.h>

@@ -2,7 +2,7 @@
 
 #include <ECSTypes.h>
 #include "../..//Gameplay/StateMachine/StateMachine.h"
-#include "../..//MathLibrary/Transform.h"
+#include <Transform.h>
 class PlayerController;
 class TransformComponent;
 class PlayerControllerStateMachine : public StateMachine

@@ -1,6 +1,6 @@
 #include "debug_renderer.h"
 #include <array>
-#include "../../MathLibrary/ColorConstants.h"
+#include <ColorConstants.h>
 #include <MemoryDefines.h>
 
 using namespace DirectX;

@@ -1,6 +1,7 @@
 #pragma once
 #include <Component.h>
-#include "../../MathLibrary/Quaternion.h"
+#include <Quaternion.h>
+#include <MathConstants.h>
 #include "ParticleData.h"
 class EmitterComponent : public Component<EmitterComponent>
 {

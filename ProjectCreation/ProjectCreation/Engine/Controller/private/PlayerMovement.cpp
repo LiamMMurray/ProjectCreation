@@ -7,8 +7,8 @@
 #include "../../CoreInput/CoreInput.h"
 #include "../../GEngine.h"
 #include "../../GenericComponents/TransformComponent.h"
-#include "../../MathLibrary/MathLibrary.h"
-#include "../../MathLibrary/Quaternion.h"
+#include <MathLibrary.h>
+#include <Quaternion.h>
 #include "ControllerSystem.h"
 
 #include "PlayerCinematicState.h"

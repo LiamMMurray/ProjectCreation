@@ -6,7 +6,7 @@
 #include "../../Gameplay/GoalComponent.h"
 #include "../../Gameplay/OrbitSystem.h"
 #include "../../GenericComponents/TransformComponent.h"
-#include "../../MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 #include <PlayerMovement.h>
 #include <PlayerStateEvents.h>
 

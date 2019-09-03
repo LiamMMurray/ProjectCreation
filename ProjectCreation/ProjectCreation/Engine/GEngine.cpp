@@ -2,7 +2,7 @@
 
 #include <JobScheduler.h>
 #include "GEngine.h"
-#include "MathLibrary/MathLibrary.h"
+#include <MathLibrary.h>
 GEngine*         GEngine::instance        = 0;
 bool             GEngine::ShowFPS         = false;
 NMemory::memsize GEngine::s_PoolAllocSize = MB(64);
