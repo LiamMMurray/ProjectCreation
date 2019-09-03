@@ -4,7 +4,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-#include <DirectXMacros.h>
 #include <DirectXMath.h>
 #include <d3d11_1.h>
 #pragma comment(lib, "d3d11.lib")
@@ -15,6 +14,7 @@
 #include <unordered_map>
 #include <algorithm>
 
+#include <DirectXMacros.h>
 #include <D3DNativeTypes.h>
 #include <GlobalMacros.h>
 #include <GEngine.h>
