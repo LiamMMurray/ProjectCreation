@@ -2,7 +2,7 @@
 #include <ECSTypes.h>
 #include <IController.h>
 
-#include <ConsoleWindow.h>
+#include <ConsoleUtility.h>
 #include <MathLibrary.h>
 #include <PhysicsComponent.h>
 #include <PlayerControllerStateMachine.h>

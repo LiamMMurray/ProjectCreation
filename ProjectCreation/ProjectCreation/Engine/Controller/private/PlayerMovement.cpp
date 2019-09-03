@@ -1,25 +1,25 @@
-#include "PlayerMovement.h"
+#include <GEngine.h>
+
+#include <PlayerMovement.h>
 #include <Entity.h>
 #include <GoalComponent.h>
 #include <OrbitSystem.h>
 #include <CollisionLibary.h>
 #include <CollisionResult.h>
 #include <CoreInput.h>
-#include <GEngine.h>
 #include <TransformComponent.h>
 #include <MathLibrary.h>
 #include <Quaternion.h>
-#include "ControllerSystem.h"
+#include <ControllerSystem.h>
 
-#include "PlayerCinematicState.h"
-#include "PlayerGroundState.h"
-#include "PlayerPuzzleState.h"
-#include "PlayerStateEvents.h"
+#include <PlayerCinematicState.h>
+#include <PlayerGroundState.h>
+#include <PlayerPuzzleState.h>
+#include <PlayerStateEvents.h>
 
 #include <debug_renderer.h>
 #include <ContinousSoundSystem.h>
 // v Testing only delete when done v
-#include <iostream>
 #include <InputActions.h>
 // ^ Testing only delete when done ^
 using namespace DirectX;
@@ -85,16 +85,16 @@ void PlayerController::DebugPrintSpeedBoostColor(int color)
         switch (color)
         {
                 case 0:
-                        ConsoleWindow::PrintMessage("Boosting on red light", "PlayerMovement");
+                        ConsoleUtil::PrintMessage("Boosting on red light", "PlayerMovement");
                         break;
                 case 1:
-                        ConsoleWindow::PrintMessage("Boosting on green light", "PlayerMovement");
+                        ConsoleUtil::PrintMessage("Boosting on green light", "PlayerMovement");
                         break;
                 case 2:
-                        ConsoleWindow::PrintMessage("Boosting on blue light", "PlayerMovement");
+                        ConsoleUtil::PrintMessage("Boosting on blue light", "PlayerMovement");
                         break;
                 case 3:
-                        ConsoleWindow::PrintMessage("Boosting on white light", "PlayerMovement");
+                        ConsoleUtil::PrintMessage("Boosting on white light", "PlayerMovement");
                         break;
         }
 }

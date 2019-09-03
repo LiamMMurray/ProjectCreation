@@ -96,7 +96,7 @@
     <ClInclude Include="Engine\Physics\public\PhysicsComponent.h" />
     <ClInclude Include="Engine\GenericComponents\TestComponents.h" />
     <ClInclude Include="Engine\Physics\public\TransformComponent.h" />
-    <ClInclude Include="Engine\Utility\public\ConsoleWindow.h" />
+    <ClInclude Include="Engine\Utility\public\ConsoleUtility.h" />
     <ClInclude Include="Engine\CoreInput\public\CoreInput.h" />
     <ClInclude Include="Engine\Animation\public\AnimationComponent.h" />
     <ClInclude Include="Engine\Animation\public\AnimationContainers.h" />
@@ -578,6 +578,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Engine\Utility\private\ConsoleUtility.cpp" />
     <ClCompile Include="Engine\Utility\private\EngineInitShutdownHelpers.cpp" />
     <ClCompile Include="Engine\Utility\private\EntityFactory.cpp" />
     <ClCompile Include="Engine\Gameplay\private\LightOrbColors.cpp" />

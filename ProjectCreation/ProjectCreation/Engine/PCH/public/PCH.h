@@ -13,6 +13,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <algorithm>
+#include <iostream>
 
 #include <DirectXMacros.h>
 #include <D3DNativeTypes.h>

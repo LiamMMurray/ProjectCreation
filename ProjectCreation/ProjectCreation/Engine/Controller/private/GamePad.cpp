@@ -1,7 +1,6 @@
 #include <JGamePad.h>
-//#include <winerror.h>
-//#include <d3d11.h>
-#include <ConsoleWindow.h>
+#include <CoreInput.h>
+#include <ConsoleUtility.h>
 #include <GEngine.h>
 
 JGamePad* JGamePad::instance = nullptr;
@@ -18,12 +17,12 @@ JGamePad::JGamePad()
                 if (dwResult == ERROR_SUCCESS)
                 {
                         // Controller is connected
-                        ConsoleWindow::PrintMessage("Controller Is Connected", "GamePad");
+                        ConsoleUtil::PrintMessage("Controller[" + std::to_string(i) + "] Is Connected", "GamePad");
                 }
                 else
                 {
                         // Controller is not connected
-                        ConsoleWindow::PrintMessage("Controller Is Not Connected", "GamePad");
+                        ConsoleUtil::PrintMessage("Controller[" + std::to_string(i) + "] Is Not Connected", "GamePad");
                 }
         }
 

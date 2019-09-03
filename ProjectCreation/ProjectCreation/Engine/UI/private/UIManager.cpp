@@ -11,7 +11,6 @@
 #include <DirectXMacros.h>
 #include <MemoryLeakDetection.h>
 
-#include <ConsoleWindow.h>
 #include <TutorialLevel.h>
 class TutorialLevel;
 

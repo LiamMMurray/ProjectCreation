@@ -19,7 +19,6 @@
 
 #include <CoreInput.h>
 
-#include <ConsoleWindow.h>
 
 #include<EngineInitShutdownHelpers.h>
 #include <EntityFactory.h>
@@ -89,17 +88,16 @@ LONG WINAPI errorFunc(_EXCEPTION_POINTERS* pExceptionInfo)
         return 0;
 }
 
+#include <ConsoleUtility.h>
 #include <WindowsUtility.h> 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+        ConsoleUtil::CreateConsoleWindow("Inanis Console Window");
+
         std::srand(unsigned(std::time(0)));
         JGamePad::Get()->Init();
 
-
         // console window creation
-        ConsoleWindow CW;
-        CW.CreateConsoleWindow("Inanis Console Window");
-
 		HWND mainWindowHandle = WindowsUtil::CreateDefaultEngineWindow();
 
         /** Main init engine **/
