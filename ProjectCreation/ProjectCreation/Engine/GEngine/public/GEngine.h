@@ -12,7 +12,7 @@
 #include <Profiling.h>
 #include <ResourceManager.h>
 #include <SystemManager.h>
-#include "XTime.h"
+#include <XTime.h>
 
 #include <DirectXMath.h>
 #include <LevelStateManager.h>
