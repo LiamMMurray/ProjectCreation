@@ -1,5 +1,5 @@
-#include "Quaternion.h"
-#include "MathLibrary.h"
+#include <Quaternion.h>
+#include <MathLibrary.h>
 using namespace DirectX;
 
 FQuaternion::FQuaternion()

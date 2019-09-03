@@ -1,5 +1,9 @@
 #pragma once
-#include <DirectXMath.h>
+namespace MathConstants
+{
+        constexpr float kEpsilon = 0.001f;
+}
+
 class VectorConstants
 {
     public:

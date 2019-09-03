@@ -1,5 +1,6 @@
 #pragma once
-#include "Vector.h"
+#include <DirectXMath.h>
+
 struct FQuaternion
 {
         DirectX::XMVECTOR data;
