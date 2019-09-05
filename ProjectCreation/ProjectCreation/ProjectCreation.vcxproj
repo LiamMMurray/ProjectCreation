@@ -9,166 +9,190 @@
       <Configuration>Release_FPS</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_Test|x64">
+      <Configuration>Release_Test</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ECS\Component.h" />
-    <ClInclude Include="ECS\ComponentHandle.h" />
-    <ClInclude Include="ECS\Entity.h" />
-    <ClInclude Include="ECS\EntityHandle.h" />
-    <ClInclude Include="ECS\IComponent.h" />
-    <ClInclude Include="ECS\IPoolElement.h" />
-    <ClInclude Include="ECS\Memory.h" />
-    <ClInclude Include="ECS\Pools.h" />
-    <ClInclude Include="Engine\Audio\3DSoundComponent.h" />
-    <ClInclude Include="Engine\Audio\3DSoundTypes.h" />
-    <ClInclude Include="Engine\Audio\AudioManager.h" />
-    <ClInclude Include="Engine\Audio\ContinousSoundSystem.h" />
-    <ClInclude Include="Engine\CollisionLibary\CollisionHelpers.h" />
-    <ClInclude Include="Engine\CollisionLibary\CollisionResult.h" />
-    <ClInclude Include="Engine\CollisionLibary\CollisionGrid.h" />
-    <ClInclude Include="Engine\CollisionLibary\CollisionLibary.h" />
-    <ClInclude Include="Engine\CollisionLibary\CollisionComponents.h" />
-    <ClInclude Include="Engine\Commands.h" />
-    <ClInclude Include="Engine\ContainerUtility.h" />
-    <ClInclude Include="Engine\Controller\ControllerSystem.h" />
-    <ClInclude Include="Engine\Controller\DebugCameraController.h" />
-    <ClInclude Include="Engine\CollisionLibary\Shapes.h" />
-    <ClInclude Include="Engine\Controller\GamePad.h" />
-    <ClInclude Include="Engine\Controller\PlayerCinematicState.h" />
-    <ClInclude Include="Engine\Controller\PlayerControllerState.h" />
-    <ClInclude Include="Engine\Controller\PlayerControllerStateMachine.h" />
-    <ClInclude Include="Engine\Controller\PlayerGroundState.h" />
-    <ClInclude Include="Engine\Controller\PlayerPuzzleState.h" />
-    <ClInclude Include="Engine\Controller\PlayerStateEvents.h" />
-    <ClInclude Include="Engine\CoreInput\InputActions.h" />
-    <ClInclude Include="Engine\EngineInitShutdownHelpers.h" />
-    <ClInclude Include="Engine\Entities\EntityFactory.h" />
-    <ClInclude Include="Engine\Events\Event.h" />
-    <ClInclude Include="Engine\Events\EventDelegate.h" />
-    <ClInclude Include="Engine\Events\EventManager.h" />
-    <ClInclude Include="Engine\Events\IEvent.h" />
-    <ClInclude Include="Engine\Events\IEventDelegate.h" />
-    <ClInclude Include="Engine\Gameplay\GoalComponent.h" />
-    <ClInclude Include="Engine\Gameplay\LightOrbColors.h" />
-    <ClInclude Include="Engine\Gameplay\OrbitSystem.h" />
-    <ClInclude Include="Engine\Gameplay\OrbRespawnComponent.h" />
-    <ClInclude Include="Engine\Gameplay\SpeedboostComponent.h" />
-    <ClInclude Include="Engine\Gameplay\SplineCluster.h" />
-    <ClInclude Include="Engine\Gameplay\SplineElementComponent.h" />
-    <ClInclude Include="Engine\Gameplay\SpeedBoostSystem.h" />
-    <ClInclude Include="Engine\Gameplay\StateMachine\IState.h" />
-    <ClInclude Include="Engine\Gameplay\StateMachine\StateMachine.h" />
-    <ClInclude Include="Engine\GenericComponents\TransformSystem.h" />
-    <ClInclude Include="Engine\JobScheduler.h" />
-    <ClInclude Include="Engine\Levels\LevelState.h" />
-    <ClInclude Include="Engine\Levels\LevelStateEvents.h" />
-    <ClInclude Include="Engine\Levels\LevelStateMachine.h" />
-    <ClInclude Include="Engine\Levels\LevelStateManager.h" />
-    <ClInclude Include="Engine\Levels\Level_01.h" />
-    <ClInclude Include="Engine\Levels\Level_02.h" />
-    <ClInclude Include="Engine\Levels\Level_03.h" />
-    <ClInclude Include="Engine\Levels\Level_04.h" />
-    <ClInclude Include="Engine\Levels\TutorialLevel.h" />
-    <ClInclude Include="Engine\MathLibrary\ColorConstants.h" />
-    <ClInclude Include="Engine\Particle Systems\EmitterComponent.h" />
-    <ClInclude Include="Engine\MathLibrary\Maze\MazeGenerator.h" />
-    <ClInclude Include="Engine\Particle Systems\Pools.h" />
-    <ClInclude Include="Engine\Physics\PhysicsComponent.h" />
+    <ClInclude Include="Engine\Audio\public\3DSoundComponent.h" />
+    <ClInclude Include="Engine\Audio\public\3DSoundTypes.h" />
+    <ClInclude Include="Engine\Audio\public\AudioManager.h" />
+    <ClInclude Include="Engine\Audio\public\ContinousSoundSystem.h" />
+    <ClInclude Include="Engine\CollisionLibrary\public\CollisionHelpers.h" />
+    <ClInclude Include="Engine\CollisionLibrary\public\CollisionResult.h" />
+    <ClInclude Include="Engine\CollisionLibrary\public\CollisionGrid.h" />
+    <ClInclude Include="Engine\CollisionLibrary\public\CollisionLibary.h" />
+    <ClInclude Include="Engine\CollisionLibrary\public\CollisionComponents.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerEndState.h" />
+    <ClInclude Include="Engine\PCH\public\PCH.h" />
+    <ClInclude Include="Engine\Utility\public\ContainerUtility.h" />
+    <ClInclude Include="Engine\CollisionLibrary\public\CollisionShapes.h" />
+    <ClInclude Include="Engine\Controller\public\ControllerSystem.h" />
+    <ClInclude Include="Engine\Controller\public\DebugCameraController.h" />
+    <ClInclude Include="Engine\Controller\public\JGamePad.h" />
+    <ClInclude Include="Engine\Controller\public\IController.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerCinematicState.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerControllerState.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerControllerStateMachine.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerGroundState.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerMovement.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerPuzzleState.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerStateEvents.h" />
+    <ClInclude Include="Engine\CoreInput\public\InputActions.h" />
+    <ClInclude Include="Engine\ECS\public\Component.h" />
+    <ClInclude Include="Engine\ECS\public\ComponentHandle.h" />
+    <ClInclude Include="Engine\ECS\public\ECS.h" />
+    <ClInclude Include="Engine\ECS\public\ECSMem.h" />
+    <ClInclude Include="Engine\ECS\public\ECSTypes.h" />
+    <ClInclude Include="Engine\ECS\public\Entity.h" />
+    <ClInclude Include="Engine\ECS\public\EntityHandle.h" />
+    <ClInclude Include="Engine\ECS\public\Handle.h" />
+    <ClInclude Include="Engine\ECS\public\HandleManager.h" />
+    <ClInclude Include="Engine\ECS\public\IComponent.h" />
+    <ClInclude Include="Engine\ECS\public\IContainer.h" />
+    <ClInclude Include="Engine\ECS\public\IPoolElement.h" />
+    <ClInclude Include="Engine\ECS\public\ISystem.h" />
+    <ClInclude Include="Engine\ECS\public\ECSPools.h" />
+    <ClInclude Include="Engine\ECS\public\JobScheduler.h" />
+    <ClInclude Include="Engine\ECS\public\SystemManager.h" />
+    <ClInclude Include="Engine\Utility\public\EngineInitShutdownHelpers.h" />
+    <ClInclude Include="Engine\Utility\public\EntityFactory.h" />
+    <ClInclude Include="Engine\Events\public\Event.h" />
+    <ClInclude Include="Engine\Events\public\EventDelegate.h" />
+    <ClInclude Include="Engine\Events\public\EventManager.h" />
+    <ClInclude Include="Engine\Events\public\IEvent.h" />
+    <ClInclude Include="Engine\Events\public\IEventDelegate.h" />
+    <ClInclude Include="Engine\Gameplay\public\GoalComponent.h" />
+    <ClInclude Include="Engine\Gameplay\public\LightOrbColors.h" />
+    <ClInclude Include="Engine\Gameplay\public\OrbitSystem.h" />
+    <ClInclude Include="Engine\Gameplay\public\OrbRespawnComponent.h" />
+    <ClInclude Include="Engine\Gameplay\public\SpeedboostComponent.h" />
+    <ClInclude Include="Engine\Gameplay\public\SplineCluster.h" />
+    <ClInclude Include="Engine\Gameplay\public\SplineElementComponent.h" />
+    <ClInclude Include="Engine\Gameplay\public\SpeedBoostSystem.h" />
+    <ClInclude Include="Engine\StateMachine\public\IState.h" />
+    <ClInclude Include="Engine\StateMachine\public\StateMachine.h" />
+    <ClInclude Include="Engine\Physics\public\TransformSystem.h" />
+    <ClInclude Include="Engine\Levels\public\LevelState.h" />
+    <ClInclude Include="Engine\Levels\public\LevelStateEvents.h" />
+    <ClInclude Include="Engine\Levels\public\LevelStateMachine.h" />
+    <ClInclude Include="Engine\Levels\public\LevelStateManager.h" />
+    <ClInclude Include="Engine\Levels\public\Level_01.h" />
+    <ClInclude Include="Engine\Levels\public\Level_02.h" />
+    <ClInclude Include="Engine\Levels\public\Level_03.h" />
+    <ClInclude Include="Engine\Levels\public\Level_04.h" />
+    <ClInclude Include="Engine\Levels\public\TutorialLevel.h" />
+    <ClInclude Include="Engine\MathLibrary\public\ColorConstants.h" />
+    <ClInclude Include="Engine\MathLibrary\public\MazeGenerator.h" />
+    <ClInclude Include="Engine\Particle Systems\public\EmitterComponent.h" />
+    <ClInclude Include="Engine\Particle Systems\public\ParticleBufferSetup.h" />
+    <ClInclude Include="Engine\Particle Systems\public\ParticleData.h" />
+    <ClInclude Include="Engine\Particle Systems\public\ParticleManager.h" />
+    <ClInclude Include="Engine\Particle Systems\public\Pools.h" />
+    <ClInclude Include="Engine\Physics\public\PhysicsComponent.h" />
     <ClInclude Include="Engine\GenericComponents\TestComponents.h" />
-    <ClInclude Include="Engine\GenericComponents\TransformComponent.h" />
-    <ClInclude Include="Engine\ConsoleWindow\ConsoleWindow.h" />
-    <ClInclude Include="Engine\Controller\IController.h" />
-    <ClInclude Include="Engine\Controller\PlayerMovement.h" />
-    <ClInclude Include="Engine\CoreInput\CoreInput.h" />
-    <ClInclude Include="ECS\ECS.h" />
-    <ClInclude Include="ECS\ECSTypes.h" />
-    <ClInclude Include="ECS\HandleManager.h" />
-    <ClInclude Include="Engine\Animation\AnimationComponent.h" />
-    <ClInclude Include="Engine\Animation\AnimationContainers.h" />
-    <ClInclude Include="Engine\Animation\AnimationSystem.h" />
-    <ClInclude Include="Engine\GEngine.h" />
-    <ClInclude Include="ECS\Handle.h" />
-    <ClInclude Include="ECS\ISystem.h" />
-    <ClInclude Include="ECS\SystemManager.h" />
+    <ClInclude Include="Engine\Physics\public\TransformComponent.h" />
+    <ClInclude Include="Engine\Utility\public\ConsoleUtility.h" />
+    <ClInclude Include="Engine\CoreInput\public\CoreInput.h" />
+    <ClInclude Include="Engine\Animation\public\AnimationComponent.h" />
+    <ClInclude Include="Engine\Animation\public\AnimationContainers.h" />
+    <ClInclude Include="Engine\Animation\public\AnimationSystem.h" />
+    <ClInclude Include="Engine\GEngine\public\GEngine.h" />
     <ClInclude Include="ECS\Util.h" />
-    <ClInclude Include="Engine\ResourceManager\ComputeShader.h" />
-    <ClInclude Include="Engine\ResourceManager\GeometryShader.h" />
-    <ClInclude Include="Engine\XTime.h" />
+    <ClInclude Include="Engine\Rendering\public\Bloom.h" />
+    <ClInclude Include="Engine\Rendering\public\CameraComponent.h" />
+    <ClInclude Include="Engine\Rendering\public\ConstantBuffers.h" />
+    <ClInclude Include="Engine\Rendering\public\debug_renderer.h" />
+    <ClInclude Include="Engine\Rendering\public\DirectionalLightComponent.h" />
+    <ClInclude Include="Engine\Rendering\public\InstanceData.h" />
+    <ClInclude Include="Engine\Rendering\public\LightBuffers.h" />
+    <ClInclude Include="Engine\Rendering\public\PointLightComponent.h" />
+    <ClInclude Include="Engine\Rendering\public\PostProcessEffectBase.h" />
+    <ClInclude Include="Engine\Rendering\public\RenderingSystem.h" />
+    <ClInclude Include="Engine\Rendering\public\SkeletalMeshComponent.h" />
+    <ClInclude Include="Engine\Rendering\public\StaticMeshComponent.h" />
+    <ClInclude Include="Engine\Rendering\public\TerrainManager.h" />
+    <ClInclude Include="Engine\Rendering\public\Vertex.h" />
+    <ClInclude Include="Engine\ResourceManager\public\AnimationClip.h" />
+    <ClInclude Include="Engine\ResourceManager\public\ComputeShader.h" />
+    <ClInclude Include="Engine\ResourceManager\public\GeometryShader.h" />
+    <ClInclude Include="Engine\ResourceManager\public\IResource.h" />
+    <ClInclude Include="Engine\ResourceManager\public\Material.h" />
+    <ClInclude Include="Engine\ResourceManager\public\PixelShader.h" />
+    <ClInclude Include="Engine\ResourceManager\public\Resource.h" />
+    <ClInclude Include="Engine\ResourceManager\public\ResourceInfoTypes.h" />
+    <ClInclude Include="Engine\ResourceManager\public\ResourceManager.h" />
+    <ClInclude Include="Engine\ResourceManager\public\SkeletalMesh.h" />
+    <ClInclude Include="Engine\ResourceManager\public\StaticMesh.h" />
+    <ClInclude Include="Engine\ResourceManager\public\Texture2D.h" />
+    <ClInclude Include="Engine\ResourceManager\public\VertexShader.h" />
+    <ClInclude Include="Engine\3rdParty\public\XTime.h" />
     <ClInclude Include="Engine\Entities\TestEntities.h" />
-    <ClInclude Include="ErrorHandling\ErrorTypes.h" />
-    <ClInclude Include="FileIO\BasicIOTypes.h" />
-    <ClInclude Include="FileIO\FileIO.h" />
-    <ClInclude Include="FileIO\Material.h" />
-    <ClInclude Include="FileIO\Shader.h" />
-    <ClInclude Include="FileIO\SkeletalMesh.h" />
-    <ClInclude Include="FileIO\StaticMesh.h" />
-    <ClInclude Include="Engine\MathLibrary\MathConstants.h" />
-    <ClInclude Include="Engine\MathLibrary\MathLibrary.h" />
-    <ClInclude Include="Engine\MathLibrary\Quaternion.h" />
-    <ClInclude Include="Engine\MathLibrary\Transform.h" />
-    <ClInclude Include="Engine\MathLibrary\Vector.h" />
-    <ClInclude Include="Rendering\InstanceData.h" />
-    <ClInclude Include="Rendering\Terrain\TerrainManager.h" />
+    <ClInclude Include="Engine\Utility\public\ErrorTypes.h" />
+    <ClInclude Include="Engine\MathLibrary\public\MathConstants.h" />
+    <ClInclude Include="Engine\MathLibrary\public\MathLibrary.h" />
+    <ClInclude Include="Engine\MathLibrary\public\Quaternion.h" />
+    <ClInclude Include="Engine\MathLibrary\public\Transform.h" />
+    <ClInclude Include="Engine\FileIO\public\BasicIOTypes.h" />
+    <ClInclude Include="Engine\FileIO\public\FileIO.h" />
+    <ClInclude Include="Engine\FileIO\public\FMaterial.h" />
+    <ClInclude Include="Engine\FileIO\public\FShader.h" />
+    <ClInclude Include="Engine\FileIO\public\FSkeletalMesh.h" />
+    <ClInclude Include="Engine\FileIO\public\FStaticMesh.h" />
+    <ClInclude Include="Engine\ForwardDeclarations\public\D3DNativeTypes.h" />
+    <ClInclude Include="Engine\ForwardDeclarations\public\STLTypes.h" />
+    <ClInclude Include="Engine\ForwardDeclarations\public\WinProcTypes.h" />
+    <ClInclude Include="Engine\Hashing\public\PairHash.h" />
+    <ClInclude Include="Engine\3rdParty\public\SpookyHashV2.h" />
+    <ClInclude Include="Engine\Macros\public\DirectXMacros.h" />
+    <ClInclude Include="Engine\Macros\public\GlobalMacros.h" />
+    <ClInclude Include="Engine\Utility\public\WindowsUtility.h" />
     <ClInclude Include="Shaders\InstanceData.hlsl" />
     <ClInclude Include="Shaders\Interpolation.hlsl" />
     <ClInclude Include="Shaders\MVPBuffer.hlsl" />
     <ClInclude Include="Shaders\PBRMath.hlsl" />
-    <ClInclude Include="Engine\Audio\SoundComponent.h" />
-    <ClInclude Include="UI\FontComponent.h" />
-    <ClInclude Include="Engine\Particle Systems\ParticleBufferSetup.h" />
-    <ClInclude Include="Engine\Particle Systems\ParticleData.h" />
-    <ClInclude Include="Engine\Particle Systems\ParticleManager.h" />
-    <ClInclude Include="Rendering\Components\CameraComponent.h" />
-    <ClInclude Include="Rendering\Components\DirectionalLightComponent.h" />
-    <ClInclude Include="Rendering\Components\PointLightComponent.h" />
-    <ClInclude Include="Rendering\ConstantBuffers.h" />
-    <ClInclude Include="Rendering\Components\SkeletalMeshComponent.h" />
-    <ClInclude Include="Rendering\Components\StaticMeshComponent.h" />
-    <ClInclude Include="Rendering\DebugRender\debug_renderer.h" />
-    <ClInclude Include="Rendering\LightBuffers.h" />
-    <ClInclude Include="Rendering\PostProcess\Bloom.h" />
-    <ClInclude Include="Rendering\PostProcess\PostProcessEffectBase.h" />
-    <ClInclude Include="Rendering\RenderingSystem.h" />
-    <ClInclude Include="Rendering\Vertex.h" />
-    <ClInclude Include="Engine\ResourceManager\AnimationClip.h" />
-    <ClInclude Include="Engine\ResourceManager\Material.h" />
-    <ClInclude Include="Engine\ResourceManager\PixelShader.h" />
-    <ClInclude Include="Engine\ResourceManager\Resource.h" />
-    <ClInclude Include="Engine\ResourceManager\IResource.h" />
-    <ClInclude Include="Engine\ResourceManager\ResourceInfoTypes.h" />
-    <ClInclude Include="Engine\ResourceManager\ResourceManager.h" />
-    <ClInclude Include="Engine\ResourceManager\SkeletalMesh.h" />
-    <ClInclude Include="Engine\ResourceManager\StaticMesh.h" />
-    <ClInclude Include="Engine\ResourceManager\Texture2D.h" />
-    <ClInclude Include="Engine\ResourceManager\VertexShader.h" />
-    <ClInclude Include="Utility\BitwiseUtility.h" />
-    <ClInclude Include="Utility\Hashing\SpookyHashV2.h" />
-    <ClInclude Include="Utility\Macros\GlobalMacros.h" />
-    <ClInclude Include="Utility\Profiling.h" />
-    <ClInclude Include="Utility\StaticSentinelDumpMemoryLeaks.h" />
-    <ClInclude Include="Utility\TypeIndexFactory.h" />
+    <ClInclude Include="Engine\Audio\public\SoundComponent.h" />
+    <ClInclude Include="Engine\UI\public\FontComponent.h" />
+    <ClInclude Include="Engine\UI\public\SpriteComponent.h" />
+    <ClInclude Include="Engine\UI\public\UICollision.h" />
+    <ClInclude Include="Engine\UI\public\UIManager.h" />
+    <ClInclude Include="Engine\Utility\public\BitwiseUtility.h" />
+    <ClInclude Include="Engine\Utility\public\MemoryDefines.h" />
+    <ClInclude Include="Engine\Utility\public\MemoryLeakDetection.h" />
+    <ClInclude Include="Engine\Utility\public\Profiling.h" />
+    <ClInclude Include="Engine\Utility\public\Random.h" />
+    <ClInclude Include="Engine\Utility\public\Range.h" />
+    <ClInclude Include="Engine\Utility\public\RenderUtility.h" />
+    <ClInclude Include="Engine\Utility\public\StringUtility.h" />
+    <ClInclude Include="Engine\Utility\public\TypeIndexFactory.h" />
     <FxCompile Include="Shaders\AlignCamera_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\AOBlur_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\AO_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
@@ -176,61 +200,76 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">4.1</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">4.1</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\BloomDownscaleKaris_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\BloomDownscale_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\BloomMask_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\BloomUpscale_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\Clouds_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\DefaultInstanced_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\DefaultInstanced_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\EmittionComputeShader_CS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
@@ -240,6 +279,7 @@
     <FxCompile Include="Shaders\GlowPlanet_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\InstanceUpdate_CS.hlsl">
@@ -247,19 +287,24 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\VolcanoEffect_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\Line_GS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Geometry</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
@@ -267,7 +312,9 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hull</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Hull</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Hull</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Hull</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
@@ -276,49 +323,42 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\Debug_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\Debug_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\Default_Skinned_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">4.1</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">4.1</ShaderModel>
     </FxCompile>
     <ClInclude Include="System\PhysicsSystem.h" />
-    <ClInclude Include="UI\SpriteComponent.h" />
-    <ClInclude Include="UI\UICollision.h" />
-    <ClInclude Include="UI\UIManager.h" />
-    <ClInclude Include="Engine\Physics\PhysicsSystem.h" />
+    <ClInclude Include="Engine\Physics\public\PhysicsSystem.h" />
     <ClInclude Include="Shaders\BasePassTextureMaps.hlsl" />
     <ClInclude Include="Shaders\BloomInclude.hlsl" />
     <ClInclude Include="Shaders\Constants.hlsl" />
     <ClInclude Include="Shaders\Math.hlsl" />
     <ClInclude Include="Shaders\Samplers.hlsl" />
-    <ClInclude Include="Utility\ForwardDeclarations\D3DNativeTypes.h" />
-    <ClInclude Include="Utility\ForwardDeclarations\STLTypes.h" />
-    <ClInclude Include="Utility\ForwardDeclarations\WinProcTypes.h" />
-    <ClInclude Include="Utility\Hashing\PairHash.h" />
-    <ClInclude Include="Utility\Macros\DirectXMacros.h" />
-    <ClInclude Include="Utility\MemoryDefines.h" />
-    <ClInclude Include="Utility\MemoryLeakDetection.h" />
-    <ClInclude Include="Utility\Range.h" />
-    <ClInclude Include="Utility\RenderUtility.h" />
-    <ClInclude Include="Engine\MathLibrary\Splines\FGoodSpline.h" />
-    <ClInclude Include="Engine\MathLibrary\Splines\splines.hpp" />
-    <ClInclude Include="Utility\StringUtility.h" />
+    <ClInclude Include="Engine\MathLibrary\public\FGoodSpline.h" />
+    <ClInclude Include="Engine\MathLibrary\public\splines.hpp" />
     <ClInclude Include="Shaders\PostProcessConstantBuffers.hlsl">
       <FileType>Document</FileType>
     </ClInclude>
@@ -327,31 +367,38 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Geometry</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
     </FxCompile>
     <ClInclude Include="Shaders\GlowingEffects.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">4.0</ShaderModel>
       <FileType>Document</FileType>
     </ClInclude>
     <FxCompile Include="Shaders\Glow_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\Line_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\Line_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\Ocean_DS.hlsl">
@@ -359,16 +406,20 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Domain</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Domain</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Domain</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\Ocean_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\PurePixelShader_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -376,14 +427,17 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0_level_9_3</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\PureVertexShader_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
     </FxCompile>
     <ClInclude Include="Shaders\SceneBuffer.hlsl">
       <FileType>Document</FileType>
@@ -392,38 +446,47 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">4.1</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">4.1</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\SimpleGlow_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\Sky_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\Terrain_DS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Domain</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Domain</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Domain</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Domain</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\Terrain_HS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hull</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Hull</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Hull</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Hull</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
     </FxCompile>
     <ClInclude Include="Shaders\Terrain_Includes.hlsl">
       <FileType>Document</FileType>
@@ -432,17 +495,21 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\Terrain_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
     </FxCompile>
     <ClInclude Include="Shaders\Wrap.hlsl">
       <FileType>Document</FileType>
@@ -450,150 +517,171 @@
     <FxCompile Include="Shaders\TreeInstanced01_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\TreeInstanced01_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\VolcanoEffect_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">5.0</ShaderModel>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ECS\Entity.cpp" />
-    <ClCompile Include="ECS\HandleManager.cpp" />
-    <ClCompile Include="ECS\IComponent.cpp" />
-    <ClCompile Include="ECS\IPoolElement.cpp" />
-    <ClCompile Include="ECS\Memory.cpp" />
-    <ClCompile Include="ECS\Pools.cpp" />
-    <ClCompile Include="Engine\Animation\AnimationComponent.cpp" />
-    <ClCompile Include="Engine\Audio\3DSoundComponent.cpp" />
-    <ClCompile Include="Engine\Audio\AudioManager.cpp" />
-    <ClCompile Include="Engine\Audio\ContinousSoundSystem.cpp" />
-    <ClCompile Include="Engine\CollisionLibary\CollisionHelpers.cpp" />
-    <ClCompile Include="Engine\CollisionLibary\CollisionResult.cpp" />
-    <ClCompile Include="Engine\CollisionLibary\CollisionGrid.cpp" />
-    <ClCompile Include="Engine\CollisionLibary\CollisionLibary.cpp" />
-    <ClCompile Include="Engine\CollisionLibary\Shapes.cpp" />
-    <ClCompile Include="Engine\Controller\ControllerSystem.cpp" />
-    <ClCompile Include="Engine\Controller\DebugCameraController.cpp" />
-    <ClCompile Include="Engine\Controller\GamePad.cpp" />
-    <ClCompile Include="Engine\Controller\PlayerCinematicState.cpp" />
-    <ClCompile Include="Engine\Controller\PlayerControllerStateMachine.cpp" />
-    <ClCompile Include="Engine\Controller\PlayerGroundState.cpp" />
-    <ClCompile Include="Engine\Controller\PlayerPuzzleState.cpp" />
-    <ClCompile Include="Engine\CoreInput\InputActions.cpp" />
-    <ClCompile Include="Engine\EngineInitShutdownHelpers.cpp" />
-    <ClCompile Include="Engine\Entities\EntityFactory.cpp" />
-    <ClCompile Include="Engine\Gameplay\LightOrbColors.cpp" />
-    <ClCompile Include="Engine\Gameplay\OrbitSystem.cpp" />
-    <ClCompile Include="Engine\Gameplay\SpeedBoostSystem.cpp" />
-    <ClCompile Include="Engine\Gameplay\SplineCluster.cpp" />
-    <ClCompile Include="Engine\Gameplay\StateMachine\IState.cpp" />
-    <ClCompile Include="Engine\Gameplay\StateMachine\StateMachine.cpp" />
-    <ClCompile Include="Engine\GenericComponents\TransformSystem.cpp" />
-    <ClCompile Include="Engine\JobScheduler.cpp" />
-    <ClCompile Include="Engine\Levels\LevelStateMachine.cpp" />
-    <ClCompile Include="Engine\Levels\LevelStateManager.cpp" />
-    <ClCompile Include="Engine\Levels\Level_01.cpp" />
-    <ClCompile Include="Engine\Levels\Level_02.cpp" />
-    <ClCompile Include="Engine\Levels\Level_03.cpp" />
-    <ClCompile Include="Engine\Levels\Level_04.cpp" />
-    <ClCompile Include="Engine\Levels\TutorialLevel.cpp" />
-    <ClCompile Include="Engine\Particle Systems\EmitterComponent.cpp" />
-    <ClCompile Include="Engine\Particle Systems\ParticleData.cpp" />
-    <ClCompile Include="Engine\Particle Systems\ParticleManager.cpp" />
-    <ClCompile Include="Engine\MathLibrary\Maze\MazeGenerator.cpp" />
-    <ClCompile Include="Engine\MathLibrary\Splines\FGoodSpline.cpp" />
-    <ClCompile Include="Engine\Physics\PhysicsComponent.cpp" />
-    <ClCompile Include="Engine\Controller\IController.cpp" />
-    <ClCompile Include="Engine\Controller\PlayerMovement.cpp" />
-    <ClCompile Include="Engine\CoreInput\CoreInput.cpp" />
-    <ClCompile Include="Engine\Animation\AnimationSystem.cpp" />
-    <ClCompile Include="Engine\GEngine.cpp" />
-    <ClCompile Include="ECS\ISystem.cpp" />
-    <ClCompile Include="ECS\SystemManager.cpp" />
-    <ClCompile Include="Engine\ResourceManager\ComputeShader.cpp" />
-    <ClCompile Include="Engine\ResourceManager\GeometryShader.cpp" />
-    <ClCompile Include="Engine\XTime.cpp" />
-    <ClCompile Include="FileIO\FileIO.cpp" />
-    <ClCompile Include="Rendering\Terrain\TerrainManager.cpp" />
-    <ClCompile Include="Engine\Audio\SoundComponent.cpp" />
-    <ClCompile Include="UI\FontComponent.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Engine\MathLibrary\MathLibrary.cpp" />
-    <ClCompile Include="Engine\MathLibrary\Quaternion.cpp" />
-    <ClCompile Include="Engine\MathLibrary\Transform.cpp" />
-    <ClCompile Include="Engine\MathLibrary\Vector.cpp" />
-    <ClCompile Include="Engine\Particle Systems\ParticleBufferSetup.cpp" />
-    <ClCompile Include="Rendering\DebugRender\debug_renderer.cpp" />
-    <ClCompile Include="Rendering\PostProcess\Bloom.cpp" />
-    <ClCompile Include="Rendering\RenderingSystem.cpp" />
-    <ClCompile Include="Rendering\Components\SkeletalMeshComponent.cpp" />
-    <ClCompile Include="Rendering\Components\StaticMeshComponent.cpp" />
-    <ClCompile Include="Rendering\Vertex.cpp" />
-    <ClCompile Include="Engine\ResourceManager\AnimationClip.cpp" />
-    <ClCompile Include="Engine\ResourceManager\IResource.cpp" />
-    <ClCompile Include="Engine\ResourceManager\Material.cpp" />
-    <ClCompile Include="Engine\ResourceManager\PixelShader.cpp" />
-    <ClCompile Include="Engine\ResourceManager\ResourceManager.cpp" />
-    <ClCompile Include="Engine\ResourceManager\SkeletalMesh.cpp" />
-    <ClCompile Include="Engine\ResourceManager\StaticMesh.cpp" />
-    <ClCompile Include="Engine\ResourceManager\Texture2D.cpp" />
-    <ClCompile Include="Engine\ResourceManager\VertexShader.cpp" />
-    <ClCompile Include="UI\UICollision.cpp" />
-    <ClCompile Include="Utility\Hashing\SpookyHashV2.cpp" />
-    <ClCompile Include="Utility\Profiling.cpp" />
-    <ClCompile Include="Utility\RenderUtility.cpp" />
-    <ClCompile Include="UI\UIManager.cpp">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    <ClCompile Include="Engine\Animation\private\AnimationComponent.cpp" />
+    <ClCompile Include="Engine\Audio\private\3DSoundComponent.cpp" />
+    <ClCompile Include="Engine\Audio\private\AudioManager.cpp" />
+    <ClCompile Include="Engine\Audio\private\ContinousSoundSystem.cpp" />
+    <ClCompile Include="Engine\CollisionLibrary\private\CollisionHelpers.cpp" />
+    <ClCompile Include="Engine\CollisionLibrary\private\CollisionGrid.cpp" />
+    <ClCompile Include="Engine\CollisionLibrary\private\CollisionLibary.cpp" />
+    <ClCompile Include="Engine\CollisionLibrary\private\CollisionShapes.cpp" />
+    <ClCompile Include="Engine\Controller\private\ControllerSystem.cpp" />
+    <ClCompile Include="Engine\Controller\private\DebugCameraController.cpp" />
+    <ClCompile Include="Engine\Controller\private\GamePad.cpp" />
+    <ClCompile Include="Engine\Controller\private\IController.cpp" />
+    <ClCompile Include="Engine\Controller\private\PlayerCinematicState.cpp" />
+    <ClCompile Include="Engine\Controller\private\PlayerControllerStateMachine.cpp" />
+    <ClCompile Include="Engine\Controller\private\PlayerEndState.cpp" />
+    <ClCompile Include="Engine\Controller\private\PlayerGroundState.cpp" />
+    <ClCompile Include="Engine\Controller\private\PlayerMovement.cpp" />
+    <ClCompile Include="Engine\Controller\private\PlayerPuzzleState.cpp" />
+    <ClCompile Include="Engine\CoreInput\private\InputActions.cpp" />
+    <ClCompile Include="Engine\ECS\private\Entity.cpp" />
+    <ClCompile Include="Engine\ECS\private\HandleManager.cpp" />
+    <ClCompile Include="Engine\ECS\private\IComponent.cpp" />
+    <ClCompile Include="Engine\ECS\private\IPoolElement.cpp" />
+    <ClCompile Include="Engine\ECS\private\ISystem.cpp" />
+    <ClCompile Include="Engine\ECS\private\Memory.cpp" />
+    <ClCompile Include="Engine\ECS\private\Pools.cpp" />
+    <ClCompile Include="Engine\ECS\private\SystemManager.cpp" />
+    <ClCompile Include="Engine\PCH\private\PCH.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="UI\SpriteComponent.cpp" />
-    <ClCompile Include="Utility\StringUtility.cpp" />
+    <ClCompile Include="Engine\Utility\private\ConsoleUtility.cpp" />
+    <ClCompile Include="Engine\Utility\private\EngineInitShutdownHelpers.cpp" />
+    <ClCompile Include="Engine\Utility\private\EntityFactory.cpp" />
+    <ClCompile Include="Engine\Gameplay\private\LightOrbColors.cpp" />
+    <ClCompile Include="Engine\Gameplay\private\OrbitSystem.cpp" />
+    <ClCompile Include="Engine\Gameplay\private\SpeedBoostSystem.cpp" />
+    <ClCompile Include="Engine\Gameplay\private\SplineCluster.cpp" />
+    <ClCompile Include="Engine\StateMachine\private\StateMachine.cpp" />
+    <ClCompile Include="Engine\Physics\private\TransformSystem.cpp" />
+    <ClCompile Include="Engine\Levels\private\LevelStateMachine.cpp" />
+    <ClCompile Include="Engine\Levels\private\LevelStateManager.cpp" />
+    <ClCompile Include="Engine\Levels\private\Level_01.cpp" />
+    <ClCompile Include="Engine\Levels\private\Level_02.cpp" />
+    <ClCompile Include="Engine\Levels\private\Level_03.cpp" />
+    <ClCompile Include="Engine\Levels\private\Level_04.cpp" />
+    <ClCompile Include="Engine\Levels\private\TutorialLevel.cpp" />
+    <ClCompile Include="Engine\MathLibrary\private\MazeGenerator.cpp" />
+    <ClCompile Include="Engine\MathLibrary\private\FGoodSpline.cpp" />
+    <ClCompile Include="Engine\Particle Systems\private\EmitterComponent.cpp" />
+    <ClCompile Include="Engine\Particle Systems\private\ParticleBufferSetup.cpp" />
+    <ClCompile Include="Engine\Particle Systems\private\ParticleData.cpp" />
+    <ClCompile Include="Engine\Particle Systems\private\ParticleManager.cpp" />
+    <ClCompile Include="Engine\Physics\private\PhysicsComponent.cpp" />
+    <ClCompile Include="Engine\CoreInput\private\CoreInput.cpp" />
+    <ClCompile Include="Engine\Animation\private\AnimationSystem.cpp" />
+    <ClCompile Include="Engine\GEngine\private\GEngine.cpp" />
+    <ClCompile Include="Engine\Rendering\private\Bloom.cpp" />
+    <ClCompile Include="Engine\Rendering\private\debug_renderer.cpp" />
+    <ClCompile Include="Engine\Rendering\private\RenderingSystem.cpp" />
+    <ClCompile Include="Engine\Rendering\private\SkeletalMeshComponent.cpp" />
+    <ClCompile Include="Engine\Rendering\private\StaticMeshComponent.cpp" />
+    <ClCompile Include="Engine\Rendering\private\TerrainManager.cpp" />
+    <ClCompile Include="Engine\Rendering\private\Vertex.cpp" />
+    <ClCompile Include="Engine\ResourceManager\private\AnimationClip.cpp" />
+    <ClCompile Include="Engine\ResourceManager\private\ComputeShader.cpp" />
+    <ClCompile Include="Engine\ResourceManager\private\GeometryShader.cpp" />
+    <ClCompile Include="Engine\ResourceManager\private\IResource.cpp" />
+    <ClCompile Include="Engine\ResourceManager\private\Material.cpp" />
+    <ClCompile Include="Engine\ResourceManager\private\PixelShader.cpp" />
+    <ClCompile Include="Engine\ResourceManager\private\ResourceManager.cpp" />
+    <ClCompile Include="Engine\ResourceManager\private\SkeletalMesh.cpp" />
+    <ClCompile Include="Engine\ResourceManager\private\StaticMesh.cpp" />
+    <ClCompile Include="Engine\ResourceManager\private\Texture2D.cpp" />
+    <ClCompile Include="Engine\ResourceManager\private\VertexShader.cpp" />
+    <ClCompile Include="Engine\3rdParty\private\XTime.cpp" />
+    <ClCompile Include="Engine\FileIO\private\FileIO.cpp" />
+    <ClCompile Include="Engine\3rdParty\private\SpookyHashV2.cpp" />
+    <ClCompile Include="Engine\Audio\private\SoundComponent.cpp" />
+    <ClCompile Include="Engine\Utility\private\WindowsUtility.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Engine\MathLibrary\private\MathLibrary.cpp" />
+    <ClCompile Include="Engine\MathLibrary\private\Quaternion.cpp" />
+    <ClCompile Include="Engine\MathLibrary\private\Transform.cpp" />
+    <ClCompile Include="Engine\UI\private\FontComponent.cpp" />
+    <ClCompile Include="Engine\UI\private\SpriteComponent.cpp" />
+    <ClCompile Include="Engine\UI\private\UICollision.cpp" />
+    <ClCompile Include="Engine\UI\private\UIManager.cpp" />
+    <ClCompile Include="Engine\Utility\private\Profiling.cpp" />
+    <ClCompile Include="Engine\Utility\private\RenderUtility.cpp" />
+    <ClCompile Include="Engine\Utility\private\StringUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shaders\DefaultPixelIn.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Vertex</ShaderType>
       <FileType>Document</FileType>
     </ClInclude>
     <FxCompile Include="Shaders\Default_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">4.1</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">4.1</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\Default_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Vertex</ShaderType>
     </FxCompile>
     <ClInclude Include="Shaders\DefaultVertexIn.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">Vertex</ShaderType>
       <FileType>Document</FileType>
     </ClInclude>
-    <ClCompile Include="Engine\Physics\PhysicsSystem.cpp" />
+    <ClCompile Include="Engine\Physics\private\PhysicsSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Engine\MathLibrary\Splines\splines.inl" />
+    <CopyFileToFolders Include="Engine\MathLibrary\private\SPLINE_LICENSE">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+    <None Include="Engine\MathLibrary\public\splines.inl" />
     <None Include="packages.config" />
     <None Include="Shaders\Bezier.hlsli" />
     <None Include="Shaders\DoSpeedWave.hlsli" />
@@ -626,6 +714,13 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -638,6 +733,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_FPS|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -653,15 +751,22 @@
     <IncludePath>../../gateware/;$(IncludePath)</IncludePath>
     <LibraryPath>../../gateware/Archive/Win32/Gateware_amd64/Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">
+    <IncludePath>../../gateware/;$(IncludePath)</IncludePath>
+    <LibraryPath>../../gateware/Archive/Win32/Gateware_amd64/Release;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\Gameplay\public;$(ProjectDir)Engine\StateMachine\public;$(ProjectDir)Engine\Events\public;$(ProjectDir)Engine\Animation\public;$(ProjectDir)Engine\Audio\public;$(ProjectDir)Engine\CollisionLibrary\public;$(ProjectDir)Engine\CoreInput\public;$(ProjectDir)Engine\3rdParty\public;$(ProjectDir)Engine\GEngine\public;$(ProjectDir)Engine\PCH\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>PCH.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -683,8 +788,11 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(SolutionDir)DirectXTK-apr2019\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\Gameplay\public;$(ProjectDir)Engine\StateMachine\public;$(ProjectDir)Engine\Events\public;$(ProjectDir)Engine\Animation\public;$(ProjectDir)Engine\Audio\public;$(ProjectDir)Engine\CollisionLibrary\public;$(ProjectDir)Engine\CoreInput\public;$(ProjectDir)Engine\3rdParty\public;$(ProjectDir)Engine\GEngine\public;$(ProjectDir)Engine\PCH\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <ForcedIncludeFiles>PCH.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -711,8 +819,42 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(SolutionDir)DirectXTK-apr2019\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\Gameplay\public;$(ProjectDir)Engine\StateMachine\public;$(ProjectDir)Engine\Events\public;$(ProjectDir)Engine\Animation\public;$(ProjectDir)Engine\Audio\public;$(ProjectDir)Engine\CollisionLibrary\public;$(ProjectDir)Engine\CoreInput\public;$(ProjectDir)Engine\3rdParty\public;$(ProjectDir)Engine\GEngine\public;$(ProjectDir)Engine\PCH\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>PCH.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
+      <AdditionalDependencies>GAudio_DLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <FxCompile>
+      <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <ResourceCompile>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Test|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <OmitFramePointers>false</OmitFramePointers>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTK\Inc;$(ProjectDir)Engine\Utility\public;$(ProjectDir)Engine\Macros\public;$(ProjectDir)Engine\Hashing\public;$(ProjectDir)Engine\ForwardDeclarations\public;$(ProjectDir)Engine\ECS\public;$(ProjectDir)Engine\UI\public;$(ProjectDir)Engine\Rendering\public;$(ProjectDir)Engine\FileIO\public;$(ProjectDir)Engine\ResourceManager\public;$(ProjectDir)Engine\Physics\public;$(ProjectDir)Engine\Particle Systems\public;$(ProjectDir)Engine\Controller\public;$(ProjectDir)Engine\MathLibrary\public;$(ProjectDir)Engine\Levels\public;$(ProjectDir)Engine\Gameplay\public;$(ProjectDir)Engine\StateMachine\public;$(ProjectDir)Engine\Events\public;$(ProjectDir)Engine\Animation\public;$(ProjectDir)Engine\Audio\public;$(ProjectDir)Engine\CollisionLibrary\public;$(ProjectDir)Engine\CoreInput\public;$(ProjectDir)Engine\3rdParty\public;$(ProjectDir)Engine\GEngine\public;$(ProjectDir)Engine\PCH\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_FPS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>PCH.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
