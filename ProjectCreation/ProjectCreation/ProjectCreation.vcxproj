@@ -168,7 +168,6 @@
     <ClInclude Include="Engine\Utility\public\Random.h" />
     <ClInclude Include="Engine\Utility\public\Range.h" />
     <ClInclude Include="Engine\Utility\public\RenderUtility.h" />
-    <ClInclude Include="Engine\Utility\public\StaticSentinelDumpMemoryLeaks.h" />
     <ClInclude Include="Engine\Utility\public\StringUtility.h" />
     <ClInclude Include="Engine\Utility\public\TypeIndexFactory.h" />
     <FxCompile Include="Shaders\AlignCamera_VS.hlsl">
