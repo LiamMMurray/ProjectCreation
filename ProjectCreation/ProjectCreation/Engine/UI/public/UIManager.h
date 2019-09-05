@@ -6,13 +6,13 @@
 #include <DDSTextureLoader.h>
 #include "WICTextureLoader.h"
 
+#include <CommonStates.h>
+#include <FontComponent.h>
+#include <SpriteComponent.h>
 #include <string>
 #include <tuple>
 #include <unordered_map>
 #include <vector>
-#include <CommonStates.h>
-#include <FontComponent.h>
-#include <SpriteComponent.h>
 
 class RenderSystem;
 
@@ -66,6 +66,8 @@ class UIManager
         native_handle_type         m_WindowHandle;
         std::vector<TimedFunction> timed_functions;
 
+        bool m_GameEnded = false;
+
     public:
         static void Initialize(native_handle_type hwnd);
         static void Update(float deltaTime);
@@ -80,7 +82,8 @@ class UIManager
                       float                PositionY,
                       float                scaleX,
                       float                scaleY,
-                      bool                 enabled);
+                      bool                 enabled,
+                      const wchar_t*       gamePadFileName = nullptr);
 
         void AddText(ID3D11Device*        device,
                      ID3D11DeviceContext* deviceContext,
@@ -95,7 +98,8 @@ class UIManager
                      bool                 AddButton                 = false,
                      bool                 bOverrideButtonDimensions = false,
                      float                buttonwidth               = 0.5f,
-                     float                buttonheight              = 0.5f);
+                     float                buttonheight              = 0.5f,
+                     const char*          altText                   = nullptr);
 
         static constexpr std::tuple<float, float, float> RedIconColor{1.0f, 0.4f, 0.2f};
         static constexpr std::tuple<float, float, float> GreenIconColor{0.4f, 1.0f, 0.4f};
@@ -169,5 +173,5 @@ class UIManager
 
         DirectX::SpriteFont* m_FontTypes[E_FONT_TYPE::COUNT];
 
-        std::tuple<unsigned, unsigned> m_currentTutorialIcon = {-1, -1};
+        unsigned m_currentTutorialIcon = -1;
 };

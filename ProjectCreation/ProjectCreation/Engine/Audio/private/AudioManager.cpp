@@ -98,6 +98,11 @@ void AudioManager::StopAllMusic()
         }
 }
 
+void AudioManager::ResetMusic()
+{
+        StopAllMusic();
+}
+
 void AudioManager::Initialize()
 {
         assert(!instance);

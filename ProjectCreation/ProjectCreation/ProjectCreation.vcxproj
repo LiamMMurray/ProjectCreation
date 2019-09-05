@@ -28,6 +28,7 @@
     <ClInclude Include="Engine\CollisionLibrary\public\CollisionGrid.h" />
     <ClInclude Include="Engine\CollisionLibrary\public\CollisionLibary.h" />
     <ClInclude Include="Engine\CollisionLibrary\public\CollisionComponents.h" />
+    <ClInclude Include="Engine\Controller\public\PlayerEndState.h" />
     <ClInclude Include="Engine\PCH\public\PCH.h" />
     <ClInclude Include="Engine\Utility\public\ContainerUtility.h" />
     <ClInclude Include="Engine\CollisionLibrary\public\CollisionShapes.h" />
@@ -560,6 +561,7 @@
     <ClCompile Include="Engine\Controller\private\IController.cpp" />
     <ClCompile Include="Engine\Controller\private\PlayerCinematicState.cpp" />
     <ClCompile Include="Engine\Controller\private\PlayerControllerStateMachine.cpp" />
+    <ClCompile Include="Engine\Controller\private\PlayerEndState.cpp" />
     <ClCompile Include="Engine\Controller\private\PlayerGroundState.cpp" />
     <ClCompile Include="Engine\Controller\private\PlayerMovement.cpp" />
     <ClCompile Include="Engine\Controller\private\PlayerPuzzleState.cpp" />

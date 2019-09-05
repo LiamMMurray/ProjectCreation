@@ -15,6 +15,7 @@
 #include <PlayerCinematicState.h>
 #include <PlayerGroundState.h>
 #include <PlayerPuzzleState.h>
+#include <PlayerEndState.h>
 #include <PlayerStateEvents.h>
 
 #include <debug_renderer.h>
@@ -40,8 +41,7 @@ void PlayerController::GatherInput()
                         {
                                 tempDir.z += (1.5f * JGamePad::Get()->rightTrigger);
                         }
-
-                        if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
+                        else if (GCoreInput::GetMouseState(MouseCode::LeftClick) == KeyState::Down)
                         {
                                 tempDir.z += 1.5f;
                         }
@@ -140,10 +140,12 @@ void PlayerController::Init(EntityHandle h)
         m_CinematicState = m_StateMachine.CreateState<PlayerCinematicState>();
         m_GroundState    = m_StateMachine.CreateState<PlayerGroundState>();
         auto puzzleState = m_StateMachine.CreateState<PlayerPuzzleState>();
+        auto endState = m_StateMachine.CreateState<PlayerEndState>();
 
         m_StateMachine.AddTransition(m_GroundState, m_CinematicState, E_PLAYERSTATE_EVENT::TO_TRANSITION);
         m_StateMachine.AddTransition(m_CinematicState, m_GroundState, E_PLAYERSTATE_EVENT::TO_GROUND);
         m_StateMachine.AddTransition(m_CinematicState, puzzleState, E_PLAYERSTATE_EVENT::TO_PUZZLE);
+        m_StateMachine.AddTransition(m_CinematicState, endState, E_PLAYERSTATE_EVENT::TO_END);
 
         m_StateMachine.AddTransition(m_GroundState, puzzleState, E_PLAYERSTATE_EVENT::TO_PUZZLE);
         m_StateMachine.AddTransition(puzzleState, m_GroundState, E_PLAYERSTATE_EVENT::TO_GROUND);

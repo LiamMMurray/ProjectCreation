@@ -1,11 +1,11 @@
 #pragma once
 
-#include <d3d11.h>
 #include <Component.h>
 #include <Event.h>
 #include <EventDelegate.h>
 #include <EventManager.h>
 #include <UICollision.h>
+#include <d3d11.h>
 
 #include <SimpleMath.h>
 #include <SpriteFont.h>
@@ -38,10 +38,11 @@ class SpriteComponent : public Component<SpriteComponent>
         float                        mScaleX;
         float                        mScaleY;
 
-		DirectX::XMVECTOR currColor = {1,1,1,1};
-		DirectX::XMVECTOR desiredColor = {1,1,1,1};
+        DirectX::XMVECTOR currColor    = {1, 1, 1, 1};
+        DirectX::XMVECTOR desiredColor = {1, 1, 1, 1};
 
         ID3D11ShaderResourceView* mTexture;
+        ID3D11ShaderResourceView* mAltTexture = nullptr;
         UI::UIRect                mRectangle;
 
         bool mEnabled;

@@ -1,8 +1,8 @@
 #pragma once
 
+#include <Component.h>
 #include <d3d11.h>
 #include <string>
-#include <Component.h>
 #include "SimpleMath.h"
 #include "SpriteFont.h"
 
@@ -11,6 +11,8 @@ class FontComponent
     public:
         int                          mFontType;
         std::string                  mTextDisplay;
+        bool                         hasAltText = false;
+        std::string                  mAltTextDisplay;
         DirectX::SimpleMath::Vector2 mScreenOffset;
         unsigned int                 mWidth;
         unsigned int                 mHeight;

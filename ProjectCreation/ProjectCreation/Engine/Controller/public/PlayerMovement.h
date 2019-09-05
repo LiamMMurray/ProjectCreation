@@ -10,9 +10,9 @@
 #include <CoreInput.h>
 #include <LightOrbColors.h>
 // Audio Includes
+#include <AudioManager.h>
 #include <Interface/G_Audio/GMusic.h>
 #include <Interface/G_Audio/GSound.h>
-#include <AudioManager.h>
 #include <JGamePad.h>
 
 class TransformComponent;
@@ -74,23 +74,23 @@ class PlayerController : public IController
                 m_CollectedSplineOrbCount = 0;
         }
 
-        float m_Sensitivity = 0;
+        int m_SensitivityIndex = 0;
 
         inline void SetSensitivity(int var)
         {
-                if (JGamePad::Get()->CheckConnection() == true)
-                {
-                        m_Sensitivity = m_ControllerSensitivity[var];
-                }
-                else
-                {
-                        m_Sensitivity = m_MouseSensitivity[var];
-                }
+                m_SensitivityIndex = var;
         }
 
         inline float GetSensitivity()
         {
-                return m_Sensitivity;
+                if (JGamePad::Get()->CheckConnection() == true)
+                {
+                        return m_ControllerSensitivity[m_SensitivityIndex];
+                }
+                else
+                {
+                        return m_MouseSensitivity[m_SensitivityIndex];
+                }
         }
 
         inline void SetNextForward(const DirectX::XMVECTOR& _val)
@@ -108,7 +108,9 @@ class PlayerController : public IController
         KeyCode m_ColorInputKeyCodes[E_LIGHT_ORBS::COUNT]            = {KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::Any};
         DWORD   m_ColorInputGameControllerCodes[E_LIGHT_ORBS::COUNT] = {XINPUT_GAMEPAD_B, XINPUT_GAMEPAD_A, XINPUT_GAMEPAD_X};
 
-        const std::string m_SpeedboostSoundNames[3] = {"WHITE_ORB_COLLECT_0_0", "WHITE_ORB_COLLECT_0_1", "WHITE_ORB_COLLECT_0_2"};
+        const std::string m_SpeedboostSoundNames[3] = {"WHITE_ORB_COLLECT_0_0",
+                                                       "WHITE_ORB_COLLECT_0_1",
+                                                       "WHITE_ORB_COLLECT_0_2"};
 
         GW::AUDIO::GSound* m_SpeedBoostSoundPool[E_LIGHT_ORBS::COUNT][MAX_SPEEDBOOST_SOUNDS];
         unsigned int       m_SpeedBoostPoolCounter[E_LIGHT_ORBS::COUNT] = {};

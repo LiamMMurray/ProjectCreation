@@ -7,5 +7,6 @@ struct E_PLAYERSTATE_EVENT
                 TO_TRANSITION,
                 TO_GROUND,
                 TO_PUZZLE,
+				TO_END
         };
 };

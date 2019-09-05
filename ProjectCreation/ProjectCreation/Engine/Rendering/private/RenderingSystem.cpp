@@ -1,14 +1,14 @@
+#include <Bloom.h>
+#include <ControllerSystem.h>
+#include <CoreInput.h>
+#include <EntityFactory.h>
+#include <FileIO.h>
+#include <GEngine.h>
+#include <MathLibrary.h>
+#include <PlayerMovement.h>
 #include <RenderingSystem.h>
 #include <algorithm>
 #include <iostream>
-#include <EntityFactory.h>
-#include <ControllerSystem.h>
-#include <PlayerMovement.h>
-#include <CoreInput.h>
-#include <GEngine.h>
-#include <MathLibrary.h>
-#include <FileIO.h>
-#include <Bloom.h>
 
 #include <d3d11_1.h>
 #pragma comment(lib, "d3d11.lib")
@@ -18,8 +18,8 @@
 #include <Windows.h>
 #include <windowsx.h>
 
-#include <wrl/client.h>
 #include <DirectXMacros.h>
+#include <wrl/client.h>
 
 #include <AnimationClip.h>
 #include <GeometryShader.h>
@@ -46,8 +46,8 @@
 #include <StaticMeshComponent.h>
 #include <TerrainManager.h>
 
-#include <ControllerSystem.h>
 #include <ColorConstants.h>
+#include <ControllerSystem.h>
 #include <MemoryLeakDetection.h>
 #include <debug_renderer.h>
 
@@ -219,7 +219,7 @@ void RenderSystem::CreateDefaultRenderTargets(D3D11_TEXTURE2D_DESC* backbufferDe
         BOOL currentState;
         m_Swapchain->GetFullscreenState(&currentState, nullptr);
 
-        if (currentState != goFullscreen)
+        if ((bool)currentState != goFullscreen)
         {
                 hr = m_Swapchain->SetFullscreenState(goFullscreen, nullptr);
                 assert(SUCCEEDED(hr));

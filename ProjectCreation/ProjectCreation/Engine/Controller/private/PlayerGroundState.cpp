@@ -1,19 +1,20 @@
-#include <PlayerGroundState.h>
-#include <cmath>
-#include <iostream>
-#include <UIManager.h>
 #include <CameraComponent.h>
+#include <CoreInput.h>
 #include <DirectionalLightComponent.h>
 #include <GEngine.h>
-#include <TransformComponent.h>
-#include <MathLibrary.h>
-#include <CoreInput.h>
-#include <PlayerControllerStateMachine.h>
-#include <PlayerMovement.h>
 #include <JGamePad.h>
+#include <MathLibrary.h>
+#include <PlayerControllerStateMachine.h>
+#include <PlayerGroundState.h>
+#include <PlayerMovement.h>
+#include <PlayerStateEvents.h>
+#include <TransformComponent.h>
+#include <UIManager.h>
+#include <cmath>
+#include <iostream>
 
-#include <OrbitSystem.h>
 #include <ControllerSystem.h>
+#include <OrbitSystem.h>
 
 #define _USE_MATH_DEFINES
 
@@ -29,11 +30,11 @@ void PlayerGroundState::Enter()
 
         _playerController->SetEulerAngles(playerTransformComponent->transform.rotation.ToEulerAngles());
 
-        volcanoPos = XMVectorSet(24.51, 0.0f, -139.36f, 1.0f);
+        volcanoPos = XMVectorSet(24.51f, 0.0f, -139.36f, 1.0f);
 
         currMagnitude = 0.0f;
         goalMagnitude = 0.7f;
-		
+
         // Sets the gravity vector for the player
         //_playerController->SetPlayerGravity(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f));
 }
@@ -67,8 +68,7 @@ void PlayerGroundState::Update(float deltaTime)
                 GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_02_TO_LEVEL_03);
         }
 
-        static bool doOnce = false;
-        if (!doOnce && orbitSystem->goalsCollected == 3)
+        if (orbitSystem->goalsCollected == 3)
         {
                 GEngine::Get()->GetLevelStateManager()->RequestState(E_LevelStateEvents::LEVEL_03_TO_LEVEL_04);
                 // UIManager::instance->DemoEnd();
@@ -160,14 +160,20 @@ void PlayerGroundState::Update(float deltaTime)
                         startedShaking = false;
                 }
 
-                if (distance <= 15.0f && doOnce == false)
+                if (distance <= 15.0f)
                 {
                         currMagnitude  = 0.0f;
                         shakeTime      = 0.0f;
                         startedShaking = false;
 
-                        UIManager::instance->DemoEnd();
-                        doOnce = true;
+                        ComponentHandle tch = _playerController->GetControlledEntity().GetComponentHandle<TransformComponent>();
+
+                        FTransform targetTransform;
+                        targetTransform.translation = volcanoPos + XMVectorSet(0.0f, 60.0f, 0.0f, 0.0f);
+                        targetTransform.rotation    = FQuaternion::FromEulerAngles(-XM_PIDIV2, eulerAngles.y, 0.0f);
+
+                        _playerController->RequestCinematicTransition(
+                            1, &tch, &targetTransform, E_PLAYERSTATE_EVENT::TO_END, 4.0f);
                 }
 
                 if (GCoreInput::GetKeyState(KeyCode::K) == KeyState::DownFirst)

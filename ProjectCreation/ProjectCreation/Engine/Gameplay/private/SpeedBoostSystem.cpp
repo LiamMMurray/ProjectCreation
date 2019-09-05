@@ -1,36 +1,36 @@
-#include <SpeedBoostSystem.h>
-#include <algorithm>
 #include <ControllerSystem.h>
 #include <EntityFactory.h>
 #include <GEngine.h>
+#include <SpeedBoostSystem.h>
+#include <algorithm>
 
-#include <TransformComponent.h>
 #include <GoalComponent.h>
 #include <OrbRespawnComponent.h>
 #include <OrbitSystem.h>
 #include <SpeedboostComponent.h>
 #include <SplineElementComponent.h>
+#include <TransformComponent.h>
 
 #include <TutorialLevel.h>
 
+#include <CoreInput.h>
+#include <MathLibrary.h>
+#include <PlayerMovement.h>
 #include <cmath>
 #include <map>
 #include <random>
 #include <string>
-#include <CoreInput.h>
-#include <MathLibrary.h>
-#include <PlayerMovement.h>
 
 #include <Material.h>
 
-#include <MazeGenerator.h>
 #include <FGoodSpline.h>
+#include <MazeGenerator.h>
 
-#include <limits>
 #include <CollisionLibary.h>
+#include <limits>
 
-#include <InputActions.h>
 #include <EmitterComponent.h>
+#include <InputActions.h>
 
 #include <ContinousSoundSystem.h>
 #include <JobScheduler.h>
@@ -60,7 +60,7 @@ EntityHandle SpeedBoostSystem::SpawnSpeedOrb()
                 pos                   = XMVectorSetY(pos, 0.0f);
                 auto entityH          = SpawnLightOrb(pos, color);
                 auto speedBoostHandle = entityH.AddComponent<SpeedboostComponent>();
-                //entityH.AddComponent<AIComponent>();
+                // entityH.AddComponent<AIComponent>();
                 auto speedboostComponent             = speedBoostHandle.Get<SpeedboostComponent>();
                 speedboostComponent->collisionRadius = m_BoostRadius;
                 speedboostComponent->lifetime = MathLibrary::RandomFloatInRange(m_BoostLifespan - m_BoostLifespanVariance,
@@ -122,7 +122,8 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
         int desiredColor = cluster.targetColor;
 
 
-        if (levelType == E_Level_States::LEVEL_02 || levelType == E_Level_States::LEVEL_03)
+        if (levelType == E_Level_States::LEVEL_02 || levelType == E_Level_States::LEVEL_03 ||
+            levelType == E_Level_States::LEVEL_04)
         {
                 int div = 1;
                 if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() == E_Level_States::LEVEL_02)
@@ -133,6 +134,10 @@ EntityHandle SpeedBoostSystem::SpawnSplineOrb(SplineCluster& cluster, int cluste
                          E_Level_States::LEVEL_03)
                 {
                         div = cluster.current / 15;
+                }
+                else
+                {
+                        div = cluster.current / 10;
                 }
                 int color                                   = (cluster.targetColor + div) % 3;
                 cluster.color                               = color;
@@ -584,7 +589,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                     auto orbComp            = speedComp.GetParent().GetComponent<OrbComponent>();
                                     speedComp.lifetime      = -1.0f;
                                     orbComp->m_WantsDestroy = true;
-                                    SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating    = true;
+                                    SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating     = true;
                                     SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrengthL = 0.5f;
                                     SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrengthR = 0.0f;
                                     return;
@@ -849,7 +854,7 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                                                         AudioManager::Get()->PlaySoundAtLocation(currPos, settings);
                                                 }
 
-                                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating    = true;
+                                                SYSTEM_MANAGER->GetSystem<ControllerSystem>()->IsVibrating     = true;
                                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrengthL = 0.25f;
                                                 SYSTEM_MANAGER->GetSystem<ControllerSystem>()->rumbleStrengthR = 0.0f;
                                                 playerController->IncreaseCollectedSplineOrbCount(
