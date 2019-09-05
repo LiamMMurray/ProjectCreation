@@ -2,10 +2,10 @@
 
 // Includes
 #include <DirectXMath.h>
+#include <ECSTypes.h>
 #include <Interface/G_Audio/GAudio.h>
 #include <string>
 #include <unordered_map>
-#include <ECSTypes.h>
 #include "3DSoundComponent.h"
 
 //! Macro used to determine if a function succeeded.
@@ -26,14 +26,21 @@
  */
 #define G_FAIL(_greturn_) ((_greturn_) < 0xFFFFFFFF)
 
+struct FMusic
+{
+        GW::AUDIO::GMusic* music;
+        float              volume;
+};
+
 class AudioManager
 {
+
     private:
-        GW::AUDIO::GAudio*                                  m_SoundEngine = nullptr;
-        std::unordered_map<std::string, GW::AUDIO::GMusic*> m_LoadedMusic;
-        float                                               m_MasterVolume     = 1.0f;
-        float                                               m_PrevMasterVolume = 1.0f;
-        static AudioManager*                                instance;
+        GW::AUDIO::GAudio*                      m_SoundEngine = nullptr;
+        std::unordered_map<std::string, FMusic> m_LoadedMusic;
+        float                                   m_MasterVolume     = 1.0f;
+        float                                   m_PrevMasterVolume = 1.0f;
+        static AudioManager*                    instance;
 
     public:
         EntityHandle PlaySoundWithVolume(float volume, const char* name);
@@ -41,11 +48,10 @@ class AudioManager
         EntityHandle PlaySoundAtLocation(const DirectX::XMVECTOR& pos, SoundComponent3D::FSettings& settings);
 
         GW::AUDIO::GSound* CreateSFX(const char*);
-        GW::AUDIO::GMusic* LoadMusic(const char*);
+        FMusic*            LoadMusic(const char*, float volume = -1.0f);
         void               SetMasterVolume(float val);
-        void               ActivateMusicAndPause(GW::AUDIO::GMusic*, bool looping = false);
+        void               ActivateMusicAndPause(FMusic* music, bool looping = false);
 
-        void PlayMusic(const char* name);
 
         inline float GetMasterVolume()
         {

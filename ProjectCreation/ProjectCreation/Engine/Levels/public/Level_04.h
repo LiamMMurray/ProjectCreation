@@ -14,9 +14,9 @@ class Level_04 : public ILevelState
         OrbitSystem*       m_OrbitSystem;
         PlayerController*  m_PlayerController;
 
-        GW::AUDIO::GMusic* Waves;
-        GW::AUDIO::GMusic* Eruption;
-        GW::AUDIO::GMusic* Forest;
+        FMusic* Waves;
+        FMusic* Eruption;
+        FMusic* Forest;
 
     public:
         // Inherited via ILevelState

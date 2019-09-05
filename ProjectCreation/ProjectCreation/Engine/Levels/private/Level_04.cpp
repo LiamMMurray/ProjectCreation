@@ -1,5 +1,5 @@
-#include <Level_04.h>
 #include <GEngine.h>
+#include <Level_04.h>
 #include <MathLibrary.h>
 
 #include <ControllerSystem.h>
@@ -10,6 +10,8 @@ void Level_04::Enter()
         m_OrbitSystem->ClearTimedFunctions();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
+                AudioManager::Get()->ResetMusic();
+
                 controllerSys->ResetPlayer();
 
                 m_OrbitSystem->InstantCreateOrbitSystem();
@@ -36,7 +38,7 @@ void Level_04::Enter()
         else
         {
                 AudioManager::Get()->PlaySoundWithVolume(1.0f, "TRANSITION_PLANTS");
-		}
+        }
 
         m_SpeedBoostSystem->m_ColorsCollected[0] = false;
         m_SpeedBoostSystem->m_ColorsCollected[1] = false;
@@ -59,13 +61,13 @@ void Level_04::Enter()
         controllerSys->ResetOrbCount();
 
         AudioManager::Get()->ActivateMusicAndPause(Waves, true);
-        Waves->ResumeStream();
+        Waves->music->ResumeStream();
 
         AudioManager::Get()->ActivateMusicAndPause(Eruption, true);
-        Eruption->ResumeStream();
+        Eruption->music->ResumeStream();
 
         AudioManager::Get()->ActivateMusicAndPause(Forest, true);
-        Forest->ResumeStream();
+        Forest->music->ResumeStream();
 
         m_SpeedBoostSystem->SetTargetTerrain(1.0f);
 
@@ -88,11 +90,6 @@ Level_04::Level_04()
         m_PlayerController              = static_cast<PlayerController*>(controllerSys->GetCurrentController());
 
         Waves = AudioManager::Get()->LoadMusic("Ambience_andWaves");
-        Waves->SetVolume(0.4f);
-
         Eruption = AudioManager::Get()->LoadMusic("EARTHQUAKE_SFX");
-        Eruption->SetVolume(0.3f);
-
         Forest = AudioManager::Get()->LoadMusic("LEVEL_4_AMBIENCE");
-        Forest->SetVolume(0.6f);
 }

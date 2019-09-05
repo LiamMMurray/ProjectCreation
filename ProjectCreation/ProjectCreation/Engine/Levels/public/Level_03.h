@@ -1,19 +1,19 @@
 #pragma once
 #include <AudioManager.h>
-#include <OrbitSystem.h>
-#include <SpeedBoostSystem.h>
-#include <PlayerMovement.h>
 #include <LevelState.h>
+#include <OrbitSystem.h>
+#include <PlayerMovement.h>
+#include <SpeedBoostSystem.h>
 
 // LEVEL 3 : LAND
 class Level_03 : public ILevelState
 {
         friend class SpeedBoostSystem;
 
-        SpeedBoostSystem*  m_SpeedBoostSystem;
-        OrbitSystem*       m_OrbitSystem;
-        PlayerController*  m_PlayerController;
-        GW::AUDIO::GMusic* Waves;
+        SpeedBoostSystem* m_SpeedBoostSystem;
+        OrbitSystem*      m_OrbitSystem;
+        PlayerController* m_PlayerController;
+        FMusic*           Waves;
 
     public:
         // Inherited via ILevelState
