@@ -185,7 +185,7 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
 
                 if (color == 3)
                 {
-                        AudioManager::Get()->PlaySoundWithVolume(1.0f, m_SpeedboostSoundNames[index].c_str());
+                        AudioManager::Get()->PlaySoundWithVolume(0.5f, m_SpeedboostSoundNames[index].c_str());
                 }
                 else
                 {
@@ -202,7 +202,7 @@ bool PlayerController::SpeedBoost(DirectX::XMVECTOR boostPos, int color)
 
                         settings.m_SoundVaration = variation;
                         settings.flags.set(SoundComponent3D::E_FLAGS::DestroyOnEnd, true);
-                        settings.m_Volume = 1.0f;
+                        settings.m_Volume = 0.7f;
 
                         AudioManager::Get()->PlaySoundAtLocation(boostPos, settings);
                 }

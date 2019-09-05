@@ -11,6 +11,8 @@ void Level_02::Enter()
         m_OrbitSystem->ClearTimedFunctions();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
+                AudioManager::Get()->ResetMusic();
+
                 controllerSys->ResetPlayer();
 
                 m_OrbitSystem->InstantCreateOrbitSystem();
@@ -50,7 +52,7 @@ void Level_02::Enter()
         controllerSys->ResetOrbCount();
 
         AudioManager::Get()->ActivateMusicAndPause(Waves, true);
-        Waves->ResumeStream();
+        Waves->music->ResumeStream();
 
         m_LevelType = E_Level_States::LEVEL_02;
 }
@@ -73,5 +75,4 @@ Level_02::Level_02()
         m_PlayerController              = static_cast<PlayerController*>(controllerSys->GetCurrentController());
 
         Waves = AudioManager::Get()->LoadMusic("Ambience_andWaves");
-        Waves->SetVolume(0.6f);
 }

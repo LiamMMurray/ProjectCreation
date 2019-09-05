@@ -10,6 +10,8 @@ void Level_03::Enter()
         m_OrbitSystem->ClearTimedFunctions();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
+                AudioManager::Get()->ResetMusic();
+
                 controllerSys->ResetPlayer();
 
                 m_OrbitSystem->InstantCreateOrbitSystem();
@@ -52,7 +54,7 @@ void Level_03::Enter()
         controllerSys->ResetOrbCount();
 
         AudioManager::Get()->ActivateMusicAndPause(Waves, true);
-        Waves->ResumeStream();
+        Waves->music->ResumeStream();
 
         m_SpeedBoostSystem->SetTargetTerrain(1.0f);
 
@@ -80,5 +82,4 @@ Level_03::Level_03()
         m_PlayerController              = static_cast<PlayerController*>(controllerSys->GetCurrentController());
 
         Waves = AudioManager::Get()->LoadMusic("Ambience_andWaves");
-        Waves->SetVolume(0.6f);
 }

@@ -115,9 +115,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
         // Joseph found an underwater abience music track and is replacing the old music with it for testing <06/19/19>
         // auto music = AudioManager::Get()->LoadMusic("extreme");
-        auto music = AudioManager::Get()->LoadMusic("Ambience 16-48k");
-        AudioManager::Get()->ActivateMusicAndPause(music, true);
-        music->ResumeStream();
+        AudioManager::Get()->ResetMusic();
 
         // Directional Light setup
         {

@@ -522,14 +522,6 @@ void SpeedBoostSystem::OnUpdate(float deltaTime)
                 targetTerrain = m_targetTerrain;
         }
 
-        if (GEngine::Get()->GetLevelStateManager()->GetCurrentLevelState()->GetLevelType() >= E_Level_States::LEVEL_02)
-        {
-                auto Waves = AudioManager::Get()->LoadMusic("Ambience_andWaves");
-                Waves->SetVolume(0.6f);
-                AudioManager::Get()->ActivateMusicAndPause(Waves, true);
-                Waves->ResumeStream();
-        }
-
         // if (InputActions::CheckActionDown(E_LIGHT_ORBS::RED_LIGHTS))
         //{
         //        int temp = 0;

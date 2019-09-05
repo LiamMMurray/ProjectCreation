@@ -1,8 +1,8 @@
 #include "AudioManager.h"
+#include <MathLibrary.h>
+#include <MemoryLeakDetection.h>
 #include <assert.h>
 #include <sstream>
-#include <MemoryLeakDetection.h>
-#include <MathLibrary.h>
 
 #include <GEngine.h>
 #include "ContinousSoundSystem.h"
@@ -10,6 +10,7 @@
 using namespace GW::AUDIO;
 
 AudioManager *AudioManager::instance;
+
 
 EntityHandle AudioManager::PlaySoundWithVolume(float volume, const char *name)
 {
@@ -34,9 +35,9 @@ GW::AUDIO::GSound *AudioManager::CreateSFX(const char *name)
         return output;
 }
 
-GMusic *AudioManager::LoadMusic(const char *name)
+FMusic *AudioManager::LoadMusic(const char *name, float volume)
 {
-        GMusic *output;
+        FMusic *output;
 
         std::ostringstream filePathStream;
         filePathStream << "../Assets/Music/" << name << ".wav";
@@ -45,14 +46,19 @@ GMusic *AudioManager::LoadMusic(const char *name)
         auto it = m_LoadedMusic.find(name);
         if (it == m_LoadedMusic.end())
         {
-                GW::GReturn returnCode = m_SoundEngine->CreateMusicStream(str.c_str(), &output);
-                output->SetVolume(m_MasterVolume);
-                m_LoadedMusic.insert(std::make_pair(name, output));
+                auto newIt = m_LoadedMusic.emplace(name, FMusic());
+                output     = &newIt.first->second;
+                m_SoundEngine->CreateMusicStream(str.c_str(), &output->music);
         }
         else
         {
-                output = it->second;
+                output = &it->second;
         }
+
+        if (volume >= 0.0f)
+                output->volume = volume;
+
+        output->music->SetVolume(m_MasterVolume * volume);
 
         return output;
 }
@@ -65,27 +71,25 @@ void AudioManager::SetMasterVolume(float val)
         m_MasterVolume = val;
         for (auto &music : m_LoadedMusic)
         {
-                music.second->SetVolume(val);
+                music.second.music->SetVolume(val * music.second.volume);
         }
         GET_SYSTEM(SpatialSoundSystem)->SetMasterVolume(val);
 }
 
-void AudioManager::ActivateMusicAndPause(GW::AUDIO::GMusic *m, bool looping)
+void AudioManager::ActivateMusicAndPause(FMusic *m, bool looping)
 {
-        m->StreamStart(looping);
-        m->SetVolume(m_MasterVolume);
-        m->PauseStream();
+        m->music->StreamStart(looping);
+        m->music->SetVolume(m_MasterVolume * m->volume);
+        m->music->PauseStream();
 }
 
-void AudioManager::PlayMusic(const char *name)
-{}
 
 void AudioManager::_shutdown()
 {
 
         for (auto &it : m_LoadedMusic)
         {
-                it.second->DecrementCount();
+                it.second.music->DecrementCount();
         }
         m_SoundEngine->DecrementCount();
 }
@@ -94,13 +98,21 @@ void AudioManager::StopAllMusic()
 {
         for (auto &music : m_LoadedMusic)
         {
-                music.second->StopStream();
+                music.second.music->StopStream();
         }
 }
 
 void AudioManager::ResetMusic()
 {
         StopAllMusic();
+
+        LoadMusic("Ambience_andWaves", 0.6f);
+        LoadMusic("EARTHQUAKE_SFX", 0.3f);
+        LoadMusic("LEVEL_4_AMBIENCE", 0.6f);
+
+        auto fmusic = LoadMusic("Ambience 16-48k", 1.0f);
+        ActivateMusicAndPause(fmusic, true);
+        fmusic->music->ResumeStream();
 }
 
 void AudioManager::Initialize()

@@ -11,7 +11,7 @@ class Level_02 : public ILevelState
         SpeedBoostSystem*  m_SpeedBoostSystem;
         OrbitSystem*       m_OrbitSystem;
         PlayerController*  m_PlayerController;
-        GW::AUDIO::GMusic* Waves;
+        FMusic* Waves;
 
     public:
         // Inherited via ILevelState

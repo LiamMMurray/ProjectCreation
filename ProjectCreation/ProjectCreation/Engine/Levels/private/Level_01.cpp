@@ -1,8 +1,8 @@
-#include <Level_01.h>
-#include <DirectXMath.h>
-#include <UIManager.h>
 #include <ControllerSystem.h>
+#include <DirectXMath.h>
+#include <Level_01.h>
 #include <OrbitSystem.h>
+#include <UIManager.h>
 #include "LevelStateMachine.h"
 
 using namespace DirectX;
@@ -13,6 +13,8 @@ void Level_01::Enter()
         m_OrbitSystem->ClearTimedFunctions();
         if (static_cast<LevelStateMachine*>(stateMachine)->m_ForceLoad)
         {
+                AudioManager::Get()->ResetMusic();
+
                 controllerSys->ResetPlayer();
 
                 m_OrbitSystem->InstantCreateOrbitSystem();
@@ -25,7 +27,6 @@ void Level_01::Enter()
                 m_OrbitSystem->ClearCollectedMask();
 
                 GEngine::Get()->SetPuzzleState(0.0f);
-
         }
 
         m_SpeedBoostSystem->SetRandomSpawnEnabled(true);

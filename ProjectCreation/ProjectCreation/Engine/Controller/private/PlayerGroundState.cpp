@@ -30,7 +30,7 @@ void PlayerGroundState::Enter()
 
         _playerController->SetEulerAngles(playerTransformComponent->transform.rotation.ToEulerAngles());
 
-        volcanoPos = XMVectorSet(24.51f, 0.0f, -139.36f, 1.0f);
+        volcanoPos = XMVectorSet(20.51f, 0.0f, -139.36f, 1.0f);
 
         currMagnitude = 0.0f;
         goalMagnitude = 0.7f;
