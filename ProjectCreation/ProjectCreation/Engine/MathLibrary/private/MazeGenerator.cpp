@@ -94,9 +94,9 @@ std::vector<MazeGenerator::MazePoint> MazeGenerator::GenerateMaze(unsigned int r
         std::stack<MazeGenerator::MazePoint> path;
 
 
-        bool** visited = DBG_NEW bool * [rows];
+        bool** visited = new bool * [rows];
         for (unsigned int i = 0; i < rows; ++i)
-                visited[i] = DBG_NEW bool[cols]{};
+                visited[i] = new bool[cols]{};
 
 
         visited[start.y][start.x] = true;

@@ -4,7 +4,7 @@
 
 HandleManager::HandleManager(NMemory::NPools::RandomAccessPools& componentRandomAccessPools,
                              NMemory::NPools::RandomAccessPools& entityRandomAccessPools,
-                             NMemory::MemoryStack&                poolMemory) :
+                             NMemory::MemoryStack&               poolMemory) :
     m_ComponentRandomAccessPools(componentRandomAccessPools),
     m_EntityRandomAccessPools(entityRandomAccessPools),
     m_MemoryStack(poolMemory),
@@ -32,12 +32,18 @@ EntityHandle HandleManager::CreateEntity(EntityHandle parentHandle)
         if (m_EntityRandomAccessPools.m_mem_starts.size() <= pool_index)
         {
                 assert(m_MemoryStack.m_MemCurr + sizeof(Entity) * Entity::SGetMaxElements() <= m_MemoryStack.m_MemMax);
-                InsertPool(m_EntityRandomAccessPools, {sizeof(Entity), Entity::SGetMaxElements()}, m_MemoryStack.m_MemCurr, pool_index);
+                InsertPool(m_EntityRandomAccessPools,
+                           {sizeof(Entity), Entity::SGetMaxElements()},
+                           m_MemoryStack.m_MemCurr,
+                           pool_index);
         }
         auto         allocation   = Allocate(m_EntityRandomAccessPools, pool_index);
         EntityHandle entityHandle = allocation.redirection_idx;
         Entity*      objectPtr    = reinterpret_cast<Entity*>(allocation.objectPtr);
+#pragma push_macro("new")
+#undef new
         new (objectPtr) Entity();
+#pragma pop_macro("new")
         objectPtr->m_redirection_index        = allocation.redirection_idx;
         objectPtr->m_parent_redirection_index = parentHandle.redirection_index;
 

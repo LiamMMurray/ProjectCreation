@@ -106,7 +106,7 @@ void AudioManager::ResetMusic()
 void AudioManager::Initialize()
 {
         assert(!instance);
-        instance              = DBG_NEW AudioManager;
+        instance              = new AudioManager;
         GW::GReturn        gr = (GW::AUDIO::CreateGAudio(&instance->m_SoundEngine));
         assert(G_SUCCESS(gr));
 }

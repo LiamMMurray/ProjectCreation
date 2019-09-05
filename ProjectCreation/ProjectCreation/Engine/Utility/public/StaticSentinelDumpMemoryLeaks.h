@@ -6,7 +6,7 @@ struct StaticSentinelDumpMemoryLeaks
         {}
         ~StaticSentinelDumpMemoryLeaks()
         {
-                _CrtDumpMemoryLeaks();
+                //_CrtDumpMemoryLeaks();
         }
 };
 

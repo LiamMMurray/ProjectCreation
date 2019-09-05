@@ -60,7 +60,7 @@ inline EResult SystemManager::CreateSystem(T** outSystem)
 
         assert(m_SystemsMap.find(typeID) == m_SystemsMap.end());
 
-        *outSystem               = DBG_NEW T();
+        *outSystem               = new T();
         ISystem*             val = *outSystem;
         auto                 it  = m_SystemsMap.insert(std::make_pair(typeID, val));
 

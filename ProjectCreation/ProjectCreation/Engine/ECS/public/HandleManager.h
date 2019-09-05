@@ -1,12 +1,12 @@
 #pragma once
+#include <ECSPools.h>
+#include <Range.h>
+#include <SpookyHashV2.h>
+#include <TypeIndexFactory.h>
 #include <assert.h>
 #include <algorithm>
-#include <SpookyHashV2.h>
-#include <Range.h>
-#include <TypeIndexFactory.h>
 #include "ComponentHandle.h"
 #include "IPoolElement.h"
-#include <ECSPools.h>
 
 #include <limits>
 namespace std
@@ -147,7 +147,10 @@ inline ComponentHandle HandleManager::AddComponent(EntityHandle parentHandle)
         auto            allocation = Allocate(m_ComponentRandomAccessPools, pool_index);
         ComponentHandle componentHandle(pool_index, allocation.redirection_idx);
         T*              objectPtr = reinterpret_cast<T*>(allocation.objectPtr);
+#pragma push_macro("new")
+#undef new
         new (objectPtr) T();
+#pragma pop_macro("new")
         objectPtr->m_pool_index               = componentHandle.pool_index;
         objectPtr->m_redirection_index        = componentHandle.redirection_index;
         objectPtr->m_parent_redirection_index = parentHandle.redirection_index;

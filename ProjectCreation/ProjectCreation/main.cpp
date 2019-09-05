@@ -1,5 +1,3 @@
-#include <StaticSentinelDumpMemoryLeaks.h> 
-
 #include <stdio.h>
 #include <time.h>
 #include <windowsx.h>
@@ -92,6 +90,8 @@ LONG WINAPI errorFunc(_EXCEPTION_POINTERS* pExceptionInfo)
 #include <WindowsUtility.h> 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+        _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);
+
         ConsoleUtil::CreateConsoleWindow("Inanis Console Window");
 
         std::srand(unsigned(std::time(0)));

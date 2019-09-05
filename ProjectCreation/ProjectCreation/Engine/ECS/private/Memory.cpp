@@ -12,7 +12,7 @@ namespace NMemory
                 // LPVOID ptr = VirtualAlloc(0, allocSize, MEM_RESERVE, PAGE_READWRITE);
                 // ptr        = VirtualAlloc(ptr, allocSize, MEM_COMMIT, PAGE_READWRITE);
                 // return static_cast<byte*>(ptr);
-                poolMemory.m_MemStart = reinterpret_cast<byte*>(DBG_MALLOC(allocSize));
+                poolMemory.m_MemStart = reinterpret_cast<byte*>(malloc(allocSize));
                 poolMemory.m_MemCurr  = poolMemory.m_MemStart;
                 poolMemory.m_MemMax   = poolMemory.m_MemStart + allocSize;
         }

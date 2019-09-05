@@ -164,7 +164,7 @@ ResourceContainer<T>* ResourceManager::GetResourceContainer()
 
         if (it == this->m_Containers.end())
         {
-                rc                     = DBG_NEW ResourceContainer<T>();
+                rc                     = new ResourceContainer<T>();
                 this->m_Containers[ID] = rc;
         }
         else

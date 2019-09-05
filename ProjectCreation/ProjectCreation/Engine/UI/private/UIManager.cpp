@@ -872,7 +872,7 @@ void UIManager::DemoEnd()
 void UIManager::Initialize(native_handle_type hwnd)
 {
         assert(!instance);
-        instance = DBG_NEW UIManager;
+        instance = new UIManager;
 
         instance->m_RenderSystem = GEngine::Get()->GetSystemManager()->GetSystem<RenderSystem>();
 

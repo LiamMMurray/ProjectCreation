@@ -145,7 +145,7 @@ void TerrainManager::_initialize(RenderSystem* rs)
                 texd.MipLevels          = 1;
 
                 stagingTextureCPUElementCount = texd.Width * texd.Height;
-                terrainHeightArray            = DBG_NEW float[texd.Height * texd.Width]();
+                terrainHeightArray            = new float[texd.Height * texd.Width]();
 
                 D3D11_SUBRESOURCE_DATA data{};
                 data.pSysMem     = (void*)terrainHeightArray;
