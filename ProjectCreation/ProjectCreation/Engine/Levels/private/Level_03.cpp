@@ -69,7 +69,7 @@ void Level_03::Update(float deltaTime)
 
 void Level_03::Exit()
 {
-        Waves->StopStream();
+        //Waves->StopStream();
 }
 
 Level_03::Level_03()

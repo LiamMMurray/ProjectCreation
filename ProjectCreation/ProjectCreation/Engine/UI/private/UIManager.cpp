@@ -1734,7 +1734,7 @@ void UIManager::Initialize(native_handle_type hwnd)
                                   instance->m_RenderSystem->m_Context,
                                   E_MENU_CATEGORIES::Demo,
                                   E_FONT_TYPE::Calibri,
-                                  "Music and Aduio Developer",
+                                  "Music and Audio Developer",
                                   0.05f * ScaleXRatio,
                                   0.05f * ScaleYRatio,
                                   0.3f * PosXRatio,
