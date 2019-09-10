@@ -8,10 +8,4 @@
 #else
 #define ENABLE_LEAK_DETECTION()
 #endif
-//
-//#ifdef _DEBUG
-//#define new new ( _CLIENT_BLOCK , __FILE__ , __LINE__ )
-//#else
-//#define new new
-//#endif
 
