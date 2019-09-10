@@ -3,6 +3,8 @@
 #define WIN_32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <atomic>
+#include <condition_variable>
+#include <mutex>
 #include <random>
 #include <thread>
 #include <tuple>
@@ -85,9 +87,19 @@ inline namespace JobScheduler
 }
 inline namespace JobSchedulerGlobals
 {
+        struct Signal
+        {
+                inline Signal()
+                {}
+                inline Signal(const Signal&)
+                {}
+                std::condition_variable cv;
+                std::mutex              m;
+        };
         inline DWORD                     g_tls_access_value = TlsAlloc();
         inline unsigned                  g_num_threads      = std::thread::hardware_concurrency();
         inline std::vector<std::thread>  g_worker_threads;
+        inline std::vector<Signal>       g_work_available;
         inline volatile bool             g_worker_thread_active = true;
         inline thread_local std::mt19937 g_thread_local_rng_engine;
 
@@ -144,8 +156,8 @@ inline namespace JobScheduler
                 static constexpr auto MAX_JOBS = nextPowerOf2(MAX_JOBS);
                 static constexpr auto MASK     = MAX_JOBS - 1;
                 JobInternal**         m_jobs;
-				volatile int64_t m_bottom;
-                volatile int64_t m_top;
+                volatile int64_t      m_bottom;
+                volatile int64_t      m_top;
                 JobQueue()
                 {}
                 void Initialize() volatile
@@ -177,6 +189,10 @@ inline namespace JobScheduler
                         std::atomic_thread_fence(std::memory_order_seq_cst);
 
                         m_bottom = b + 1;
+
+                        std::atomic_thread_fence(std::memory_order_seq_cst);
+                        for (auto& itr : g_work_available)
+                                itr.cv.notify_all();
                 }
                 JobInternal* Pop(void) volatile
                 {
@@ -346,6 +362,9 @@ inline namespace JobSchedulerInternal
                 TlsSetValue(g_tls_access_value, (LPVOID)index);
                 while (g_worker_thread_active)
                 {
+                        std::unique_lock ul(g_work_available[index].m);
+                        g_work_available[index].cv.wait(ul);
+
                         JobInternal* job = GetJob();
                         if (job)
                         {
@@ -374,6 +393,7 @@ inline namespace JobScheduler
                 thread_index = 0;
                 TlsSetValue(g_tls_access_value, reinterpret_cast<LPVOID>(thread_index));
                 thread_index++;
+                g_work_available.resize(g_num_threads);
                 for (; thread_index < g_num_threads; thread_index++)
                         g_worker_threads.push_back(std::thread(WorkerThreadMain, thread_index));
         }
@@ -382,6 +402,8 @@ inline namespace JobScheduler
                 g_thread_local_job_allocator_static.Release();
                 g_thread_local_job_allocator_temp.Release();
                 g_worker_thread_active = false;
+                for (auto& itr : g_work_available)
+                        itr.cv.notify_all();
                 for (auto& itr : g_worker_threads)
                         itr.join();
                 // for (auto& itr : g_worker_threads)
