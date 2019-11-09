@@ -78,7 +78,11 @@ void Level_04::Update(float deltaTime)
 {}
 
 void Level_04::Exit()
-{}
+{
+        //Waves->StopStream();
+        //Eruption->StopStream();
+        //Forest->StopStream();
+}
 
 Level_04::Level_04()
 {
